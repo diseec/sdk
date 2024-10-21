@@ -36,6 +36,24 @@ case $command in
         sh $0 run /bin/sh
     ;;
 
+    # MODIFIERS
+
+    devops)
+        subcommand=$1 && shift
+        case $subcommand in
+            override)
+                sh $0 run npm run devops override
+            ;;
+            *)
+                echo "Unknown subcommand: $subcommand"
+                echo "Usage: $0 devops [subcommand]"
+                echo "Subcommands:"
+                echo "  "
+                exit 1
+            ;;
+        esac
+    ;;
+
     --help|-h)
         echo "Usage: $0 [command]"
         echo "Commands:"

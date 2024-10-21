@@ -1,8 +1,10 @@
 
 FROM alpine:latest
 
-WORKDIR /app
+WORKDIR /
 
 COPY . .
+
+RUN alias cli="/cli"
 
 CMD ["sh", "cli", "--help"]
