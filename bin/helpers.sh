@@ -12,7 +12,7 @@ color_output() {
 message(){
   load_env
   
-  printf "\e[30;47m @$APP_NAME \e[0m"
+  printf "\e[30;47m @DISEEC \e[0m"
   if [ $# -eq 1 ]; then
     type="\e[30;46m message \e[0m"
     text=$1

@@ -12,7 +12,7 @@ case $command in
     ;;
 
     run)
-        if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup; then
+        if [ -f /.dockerenv ]; then
             "$@"
         else
             if [ -z "$CI" ]; then

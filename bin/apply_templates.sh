@@ -56,6 +56,12 @@ process_template() {
   rm -rf "$CACHE_DIR"
 }
 
+# Function to copy helper scripts to the project directory
+copy_helpers() {
+  mkdir -p "$MOUNTED_PROJECT_DIR/bin"
+  cp "bin/helpers.sh" "$MOUNTED_PROJECT_DIR/bin"
+}
+
 # Main script execution
 MOUNTED_PROJECT_DIR="/app"
 
@@ -63,5 +69,6 @@ list_templates
 select_template
 prompt_inputs
 process_template
+copy_helpers
 
 echo "Template applied successfully!"
