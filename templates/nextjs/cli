@@ -61,7 +61,7 @@ case $command in
             -w /app \
             -v "$(pwd)":/app \
             --pull always \
-            registry.diseec.com/toolkit sh /cli "$@"
+            registry.diseec.com/toolkit bash /toolkit/cli "$@"
     ;;
 
     --help|-h)
