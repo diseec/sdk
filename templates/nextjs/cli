@@ -1,0 +1,77 @@
+#!/bin/sh
+
+cd $(dirname "$0") && command=$1 && shift
+source "./bin/helpers.sh"
+
+case $command in
+    build)
+        set -e
+        docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t registry.diseec.com/placeholderforprojectid-placeholderforprojectname \
+            --push .
+    ;;
+
+    run)
+        if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup; then
+            "$@"
+        else
+            if [ -z "$CI" ]; then
+                IT_OPTION="-it"
+            else
+                IT_OPTION=""
+            fi
+            docker run --rm $IT_OPTION \
+                -v "$(pwd)":/app \
+                -p 3000:3000 \
+                -w /app \
+                registry.diseec.com/placeholderforprojectid-placeholderforprojectname "$@"
+        fi
+    ;;
+
+    install)
+        set -e
+        sh $0 run npm install
+    ;;
+
+    dev)
+        sh $0 run npm run dev
+    ;;
+
+    shell)
+        sh $0 run /bin/sh
+    ;;
+
+    test)
+        set -e
+        sh $0 run npm run lint
+        # sh $0 run npm run test
+    ;;
+
+    release)
+        TAG="v$(date +%Y%m%d%H%M%S)"
+        git checkout main
+        git pull origin main
+        git tag -a $TAG -m "Release $TAG"
+        git push origin $TAG
+    ;;
+
+    --help|-h)
+        echo "Usage: $0 [command]"
+        echo "Commands:"
+        echo "  install        Install the dependencies"
+        echo "  dev            Start the development server"
+        echo "  run            Run a command in fresh instance"
+        echo "  shell          Start the shell"
+        echo "  test           Run the tests"
+        echo "  build          Build the images push to registry"
+        echo "  release        Merge to release branch to trigger CI/CD pipeline"
+        exit 0
+    ;;
+
+    *)
+        echo "Unknown command: $command"
+        sh $0 --help
+        exit 1
+    ;;
+esac

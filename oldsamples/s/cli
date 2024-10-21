@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Load the helpers
+source "$(dirname "$0")/bin/helpers.sh"
+
+# Get the command
+command=$1
+shift
+
+# If no command is provided, display the help message
+if [ -z "$command" ]; then
+    clear
+    bash $0 help
+    exit 0
+fi
+
+case $command in
+    
+    # ------------------ COMMANDS ------------------ #
+
+    install)
+        execute bin/cli/install "$@"
+        ;;
+    dev)
+        execute bin/cli/dev "$@"
+        ;;
+    test)
+        execute bin/cli/test "$@"
+        ;;
+    build)
+        # Add your code for building the application here
+        ;;
+    deploy)
+        # transferr to server & start services
+        ;;
+
+    # ------------------ SERVICES ------------------ #
+
+    docker)
+        execute bin/cli/docker "$@"
+        ;;
+    api)
+        execute api/cli "$@"
+        ;;
+    web)
+        execute ui/web/cli "$@"
+        ;;
+    pro)
+        execute bin/cli/pro "$@"
+        ;;
+
+    # ------------------ OPTIONS ------------------ #
+
+    help|--help|-h)
+        message "Welcome to Satyp CLI"
+        printf "\n"
+        color_output 33 "Usage:"
+        color_output 0 "    command [options] [arguments]"
+        printf "\n"
+        color_output 33 "Options:"
+        color_output 0 "    \e[32m-h, --help\e[0m       Display help for the given command"
+        printf "\n"
+        color_output 33 "Commands:"
+        color_output 0 "    \e[32minstall\e[0m          Install and setup the application after it was cloned"
+        color_output 0 "    \e[32mdev\e[0m              Start the server in dev mode"
+        color_output 0 "    \e[31mdeploy\e[0m           Deploy the application"
+        color_output 0 "    \e[31mstart\e[0m            Start servers or services in production mode (e.g. mysql, redis, etc.)"
+        color_output 0 "    \e[32mtest\e[0m             Run tests"
+        color_output 0 "    \e[31mbuild\e[0m            Build the application"
+        printf "\n"
+        color_output 33 "Services:"
+        color_output 0 "    \e[32mdocker\e[0m           Docker specific commands (e.g. \e[32mbuild\e[0m images, access \e[32mcompose\e[0m commands, etc.)"
+        color_output 0 "    \e[32mapi\e[0m              The CLI for the api service"
+        color_output 0 "    \e[32mweb\e[0m              The CLI for the web service"
+        color_output 0 "    \e[32mpro\e[0m              Production server CLI (e.g. connecting, deploying, etc.)"
+        printf "\n"
+        message note "Do not use this cli inside the containers, as it does not support it yet."
+        exit 0
+        ;;
+
+    # ------------------ QUICK ACTIONS ------------------ #
+    # !!! CAUTION: These are only for in terminal use and are subjected to removal !!!
+    clone)
+        (cd ~/Projects/satyp/clones && rm -rf DONT-DEV-HERE && gh repo clone k1zang/satyp DONT-DEV-HERE && cd DONT-DEV-HERE && git checkout dev && code .)
+        ;;
+    tree)
+        (cd ~/Projects/satyp && find codebase -type d -maxdepth 7 | grep -vE "(git|vendor|node_modules)")
+        ;;
+        
+    *)
+        message error "Unknown command: $command"
+        ;;
+esac

@@ -1,0 +1,54 @@
+#!/bin/sh
+
+cd $(dirname "$0") && command=$1 && shift
+
+case $command in
+    build)
+        set -e
+        docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t registry.diseec.com/toolkit \
+            --push .
+    ;;
+
+    run)
+        if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup; then
+            "$@"
+        else
+            if [ -z "$CI" ]; then
+                IT_OPTION="-it"
+            else
+                IT_OPTION=""
+            fi
+            docker run --rm $IT_OPTION \
+                -v "$(pwd)":/app \
+                -w /app \
+                registry.diseec.com/toolkit "$@"
+        fi
+    ;;
+
+    install)
+        set -e
+        sh $0 run npm install
+    ;;
+
+    shell)
+        sh $0 run /bin/sh
+    ;;
+
+    --help|-h)
+        echo "Usage: $0 [command]"
+        echo "Commands:"
+        echo "  run            Run a command in fresh instance"
+        echo "  build          Build the images push to registry"
+        echo "  install        Install the dependencies"
+        echo "  shell          Start the shell"
+        exit 0
+    ;;
+
+    *)
+        echo "Unknown command: $command"
+        sh $0 --help
+        exit 1
+    ;;
+esac
