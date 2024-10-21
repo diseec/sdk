@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -24,7 +24,7 @@ select_template() {
 
 # Function to prompt user for initial inputs
 prompt_inputs() {
-  read -p "Enter the author name: " PROJECT_ID
+  read -p "Enter the project id: " PROJECT_ID
   read -p "Enter the project name: " PROJECT_NAME
 }
 
@@ -39,12 +39,13 @@ replace_placeholders() {
 process_template() {
   # Create cache directory
   mkdir -p "$CACHE_DIR"
+  shopt -s dotglob
 
   # Copy template files to cache directory
   cp -r "$TEMPLATE_DIR"/* "$CACHE_DIR"
 
   # Replace placeholders in cached files
-  for file in $(find "$CACHE_DIR" -type f); do
+  find "$CACHE_DIR" -type f | while read -r file; do
     replace_placeholders "$file"
   done
 

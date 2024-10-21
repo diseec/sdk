@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd $(dirname "$0") && command=$1 && shift
 
@@ -29,11 +29,11 @@ case $command in
 
     install)
         set -e
-        sh $0 run npm install
+        bash $0 run npm install
     ;;
 
     shell)
-        sh $0 run /bin/sh
+        bash $0 run /bin/bash
     ;;
 
     # MODIFIERS
@@ -42,7 +42,7 @@ case $command in
         subcommand=$1 && shift
         case $subcommand in
             override)
-                sh $0 run npm run devops override
+                bash bin/apply_templates.sh
             ;;
             *)
                 echo "Unknown subcommand: $subcommand"
@@ -61,12 +61,13 @@ case $command in
         echo "  build          Build the images push to registry"
         echo "  install        Install the dependencies"
         echo "  shell          Start the shell"
+        echo "  devops         Run devops commands"
         exit 0
     ;;
 
     *)
         echo "Unknown command: $command"
-        sh $0 --help
+        bash $0 --help
         exit 1
     ;;
 esac

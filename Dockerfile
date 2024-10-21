@@ -1,10 +1,11 @@
-
 FROM alpine:latest
 
-WORKDIR /
+RUN apk add --no-cache bash
 
-COPY . .
+COPY . /toolkit
 
-RUN alias cli="/cli"
+WORKDIR /app
 
-CMD ["sh", "cli", "--help"]
+RUN alias toolkit="/toolkit/cli"
+
+CMD ["bash", "cli", "--help"]

@@ -56,6 +56,14 @@ case $command in
         git push origin $TAG
     ;;
 
+    toolkit)
+        docker run --rm -it \
+            -w /app \
+            -v "$(pwd)":/app \
+            --pull always \
+            registry.diseec.com/toolkit sh /cli "$@"
+    ;;
+
     --help|-h)
         echo "Usage: $0 [command]"
         echo "Commands:"
@@ -67,11 +75,6 @@ case $command in
         echo "  build          Build the images push to registry"
         echo "  release        Merge to release branch to trigger CI/CD pipeline"
         exit 0
-    ;;
-
-    toolkit)
-        docker run --rm -it -w /app -v \
-            "$(pwd)":/app registry.diseec.com/toolkit "$@"
     ;;
 
     *)
