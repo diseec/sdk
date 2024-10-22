@@ -2,45 +2,20 @@
 
 CLI_STARTER_FILE="cli"
 
-# color the output of the text
-color_output() {
-    local color=$1
-    local text=$2
-    printf "\e[${color}m${text}\e[0m\n"
+capitalize() {
+  echo "$1" | tr '[:lower:]' '[:upper:]'
+}
+
+color() {
+    local color=$1; local text=$2;
+    printf "\e[${color}m${text}\e[0m"
 }
 
 message(){
-  load_env
-  
-  printf "\e[30;47m @DISEEC \e[0m"
-  if [ $# -eq 1 ]; then
-    type="\e[30;46m message \e[0m"
-    text=$1
-  else
-    type=$1
-    text=$2
-  fi
-
-  case $type in
-    error|err|e|fail|failed|f)
-      printf "\e[41m ERROR \e[0m $text"
-      ;;
-    okey|ok|success|s|done|d)
-      printf "\e[42m DONE \e[0m $text"
-      ;;
-    warning|warn|w|caution|c|alert|attention|attn|a)
-      printf "\e[43m WARN \e[0m $text"
-      ;;
-    info|i|notice|note|n)
-      printf "\e[44m INFO \e[0m $text"
-      ;;
-    command|cmd)
-      printf "\e[45m $ \e[0m $text"
-      ;;
-    *)
-      printf "$type $text"
-      ;;
-  esac
+  printf "\e[30;47m DISEEC \e[0m"
+  if [ $# -eq 1 ]; then printf " $1 ";
+  elif [ $# -eq 2 ]; then color "$1" " $(capitalize "$2") ";
+  else color "$1" " $(capitalize "$2") "; printf " $3 "; fi
   printf "\n"
 }
 
@@ -50,6 +25,32 @@ are_you_sure() {
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 0
   fi
+}
+
+display_help() {
+    color 0 "\n"
+    color 30 "Usage:\n"
+    color 0 "    command [options] [arguments]\n"
+    color 0 "\n"
+    color 0 "Commands:\n"
+    
+    # Loop through the arguments and print them
+    while [ "$#" -gt 0 ]; do
+        command=$1
+        description=$2
+        color 0 "  $command          $description\n"
+        shift 2
+    done
+
+    color 0 "\n"
+    message 44 info "This cli is designed to run only in it's container\n"
+    color 0 "Copyright (c) 2018 DISEEC, all rights reserved.\n\n"
+    color 0 "This software and associated documentation files (the \"Software\") are the exclusive property of DISEEC and are protected by copyright and other intellectual property laws. Permission is hereby granted, free of charge, to any person obtaining a copy of this Software, to use the Software within the organization only.\n\n"
+    color 0 "\e[1mWebsite \e[0m  https://diseec.com\n"
+    color 0 "\e[1mGitHub \e[0m   https://github.com/diseec\n"
+    color 0 "\e[1mLinkedIn \e[0m https://linkedin.com/company/diseec\n"
+    printf "\n"
+    exit 0
 }
 
 # cache the project root

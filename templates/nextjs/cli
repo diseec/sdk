@@ -6,6 +6,7 @@ source "./bin/helpers.sh"
 case $command in
     build)
         set -e
+        message "Building multi-arc image using buildx .."
         docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -t registry.diseec.com/placeholderforprojectid-placeholderforprojectname \
@@ -13,11 +14,12 @@ case $command in
     ;;
 
     run)
-    
-    if [ -f /.dockerenv ]; then
+        if [ -f /.dockerenv ]; then
+            message 46 "(in-container)"
             NODE_ENV=
             "$@"
         else
+            message "Running in a fresh instance .."
             if [ -z "$CI" ]; then IT_OPTION="-it";
             else IT_OPTION=""; fi
             docker run --rm $IT_OPTION \
@@ -30,7 +32,9 @@ case $command in
     ;;
 
     pull)
+        message "Pulling the repo .."
         git pull origin main
+        message "Pulling the image .."
         docker pull registry.diseec.com/placeholderforprojectid-placeholderforprojectname
     ;;
 
@@ -40,7 +44,11 @@ case $command in
     ;;
 
     dev)
+        set -e
+        message "Pulling latest 'main' branch changes .."
+        message 45 "☺︎" "Push to 'dev' branch, and don't forget to make PR tonight. Happy Coding! -K1\n"
         git pull origin && git merge origin/main
+        message "Starting the development server .."
         sh $0 run npm run dev
     ;;
 
@@ -70,18 +78,17 @@ case $command in
             registry.diseec.com/kit kit "$@"
     ;;
 
-    --help|-h)
-        echo "Usage: $0 [command]"
-        echo "Commands:"
-        echo "  build          Build the image push to registry"
-        echo "  run            Run a command in fresh instance"
-        echo "  pull           Pull the repo and image from registry"
-        echo "  install        Install the dependencies"
-        echo "  dev            Start the development server"
-        echo "  shell          Start the shell"
-        echo "  test           Run the tests"
-        echo "  release        Merge to release branch to trigger CI/CD pipeline"
-        exit 0
+    help|--help|-h)
+        printf "\n"
+        display_help \
+            "build  "  "Build the image push to registry" \
+            "run    "  "Run a command in fresh instance" \
+            "pull   "  "Pull the repo and image from registry" \
+            "install"  "Install the dependencies" \
+            "dev    "  "Start the development server" \
+            "shell  "  "Start the shell" \
+            "test   "  "Run the tests" \
+            "release"  "Merge to release branch to trigger CI/CD pipeline"
     ;;
 
     *)
