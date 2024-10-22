@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $(dirname "$0") && command=$1 && shift
+cd /kit && command=$1 && shift
 
 case $command in
     build)
