@@ -1,6 +1,9 @@
 #!/bin/bash
 
-cd /kit && command=$1 && shift
+if [ "$(pwd)" != "/kit" ]; then
+  cd /kit
+fi
+command=$1 && shift
 
 case $command in
     build)
