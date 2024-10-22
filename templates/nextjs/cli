@@ -25,8 +25,14 @@ case $command in
                 -v "$(pwd)":/app \
                 -p 3000:3000 \
                 -w /app \
+                -e NODE_ENV=development \
                 registry.diseec.com/placeholderforprojectid-placeholderforprojectname "$@"
         fi
+    ;;
+
+    pull)
+        git pull origin main
+        docker pull registry.diseec.com/placeholderforprojectid-placeholderforprojectname
     ;;
 
     install)
@@ -67,12 +73,13 @@ case $command in
     --help|-h)
         echo "Usage: $0 [command]"
         echo "Commands:"
+        echo "  build          Build the image push to registry"
+        echo "  run            Run a command in fresh instance"
+        echo "  pull           Pull the repo and image from registry"
         echo "  install        Install the dependencies"
         echo "  dev            Start the development server"
-        echo "  run            Run a command in fresh instance"
         echo "  shell          Start the shell"
         echo "  test           Run the tests"
-        echo "  build          Build the images push to registry"
         echo "  release        Merge to release branch to trigger CI/CD pipeline"
         exit 0
     ;;

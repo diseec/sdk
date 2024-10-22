@@ -67,6 +67,22 @@ Build the Docker images and push them to the registry.
 sh cli build
 ```
 
+#### `deploy`
+
+Deploy the application to the Kubernetes cluster.
+
+```sh
+sh cli deploy
+```
+
+#### `pull`
+
+Pull the latest changes and image from the remote repository.
+
+```sh
+sh cli pull
+```
+
 #### `release`
 
 Merge the `main` branch into the `release` branch and push to trigger the CI/CD pipeline.
