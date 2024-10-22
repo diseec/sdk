@@ -61,12 +61,12 @@ case $command in
         git push origin $TAG
     ;;
 
-    toolkit)
+    kit)
         docker run --rm -it \
             -w /app \
             -v "$(pwd)":/app \
             --pull always \
-            registry.diseec.com/toolkit bash /toolkit/cli "$@"
+            registry.diseec.com/kit kit "$@"
     ;;
 
     --help|-h)
