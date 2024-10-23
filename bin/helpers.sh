@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 CLI_STARTER_FILE="cli"
 
