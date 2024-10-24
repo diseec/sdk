@@ -32,7 +32,9 @@ case $command in
     ;;
 
     pull)
-        message "Pulling the repo .."
+        git pull origin
+        message "Pulling latest 'main' branch changes .."
+        git merge origin/main
         git pull origin main
         message "Pulling the image .."
         docker pull registry.diseec.com/placeholderforprojectid-placeholderforprojectname
@@ -45,9 +47,7 @@ case $command in
 
     dev)
         set -e
-        message "Pulling latest 'main' branch changes .."
         message 45 "☺︎" "Push to 'dev' branch, and don't forget to make PR tonight. Happy Coding! -K1\n"
-        git pull origin && git merge origin/main
         message "Starting the development server .."
         sh $0 run npm run dev
     ;;
