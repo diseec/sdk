@@ -1,0 +1,47 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  extract:
+    runs-on: self-hosted
+    container:
+      image: alpine
+    outputs:
+      project_id: ${{ steps.vars.outputs.project_id }}
+      project_name: ${{ steps.vars.outputs.project_name }}
+      repo_name: ${{ steps.vars.outputs.repo_name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generate dynamic values
+        id: vars
+        run: |
+          REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          echo "::set-output name=repo_name::$REPO_NAME"
+
+  test:
+    needs: extract
+    runs-on: self-hosted
+    container:
+      image: ${{ needs.extract.outputs.repo_name }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sh cli install
+
+      - name: Run lint
+        run: sh cli run npm run lint
+
+      - name: Build bundle
+        run: sh cli run npm run build
