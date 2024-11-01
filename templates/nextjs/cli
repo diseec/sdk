@@ -3,13 +3,15 @@
 command=$1 && shift
 . "./bin/helpers.sh"
 
+REPO_NAME="placeholderforprojectid-placeholderforprojectname"
+
 case $command in
     build)
         set -e
         message "Building multi-arc image using buildx .."
         docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            -t registry.diseec.com/placeholderforprojectid-placeholderforprojectname \
+            -t registry.diseec.com/$REPO_NAME \
             --push .
     ;;
 
@@ -19,15 +21,26 @@ case $command in
             NODE_ENV=
             "$@"
         else
-            message "Running in a fresh instance .."
-            if [ -z "$CI" ]; then IT_OPTION="-it";
-            else IT_OPTION=""; fi
-            docker run --rm $IT_OPTION \
-                -v "$(pwd)":/app \
-                -p 3000:3000 \
-                -w /app \
-                -e NODE_ENV= \
-                registry.diseec.com/placeholderforprojectid-placeholderforprojectname "$@"
+            if [ -z "$CI" ]; then
+                IT_OPTION="-it"; 
+            else 
+                message 44 'info' "Running in CI mode (non-interactive) .."
+                IT_OPTION=""; 
+            fi
+
+            if [ "$(docker ps -q -f name=$REPO_NAME)" ]; then
+                message 44 'info' "Container $REPO_NAME is already running. Executing command inside it .."
+                docker exec $IT_OPTION $REPO_NAME "$@"
+            else
+                message 44 'info' "Running in a fresh instance .."
+                docker run --rm $IT_OPTION \
+                    --name $REPO_NAME \
+                    -v "$(pwd)":/app \
+                    -p 3000:3000 \
+                    -w /app \
+                    -e NODE_ENV= \
+                    registry.diseec.com/$REPO_NAME "$@"
+            fi
         fi
     ;;
 
@@ -37,7 +50,7 @@ case $command in
         git merge origin/main
         git pull origin main
         message "Pulling the image .."
-        docker pull registry.diseec.com/placeholderforprojectid-placeholderforprojectname
+        docker pull registry.diseec.com/$REPO_NAME
     ;;
 
     install)
