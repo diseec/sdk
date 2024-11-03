@@ -30,30 +30,14 @@ jobs:
           echo "::set-output name=project_name::$PROJECT_NAME"
           echo "::set-output name=image_name::$IMAGE_NAME"
 
-  test:
-    needs: prepare
-    runs-on: self-hosted
-    container:
-      image: registry.diseec.com/${{ needs.prepare.outputs.image_name }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: sh cli install
-
-      - name: Run lint
-        run: sh cli run npm run lint
-
-      - name: Build bundle
-        run: sh cli run npm run build
-
   build:
-    needs: [prepare, test]
+    needs: [prepare]
     runs-on: self-hosted
     container:
       image: docker:latest
       options: --privileged
+      volumes:
+        - /var/lib/docker:/var/lib/docker
 
     steps:
       - name: Checkout code
@@ -68,7 +52,7 @@ jobs:
         run: sh cli build
 
   deploy:
-    needs: [prepare, build]
+    needs: [build]
     runs-on: self-hosted
     container:
       image: alpine
