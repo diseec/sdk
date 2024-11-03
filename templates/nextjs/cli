@@ -34,6 +34,7 @@ case $command in
             else
                 message 44 'info' "Running in a fresh instance .."
                 docker run --rm $IT_OPTION \
+                    --pull always \
                     --name $REPO_NAME \
                     -v "$(pwd)":/app \
                     -p 3000:3000 \
@@ -63,6 +64,12 @@ case $command in
         message 45 "☺︎" "Push to 'dev' branch, and don't forget to make PR tonight. Happy Coding! -K1\n"
         message "Starting the development server .."
         sh $0 run npm run dev
+    ;;
+
+    production)
+        set -e
+        message "Starting the production server .."
+        docker run --rm -it -p 3000:3000 registry.diseec.com/$REPO_NAME
     ;;
 
     shell)
@@ -99,6 +106,7 @@ case $command in
             "pull   "  "Pull the repo and image from registry" \
             "install"  "Install the dependencies" \
             "dev    "  "Start the development server" \
+            "production"  "Start the production server" \
             "shell  "  "Start the shell" \
             "test   "  "Run the tests" \
             "release"  "Merge to release branch to trigger CI/CD pipeline"
