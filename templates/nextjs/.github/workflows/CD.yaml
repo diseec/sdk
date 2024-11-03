@@ -52,7 +52,7 @@ jobs:
         run: sh cli build
 
   deploy:
-    needs: [build]
+    needs: [prepare, build]
     runs-on: self-hosted
     container:
       image: alpine
