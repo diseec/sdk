@@ -36,8 +36,6 @@ jobs:
     container:
       image: docker:latest
       options: --privileged
-      volumes:
-        - /var/lib/docker:/var/lib/docker
 
     steps:
       - name: Checkout code
@@ -69,4 +67,4 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          script: cli update ${{ needs.prepare.outputs.project_id }} ${{ needs.prepare.outputs.project_name }}
+          script: cli update --pull-image ${{ needs.prepare.outputs.project_id }} ${{ needs.prepare.outputs.project_name }}

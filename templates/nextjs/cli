@@ -12,6 +12,8 @@ case $command in
         docker buildx build \
             --platform linux/amd64,linux/arm64 \
             -t registry.diseec.com/$REPO_NAME \
+            --cache-from=type=registry,ref=registry.diseec.com/$REPO_NAME:cache \
+            --cache-to=type=registry,ref=registry.diseec.com/$REPO_NAME:cache,mode=max \
             --push .
     ;;
 
@@ -68,8 +70,10 @@ case $command in
 
     production)
         set -e
+        message "Building the production image .."
+        docker build --cache-from=registry.diseec.com/$REPO_NAME -t $REPO_NAME .
         message "Starting the production server .."
-        docker run --rm -it -p 3000:3000 registry.diseec.com/$REPO_NAME
+        docker run --rm -it -p 3000:3000 $REPO_NAME
     ;;
 
     shell)
@@ -101,15 +105,15 @@ case $command in
     help|--help|-h)
         printf "\n"
         display_help \
-            "build  "  "Build the image push to registry" \
-            "run    "  "Run a command in fresh instance" \
-            "pull   "  "Pull the repo and image from registry" \
-            "install"  "Install the dependencies" \
-            "dev    "  "Start the development server" \
+            "build     "  "Build the image push to registry" \
+            "run       "  "Run a command in fresh instance" \
+            "pull      "  "Pull the repo and image from registry" \
+            "install   "  "Install the dependencies" \
+            "dev       "  "Start the development server" \
             "production"  "Start the production server" \
-            "shell  "  "Start the shell" \
-            "test   "  "Run the tests" \
-            "release"  "Merge to release branch to trigger CI/CD pipeline"
+            "shell     "  "Start the shell" \
+            "test      "  "Run the tests" \
+            "release   "  "Merge to release branch to trigger CI/CD pipeline"
     ;;
 
     *)
