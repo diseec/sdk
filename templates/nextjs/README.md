@@ -1,3 +1,5 @@
+[![Deploy](https://github.com/diseec/placeholderforprojectid-placeholderforprojectname/actions/workflows/CD.yaml/badge.svg)](https://github.com/diseec/placeholderforprojectid-placeholderforprojectname/actions/workflows/CD.yaml)
+
 # placeholderforprojectid placeholderforprojectname Project
 
 This project includes a set of scripts to manage the development, building, and deployment of the placeholderforprojectid placeholderforprojectname application. The scripts are encapsulated in a `cli` script that provides various commands to streamline common tasks.
@@ -28,6 +30,8 @@ Start the development server.
 ```sh
 sh cli dev
 ```
+
+**Note:** This command prioritizes the local Docker image built with the `build` command. If you want to use the image from the registry, you must first pull it using the `pull` command. Additionally, if you need to add any environment variables, you must do so by adding them to the `docker-compose` environment section.
 
 #### `run`
 
@@ -90,6 +94,16 @@ Merge the `main` branch into the `release` branch and push to trigger the CI/CD 
 ```sh
 sh cli release
 ```
+
+#### `pro`
+
+Start the production server.
+
+```sh
+sh cli pro
+```
+
+**Note:** The pull policy for this command is always, meaning it will always pull the latest image from the registry. This ensures that the local environment simulates the same conditions as the production pod on the server.
 
 #### `--help` or `-h`
 

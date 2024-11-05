@@ -52,8 +52,8 @@ case $command in
             *)
                 echo "Unknown subcommand: $subcommand"
                 echo "Usage: $0 devops [subcommand]"
-                echo "Subcommands:"
-                echo "  "
+                echo "commands:"
+                echo "   override     Apply the templates"
                 exit 1
             ;;
         esac
