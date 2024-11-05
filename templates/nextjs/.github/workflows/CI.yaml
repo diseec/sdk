@@ -49,6 +49,9 @@ jobs:
       - name: Run lint
         run: sh cli run npm run lint
 
+      - name: Run npm build (test bundling)
+        run: sh cli run npm run build
+
       # - name: Run smoke tests
       #   run: sh cli test --smoke
 
