@@ -1,19 +1,7 @@
 #!/bin/sh
-
-command=$1 && shift
-. "./bin/helpers.sh"
-
-REPO_NAME="placeholderforprojectid-placeholderforprojectname"
-REGISTRY_URL="registry.diseec.com"
-
-if [ -z "$CI" ]; then
-    INTERACTIVE="-it"; 
-else 
-    message "Running in CI mode (non-interactive) .."
-    INTERACTIVE=""; 
-fi
-
+command=$1; shift; . "./bin/helpers.sh";
 case $command in
+
     status)
         informer summary-branch-status
         informer forbid-dev-on-main
@@ -31,17 +19,18 @@ case $command in
 
     build)
         set -e
-        docker build -t $REGISTRY_URL/$REPO_NAME .
+        docker build -t $REGISTRY_URL/$REPO_NAME
     ;;
 
     run)
-        if [ "$IMAGE_NAME" = "$REGISTRY_URL/$REPO_NAME" ]; then
-            message "already in container, image name: '$REGISTRY_URL/$REPO_NAME'"
+        if [ "$IS_IN_CONTAINER" = "true" ]; then
+            message "Container environment detected"
             "$@"
         else
+            if [ -z "$CI" ]; then INTERACTIVE="-it"; fi
             bash $0 status
             if docker compose ps -q app | grep -q .; then
-                message "Container $REPO_NAME is already running. Executing command inside it .."
+                message "Container is running. Executing command inside it .."
                 docker compose exec $INTERACTIVE app "$@"
             else
                 message "Running in a fresh instance .."
@@ -98,16 +87,16 @@ case $command in
     help|--help|-h)
         printf "\n"
         display_help \
-            "status    "  "Show project status" \
-            "build     "  "Build the image push to registry" \
-            "run       "  "Run a command in fresh instance" \
-            "pull      "  "Pull the repo and image from registry" \
-            "install   "  "Install the dependencies" \
-            "dev       "  "Start the development server" \
-            "pro       "  "Start the production server" \
-            "shell     "  "Start the shell" \
-            "test      "  "Run the tests" \
-            "release   "  "Merge to release branch to trigger CI/CD pipeline"
+            "status   "  "Show project status" \
+            "build    "  "Build the image push to registry" \
+            "run      "  "Run a command in fresh instance" \
+            "pull     "  "Pull the repo and image from registry" \
+            "install  "  "Install the dependencies" \
+            "dev      "  "Start the development server" \
+            "pro      "  "Start the production server" \
+            "shell    "  "Start the shell" \
+            "test     "  "Run the tests" \
+            "release  "  "Merge to release branch to trigger CI/CD pipeline"
     ;;
 
     *)

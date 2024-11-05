@@ -1,6 +1,6 @@
 services:
   app:
-    image: registry.diseec.com/placeholderforprojectid-placeholderforprojectname
+    image: ${REGISTRY_URL}/${REPO_NAME}
     pull_policy: always
     ports:
       - "3000:3000"

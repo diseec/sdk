@@ -1,6 +1,12 @@
 #!/bin/sh
 
-CLI_STARTER_FILE="cli"
+export NODE_ENV="development"
+export REGISTRY_URL="registry.diseec.com"
+
+if command -v git >/dev/null 2>&1; then
+  REPO_NAME=$(basename $(git remote get-url origin | sed 's/.*\/\([^\/]*\)\.git/\1/'))
+  export REPO_NAME
+fi
 
 capitalize() {
   echo "$1" | tr '[:lower:]' '[:upper:]'
@@ -52,7 +58,7 @@ display_help() {
     exit 0
 }
 
-function informer() {
+informer() {
   case "$1" in
     sync-registry-image)
       IMAGE_NAME="registry.diseec.com/$REPO_NAME"
@@ -60,14 +66,14 @@ function informer() {
       LOCAL_DIGEST=$(docker image inspect $IMAGE_NAME --format='{{index .RepoDigests 0}}' 2>/dev/null || echo "")
       # Check if the local digest retrieval was an error
       if [ -z "$LOCAL_DIGEST" ]; then
-          message 43 "⎋" "Image out of sync with registry"
+          message 43 "⎋" "Using locally built image"
       fi
     ;;
 
     forbid-dev-on-main)
       current_branch=$(git rev-parse --abbrev-ref HEAD)
       if [ "$current_branch" = "main" ]; then
-          message 41 "!" "On the 'main' branch, switch to 'dev' branch"
+          message 41 "!" "On the 'main' branch, consider switching to 'dev' branch"
       fi
     ;;
 
