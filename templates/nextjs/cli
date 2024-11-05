@@ -19,7 +19,7 @@ case $command in
 
     build)
         set -e
-        docker build -t $REGISTRY_URL/$REPO_NAME
+        docker build -t $REGISTRY_URL/$REPO_NAME .
     ;;
 
     run)
