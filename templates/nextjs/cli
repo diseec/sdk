@@ -4,46 +4,50 @@ command=$1 && shift
 . "./bin/helpers.sh"
 
 REPO_NAME="placeholderforprojectid-placeholderforprojectname"
+REGISTRY_URL="registry.diseec.com"
+
+if [ -z "$CI" ]; then
+    INTERACTIVE="-it"; 
+else 
+    message "Running in CI mode (non-interactive) .."
+    INTERACTIVE=""; 
+fi
 
 case $command in
-    build)
-        set -e
-        message "Building image .."
-        docker build --cache-from=registry.diseec.com/$REPO_NAME \
-            -t registry.diseec.com/$REPO_NAME .
-    ;;
-
-    run)
-        if [ "$IMAGE_NAME" = "$REPO_NAME" ]; then
-            message 46 "(in-container: $IMAGE_NAME)"
-            "$@"
-        else
-            if [ -z "$CI" ]; then
-                IT_OPTION="-it"; 
-            else 
-                message 44 'info' "Running in CI mode (non-interactive) .."
-                IT_OPTION=""; 
-            fi
-
-            if docker-compose ps -q app | grep -q .; then
-                message 44 'info' "Container $REPO_NAME is already running. Executing command inside it .."
-                docker-compose exec $IT_OPTION app "$@"
-            else
-                message 44 'info' "Running in a fresh instance .."
-                docker-compose run --rm $IT_OPTION \
-                    -e IMAGE_NAME=$REPO_NAME \
-                    app "$@"
-            fi
-        fi
+    status)
+        informer summary-branch-status
+        informer forbid-dev-on-main
+        informer sync-registry-image
     ;;
 
     pull)
         git pull origin
-        message "Pulling latest 'main' branch changes .."
+        message "Merging latest 'main' changes to '$(git branch --show-current)' .."
         git merge origin/main
         git pull origin main
         message "Pulling the image .."
-        docker pull registry.diseec.com/$REPO_NAME
+        docker pull $REGISTRY_URL/$REPO_NAME
+    ;;
+
+    build)
+        set -e
+        docker build -t $REGISTRY_URL/$REPO_NAME .
+    ;;
+
+    run)
+        if [ "$IMAGE_NAME" = "$REGISTRY_URL/$REPO_NAME" ]; then
+            message "already in container, image name: '$REGISTRY_URL/$REPO_NAME'"
+            "$@"
+        else
+            bash $0 status
+            if docker compose ps -q app | grep -q .; then
+                message "Container $REPO_NAME is already running. Executing command inside it .."
+                docker compose exec $INTERACTIVE app "$@"
+            else
+                message "Running in a fresh instance .."
+                docker compose run --rm $INTERACTIVE app "$@"
+            fi
+        fi
     ;;
 
     install)
@@ -53,17 +57,16 @@ case $command in
 
     dev)
         set -e
-        message 45 "☺︎" "Push to 'dev' branch, and don't forget to make PR tonight. Happy Coding! -K1\n"
-        message "Starting the development server .."
-        docker-compose up
+        bash $0 status
+        message 45 "☺︎" "Happy Coding! -K1"
+        docker compose up
+        message 43 "!" "Don't forget to make PR. -K1"
     ;;
 
     pro)
         set -e
-        message "Building the production image .."
-        sh $0 build
         message "Starting the production server .."
-        docker-compose -f docker-compose.yaml up
+        docker compose -f docker-compose.yaml up
     ;;
 
     shell)
@@ -89,18 +92,19 @@ case $command in
             -w /app \
             -v "$(pwd)":/app \
             --pull always \
-            registry.diseec.com/kit kit "$@"
+            $REGISTRY_URL/kit kit "$@"
     ;;
 
     help|--help|-h)
         printf "\n"
         display_help \
+            "status    "  "Show project status" \
             "build     "  "Build the image push to registry" \
             "run       "  "Run a command in fresh instance" \
             "pull      "  "Pull the repo and image from registry" \
             "install   "  "Install the dependencies" \
             "dev       "  "Start the development server" \
-            "pro"      "Start the production server" \
+            "pro       "  "Start the production server" \
             "shell     "  "Start the shell" \
             "test      "  "Run the tests" \
             "release   "  "Merge to release branch to trigger CI/CD pipeline"

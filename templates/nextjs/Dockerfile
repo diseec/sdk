@@ -38,6 +38,9 @@ RUN \
 FROM base AS runner
 WORKDIR /app
 
+# Burn image name into the binary
+ENV IMAGE_NAME=registry.diseec.com/placeholderforprojectid-placeholderforprojectname
+
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED=1

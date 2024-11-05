@@ -12,7 +12,7 @@ color() {
 }
 
 message(){
-  printf "\e[30;47m DISEEC \e[0m"
+  printf "\e[1;30;47m D \e[0m"
   if [ $# -eq 1 ]; then printf " $1 ";
   elif [ $# -eq 2 ]; then color "$1" " $(capitalize "$2") ";
   else color "$1" " $(capitalize "$2") "; printf " $3 "; fi
@@ -43,7 +43,6 @@ display_help() {
     done
 
     color 0 "\n"
-    message 44 info "This cli is designed to run only in it's container\n"
     color 0 "Copyright (c) 2018 DISEEC, all rights reserved.\n\n"
     color 0 "This software and associated documentation files (the \"Software\") are the exclusive property of DISEEC and are protected by copyright and other intellectual property laws. Permission is hereby granted, free of charge, to any person obtaining a copy of this Software, to use the Software within the organization only.\n\n"
     color 0 "\e[1mWebsite \e[0m  https://diseec.com\n"
@@ -51,6 +50,43 @@ display_help() {
     color 0 "\e[1mLinkedIn \e[0m https://linkedin.com/company/diseec\n"
     printf "\n"
     exit 0
+}
+
+function informer() {
+  case "$1" in
+    sync-registry-image)
+      IMAGE_NAME="registry.diseec.com/$REPO_NAME"
+      # Attempt to get the local image digest
+      LOCAL_DIGEST=$(docker image inspect $IMAGE_NAME --format='{{index .RepoDigests 0}}' 2>/dev/null || echo "")
+      # Check if the local digest retrieval was an error
+      if [ -z "$LOCAL_DIGEST" ]; then
+          message 43 "⎋" "Image out of sync with registry"
+      fi
+    ;;
+
+    forbid-dev-on-main)
+      current_branch=$(git rev-parse --abbrev-ref HEAD)
+      if [ "$current_branch" = "main" ]; then
+          message 41 "!" "On the 'main' branch, switch to 'dev' branch"
+      fi
+    ;;
+
+    summary-branch-status)
+      if ping -c 1 google.com &> /dev/null; then
+          git fetch origin
+      fi
+      local_commit=$(git rev-parse @)
+      remote_commit=$(git rev-parse @{u})
+      base_commit=$(git merge-base @ @{u})
+      if [ "$local_commit" != "$remote_commit" ]; then
+        if [ "$local_commit" = "$base_commit" ]; then
+          message 44 "⟳" "Updates available on 'origin/$current_branch'"
+        else
+          message 41 "↫" "Branch has diverged from 'origin/$current_branch'!"
+        fi
+      fi
+    ;;
+  esac
 }
 
 # cache the project root
@@ -74,10 +110,6 @@ get_root() {
 
   message error "Could not find project root" >&2
   exit 1
-}
-
-cli(){
-  "$(get_root)/$CLI_STARTER_FILE" "$@"
 }
 
 load_env() {

@@ -55,23 +55,24 @@ jobs:
           cache-from: type=registry,ref=${{ needs.prepare.outputs.image_name }}:cache
           cache-to: type=registry,ref=${{ needs.prepare.outputs.image_name }}:cache,mode=max
 
-  # test:
-  #   needs: [prepare, build]
-  #   runs-on: self-hosted
-  #   container:
-  #     image: ${{ needs.prepare.outputs.image_name }}
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  test:
+    needs: [prepare, build]
+    runs-on: self-hosted
+    container:
+      image: ${{ needs.prepare.outputs.image_name }}
 
-  #     - name: Install dependencies
-  #       run: sh cli install
+    steps:
+      - name: Run
+        uses: echo "Run tests"
 
-  #     - name: Run lint
-  #       run: sh cli run npm run lint
+      # - name: Run smoke tests
+      #   run: sh cli test --smoke
 
-  #     - name: Build bundle
-  #       run: sh cli run npm run build
+      # - name: Run unit tests
+      #   run: sh cli test --unit
+
+      # - name: Run unit tests
+      #   run: sh cli test --e2e
 
   deploy:
     needs: [prepare, build]
