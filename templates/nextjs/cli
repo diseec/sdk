@@ -8,19 +8,14 @@ REPO_NAME="placeholderforprojectid-placeholderforprojectname"
 case $command in
     build)
         set -e
-        message "Building multi-arc image using buildx .."
-        docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            -t registry.diseec.com/$REPO_NAME \
-            --cache-from=type=registry,ref=registry.diseec.com/$REPO_NAME:cache \
-            --cache-to=type=registry,ref=registry.diseec.com/$REPO_NAME:cache,mode=max \
-            --push .
+        message "Building image .."
+        docker build --cache-from=registry.diseec.com/$REPO_NAME \
+            -t registry.diseec.com/$REPO_NAME .
     ;;
 
     run)
-        if [ -f /.dockerenv ]; then
-            message 46 "(in-container)"
-            NODE_ENV=
+        if [ "$IMAGE_NAME" = "$REPO_NAME" ]; then
+            message 46 "(in-container: $IMAGE_NAME)"
             "$@"
         else
             if [ -z "$CI" ]; then
@@ -30,19 +25,14 @@ case $command in
                 IT_OPTION=""; 
             fi
 
-            if [ "$(docker ps -q -f name=$REPO_NAME)" ]; then
+            if docker-compose ps -q app | grep -q .; then
                 message 44 'info' "Container $REPO_NAME is already running. Executing command inside it .."
-                docker exec $IT_OPTION $REPO_NAME "$@"
+                docker-compose exec $IT_OPTION app "$@"
             else
                 message 44 'info' "Running in a fresh instance .."
-                docker run --rm $IT_OPTION \
-                    --pull always \
-                    --name $REPO_NAME \
-                    -v "$(pwd)":/app \
-                    -p 3000:3000 \
-                    -w /app \
-                    -e NODE_ENV= \
-                    registry.diseec.com/$REPO_NAME "$@"
+                docker-compose run --rm $IT_OPTION \
+                    -e IMAGE_NAME=$REPO_NAME \
+                    app "$@"
             fi
         fi
     ;;
@@ -65,15 +55,15 @@ case $command in
         set -e
         message 45 "☺︎" "Push to 'dev' branch, and don't forget to make PR tonight. Happy Coding! -K1\n"
         message "Starting the development server .."
-        sh $0 run npm run dev
+        docker-compose up
     ;;
 
-    production)
+    pro)
         set -e
         message "Building the production image .."
-        docker build --cache-from=registry.diseec.com/$REPO_NAME -t $REPO_NAME .
+        sh $0 build
         message "Starting the production server .."
-        docker run --rm -it -p 3000:3000 $REPO_NAME
+        docker-compose -f docker-compose.yaml up
     ;;
 
     shell)
@@ -110,7 +100,7 @@ case $command in
             "pull      "  "Pull the repo and image from registry" \
             "install   "  "Install the dependencies" \
             "dev       "  "Start the development server" \
-            "production"  "Start the production server" \
+            "pro"      "Start the production server" \
             "shell     "  "Start the shell" \
             "test      "  "Run the tests" \
             "release   "  "Merge to release branch to trigger CI/CD pipeline"

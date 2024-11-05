@@ -31,7 +31,10 @@ jobs:
     needs: extract
     runs-on: self-hosted
     container:
-      image: ${{ needs.extract.outputs.repo_name }}
+      image: docker:latest
+      options: --privileged
+    # container:
+    #   image: registry.diseec.com/${{ needs.extract.outputs.repo_name }}
 
     steps:
       - name: Checkout code

@@ -1,0 +1,9 @@
+services:
+  app:
+    image: registry.diseec.com/placeholderforprojectid-placeholderforprojectname
+    pull_policy: always
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
