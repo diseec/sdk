@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export NODE_ENV="development"
+export NODE_ENV=
 export REGISTRY_URL="registry.diseec.com"
 
 if command -v git >/dev/null 2>&1; then
