@@ -6,6 +6,9 @@ set -e
 TEMPLATES_DIR="templates"
 CACHE_DIR=".cache"
 
+# Main script execution
+MOUNTED_PROJECT_DIR="/app"
+
 # Function to list available templates
 list_templates() {
   echo "Available templates:"
@@ -57,18 +60,14 @@ process_template() {
 }
 
 # Function to copy helper scripts to the project directory
-copy_helpers() {
-  mkdir -p "$MOUNTED_PROJECT_DIR/bin"
-  cp "bin/helpers.sh" "$MOUNTED_PROJECT_DIR/bin"
+copy_common() {
+  cp "common" "$MOUNTED_PROJECT_DIR"
 }
-
-# Main script execution
-MOUNTED_PROJECT_DIR="/app"
 
 list_templates
 select_template
 prompt_inputs
 process_template
-copy_helpers
+copy_common
 
 echo "Template applied successfully!"

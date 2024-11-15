@@ -23,7 +23,8 @@ case $command in
     ;;
 
     run)
-        if [ "$IS_IN_CONTAINER" = "true" ]; then
+        # if [ "$IS_IN_CONTAINER" = "true" ]; then
+        if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
             message "Container environment detected"
             "$@"
         else

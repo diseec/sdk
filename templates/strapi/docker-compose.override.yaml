@@ -1,0 +1,8 @@
+services:
+  app:
+    command: npm run develop
+    pull_policy: missing
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV
