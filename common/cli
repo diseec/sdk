@@ -64,9 +64,39 @@ case $command in
     ;;
 
     test)
-        set -e
-        sh $0 run npm run lint
-        # sh $0 run npm run test
+        set -e;
+        FLAGS=""
+        for arg in "$@"; do
+            if [ "$arg" = "--ci" ]; then
+            FLAGS="--fully-parallel --forbid-only --fail-on-flaky-tests"
+            set -- "${@/--ci/}"
+            break
+            fi
+        done
+        if [ -z "$1" ]; then TYPE="all"; else TYPE=$1; shift; fi
+        case $TYPE in
+            smoke)
+                # 
+            ;;
+            unit)
+                # 
+            ;;
+            e2e)
+                message "Running E2E tests .."
+                sh $0 run npx playwright test $FLAGS "$@"
+            ;;
+            all)
+                message "Running test suite .."
+                # sh $0 test smoke
+                # sh $0 test unit
+                sh $0 test e2e
+            ;;
+            *)
+                echo "Usage: $0"
+                echo "  test [smoke|unit|e2e|all]"
+                exit 1
+            ;;
+        esac
     ;;
 
     release)

@@ -36,8 +36,10 @@ jobs:
   test:
     needs: [prepare]
     runs-on: self-hosted
-    container:
-      image: ${{ needs.prepare.outputs.image_name }}
+    # container:
+    #   image: ${{ needs.prepare.outputs.image_name }}
+    #   env:
+    #     CI: true
 
     steps:
       - name: Checkout code
@@ -52,11 +54,10 @@ jobs:
       - name: Run npm build (test bundling)
         run: sh cli run npm run build
 
-      # - name: Run smoke tests
-      #   run: sh cli test --smoke
-
-      # - name: Run unit tests
-      #   run: sh cli test --unit
-
-      # - name: Run unit tests
-      #   run: sh cli test --e2e
+      - name: Run all kind of tests!
+        run: sh cli test --ci
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

@@ -5,4 +5,4 @@ services:
     volumes:
       - .:/app
     environment:
-      - NODE_ENV
+      - NODE_ENV=development
