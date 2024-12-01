@@ -23,19 +23,22 @@ case $command in
     ;;
 
     run)
-        # if [ "$IS_IN_CONTAINER" = "true" ]; then
-        if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
+        if [ "$IS_IN_CONTAINER" = "true" ]; then
+        # if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
             message "Container environment detected"
             "$@"
         else
-            if [ -z "$CI" ]; then INTERACTIVE="-it"; fi
-            bash $0 status
+            if [ -n "$CI" ]; 
+                then OPTIONS="-e CI=true";
+                else OPTIONS="-it"; sh $0 status;
+            fi
+
             if docker compose ps -q app | grep -q .; then
                 message "Container is running. Executing command inside it .."
-                docker compose exec $INTERACTIVE app "$@"
+                docker compose exec $OPTIONS app "$@"
             else
                 message "Running in a fresh instance .."
-                docker compose run --rm $INTERACTIVE app "$@"
+                docker compose run --rm $OPTIONS app "$@"
             fi
         fi
     ;;
@@ -47,9 +50,10 @@ case $command in
 
     dev)
         set -e
-        bash $0 status
+        sh $0 status
         message 45 "☺︎" "Happy Coding! -K1"
         docker compose up
+        docker compose down
         message 43 "!" "Don't forget to make PR. -K1"
     ;;
 
@@ -65,14 +69,15 @@ case $command in
 
     test)
         set -e;
-        FLAGS=""
-        for arg in "$@"; do
-            if [ "$arg" = "--ci" ]; then
-            FLAGS="--fully-parallel --forbid-only --fail-on-flaky-tests"
-            set -- "${@/--ci/}"
-            break
-            fi
-        done
+        if [ -n "$CI" ]; then FLAGS="--fully-parallel --forbid-only --fail-on-flaky-tests"; fi
+        # FLAGS=""
+        # for arg in "$@"; do
+        #     if [ "$arg" = "--ci" ]; then
+        #     FLAGS="--fully-parallel --forbid-only --fail-on-flaky-tests"
+        #     set -- "${@/--ci/}"
+        #     break
+        #     fi
+        # done
         if [ -z "$1" ]; then TYPE="all"; else TYPE=$1; shift; fi
         case $TYPE in
             smoke)

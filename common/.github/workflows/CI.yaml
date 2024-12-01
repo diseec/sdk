@@ -20,7 +20,7 @@ jobs:
       image_name: ${{ steps.vars.outputs.image_name }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Generate dynamic values
         id: vars
@@ -36,17 +36,12 @@ jobs:
   test:
     needs: [prepare]
     runs-on: self-hosted
-    # container:
-    #   image: ${{ needs.prepare.outputs.image_name }}
-    #   env:
-    #     CI: true
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Run install
-        run: sh cli run npm install
+        run: sh cli install
 
       - name: Run lint
         run: sh cli run npm run lint
@@ -55,9 +50,4 @@ jobs:
         run: sh cli run npm run build
 
       - name: Run all kind of tests!
-        run: sh cli test --ci
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+        run: sh cli test

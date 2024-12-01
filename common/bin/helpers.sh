@@ -1,11 +1,7 @@
 #!/bin/sh
 
 export REGISTRY_URL="registry.diseec.com"
-
-if command -v git >/dev/null 2>&1; then
-  REPO_NAME=$(basename $(git remote get-url origin | sed 's/.*\/\([^\/]*\)\.git/\1/'))
-  export REPO_NAME
-fi
+export REPO_NAME=$(grep 'url = ' ./.git/config | awk -F'/' '{print $NF}' | sed 's/\.git$//')
 
 capitalize() {
   echo "$1" | tr '[:lower:]' '[:upper:]'
@@ -60,7 +56,7 @@ display_help() {
 informer() {
   case "$1" in
     sync-registry-image)
-      IMAGE_NAME="registry.diseec.com/$REPO_NAME"
+      IMAGE_NAME="$REGISTRY_URL/$REPO_NAME"
       # Attempt to get the local image digest
       LOCAL_DIGEST=$(docker image inspect $IMAGE_NAME --format='{{index .RepoDigests 0}}' 2>/dev/null || echo "")
       # Check if the local digest retrieval was an error
