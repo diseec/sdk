@@ -47,7 +47,7 @@ jobs:
         run: sh cli run npm run lint
 
       - name: Run npm build (test bundling)
-        run: sh cli run npm run build
+        run: sh cli run sh -c "export NODE_ENV='' && npm run build"
 
       - name: Run all kind of tests!
         run: sh cli test

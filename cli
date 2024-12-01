@@ -9,9 +9,14 @@ command=$1 && shift
 case $command in
     build)
         set -e
+        # docker buildx build \
+        #     --platform linux/amd64,linux/arm64 \
+        #     -t $REGISTRY_URL/kit \
+        #     --push .
         docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            -t registry.diseec.com/kit \
+            -f images/tester-e2e-node \
+            -t $REGISTRY_URL/tester-e2e-node \
             --push .
     ;;
 
@@ -28,7 +33,7 @@ case $command in
                 --pull always \
                 -v "$(pwd)":/app \
                 -w /app \
-                registry.diseec.com/kit "$@"
+                $REGISTRY_URL/kit "$@"
         fi
     ;;
 

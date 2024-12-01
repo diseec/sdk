@@ -6,3 +6,11 @@ services:
       - .:/app
     environment:
       - NODE_ENV=development
+
+  tester:
+    image: ${REGISTRY_URL}/tester-e2e-node
+    command: sh cli test
+    volumes:
+      - .:/app
+    depends_on:
+      - app

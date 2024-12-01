@@ -19,6 +19,7 @@ case $command in
 
     build)
         set -e
+        message "Building main image .."
         docker build -t $REGISTRY_URL/$REPO_NAME .
     ;;
 
@@ -88,7 +89,7 @@ case $command in
             ;;
             e2e)
                 message "Running E2E tests .."
-                sh $0 run npx playwright test $FLAGS "$@"
+                docker compose run --rm tester npx playwright test $FLAGS "$@"
             ;;
             all)
                 message "Running test suite .."
