@@ -1,8 +1,12 @@
 services:
   app:
-    command: npm run develop
+    command: yarn develop
     pull_policy: missing
     volumes:
-      - .:/app
+      - ./config:/opt/app/config
+      - ./src:/opt/app/src
+      - ./package.json:/opt/package.json
+      - ./yarn.lock:/opt/yarn.lock
+      - ./public/uploads:/opt/app/public/uploads
     environment:
-      - NODE_ENV
+      NODE_ENV: development

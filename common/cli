@@ -46,7 +46,7 @@ case $command in
 
     install)
         set -e
-        sh $0 run npm install
+        sh $0 run yarn install
     ;;
 
     dev)
