@@ -1,8 +1,9 @@
 services:
   app:
-    container_name: ${REPO_NAME}
     image: ${REGISTRY_URL}/${REPO_NAME}
-    pull_policy: always
+    build:
+      context: .
+    pull_policy: missing
     restart: unless-stopped
     ports:
       - 1337:1337

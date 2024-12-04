@@ -1,7 +1,6 @@
 services:
   app:
     command: npm run dev
-    pull_policy: missing
     volumes:
       - .:/app
     environment:

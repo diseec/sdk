@@ -1,7 +1,10 @@
 services:
   app:
     image: ${REGISTRY_URL}/${REPO_NAME}
-    pull_policy: always
+    build:
+      context: .
+    pull_policy: missing
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
