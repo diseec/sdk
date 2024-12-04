@@ -5,7 +5,8 @@ services:
     pull_policy: always
     restart: unless-stopped
     ports:
-      - "1337:1337"
+      - 1337:1337
+      - 5173:5173
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
@@ -22,7 +23,7 @@ services:
       DATABASE_USERNAME:
       DATABASE_PASSWORD:
       DATABASE_SSL: false
-      DATABASE_FILENAME: data.db
+      DATABASE_FILENAME: ./database/data.db
 
     networks:
       - strapi

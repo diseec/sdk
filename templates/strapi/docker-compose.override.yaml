@@ -3,10 +3,14 @@ services:
     command: yarn develop
     pull_policy: missing
     volumes:
+      - ./bin:/opt/app/bin
       - ./config:/opt/app/config
+      - ./database:/opt/app/database
+      - ./dist:/opt/app/dist
+      - ./public/uploads:/opt/app/public/uploads
       - ./src:/opt/app/src
+      - ./types:/opt/app/types
       - ./package.json:/opt/package.json
       - ./yarn.lock:/opt/yarn.lock
-      - ./public/uploads:/opt/app/public/uploads
     environment:
       NODE_ENV: development
