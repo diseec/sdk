@@ -20,7 +20,7 @@ case $command in
     build)
         set -e
         message "Building main image .."
-        docker build -t $REGISTRY_URL/$REPO_NAME .
+        docker compose build
     ;;
 
     run)
