@@ -20,12 +20,20 @@ message(){
   printf "\n"
 }
 
-are_you_sure() {
-  local text=$1
-  read -p "\e[33m${text}\e[0m\n (y/n) " -n 1 -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    exit 0
-  fi
+
+ask_to_run_command() {
+  local question=$1; shift;
+  read -n 1 -p "$(message 45 "⁇" "$question \033[35m[y/n]\033[0m")" response
+  printf "\n"
+  case "$response" in
+    [yY][eE][sS]|[yY])
+      "$@"
+      ;;
+    [nN][oO]|[nN])
+      ;;
+    *)
+      ;;
+  esac
 }
 
 display_help() {

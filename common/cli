@@ -13,14 +13,14 @@ case $command in
         message "Merging latest 'main' changes to '$(git branch --show-current)' .."
         git merge origin/main
         git pull origin main
-        message "Pulling the image .."
-        docker pull $REGISTRY_URL/$REPO_NAME
+        # message "Pulling the image .."
+        # docker pull $REGISTRY_URL/$REPO_NAME
     ;;
 
     build)
         set -e
         message "Building main image .."
-        docker compose build
+        docker build -t $REGISTRY_URL/$REPO_NAME .
     ;;
 
     run)
@@ -46,16 +46,19 @@ case $command in
 
     install)
         set -e
-        sh $0 run yarn install
+        sh $0 run npm install
     ;;
 
     dev)
         set -e
         sh $0 status
-        message 45 "☺︎" "Happy Coding! -K1"
+        ask_to_run_command "Pull latest repo changes?" sh $0 pull
+        ask_to_run_command "Build a fresh image?" sh $0 build
         docker compose up
         docker compose down
-        message 43 "!" "Don't forget to make PR. -K1"
+        echo "\n"
+        message 45 "k1" "DO NOT FORGET TO make PR. 🚀"
+        echo "\n"
     ;;
 
     pro)
