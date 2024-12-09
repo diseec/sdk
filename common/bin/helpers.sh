@@ -68,11 +68,14 @@ informer() {
       # Attempt to get the local image digest
       LOCAL_DIGEST=$(docker image inspect $IMAGE_NAME --format='{{index .RepoDigests 0}}' 2>/dev/null || echo "")
       # Check if the local digest retrieval was an error
-      if [ -z "$LOCAL_DIGEST" ]; then
-          # message 43 "⎋" "Using locally built image"
-      else
+      if [ -n "$LOCAL_DIGEST" ]; then
           message 43 "⇊" "Using image from registry"
       fi
+      # if [ -z "$LOCAL_DIGEST" ]; then
+      #     message 43 "⎋" "Using locally built image"
+      # else
+      #     message 43 "⇊" "Using image from registry"
+      # fi
     ;;
 
     forbid-dev-on-main)
