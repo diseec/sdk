@@ -47,7 +47,8 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
+          # platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ needs.prepare.outputs.image_name }}
           cache-from: type=registry,ref=${{ needs.prepare.outputs.image_name }}:cache
