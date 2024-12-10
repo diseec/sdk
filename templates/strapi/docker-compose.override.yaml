@@ -2,13 +2,6 @@ services:
   app:
     command: yarn develop
     volumes:
-      - ./bin:/opt/app/bin
-      - ./config:/opt/app/config
-      - ./database:/opt/app/database
-      - ./public/uploads:/opt/app/public/uploads
-      - ./src:/opt/app/src
-      - ./types:/opt/app/types
-      - ./package.json:/opt/package.json
-      - ./yarn.lock:/opt/yarn.lock
+      - .:/app
     environment:
       NODE_ENV: development

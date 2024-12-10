@@ -25,11 +25,10 @@ services:
       DATABASE_PASSWORD:
       DATABASE_SSL: false
       DATABASE_FILENAME: ./database/data.db
+#     networks:
+#       - strapi
 
-    networks:
-      - strapi
-
-networks:
-  strapi:
-    name: Strapi
-    driver: bridge
+# networks:
+#   strapi:
+#     name: Strapi
+#     driver: bridge

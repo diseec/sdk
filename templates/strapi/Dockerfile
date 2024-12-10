@@ -43,8 +43,6 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json /app/yarn.lock* /app/package-lock.json* /app/pnpm-lock.yaml* ./
 COPY --from=builder /app/node_modules ./node_modules
 
-RUN chown -R node:node /app
-USER node
 EXPOSE 1337
 
 CMD ["yarn", "start"]
