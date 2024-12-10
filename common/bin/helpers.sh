@@ -23,7 +23,15 @@ message(){
 
 ask_to_run_command() {
   local question=$1; shift;
-  read -n 1 -p "$(message 45 "⁇" "$question \033[35m[y/n]\033[0m")" response
+  # read -n 1 -p "$(message 45 "⁇" "$question \033[35m[y/n]\033[0m")" response
+
+  printf "$(message 45 "⁇" "$question \033[35m[y/n]\033[0m")"
+  # Turn off echo and set input to raw mode
+  stty -echo -icanon time 0 min 1
+  response=$(dd bs=1 count=1 2>/dev/null)
+  # Restore terminal settings
+  stty echo icanon
+
   printf "\n"
   case "$response" in
     [yY][eE][sS]|[yY])
