@@ -61,7 +61,7 @@ process_template() {
 
 # Function to copy helper scripts to the project directory
 copy_common() {
-  cp -r "common" "$MOUNTED_PROJECT_DIR"
+  cp -r "common/"* "$MOUNTED_PROJECT_DIR"
 }
 
 list_templates
