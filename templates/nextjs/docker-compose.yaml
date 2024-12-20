@@ -11,7 +11,9 @@ services:
       - NODE_ENV=production
 
   # service_name:
-  #   image: ${REGISTRY_URL}/service_name
+  #   image: ${REGISTRY_URL}/project_id-service_name
+  #   build:
+  #     context: ../project_id-service_name
   #   pull_policy: missing
   #   ports:
   #     - 1337:1337

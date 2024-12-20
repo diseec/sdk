@@ -19,8 +19,8 @@ case $command in
 
     build)
         set -e
-        message "Building main image .."
-        docker build -t $REGISTRY_URL/$REPO_NAME .
+        message "Building service images .."
+        docker compose build --parallel
     ;;
 
     run)
@@ -46,7 +46,7 @@ case $command in
 
     install)
         set -e
-        sh $0 run npm install
+        sh $0 run yarn install
     ;;
 
     dev)
