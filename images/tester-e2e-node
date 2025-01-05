@@ -4,5 +4,8 @@ WORKDIR /app
 
 RUN npm install -g @playwright/test @types/node typescript
 
-CMD ["npx", "playwright", "test"]
+EXPOSE 9323
+
+CMD ["npx", "playwright", "test", "--ui-host=0.0.0.0", "--ui-port=9323"]
+ 
 

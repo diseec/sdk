@@ -1,7 +1,6 @@
 #!/bin/sh
 
-export REGISTRY_URL="registry.diseec.com"
-export REPO_NAME=$(grep 'url = ' ./.git/config | awk -F'/' '{print $NF}' | sed 's/\.git$//')
+# export REPO_NAME=$(grep 'url = ' ./.git/config | awk -F'/' '{print $NF}' | sed 's/\.git$//')
 
 capitalize() {
   echo "$1" | tr '[:lower:]' '[:upper:]'
@@ -25,7 +24,7 @@ ask_to_run_command() {
   local question=$1; shift;
   # read -n 1 -p "$(message 45 "⁇" "$question \033[35m[y/n]\033[0m")" response
 
-  printf "$(message 45 "⁇" "$question \033[35m[y/n]\033[0m")"
+  printf "$(message 45 "?" "$question \033[35m[y/n]\033[0m")"
   # Turn off echo and set input to raw mode
   stty -echo -icanon time 0 min 1
   response=$(dd bs=1 count=1 2>/dev/null)
@@ -72,7 +71,8 @@ display_help() {
 informer() {
   case "$1" in
     sync-registry-image)
-      IMAGE_NAME="$REGISTRY_URL/$REPO_NAME"
+    export REPO_NAME="$PROJECT_NAME-$PROJECT_VERSION"""
+      # IMAGE_NAME="$REGISTRY_URL/$REPO_NAME"
       # Attempt to get the local image digest
       LOCAL_DIGEST=$(docker image inspect $IMAGE_NAME --format='{{index .RepoDigests 0}}' 2>/dev/null || echo "")
       # Check if the local digest retrieval was an error
@@ -94,7 +94,7 @@ informer() {
     ;;
 
     summary-branch-status)
-      if ping -c 1 google.com &> /dev/null; then
+      if ping -c 1 google.com > /dev/null 2>&1; then
           git fetch origin
       fi
       local_commit=$(git rev-parse @)
@@ -139,4 +139,21 @@ load_env() {
     cp "$(get_root)/.env.example" "$(get_root)/.env"
   fi
   source "$(get_root)/.env"
+}
+
+execute_command_in_container() {
+    local SERVICE_NAME=$1; shift;
+
+    if [ -n "$CI" ]; 
+        then OPTIONS="-e CI=true";
+        else OPTIONS="-it";
+    fi
+
+    if docker compose ps -q "$SERVICE_NAME" | grep -q .; then
+        message 34 $SERVICE_NAME "Already running, Executing command .."
+        docker compose exec $OPTIONS "$SERVICE_NAME" "$@"
+    else
+        message 34 $SERVICE_NAME "Executing command in a fresh instance .."
+        docker compose run --rm $OPTIONS "$SERVICE_NAME" "$@"
+    fi
 }

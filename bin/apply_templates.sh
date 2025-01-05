@@ -34,8 +34,8 @@ prompt_inputs() {
 # Function to replace placeholders in files
 replace_placeholders() {
   local file=$1
-  sed -i "s/placeholderforprojectid/$PROJECT_ID/g" "$file"
-  sed -i "s/placeholderforprojectname/$PROJECT_NAME/g" "$file"
+  sed -i "s/placeholderforprojectname/$PROJECT_ID/g" "$file"
+  sed -i "s/placeholderforservicename/$PROJECT_NAME/g" "$file"
 }
 
 # Function to process template files

@@ -72,7 +72,7 @@ informer() {
     ;;
 
     summary-branch-status)
-      if ping -c 1 google.com &> /dev/null; then
+      if ping -c 1 google.com > /dev/null 2>&1; then
           git fetch origin
       fi
       local_commit=$(git rev-parse @)

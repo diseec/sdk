@@ -1,8 +1,8 @@
-[![Deploy](https://github.com/diseec/placeholderforprojectid-placeholderforprojectname/actions/workflows/CD.yaml/badge.svg)](https://github.com/diseec/placeholderforprojectid-placeholderforprojectname/actions/workflows/CD.yaml)
+[![Deploy](https://github.com/diseec/placeholderforprojectname-placeholderforservicename/actions/workflows/CD.yaml/badge.svg)](https://github.com/diseec/placeholderforprojectname-placeholderforservicename/actions/workflows/CD.yaml)
 
-# placeholderforprojectid placeholderforprojectname Project
+# placeholderforprojectname placeholderforservicename Project
 
-This project includes a set of scripts to manage the development, building, and deployment of the placeholderforprojectid placeholderforprojectname application. The scripts are encapsulated in a `cli` script that provides various commands to streamline common tasks.
+This project includes a set of scripts to manage the development, building, and deployment of the placeholderforprojectname placeholderforservicename application. The scripts are encapsulated in a `cli` script that provides various commands to streamline common tasks.
 
 ## Prerequisites
 

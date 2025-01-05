@@ -1,4 +1,10 @@
 #!/bin/sh
+
+export REGISTRY_URL="registry.diseec.com"
+export PROJECT_NAME="placeholderforprojectname"
+export SERVICE_NAME="placeholderforservicename"
+export REPO_NAME="$PROJECT_NAME-$SERVICE_NAME"
+
 command=$1; shift; . "./bin/helpers.sh";
 case $command in
 
@@ -9,10 +15,11 @@ case $command in
     ;;
 
     pull)
+        message 34 "current branch" "$(git branch --show-current)"
+        message "Pulling latest changes .."
         git pull origin
-        message "Merging latest 'main' changes to '$(git branch --show-current)' .."
+        message "Merging latest 'main' changes .."
         git merge origin/main
-        git pull origin main
         # message "Pulling the image .."
         # docker pull $REGISTRY_URL/$REPO_NAME
     ;;
@@ -29,18 +36,7 @@ case $command in
             message "Container environment detected"
             "$@"
         else
-            if [ -n "$CI" ]; 
-                then OPTIONS="-e CI=true";
-                else OPTIONS="-it"; sh $0 status;
-            fi
-
-            if docker compose ps -q app | grep -q .; then
-                message "Container is running. Executing command inside it .."
-                docker compose exec $OPTIONS app "$@"
-            else
-                message "Running in a fresh instance .."
-                docker compose run --rm $OPTIONS app "$@"
-            fi
+            sh $0 service app "$@"
         fi
     ;;
 
@@ -72,16 +68,6 @@ case $command in
     ;;
 
     test)
-        set -e;
-        if [ -n "$CI" ]; then FLAGS="--fully-parallel --forbid-only --fail-on-flaky-tests"; fi
-        # FLAGS=""
-        # for arg in "$@"; do
-        #     if [ "$arg" = "--ci" ]; then
-        #     FLAGS="--fully-parallel --forbid-only --fail-on-flaky-tests"
-        #     set -- "${@/--ci/}"
-        #     break
-        #     fi
-        # done
         if [ -z "$1" ]; then TYPE="all"; else TYPE=$1; shift; fi
         case $TYPE in
             smoke)
@@ -92,7 +78,7 @@ case $command in
             ;;
             e2e)
                 message "Running E2E tests .."
-                docker compose run --rm tester npx playwright test $FLAGS "$@"
+                sh $0 service tester npx playwright test "$@"
             ;;
             all)
                 message "Running test suite .."
@@ -106,6 +92,11 @@ case $command in
                 exit 1
             ;;
         esac
+    ;;
+    
+    service)
+        SERVICE=$1; shift;
+        execute_command_in_container "$SERVICE" "$@"
     ;;
 
     release)
@@ -128,15 +119,16 @@ case $command in
         printf "\n"
         display_help \
             "status   "  "Show project status" \
+            "service  "  "Run a command in a service container, usage: service <service-name> <command>" \
             "build    "  "Build the image push to registry" \
-            "run      "  "Run a command in fresh instance" \
+            "run      "  "Run a command in fresh instance, usage: run <command>" \
             "pull     "  "Pull the repo and image from registry" \
             "install  "  "Install the dependencies" \
             "dev      "  "Start the development server" \
             "pro      "  "Start the production server" \
-            "shell    "  "Start the shell" \
-            "test     "  "Run the tests" \
-            "release  "  "Merge to release branch to trigger CI/CD pipeline"
+            "shell    "  "Start a shell" \
+            "test     "  "Run the tests, usage: test [smoke|unit|e2e|all]" \
+            "release  "  "Merge to release branch to trigger CD pipeline"
     ;;
 
     *)

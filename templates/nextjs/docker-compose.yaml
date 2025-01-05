@@ -3,17 +3,25 @@ services:
     image: ${REGISTRY_URL}/${REPO_NAME}
     build:
       context: .
-    pull_policy: missing
+    pull_policy: always
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - 80:3000
+      - 3000:3000
+    networks:
+      default:
+        # This alias is required due to dns resolution issues
+        # with 'app' word in chromium browsers when testing
+        aliases:
+          - ${SERVICE_NAME}
     environment:
       - NODE_ENV=production
 
   # service_name:
-  #   image: ${REGISTRY_URL}/project_id-service_name
+  #   image: ${REGISTRY_URL}/${PROJECT_NAME}-service_name
+  #   pull_policy: always
   #   build:
-  #     context: ../project_id-service_name
+  #     context: ../${PROJECT_NAME}-service_name
   #   pull_policy: missing
   #   ports:
   #     - 1337:1337
@@ -35,3 +43,14 @@ services:
   #     DATABASE_PASSWORD:
   #     DATABASE_SSL: false
   #     DATABASE_FILENAME: ./database/data.db
+
+  tester:
+    image: ${REGISTRY_URL}/tester-e2e-node
+    pull_policy: always
+    command: npx playwright test --ui-host=0.0.0.0 --ui-port=9323
+    volumes:
+      - .:/app
+    ports:
+      - 9323:9323
+    depends_on:
+      - app
