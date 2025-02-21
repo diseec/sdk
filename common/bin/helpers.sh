@@ -89,7 +89,7 @@ informer() {
     forbid-dev-on-main)
       current_branch=$(git rev-parse --abbrev-ref HEAD)
       if [ "$current_branch" = "main" ]; then
-          message 41 "!" "On the 'main' branch, consider switching to 'dev' branch"
+          message 41 "!" "On the 'main' branch, consider switching to a subbranch"
       fi
     ;;
 

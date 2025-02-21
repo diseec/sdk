@@ -54,21 +54,8 @@ jobs:
           cache-from: type=registry,ref=${{ needs.prepare.outputs.image_name }}:cache
           cache-to: type=registry,ref=${{ needs.prepare.outputs.image_name }}:cache,mode=max
 
-  test:
-    needs: [prepare, build]
-    runs-on: self-hosted
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run install
-        run: sh cli install
-
-      - name: Run all kind of tests!
-        run: sh cli test
-
   deploy:
-    needs: [prepare, test]
+    needs: [prepare, build]
     runs-on: self-hosted
     container:
       image: alpine

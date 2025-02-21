@@ -5,7 +5,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - NODE_ENV=development
+      NODE_ENV: development
 
   # service_name:
   #   command: yarn develop

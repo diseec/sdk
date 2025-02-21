@@ -28,7 +28,6 @@ are_you_sure() {
 }
 
 display_help() {
-    color 0 "\n"
     color 30 "Usage:\n"
     color 0 "    command [options] [arguments]\n"
     color 0 "\n"

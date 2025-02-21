@@ -43,8 +43,17 @@ jobs:
       - name: Run install
         run: sh cli install
 
+      - name: Run lint
+        run: sh cli run npm run lint
+
       - name: Run npm build (test bundling)
         run: sh cli run sh -c "export NODE_ENV='' && npm run build"
 
+      - name: Start production simulator server
+        run: sh cli pro -d
+
       - name: Run all kind of tests!
         run: sh cli test
+
+      - name: Stop production simulator server
+        run: docker compose down

@@ -43,6 +43,7 @@ case $command in
     install)
         set -e
         sh $0 run yarn install
+        # sh $0 run yarn playwright install
     ;;
 
     dev)
@@ -127,8 +128,9 @@ case $command in
             "dev      "  "Start the development server" \
             "pro      "  "Start the production server" \
             "shell    "  "Start a shell" \
-            "test     "  "Run the tests, usage: test [smoke|unit|e2e|all]" \
-            "release  "  "Merge to release branch to trigger CD pipeline"
+            "test     "  "Run the tests in production mode, usage: test [smoke|unit|e2e|all]" \
+            "release  "  "Merge to release branch to trigger CD pipeline" \
+            "kit      "  "Run a command in SDK image, usage: kit <command>"
     ;;
 
     *)

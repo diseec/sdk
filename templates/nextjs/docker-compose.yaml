@@ -13,9 +13,10 @@ services:
         # This alias is required due to dns resolution issues
         # with 'app' word in chromium browsers when testing
         aliases:
-          - ${SERVICE_NAME}
-    environment:
-      - NODE_ENV=production
+          - placeholderforservicename
+    # environment:
+    # # NOTE: THIS TIME USE A .ENV FILE SO YOU CAN USE IT IN DOCKERFILE, DOCKER-COMPOSE same time!
+    #   NODE_ENV: production
 
   # service_name:
   #   image: ${REGISTRY_URL}/${PROJECT_NAME}-service_name
