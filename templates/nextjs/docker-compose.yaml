@@ -1,5 +1,5 @@
 services:
-  app:
+  placeholderforservicename:
     image: ${REGISTRY_URL}/${REPO_NAME}
     build:
       context: .
@@ -14,44 +14,16 @@ services:
         # with 'app' word in chromium browsers when testing
         aliases:
           - placeholderforservicename
-    # environment:
-    # # NOTE: THIS TIME USE A .ENV FILE SO YOU CAN USE IT IN DOCKERFILE, DOCKER-COMPOSE same time!
-    #   NODE_ENV: production
+    env_file:
+      - .env.pro
 
-  # service_name:
-  #   image: ${REGISTRY_URL}/${PROJECT_NAME}-service_name
+  # tester:
+  #   image: ${REGISTRY_URL}/tester-e2e-node
   #   pull_policy: always
-  #   build:
-  #     context: ../${PROJECT_NAME}-service_name
-  #   pull_policy: missing
+  #   command: npx playwright test --ui-host=0.0.0.0 --ui-port=9323
+  #   volumes:
+  #     - .:/app
   #   ports:
-  #     - 1337:1337
-  #     - 5173:5173
-  #   environment:
-  #     NODE_ENV: production
-  #     HOST: 0.0.0.0
-  #     PORT: 1337
-  #     APP_KEYS: "Mf4zMjZFIZ4QK5DaGEzs9A==,fCCvTNWwEgMfpyJE+vDUvA==,Pci+3WpRP8mqVh0GCWJ8uw==,QsQ6HaLOPHEtMeETTh7/Pg=="
-  #     API_TOKEN_SALT: VJUx2GN4bofbDxJjBAw7wg==
-  #     ADMIN_JWT_SECRET: rMbYwFhf36gzUZDQz/7dmg==
-  #     TRANSFER_TOKEN_SALT: 0WavDYxcgca2dh+675moYA==
-  #     JWT_SECRET: qsu5MyzhcLMXwIlSg0SmZw==
-  #     DATABASE_CLIENT: sqlite
-  #     DATABASE_HOST:
-  #     DATABASE_PORT:
-  #     DATABASE_NAME:
-  #     DATABASE_USERNAME:
-  #     DATABASE_PASSWORD:
-  #     DATABASE_SSL: false
-  #     DATABASE_FILENAME: ./database/data.db
-
-  tester:
-    image: ${REGISTRY_URL}/tester-e2e-node
-    pull_policy: always
-    command: npx playwright test --ui-host=0.0.0.0 --ui-port=9323
-    volumes:
-      - .:/app
-    ports:
-      - 9323:9323
-    depends_on:
-      - app
+  #     - 9323:9323
+  #   depends_on:
+  #     - app

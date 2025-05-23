@@ -1,7 +1,7 @@
 services:
-  app:
-    command: yarn develop
+  placeholderforservicename:
+    command: yarn dev
     volumes:
       - .:/app
-    environment:
-      NODE_ENV: development
+    env_file:
+      - .env.pro

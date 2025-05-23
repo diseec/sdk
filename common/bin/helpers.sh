@@ -1,18 +1,17 @@
 #!/bin/sh
 
-# export REPO_NAME=$(grep 'url = ' ./.git/config | awk -F'/' '{print $NF}' | sed 's/\.git$//')
-
 capitalize() {
   echo "$1" | tr '[:lower:]' '[:upper:]'
 }
 
 color() {
-    local color=$1; local text=$2;
-    printf "\e[${color}m${text}\e[0m"
+    color=$1; text=$2;
+    printf "\033[${color}m${text}\033[0m"
 }
 
 message(){
-  printf "\e[1;30;47m D \e[0m"
+  local repo_name=${REPO_NAME:-d}
+  printf "\e[1;30;47m $(capitalize "$repo_name") \e[0m"
   if [ $# -eq 1 ]; then printf " $1 ";
   elif [ $# -eq 2 ]; then color "$1" " $(capitalize "$2") ";
   else color "$1" " $(capitalize "$2") "; printf " $3 "; fi
@@ -70,21 +69,6 @@ display_help() {
 
 informer() {
   case "$1" in
-    sync-registry-image)
-    export REPO_NAME="$PROJECT_NAME-$PROJECT_VERSION"""
-      # IMAGE_NAME="$REGISTRY_URL/$REPO_NAME"
-      # Attempt to get the local image digest
-      LOCAL_DIGEST=$(docker image inspect $IMAGE_NAME --format='{{index .RepoDigests 0}}' 2>/dev/null || echo "")
-      # Check if the local digest retrieval was an error
-      if [ -n "$LOCAL_DIGEST" ]; then
-          message 43 "⇊" "Using image from registry"
-      fi
-      # if [ -z "$LOCAL_DIGEST" ]; then
-      #     message 43 "⎋" "Using locally built image"
-      # else
-      #     message 43 "⇊" "Using image from registry"
-      # fi
-    ;;
 
     forbid-dev-on-main)
       current_branch=$(git rev-parse --abbrev-ref HEAD)
@@ -134,11 +118,13 @@ get_root() {
   exit 1
 }
 
-load_env() {
-  if [ ! -f "$(get_root)/.env" ]; then
-    cp "$(get_root)/.env.example" "$(get_root)/.env"
+get_cache_dir() {
+  DISEEC_CACHE_DIR="$HOME/.cache/.diseec"
+  if [ ! -d "$DISEEC_CACHE_DIR" ]; then
+    mkdir -p "$DISEEC_CACHE_DIR"
   fi
-  source "$(get_root)/.env"
+  # Return the cache directory
+  echo "$DISEEC_CACHE_DIR"
 }
 
 execute_command_in_container() {
@@ -149,11 +135,32 @@ execute_command_in_container() {
         else OPTIONS="-it";
     fi
 
-    if docker compose ps -q "$SERVICE_NAME" | grep -q .; then
-        message 34 $SERVICE_NAME "Already running, Executing command .."
-        docker compose exec $OPTIONS "$SERVICE_NAME" "$@"
+    if [ "$IS_IN_CONTAINER" = "true" ]; then
+        message 34 $SERVICE_NAME "Inside container, Executing command .."
+        "$@"
     else
-        message 34 $SERVICE_NAME "Executing command in a fresh instance .."
-        docker compose run --rm $OPTIONS "$SERVICE_NAME" "$@"
+      if docker compose ps -q "$SERVICE_NAME" | grep -q .; then
+          message 34 $SERVICE_NAME "Already running, Executing command .."
+          docker compose exec $OPTIONS "$SERVICE_NAME" "$@"
+      else
+          message 34 $SERVICE_NAME "No running container found, Starting a fresh instance .."
+          docker compose run --rm $OPTIONS "$SERVICE_NAME" "$@"
+      fi
+    fi
+}
+
+is_in_container() {
+    if [ -f "/.dockerenv" ] || [ "$IS_IN_CONTAINER" = "true" ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
+is_monorepo() {
+    if [ -f ".gitmodules" ] && [ -s ".gitmodules" ]; then
+        echo "true"
+    else
+        echo "false"
     fi
 }

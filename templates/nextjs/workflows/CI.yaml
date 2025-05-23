@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run install
+        run: sh cli install
+
+      - name: Run yarn build (test bundling)
+        run: sh cli run sh -c "export NODE_ENV='production' && yarn build"
+
+      # - name: Start production simulator server
+      #   run: sh cli pro -d
+
+      # - name: Run all kind of tests!
+      #   run: sh cli test
+
+      # - name: Stop production simulator server
+      #   run: docker compose down

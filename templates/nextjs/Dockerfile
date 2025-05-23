@@ -38,9 +38,12 @@ RUN \
 FROM base AS runner
 WORKDIR /app
 
+# Copy the .env file to the container
+COPY .env.pro .env.pro
+# Load the environment variables
+RUN export $(grep -v '^#' .env.pro | xargs)
 ENV IS_IN_CONTAINER=true
 
-ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED=1
 

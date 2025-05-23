@@ -32,6 +32,10 @@ RUN \
 FROM base AS runner
 WORKDIR /app
 
+# Copy the .env file to the container
+COPY .env.pro .env.pro
+# Load the environment variables
+RUN export $(grep -v '^#' .env.pro | xargs)
 ENV IS_IN_CONTAINER=true
 
 RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev nasm bash vips-dev
