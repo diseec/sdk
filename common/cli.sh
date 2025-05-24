@@ -7,7 +7,6 @@ cd $(dirname "$0");
 # if [ -z "$1" ]; then sh cli help; fi
 command=$1; shift
 
-
 case $command in
     install)        cmd_install "$@" ;;
     status)         cmd_status "$@" ;;
@@ -22,6 +21,6 @@ case $command in
     release)        cmd_release "$@" ;;
     kit)            cmd_kit "$@" ;;
     submodule)      cmd_submodule "$@" ;;
-    help|-h)        cmd_help ;;
+    help|-h)        cmd_help "$@"  ;;
     *)              cmd_unknown "$@" ;;
 esac

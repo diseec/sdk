@@ -44,16 +44,17 @@ ask_to_run_command() {
 
 display_help() {
     color 0 "\n"
-    color 30 "Usage:\n"
-    color 0 "    command [options] [arguments]\n"
+    color 33 "Usage:\n"
+    color 32 "    command [options] [arguments]\n"
     color 0 "\n"
-    color 0 "Commands:\n"
+    color 33 "Commands (Global):\n"
     
     # Loop through the arguments and print them
     while [ "$#" -gt 0 ]; do
         command=$1
         description=$2
-        color 0 "  $command          $description\n"
+        color 34 "$command"
+        color 0 "$description\n"
         shift 2
     done
 
@@ -95,27 +96,17 @@ informer() {
   esac
 }
 
-# cache the project root
-PROJECT_ROOT=""
-
-get_root() {
-  if [ -n "$PROJECT_ROOT" ]; then
-    echo "$PROJECT_ROOT"
-    return
-  fi
-
-  dir=$(dirname "$0")
+rootdir() {
+  local dir="$(pwd)"
   while [ "$dir" != "/" ]; do
-    if [ -f "$dir/$CLI_STARTER_FILE" ]; then
-      PROJECT_ROOT="$dir"
-      echo "$PROJECT_ROOT"
-      return
+    if [ -f "$dir/cli" ]; then
+      echo "$dir"
+      return 0
     fi
     dir="$(dirname "$dir")"
   done
-
-  message error "Could not find project root" >&2
-  exit 1
+  echo "Error: Could not find project root containing 'cli' file" >&2
+  return 1
 }
 
 get_cache_dir() {

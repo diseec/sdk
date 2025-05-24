@@ -7,16 +7,16 @@ case $command in
     add)
         message "Adding submodule '$1' .."
         set -e;
-        git submodule add https://$REPOSITORY_URL/$1.git services/$1
+        git submodule add https://$REPOSITORY_URL/$1.git $(rootdir)/modules/$1
         git submodule update --init --recursive
     ;;
 
     remove|rm)
         ask_to_run_command "Are you sure, remove the submodule '$1'?" \
             set -e; \
-            git submodule deinit -f -- services/$1; \
-            rm -rf .git/modules/services/$1; \
-            git rm -f services/$1;
+            git submodule deinit -f -- $(rootdir)/modules/$1; \
+            rm -rf $(rootdir)/.git/modules/modules/$1; \
+            git rm -f $(rootdir)/modules/$1;
     ;;
 
     update)

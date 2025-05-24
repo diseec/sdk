@@ -2,16 +2,8 @@
 
 . "./bin/helpers.sh";
 
-cmd_install_nodejs() {
+cmd_install() {
     set -e
-    if [ -n "$SERVICE_NAME" ]; then
-        sh cli run yarn install
-        # if [ -z "$CI" ]; then
-        #     ask_to_run_command "Install test utils?" sh cli run yarn playwright install
-        # else
-        #     sh cli run yarn playwright install
-        # fi
-    fi
     if [ "$IS_MONOREPO" = "true" ]; then
         if git submodule status 2>/dev/null | grep -qv '^ '; then
             message "Submodules are already initialized. Exiting .."
@@ -19,7 +11,7 @@ cmd_install_nodejs() {
         fi
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive
-        git submodule foreach 'sh cli install'
+        git submodule foreach '"$(rootdir)/$0" install'
     fi
 }
 
@@ -38,17 +30,17 @@ cmd_pull() {
     if [ "$IS_MONOREPO" = "true" ]; then
         message "Updating submodules .."
         # git submodule update --remote --merge
-        git submodule foreach 'sh cli pull'
+        git submodule foreach '"$(rootdir)/$0" pull'
     fi
 }
 
 cmd_dev() {
     set -e
-    sh cli status
-    ask_to_run_command "Pull latest repo changes from all repos?" sh cli pull
-    ask_to_run_command "Build fresh images?" sh cli build
+    "$(rootdir)/$0" status
+    ask_to_run_command "Pull latest repo changes from all repos?" "$(rootdir)/$0" pull
+    ask_to_run_command "Build fresh images?" "$(rootdir)/$0" build
     if [ "$IS_IN_CONTAINER" = "true" ]; then
-        eval $(grep -m 1 'command:' docker-compose.override.yaml | sed 's/.*command: //')
+        eval $(grep -m 1 'command:' "$(rootdir)/docker-compose.override.yaml" | sed 's/.*command: //')
     else
         docker compose up
         docker compose down
@@ -61,7 +53,7 @@ cmd_dev() {
 cmd_pro() {
     set -e
     message "Starting services in production mode .."
-    docker compose -f docker-compose.yaml up "$@"
+    docker compose -f "$(rootdir)/docker-compose.yaml" up "$@"
 }
 
 cmd_build() {
@@ -72,14 +64,14 @@ cmd_build() {
 
 cmd_run() {
     if [ "$IS_MONOREPO" = "true" ]; then
-        if [ -n "$SERVICE_NAME" ]; then
-            sh cli exec $SERVICE_NAME "$@"
+        if [ -n "$REPO_NAME" ]; then
+            "$(rootdir)/$0" exec $REPO_NAME "$@"
         else
             read -p "$(message 45 "⁇" "Specify a service to run:")" service
-            sh cli exec "$service" "$@"
+            "$(rootdir)/$0" exec "$service" "$@"
         fi
     else
-        sh cli exec $SERVICE_NAME "$@"
+        "$0" exec $REPO_NAME "$@"
     fi
 }
 
@@ -89,7 +81,7 @@ cmd_exec() {
 }
 
 cmd_shell() {
-    sh cli run /bin/sh
+    "$(rootdir)/$0" run /bin/sh
 }
 
 cmd_test() {
@@ -119,23 +111,24 @@ cmd_submodule() {
 cmd_help() {
     printf "\n"
     display_help \
-        "install  "  "Install the dependencies" \
-        "status   "  "Show project status" \
-        "pull     "  "Pull the repo and image from registry" \
-        "dev      "  "Start the development server" \
-        "pro      "  "Start the production server" \
-        "build    "  "Build the image push to registry" \
-        "run      "  "Run a command in fresh instance, usage: run <command>" \
-        "exec     "  "Run a command in a service container, usage: exec <service-name> <command>" \
-        "shell    "  "Start a shell" \
-        "test     "  "Run the tests in production mode, see: test -h" \
-        "release  "  "Merge to release branch to trigger CD pipeline" \
-        "kit      "  "Run a command in SDK image, usage: kit <command>" \
-        "submodule"  "Run a command in a submodule, usage: submodule <command>"
+        "    install      "  "Install the dependencies" \
+        "    status       "  "Show project status" \
+        "    pull         "  "Pull the repo and image from registry" \
+        "    dev          "  "Start the development server" \
+        "    pro          "  "Start the production server" \
+        "    build        "  "Build the image push to registry" \
+        "    run          "  "Run a command in fresh instance, usage: run <command>" \
+        "    exec         "  "Run a command in a service container, usage: exec <service-name> <command>" \
+        "    shell        "  "Start a shell" \
+        "    test         "  "Run the tests in production mode, see: test -h" \
+        "    release      "  "Merge to release branch to trigger CD pipeline" \
+        "    kit          "  "Run a command in SDK image, usage: kit <command>" \
+        "    submodule    "  "Run a command in a submodule, usage: submodule <command>" \
+        "$@"
     exit 0
 }
 
 cmd_unknown() {
     message 41 "error" "Unknown command: $command"
-    sh cli help
+    "$(rootdir)/cli" help
 }

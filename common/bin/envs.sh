@@ -2,26 +2,49 @@
 
 . "./bin/helpers.sh";
 
-if [ -f .env.dev ]; then
-  set -a; . .env.dev; set +a;
-fi
+# if [ -f .env.dev ]; then
+#   set -a; . .env.dev; set +a;
+# fi
 
 export IMAGE_REGISTRY_URL="image.registry.diseec.com"
 
 export REPOSITORY_URL="github.com/diseec"
 
-export REPO_NAME=$(basename -s .git `git config --get remote.origin.url`)
+# Extract repository URL from .git/config or submodule gitdir without using git command
+GIT_DIR="$(rootdir)/.git"
+GIT_CONFIG_FILE=""
+REPO_URL=""
+if [ -d "$GIT_DIR" ]; then
+  # Standard git repo
+  GIT_CONFIG_FILE="$GIT_DIR/config"
+elif [ -f "$GIT_DIR" ]; then
+  # Submodule or worktree: .git is a file pointing to actual gitdir
+  GITDIR_PATH=$(rootdir)/$(awk -F': ' '/^gitdir:/ {print $2}' "$GIT_DIR")
+  if [ -n "$GITDIR_PATH" ] && [ -f "$GITDIR_PATH/config" ]; then
+    GIT_CONFIG_FILE="$GITDIR_PATH/config"
+  fi
+fi
+if [ -f "$GIT_CONFIG_FILE" ]; then
+  REPO_URL=$(awk -F' = ' '/\[remote "origin"\]/ {found=1} found && /url =/ {print $2; exit}' "$GIT_CONFIG_FILE")
+fi
+# Extract repo name from URL (supports SSH and HTTPS)
+REPO_NAME=""
+if [ -n "$REPO_URL" ]; then
+  # Remove trailing .git if present
+  REPO_NAME=$(basename "${REPO_URL%.git}")
+fi
+export REPO_NAME
 
 export DISEEC_CACHE_DIR=$(get_cache_dir)
 
-if [ -n "$NAMESPACE" ] && [ -n "$REPO_NAME" ]; then
-  SERVICE_NAME="${REPO_NAME#$NAMESPACE}"
-  # Remove leading separator if present (e.g., '-' or '/')
-  SERVICE_NAME="${SERVICE_NAME#[-_/.]}"
-else
-  SERVICE_NAME="$REPO_NAME"
-fi
-export SERVICE_NAME
+# if [ -n "$NAMESPACE" ] && [ -n "$REPO_NAME" ]; then
+#   SERVICE_NAME="${REPO_NAME#$NAMESPACE}"
+#   # Remove leading separator if present (e.g., '-' or '/')
+#   SERVICE_NAME="${SERVICE_NAME#[-_/.]}"
+# else
+#   SERVICE_NAME="$REPO_NAME"
+# fi
+# export SERVICE_NAME
 
 export IS_IN_CONTAINER=$(is_in_container)
 

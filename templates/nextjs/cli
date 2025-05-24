@@ -1,3 +1,32 @@
 #!/bin/sh
 
-"$(dirname "$0")/node_modules/@diseec/devops/cli" "$@"
+cd $(dirname "$0"); command=$1; shift;
+
+. ./node_modules/@diseec/devops/common/bin/helpers.sh
+
+case $command in
+    install)        
+        if [ -n "$SERVICE_NAME" ]; then
+            sh cli run yarn install
+            # if [ -z "$CI" ]; then
+            #     ask_to_run_command "Install test utils?" sh cli run yarn playwright install
+            # else
+            #     sh cli run yarn playwright install
+            # fi
+        fi
+
+        "./node_modules/@diseec/devops/cli.sh" install "$@" 
+    ;;
+
+    help|-h)        
+        "./node_modules/@diseec/devops/cli.sh" "$command" \
+         "" "" \
+         "$(color 33 "Service Commands:")" "" \
+         "    help         " "Display this help message"
+    ;;
+
+    *)              
+        "./node_modules/@diseec/devops/cli.sh" "$command" "$@" 
+    ;;
+
+esac

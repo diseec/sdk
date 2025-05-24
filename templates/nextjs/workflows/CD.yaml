@@ -40,8 +40,15 @@ jobs:
       image: alpine:latest
 
     steps:
-      - name: Load .env
-        run: . "./bin/envs.sh";
+      # - name: Load .env
+      #   run: . "./bin/envs.sh";
+
+      - name: Extract namespace and service name
+        run: |
+          export NAMESPACE=$(echo "$REPO_NAME" | cut -d'-' -f1)
+          export SERVICE_NAME=$(echo "$REPO_NAME" | cut -d'-' -f2-)
+          echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
+          echo "SERVICE_NAME=$SERVICE_NAME" >> $GITHUB_ENV
 
       - name: Update pods
         uses: appleboy/ssh-action@v0.1.8
