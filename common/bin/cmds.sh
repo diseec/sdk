@@ -5,10 +5,10 @@
 cmd_install() {
     set -e
     if [ "$IS_MONOREPO" = "true" ]; then
-        if git submodule status 2>/dev/null | grep -qv '^ '; then
-            message "Submodules are already initialized. Exiting .."
-            exit 0
-        fi
+        # if git submodule status 2>/dev/null | grep -qv '^ '; then
+        #     message "Submodules are already initialized. Exiting .."
+        #     exit 0
+        # fi
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive
         git submodule foreach $(rootdir)'/$name/cli install'
