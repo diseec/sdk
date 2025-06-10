@@ -149,7 +149,7 @@ is_in_container() {
 }
 
 is_monorepo() {
-    if [ -f ".gitmodules" ] && [ -s ".gitmodules" ]; then
+    if [ -f "$(rootdir)/.gitmodules" ] && [ -s "$(rootdir)/.gitmodules" ]; then
         echo "true"
     else
         echo "false"
