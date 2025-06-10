@@ -11,7 +11,7 @@ cmd_install() {
         fi
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive
-        git submodule foreach '"$(rootdir)/$0" install'
+        git submodule foreach $(rootdir)'/$name/cli install'
     fi
 }
 
