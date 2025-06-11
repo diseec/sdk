@@ -1,0 +1,25 @@
+#!/bin/sh
+
+cd $(dirname "$0"); command=$1; shift;
+
+case $command in
+    install)
+        docker run --rm -v $(pwd):/app -w /app node:alpine sh -c "yarn install"
+    ;;
+esac
+
+. ./node_modules/@diseec/devops/index.sh
+
+case $command in
+    help|-h)
+        "$CLI_SRC/cli.sh" "$command" \
+         "" "" \
+         "$(color 33 'Service Commands:')" "" \
+         "    help         " "Display this help message"
+    ;;
+
+    *)
+        "$CLI_SRC/cli.sh" "$command" "$@" 
+    ;;
+
+esac

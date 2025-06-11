@@ -1,7 +1,5 @@
 #!/bin/sh
 
-. "./bin/helpers.sh";
-
 cmd_install() {
     set -e
     if [ "$IS_MONOREPO" = "true" ]; then
@@ -11,7 +9,7 @@ cmd_install() {
         # fi
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive
-        git submodule foreach $(rootdir)'/$name/cli install'
+        git submodule foreach $ROOT_DIR'/$name/cli install'
     fi
 }
 
@@ -30,17 +28,17 @@ cmd_pull() {
     if [ "$IS_MONOREPO" = "true" ]; then
         message "Updating submodules .."
         # git submodule update --remote --merge
-        git submodule foreach '"$(rootdir)/$0" pull'
+        git submodule foreach '$0 pull'
     fi
 }
 
 cmd_dev() {
     set -e
-    "$(rootdir)/$0" status
-    ask_to_run_command "Pull latest repo changes from all repos?" "$(rootdir)/$0" pull
-    ask_to_run_command "Build fresh images?" "$(rootdir)/$0" build
+    $0 status
+    ask_to_run_command "Pull latest repo changes from all repos?" $0 pull
+    ask_to_run_command "Build fresh images?" $0 build
     if [ "$IS_IN_CONTAINER" = "true" ]; then
-        eval $(grep -m 1 'command:' "$(rootdir)/docker-compose.override.yaml" | sed 's/.*command: //')
+        eval $(grep -m 1 'command:' "$ROOT_DIR/docker-compose.override.yaml" | sed 's/.*command: //')
     else
         docker compose up
         docker compose down
@@ -53,7 +51,7 @@ cmd_dev() {
 cmd_pro() {
     set -e
     message "Starting services in production mode .."
-    docker compose -f "$(rootdir)/docker-compose.yaml" up "$@"
+    docker compose -f "$ROOT_DIR/docker-compose.yaml" up "$@"
 }
 
 cmd_build() {
@@ -65,10 +63,10 @@ cmd_build() {
 cmd_run() {
     if [ "$IS_MONOREPO" = "true" ]; then
         if [ -n "$REPO_NAME" ]; then
-            "$(rootdir)/$0" exec $REPO_NAME "$@"
+            $0 exec $REPO_NAME "$@"
         else
             read -p "$(message 45 "⁇" "Specify a service to run:")" service
-            "$(rootdir)/$0" exec "$service" "$@"
+            $0 exec "$service" "$@"
         fi
     else
         "$0" exec $REPO_NAME "$@"
@@ -81,7 +79,7 @@ cmd_exec() {
 }
 
 cmd_shell() {
-    "$(rootdir)/$0" run /bin/sh
+    $0 run /bin/sh
 }
 
 cmd_test() {
@@ -130,5 +128,5 @@ cmd_help() {
 
 cmd_unknown() {
     message 41 "error" "Unknown command: $command"
-    "$(rootdir)/cli" help
+    "$ROOT_DIR/cli" help
 }

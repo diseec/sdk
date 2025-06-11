@@ -1,13 +1,13 @@
 #!/bin/sh
 
-cd $(dirname "$0");
+cd $(dirname "$0"); 
 . "./bin/envs.sh";
 . "./bin/helpers.sh";
 . "./bin/cmds.sh";
- 
-# if [ -z "$1" ]; then sh cli help; fi
-command=$1; shift
 
+# if [ -z "$1" ]; then sh cli help; fi
+command=$1; shift;
+ 
 case $command in
     install)        cmd_install "$@" ;;
     status)         cmd_status "$@" ;;

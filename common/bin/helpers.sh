@@ -96,28 +96,6 @@ informer() {
   esac
 }
 
-rootdir() {
-  local dir="$(pwd)"
-  while [ "$dir" != "/" ]; do
-    if [ -f "$dir/cli" ]; then
-      echo "$dir"
-      return 0
-    fi
-    dir="$(dirname "$dir")"
-  done
-  echo "Error: Could not find project root containing 'cli' file" >&2
-  return 1
-}
-
-get_cache_dir() {
-  DISEEC_CACHE_DIR="$HOME/.cache/.diseec"
-  if [ ! -d "$DISEEC_CACHE_DIR" ]; then
-    mkdir -p "$DISEEC_CACHE_DIR"
-  fi
-  # Return the cache directory
-  echo "$DISEEC_CACHE_DIR"
-}
-
 execute_command_in_container() {
     local SERVICE_NAME=$1; shift;
 
@@ -137,21 +115,5 @@ execute_command_in_container() {
           message 34 $SERVICE_NAME "No running container found, Starting a fresh instance .."
           docker compose run --rm $OPTIONS "$SERVICE_NAME" "$@"
       fi
-    fi
-}
-
-is_in_container() {
-    if [ -f "/.dockerenv" ] || [ "$IS_IN_CONTAINER" = "true" ]; then
-        echo "true"
-    else
-        echo "false"
-    fi
-}
-
-is_monorepo() {
-    if [ -f "$(rootdir)/.gitmodules" ] && [ -s "$(rootdir)/.gitmodules" ]; then
-        echo "true"
-    else
-        echo "false"
     fi
 }

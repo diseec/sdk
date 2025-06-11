@@ -1,7 +1,5 @@
 #!/bin/sh
 
-. "./bin/helpers.sh";
-
 # if [ -f .env.dev ]; then
 #   set -a; . .env.dev; set +a;
 # fi
@@ -10,8 +8,24 @@ export IMAGE_REGISTRY_URL="image.registry.diseec.com"
 
 export REPOSITORY_URL="github.com/diseec"
 
+rootdir() {
+  local dir="$(pwd)"
+  while [ "$dir" != "/" ]; do
+    if [ -f "$dir/cli" ]; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  echo "Error: Could not find project root containing 'cli' file" >&2
+  return 1
+}
+export ROOT_DIR="$(rootdir)"
+
+export CLI_SRC="$ROOT_DIR/node_modules/@diseec/devops"
+
 # Extract repository URL from .git/config or submodule gitdir without using git command
-GIT_DIR="$(rootdir)/.git"
+GIT_DIR="$ROOT_DIR/.git"
 GIT_CONFIG_FILE=""
 REPO_URL=""
 if [ -d "$GIT_DIR" ]; then
@@ -19,7 +33,7 @@ if [ -d "$GIT_DIR" ]; then
   GIT_CONFIG_FILE="$GIT_DIR/config"
 elif [ -f "$GIT_DIR" ]; then
   # Submodule or worktree: .git is a file pointing to actual gitdir
-  GITDIR_PATH=$(rootdir)/$(awk -F': ' '/^gitdir:/ {print $2}' "$GIT_DIR")
+  GITDIR_PATH=$ROOT_DIR/$(awk -F': ' '/^gitdir:/ {print $2}' "$GIT_DIR")
   if [ -n "$GITDIR_PATH" ] && [ -f "$GITDIR_PATH/config" ]; then
     GIT_CONFIG_FILE="$GITDIR_PATH/config"
   fi
@@ -35,6 +49,14 @@ if [ -n "$REPO_URL" ]; then
 fi
 export REPO_NAME
 
+get_cache_dir() {
+  DISEEC_CACHE_DIR="$HOME/.cache/.diseec"
+  if [ ! -d "$DISEEC_CACHE_DIR" ]; then
+    mkdir -p "$DISEEC_CACHE_DIR"
+  fi
+  # Return the cache directory
+  echo "$DISEEC_CACHE_DIR"
+}
 export DISEEC_CACHE_DIR=$(get_cache_dir)
 
 # if [ -n "$NAMESPACE" ] && [ -n "$REPO_NAME" ]; then
@@ -46,8 +68,22 @@ export DISEEC_CACHE_DIR=$(get_cache_dir)
 # fi
 # export SERVICE_NAME
 
+is_in_container() {
+    if [ -f "/.dockerenv" ] || [ "$IS_IN_CONTAINER" = "true" ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
 export IS_IN_CONTAINER=$(is_in_container)
 
+is_monorepo() {
+    if [ -f "$ROOT_DIR/.gitmodules" ] && [ -s "$ROOT_DIR/.gitmodules" ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
 export IS_MONOREPO=$(is_monorepo)
 
 # if [ -n "$SERVICE_NAME" ]; then
