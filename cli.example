@@ -1,25 +1,27 @@
 #!/bin/sh
 
-cd $(dirname "$0"); command=$1; shift;
+cd $(dirname "$0"); command=$1; shift; case $command in install) docker run --rm -v $(pwd):/app -w /app node:alpine sh -c "yarn install" ;; esac; . ./node_modules/@diseec/devops/index.sh;
+
+# -----------------------------------------------------------------------------
+# DISEEC CLI Helper Script
+#
+# This script provides a unified command-line interface for project-level
+# DevOps and automation tasks. It leverages the @diseec/devops Node.js package
+# for core functionality and can be extended here to add or modify commands
+# specific to this project.
+#
+# -----------------------------------------------------------------------------
 
 case $command in
-    install)
-        docker run --rm -v $(pwd):/app -w /app node:alpine sh -c "yarn install"
-    ;;
-esac
 
-. ./node_modules/@diseec/devops/index.sh
-
-case $command in
     help|-h)
-        "$CLI_SRC/cli.sh" "$command" \
+        $CLI_SRC/cli.sh "$command" \
          "" "" \
          "$(color 33 'Service Commands:')" "" \
-         "    help         " "Display this help message"
-    ;;
-
-    *)
-        "$CLI_SRC/cli.sh" "$command" "$@" 
+         "    help         " "Display the help message";
+         exit 0
     ;;
 
 esac
+
+$CLI_SRC/cli.sh "$command" "$@";
