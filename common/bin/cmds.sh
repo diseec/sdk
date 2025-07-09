@@ -8,7 +8,15 @@ cmd_install() {
         #     exit 0
         # fi
         message "Submodules detected. Cloning submodules .."
-        git submodule update --init --recursive
+        git submodule update --init --recursive --remote
+        GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
+        read -p "$(message 45 "⁇" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
+        if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
+        message "Checking out branch '$BRANCH' in submodules .."
+        git submodule foreach "\
+            git fetch && git checkout $BRANCH || \
+            git checkout -b $BRANCH origin/$BRANCH || \
+            git checkout -b $BRANCH"
         git submodule foreach $ROOT_DIR'/$name/cli install'
     fi
 }
@@ -28,7 +36,7 @@ cmd_pull() {
     if [ "$IS_MONOREPO" = "true" ]; then
         message "Updating submodules .."
         # git submodule update --remote --merge
-        git submodule foreach '$0 pull'
+        git submodule foreach 'sh cli pull'
     fi
 }
 
