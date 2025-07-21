@@ -50,7 +50,7 @@ fi
 export REPO_NAME
 
 get_cache_dir() {
-  DISEEC_CACHE_DIR="$HOME/.cache/.diseec"
+  DISEEC_CACHE_DIR="$HOME/.cache/diseec"
   if [ ! -d "$DISEEC_CACHE_DIR" ]; then
     mkdir -p "$DISEEC_CACHE_DIR"
   fi
