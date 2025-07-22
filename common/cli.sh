@@ -21,7 +21,8 @@ case $command in
     test)           cmd_test "$@" ;;
     release)        cmd_release "$@" ;;
     kit)            cmd_kit "$@" ;;
-    submodule)      cmd_submodule "$@" ;;
+    service)        cmd_service "$@" ;;
+    package)        cmd_package "$@" ;;
     help|-h)        cmd_help "$@"  ;;
     *)              cmd_unknown "$@" ;;
 esac

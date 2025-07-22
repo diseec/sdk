@@ -9,15 +9,17 @@ cmd_install() {
         # fi
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive --remote
-        GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-        read -p "$(message 45 "⁇" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
-        if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
-        message "Checking out branch '$BRANCH' in submodules .."
-        git submodule foreach "\
-            git fetch && git checkout $BRANCH || \
-            git checkout -b $BRANCH origin/$BRANCH || \
-            git checkout -b $BRANCH"
-        git submodule foreach $ROOT_DIR'/$name/cli install'
+        # GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
+        # read -p "$(message 45 "⁇" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
+        # if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
+        # message "Checking out branch '$BRANCH' in submodules .."
+        # git submodule foreach '\
+        #     case $sm_path in services/*)\
+        #         git fetch && git checkout '$BRANCH' ||\
+        #         git checkout -b '$BRANCH' origin/'$BRANCH' ||\
+        #         git checkout -b '$BRANCH'\
+        #     ;; esac'
+        # git submodule foreach 'case $sm_path in services/*) '$ROOT_DIR'/$name/cli install ;; esac'
     fi
 }
 
@@ -110,8 +112,12 @@ cmd_kit() {
         $IMAGE_REGISTRY_URL/kit kit "$@"
 }
 
-cmd_submodule() {
-    . ./bin/submodule.sh "$@"
+cmd_service() {
+    . ./bin/services.sh "$@"
+}
+
+cmd_package() {
+    . ./bin/packages.sh "$@"
 }
 
 cmd_help() {
@@ -129,7 +135,8 @@ cmd_help() {
         "    test         "  "Run the tests in production mode, see: test -h" \
         "    release      "  "Merge to release branch to trigger CD pipeline" \
         "    kit          "  "Run a command in SDK image, usage: kit <command>" \
-        "    submodule    "  "Run a command in a submodule, usage: submodule <command>" \
+        "    service      "  "Run a command in a service, usage: service <command>" \
+        "    package      "  "Run a command in a package, usage: package <command>" \
         "$@"
     exit 0
 }
