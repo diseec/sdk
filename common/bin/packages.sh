@@ -1,6 +1,6 @@
 #!/bin/sh
 
-command=$1; shift; cd $ROOT_DIR;
+cd $ROOT_DIR; command=$1; shift;
 
 case $command in
 
@@ -23,8 +23,14 @@ case $command in
         git submodule update --remote --merge
     ;;
 
+    link)
+        message "Shell now at '$PWD'"
+        read -p "$(message 45 "⁇" "Enter path to package:")" PACKAGE_PATH
+        npm link $PACKAGE_PATH
+    ;;
+
     *)
-        echo "Usage: $0 package [add|remove|update] <package-name>"
+        echo "Usage: $0 package [add|remove|update|link] <package-name>"
         exit 1
     ;;
 esac

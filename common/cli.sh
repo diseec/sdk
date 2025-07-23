@@ -1,8 +1,9 @@
 #!/bin/sh
 
-. "$(dirname "$0")/bin/envs.sh";
-. "$(dirname "$0")/bin/helpers.sh";
-. "$(dirname "$0")/bin/cmds.sh";
+cd $(dirname "$0");
+. "./bin/envs.sh";
+. "./bin/helpers.sh";
+. "./bin/cmds.sh";
 
 # if [ -z "$1" ]; then sh cli help; fi
 command=$1; shift;

@@ -1,12 +1,12 @@
 #!/bin/sh
 
 cmd_install() {
-    set -e
+    set -e; cd $ROOT_DIR;
     if [ "$IS_MONOREPO" = "true" ]; then
-        # if git submodule status 2>/dev/null | grep -qv '^ '; then
-        #     message "Submodules are already initialized. Exiting .."
-        #     exit 0
-        # fi
+# if git submodule status 2>/dev/null | grep -qv '^ '; then
+#     message "Submodules are already initialized. Exiting .."
+#     exit 0
+# fi
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive --remote
         GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
@@ -18,7 +18,7 @@ cmd_install() {
                 services/*)\
                     git fetch && git checkout '$BRANCH' ||\
                     git checkout -b '$BRANCH' origin/'$BRANCH' ||\
-                    git checkout -b '$BRANCH'\
+                    git checkout -b '$BRANCH';\
                     '$ROOT_DIR'/$name/cli install\
                 ;;\
             esac'

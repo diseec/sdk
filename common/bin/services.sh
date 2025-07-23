@@ -1,6 +1,6 @@
 #!/bin/sh
 
-command=$1; shift; cd $ROOT_DIR;
+cd $ROOT_DIR; command=$1; shift;
 
 case $command in
 
