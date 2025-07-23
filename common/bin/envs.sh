@@ -5,8 +5,8 @@
 # fi
 
 export IMAGE_REGISTRY_URL="image.registry.diseec.com"
-
 export REPOSITORY_URL="github.com/diseec"
+export DISEEC_WORKSPACE_DIR="$HOME/diseec"
 
 rootdir() {
   local dir="$(pwd)"
@@ -20,8 +20,9 @@ rootdir() {
   echo "Error: Could not find project root containing 'cli' file" >&2
   return 1
 }
-export ROOT_DIR="$(rootdir)"
+if [ -z "$ROOT_DIR" ]; then export ROOT_DIR="$(rootdir)"; fi
 
+# TODO: support other languages
 export CLI_SRC="$ROOT_DIR/node_modules/@diseec/devops"
 
 # Extract repository URL from .git/config or submodule gitdir without using git command
@@ -49,8 +50,19 @@ if [ -n "$REPO_URL" ]; then
 fi
 export REPO_NAME
 
+get_projects_dir() {
+  DISEEC_PROJECTS_DIR="$DISEEC_WORKSPACE_DIR/projects"
+  if [ ! -d "$DISEEC_PROJECTS_DIR" ]; then
+    mkdir -p "$DISEEC_PROJECTS_DIR"
+  fi
+  # Return the projects directory
+  echo "$DISEEC_PROJECTS_DIR"
+}
+export DISEEC_PROJECTS_DIR=$(get_projects_dir)
+
 get_cache_dir() {
-  DISEEC_CACHE_DIR="$HOME/.cache/.diseec"
+  DISEEC_CACHE_DIR="$DISEEC_WORKSPACE_DIR/.cache"
+  rm -fr $HOME/.cache/.diseec # Clean up old cache directory, REMOVE THIS LATER
   if [ ! -d "$DISEEC_CACHE_DIR" ]; then
     mkdir -p "$DISEEC_CACHE_DIR"
   fi

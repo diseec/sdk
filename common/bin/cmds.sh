@@ -9,17 +9,19 @@ cmd_install() {
         # fi
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive --remote
-        # GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-        # read -p "$(message 45 "⁇" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
-        # if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
-        # message "Checking out branch '$BRANCH' in submodules .."
-        # git submodule foreach '\
-        #     case $sm_path in services/*)\
-        #         git fetch && git checkout '$BRANCH' ||\
-        #         git checkout -b '$BRANCH' origin/'$BRANCH' ||\
-        #         git checkout -b '$BRANCH'\
-        #     ;; esac'
-        # git submodule foreach 'case $sm_path in services/*) '$ROOT_DIR'/$name/cli install ;; esac'
+        GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
+        read -p "$(message 45 "⁇" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
+        if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
+        message "Checking out branch '$BRANCH' in submodules .."
+        git submodule foreach '\
+            case $sm_path in\
+                services/*)\
+                    git fetch && git checkout '$BRANCH' ||\
+                    git checkout -b '$BRANCH' origin/'$BRANCH' ||\
+                    git checkout -b '$BRANCH'\
+                    '$ROOT_DIR'/$name/cli install\
+                ;;\
+            esac'
     fi
 }
 
