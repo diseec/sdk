@@ -1,0 +1,85 @@
+#!/bin/bash
+
+. ./common/bin/helpers.sh; command=$1; shift;
+
+case $command in
+    build)
+        set -e
+        docker buildx build \
+            --platform linux/arm64 \
+            -t image.registry.diseec.com/devops:latest \
+            --push .
+            # --platform linux/amd64,linux/arm64 \
+    ;;
+
+    # run)
+    #     if [ -f /.dockerenv ]; then
+    #         "$@"
+    #     else
+    #         if [ -z "$CI" ]; then
+    #             IT_OPTION="-it"
+    #         else
+    #             IT_OPTION=""
+    #         fi
+    #             # --pull always \
+    #         docker run --rm $IT_OPTION \
+    #             -v "$(pwd)":/app \
+    #             -w /app \
+    #             image.registry.diseec.com/devops:latest "$@"
+    #     fi
+    # ;;
+
+    install)
+        set -e
+        if [ -f /project/package.json ]; then
+            message "Installing in Node.js project .."
+            VERSION=$(node -p "require('/project/package.json').dependencies['@diseec/devops'] || require('/project/package.json').devDependencies && require('/project/package.json').devDependencies['@diseec/devops']" | sed 's/^[^0-9]*//')
+            TMPDIR=$(mktemp -d)
+            NPM_TARBALL_URL="https://registry.npmjs.org/@diseec/devops/-/devops-$VERSION.tgz"
+            message "Fetching @diseec/devops@$VERSION from $NPM_TARBALL_URL .."
+            curl -fSL "$NPM_TARBALL_URL" -o "$TMPDIR/devops-$VERSION.tgz"
+            tar -xzf "$TMPDIR/devops-$VERSION.tgz" -C "$TMPDIR"
+            mkdir -p /project/node_modules/@diseec/devops
+            cp -r $TMPDIR/package/* /project/node_modules/@diseec/devops/
+        fi
+    ;;
+
+    shell)
+        bash $0 run /bin/bash
+    ;;
+
+    # MODIFIERS
+
+    devops)
+        subcommand=$1 && shift
+        case $subcommand in
+            override)
+                bash bin/apply_templates.sh
+            ;;
+            *)
+                echo "Unknown subcommand: $subcommand"
+                echo "Usage: $0 devops [subcommand]"
+                echo "commands:"
+                echo "   override     Apply the templates"
+                exit 1
+            ;;
+        esac
+    ;;
+
+    help|--help|-h)
+        color 0 "\n"
+        message "Dev team's toolkit. template, fix, build ..!"
+        display_help \
+            "run     " "Run a command in fresh instance" \
+            "build   " "Build the images push to registry" \
+            "install " "Install the dependencies" \
+            "shell   " "Start the shell" \
+            "devops  " "Run devops commands"
+        ;;
+
+    *)
+        echo "Unknown command: $command"
+        bash $0 --help
+        exit 1
+    ;;
+esac
