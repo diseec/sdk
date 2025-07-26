@@ -79,20 +79,16 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ${{ env.IMAGE_REGISTRY_URL }}/devops:${{ github.ref_name }}
-            ${{ env.IMAGE_REGISTRY_URL }}/devops:latest
+          tags: ${{ env.IMAGE_REGISTRY_URL }}/devops:latest
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GH_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Tag image for GitHub Container Registry
-        run: |
-          docker tag ${{ env.IMAGE_REGISTRY_URL }}/devops:${{ github.ref_name }} ghcr.io/${{ github.repository }}:${{ github.ref_name }}
-          docker tag ${{ env.IMAGE_REGISTRY_URL }}/devops:${{ github.ref_name }} ghcr.io/${{ github.repository }}:latest
+        run: docker tag ${{ env.IMAGE_REGISTRY_URL }}/devops:latest ghcr.io/${{ github.repository }}:latest
 
       - name: Push image to GitHub Container Registry (version tag)
-        run: docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+        run: docker push ghcr.io/${{ github.repository }}:latest
 
       - name: Push image to GitHub Container Registry (latest tag)
         run: docker push ghcr.io/${{ github.repository }}:latest
