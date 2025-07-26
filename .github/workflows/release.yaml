@@ -54,6 +54,7 @@ jobs:
       #     npm publish --registry=https://npm.pkg.github.com/
 
   build:
+    needs: publish
     runs-on: self-hosted
 
     steps:
