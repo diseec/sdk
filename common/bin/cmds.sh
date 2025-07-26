@@ -73,16 +73,9 @@ cmd_build() {
 }
 
 cmd_run() {
-    if [ "$IS_MONOREPO" = "true" ]; then
-        if [ -n "$REPO_NAME" ]; then
-            $0 exec $REPO_NAME "$@"
-        else
-            read -p "$(message 45 "⁇" "Specify a service to run:")" service
-            $0 exec "$service" "$@"
-        fi
-    else
-        "$0" exec $REPO_NAME "$@"
-    fi
+    docker compose config --services
+    read -p "$(message 45 "⁇" "Specify a service to run:")" service
+    $0 exec "$service" "$@"
 }
 
 cmd_exec() {
