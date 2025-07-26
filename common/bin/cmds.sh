@@ -73,9 +73,14 @@ cmd_build() {
 }
 
 cmd_run() {
-    docker compose config --services
-    read -p "$(message 45 "⁇" "Specify a service to run:")" service
-    $0 exec "$service" "$@"
+    services=$(docker compose config --services)
+    if echo "$services" | grep -qx "$REPO_NAME"; then
+        $0 exec "$REPO_NAME" "$@"
+    else
+        message "45" "SERVICES:" "\n$services"
+        read -p "$(message 45 "⁇" "Specify a service to run:")" service
+        $0 exec "$service" "$@"
+    fi
 }
 
 cmd_exec() {
