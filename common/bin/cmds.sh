@@ -31,6 +31,7 @@ cmd_status() {
 }
 
 cmd_pull() {
+    cd $ROOT_DIR;
     message 34 "$(git branch --show-current)" "Pulling latest changes .."
     git pull origin
     message 34 "$(git branch --show-current)" "Merging latest 'main' changes .."
@@ -40,7 +41,10 @@ cmd_pull() {
     if [ "$IS_MONOREPO" = "true" ]; then
         message "Updating submodules .."
         # git submodule update --remote --merge
-        git submodule foreach 'sh cli pull'
+        git submodule foreach '\
+            case $sm_path in\
+                services/*) '$ROOT_DIR'/$name/cli pull ;;\
+            esac'
     fi
 }
 
