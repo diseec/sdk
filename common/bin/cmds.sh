@@ -7,24 +7,20 @@ cmd_version() {
 cmd_install() {
     set -e; cd $ROOT_DIR;
     cmd_version
-    if [ -f "$ROOT_DIR/.gitmodules" ] && [ -s "$ROOT_DIR/.gitmodules" ]; then
+    if [ "$HAS_SUBMODULES" = "true" ]; then
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive --remote
     fi
-    if [ "$IS_MONOREPO" = "true" ] && [ -z "$CI" ]; then
+    if [ -z "$CI" ]; then
         GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
         read -p "$(message 45 "⁇" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
         if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
         message "Checking out branch '$BRANCH' in submodules .."
-        git submodule foreach '\
-            case $sm_path in\
-                services/*)\
-                    git fetch && git checkout '$BRANCH' ||\
-                    git checkout -b '$BRANCH' origin/'$BRANCH' ||\
-                    git checkout -b '$BRANCH';\
-                    '$ROOT_DIR'/$name/cli install\
-                ;;\
-            esac'
+        git fetch && git checkout $BRANCH || git checkout -b $BRANCH origin/$BRANCH || git checkout -b $BRANCH;
+        git submodule foreach 'git fetch && git checkout '$BRANCH' || git checkout -b '$BRANCH' origin/'$BRANCH' || git checkout -b '$BRANCH';'
+    fi
+    if [ "$HAS_SUBMODULES" = "true" ]; then
+        git submodule foreach $ROOT_DIR'/$name/cli install'
     fi
 }
 
@@ -39,13 +35,10 @@ cmd_pull() {
     git pull origin
     message 34 "$(git branch --show-current)" "Merging latest 'main' changes .."
     git merge origin/main
-    if [ "$IS_MONOREPO" = "true" ]; then
+    if [ "$HAS_SUBMODULES" = "true" ]; then
         message "Updating submodules .."
         # git submodule update --remote --merge
-        git submodule foreach '\
-            case $sm_path in\
-                services/*) '$ROOT_DIR'/$name/cli pull ;;\
-            esac'
+        git submodule foreach $ROOT_DIR'/$name/cli pull'
     fi
 }
 

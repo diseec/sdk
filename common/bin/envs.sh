@@ -94,6 +94,15 @@ is_monorepo() {
 }
 export IS_MONOREPO=$(is_monorepo)
 
+has_submodules() {
+    if [ -f "$ROOT_DIR/.gitmodules" ] && [ -s "$ROOT_DIR/.gitmodules" ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+export HAS_SUBMODULES=$(has_submodules)
+
 # if [ -n "$SERVICE_NAME" ]; then
 #     export REPO_NAME="$PROJECT_NAME-$SERVICE_NAME"
 # else
