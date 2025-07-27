@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# if [ -f .env.dev ]; then
-#   set -a; . .env.dev; set +a;
-# fi
-
 export IMAGE_REGISTRY_URL="image.registry.diseec.com"
 export REPOSITORY_URL="github.com/diseec"
 export DISEEC_WORKSPACE_DIR="$HOME/diseec"
@@ -22,8 +18,9 @@ rootdir() {
 }
 if [ -z "$ROOT_DIR" ]; then export ROOT_DIR="$(rootdir)"; fi
 
-# TODO: support other languages
 export CLI_SRC="$ROOT_DIR/node_modules/@diseec/devops"
+
+export VERSION=$(grep '"version"' $CLI_SRC/package.json | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
 
 # Extract repository URL from .git/config or submodule gitdir without using git command
 GIT_DIR="$ROOT_DIR/.git"
@@ -62,7 +59,6 @@ export DISEEC_PROJECTS_DIR=$(get_projects_dir)
 
 get_cache_dir() {
   DISEEC_CACHE_DIR="$DISEEC_WORKSPACE_DIR/.cache"
-  rm -fr $HOME/.cache/.diseec # Clean up old cache directory, REMOVE THIS LATER
   if [ ! -d "$DISEEC_CACHE_DIR" ]; then
     mkdir -p "$DISEEC_CACHE_DIR"
   fi

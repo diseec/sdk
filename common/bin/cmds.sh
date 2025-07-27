@@ -1,12 +1,13 @@
 #!/bin/sh
 
+cmd_version() {
+    message 40 "v$VERSION" "DISEEC DevOps CLI — Automation Toolkit"
+}
+
 cmd_install() {
     set -e; cd $ROOT_DIR;
+    cmd_version
     if [ "$IS_MONOREPO" = "true" ]; then
-# if git submodule status 2>/dev/null | grep -qv '^ '; then
-#     message "Submodules are already initialized. Exiting .."
-#     exit 0
-# fi
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive --remote
         GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
@@ -36,8 +37,6 @@ cmd_pull() {
     git pull origin
     message 34 "$(git branch --show-current)" "Merging latest 'main' changes .."
     git merge origin/main
-    # message "Pulling the image .."
-    # docker pull $IMAGE_REGISTRY_URL/$REPO_NAME
     if [ "$IS_MONOREPO" = "true" ]; then
         message "Updating submodules .."
         # git submodule update --remote --merge
@@ -50,6 +49,7 @@ cmd_pull() {
 
 cmd_dev() {
     set -e
+    cmd_version
     $0 status
     ask_to_run_command "Pull latest repo changes from all repos?" $0 pull
     ask_to_run_command "Build fresh images?" $0 build
@@ -66,12 +66,14 @@ cmd_dev() {
 
 cmd_pro() {
     set -e
+    cmd_version
     message "Starting services in production mode .."
     docker compose -f "$ROOT_DIR/docker-compose.yaml" up "$@"
 }
 
 cmd_build() {
     set -e
+    cmd_version
     message "Building service images .."
     docker compose build --parallel
 }
@@ -93,6 +95,7 @@ cmd_exec() {
 }
 
 cmd_shell() {
+    cmd_version
     $0 run /bin/sh
 }
 
@@ -125,7 +128,6 @@ cmd_package() {
 }
 
 cmd_help() {
-    printf "\n"
     display_help \
         "    install      "  "Install the dependencies" \
         "    status       "  "Show project status" \
@@ -141,8 +143,9 @@ cmd_help() {
         "    kit          "  "Run a command in SDK image, usage: kit <command>" \
         "    service      "  "Run a command in a service, usage: service <command>" \
         "    package      "  "Run a command in a package, usage: package <command>" \
+        "    version      "  "Show the current kit version" \
         "$@"
-    exit 0
+    exit 1
 }
 
 cmd_unknown() {
