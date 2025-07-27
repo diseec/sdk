@@ -7,9 +7,11 @@ cmd_version() {
 cmd_install() {
     set -e; cd $ROOT_DIR;
     cmd_version
-    if [ "$IS_MONOREPO" = "true" ]; then
+    if [ -f "$ROOT_DIR/.gitmodules" ] && [ -s "$ROOT_DIR/.gitmodules" ]; then
         message "Submodules detected. Cloning submodules .."
         git submodule update --init --recursive --remote
+    fi
+    if [ "$IS_MONOREPO" = "true" ] && [ -z "$CI" ]; then
         GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
         read -p "$(message 45 "⁇" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
         if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi

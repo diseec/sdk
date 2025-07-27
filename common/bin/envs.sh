@@ -86,7 +86,7 @@ is_in_container() {
 export IS_IN_CONTAINER=$(is_in_container)
 
 is_monorepo() {
-    if [ -f "$ROOT_DIR/.gitmodules" ] && [ -s "$ROOT_DIR/.gitmodules" ]; then
+    if [ -d "$ROOT_DIR/services" ] && [ "$(ls -A $ROOT_DIR/services)" ]; then
         echo "true"
     else
         echo "false"

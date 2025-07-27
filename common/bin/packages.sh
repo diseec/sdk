@@ -24,9 +24,9 @@ case $command in
     ;;
 
     link)
-        message "Shell now at '$PWD'"
-        read -p "$(message 45 "⁇" "Enter path to package:")" PACKAGE_PATH
-        npm link $PACKAGE_PATH
+        message "45" "PACKAGES:" "\n$(ls packages)"
+        read -p "$(message 45 "⁇" "Select a package to link:")" PACKAGE
+        npm link ./packages/$PACKAGE
     ;;
 
     *)
