@@ -48,6 +48,10 @@ case $command in
         bash $0 run /bin/bash
     ;;
 
+    pull)
+        git pull origin main
+    ;;
+
     # MODIFIERS
 
     devops)
