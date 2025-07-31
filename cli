@@ -39,8 +39,10 @@ case $command in
                 exit 1
             fi
             message "Running npm install @diseec/devops@$VERSION_SPECIFIER .."
-            (cd /project && npm install "@diseec/devops@$VERSION_SPECIFIER")
-            rm -f /project/package-lock.json
+            TMPDIR=$(mktemp -d)
+            (cd $TMPDIR && npm install "@diseec/devops@$VERSION_SPECIFIER")
+            mkdir -p /project/node_modules/@diseec/devops
+            cp -r $TMPDIR/node_modules/@diseec/devops /project/node_modules/@diseec
         fi
     ;;
 
