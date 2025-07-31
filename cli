@@ -33,14 +33,14 @@ case $command in
         set -e
         if [ -f /project/package.json ]; then
             message "Installing in Node.js project .."
-            VERSION=$(node -p "require('/project/package.json').dependencies['@diseec/devops'] || require('/project/package.json').devDependencies && require('/project/package.json').devDependencies['@diseec/devops']" | sed 's/^[^0-9]*//')
-            TMPDIR=$(mktemp -d)
-            NPM_TARBALL_URL="https://registry.npmjs.org/@diseec/devops/-/devops-$VERSION.tgz"
-            message "Fetching @diseec/devops@$VERSION from $NPM_TARBALL_URL .."
-            curl -fSL "$NPM_TARBALL_URL" -o "$TMPDIR/devops-$VERSION.tgz"
-            tar -xzf "$TMPDIR/devops-$VERSION.tgz" -C "$TMPDIR"
-            mkdir -p /project/node_modules/@diseec/devops
-            cp -r $TMPDIR/package/* /project/node_modules/@diseec/devops/
+            VERSION_SPECIFIER=$(node -p "require('/project/package.json').dependencies['@diseec/devops'] || (require('/project/package.json').devDependencies && require('/project/package.json').devDependencies['@diseec/devops'])")
+            if [ -z "$VERSION_SPECIFIER" ]; then
+                echo "@diseec/devops not found in dependencies or devDependencies."
+                exit 1
+            fi
+            message "Running npm install @diseec/devops@$VERSION_SPECIFIER .."
+            (cd /project && npm install "@diseec/devops@$VERSION_SPECIFIER")
+            rm -f /project/package-lock.json
         fi
     ;;
 
