@@ -45,9 +45,9 @@ cmd_pull() {
 cmd_dev() {
     set -e
     cmd_version
-    $0 status
-    ask_to_run_command "Pull latest repo changes from all repos?" $0 pull
-    ask_to_run_command "Build fresh images?" $0 build
+    "$ROOT_DIR/cli" status
+    ask_to_run_command "Pull latest repo changes from all repos?" "$ROOT_DIR/cli" pull
+    ask_to_run_command "Build fresh images?" "$ROOT_DIR/cli" build
     if [ "$IS_IN_CONTAINER" = "true" ]; then
         eval $(grep -m 1 'command:' "$ROOT_DIR/docker-compose.override.yaml" | sed 's/.*command: //')
     else
@@ -76,11 +76,11 @@ cmd_build() {
 cmd_run() {
     services=$(docker compose config --services)
     if echo "$services" | grep -qx "$REPO_NAME"; then
-        $0 exec "$REPO_NAME" "$@"
+        "$ROOT_DIR/cli" exec "$REPO_NAME" "$@"
     else
         message "45" "SERVICES:" "\n$services"
         read -p "$(message 45 "⁇" "Specify a service to run:")" service
-        $0 exec "$service" "$@"
+        "$ROOT_DIR/cli" exec "$service" "$@"
     fi
 }
 
@@ -91,7 +91,7 @@ cmd_exec() {
 
 cmd_shell() {
     cmd_version
-    $0 run /bin/sh
+    "$ROOT_DIR/cli" run /bin/sh
 }
 
 cmd_test() {
@@ -123,6 +123,7 @@ cmd_package() {
 }
 
 cmd_help() {
+    # TODO individual comamnds must be able to register their own help to here
     display_help \
         "    install      "  "Install the dependencies" \
         "    status       "  "Show project status" \
