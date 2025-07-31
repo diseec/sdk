@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"; cd $ROOT_DIR; command=$1; shift; case $command in install) docker run --pull always --rm -u "$(id -u):$(id -g)" -v $(pwd):/project image.registry.diseec.com/devops sh cli install ;; esac; . ./node_modules/@diseec/devops/imports.sh;
+export ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"; cd $ROOT_DIR; command=$1; shift; case $command in install) docker run --pull always --rm -v $(pwd):/project image.registry.diseec.com/devops sh cli install ;; esac; . ./node_modules/@diseec/devops/imports.sh;
 
 # -----------------------------------------------------------------------------
 # DISEEC CLI Helper Script
@@ -13,17 +13,26 @@ export ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"; cd $ROOT_DIR; command=$1; shif
 # -----------------------------------------------------------------------------
 
 case $command in
-    my-command)
-        message "Add your command logic here"
-    ;;
-
+    install) cmd_install "$@" ;;
+    status) cmd_status "$@" ;;
+    pull) cmd_pull "$@" ;;
+    dev) cmd_dev "$@" ;;
+    pro) cmd_pro "$@" ;;
+    build) cmd_build "$@" ;;
+    run) cmd_run "$@" ;;
+    exec) cmd_exec "$@" ;;
+    shell) cmd_shell "$@" ;;
+    test) cmd_test "$@" ;;
+    release) cmd_release "$@" ;;
+    kit) cmd_kit "$@" ;;
+    service) cmd_service "$@" ;;
+    package) cmd_package "$@" ;;
     help|--help|-h)
-        $CLI_SRC/cli.sh "$command" \
+        cmd_help \
          "" "" \
          "$(color 33 'Service Commands:')" "" \
          "    help         " "Display the help message";
     ;;
-
 esac
 
 $CLI_SRC/cli.sh "$command" "$@";

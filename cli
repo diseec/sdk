@@ -44,6 +44,7 @@ case $command in
             rm -rf /project/node_modules/@diseec/devops 2>/dev/null
             mkdir -p /project/node_modules/@diseec/devops 2>/dev/null
             cp -r $TMPDIR/node_modules/@diseec/devops /project/node_modules/@diseec
+            if [ ! -f /project/cli ]; then cp /app/cli.example /project/cli; fi
         fi
     ;;
 
