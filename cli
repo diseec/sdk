@@ -41,7 +41,8 @@ case $command in
             message "Running npm install @diseec/devops@$VERSION_SPECIFIER .."
             TMPDIR=$(mktemp -d)
             (cd $TMPDIR && npm install "@diseec/devops@$VERSION_SPECIFIER")
-            mkdir -p /project/node_modules/@diseec/devops
+            rm -rf /project/node_modules/@diseec/devops 2>/dev/null
+            mkdir -p /project/node_modules/@diseec/devops 2>/dev/null
             cp -r $TMPDIR/node_modules/@diseec/devops /project/node_modules/@diseec
         fi
     ;;

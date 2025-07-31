@@ -155,5 +155,6 @@ cmd_unknown() {
     then
         message 41 "error" "Unknown command: $command"
         "$ROOT_DIR/cli" help
+        exit 1
     fi
 }
