@@ -140,10 +140,20 @@ cmd_help() {
         "    package      "  "Run a command in a package, usage: package <command>" \
         "    version      "  "Show the current kit version" \
         "$@"
-    exit 1
 }
 
 cmd_unknown() {
-    message 41 "error" "Unknown command: $command"
-    "$ROOT_DIR/cli" help
+    # ── make $command safe for a POSIX Extended Regular Expression ────────────────
+    command_re=$(printf '%s\n' "$command" | sed 's/[][\/.^$*+?{}|()\\-]/\\&/g')
+
+    # ── look the token up in $ROOT_DIR/cli ────────────────────────────────────────
+    # -E              → use POSIX *Extended* REs (gives us + and | without back-slashes)
+    # -q              → quiet; we only need the exit status
+    # /dev/null redir → silence any accidental stdout on weird greps
+    if ! grep -Eq '^[[:blank:]]*([A-Za-z0-9-]+\|)*'"$command_re"'(\|[A-Za-z0-9-]+)*\)$' \
+            "$ROOT_DIR/cli" >/dev/null
+    then
+        message 41 "error" "Unknown command: $command"
+        "$ROOT_DIR/cli" help
+    fi
 }

@@ -15,14 +15,14 @@ export ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"; cd $ROOT_DIR; command=$1; shif
 case $command in
     my-command)
         message "Add your command logic here"
-    exit 0;;
+    ;;
 
-    help|-h)
+    help|--help|-h)
         $CLI_SRC/cli.sh "$command" \
          "" "" \
          "$(color 33 'Service Commands:')" "" \
          "    help         " "Display the help message";
-    exit 1;;
+    ;;
 
 esac
 
