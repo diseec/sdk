@@ -112,8 +112,8 @@ execute_command_in_container() {
           message 34 $SERVICE_NAME "Already running, Executing command .."
           docker compose exec $OPTIONS "$SERVICE_NAME" "$@"
       else
-          message 34 $SERVICE_NAME "No running container found, Starting a fresh instance .."
-          docker compose run --rm $OPTIONS "$SERVICE_NAME" "$@"
+          message 34 $SERVICE_NAME "No running container found, Starting a temporary instance .."
+          docker compose run --rm --no-deps $OPTIONS "$SERVICE_NAME" "$@"
       fi
     fi
 }
