@@ -33,6 +33,7 @@ case $command in
          "$(color 33 'Service Commands:')" "" \
          "    help         " "Display the help message";
     ;;
+    *) cmd_unknown "$@" ;;
 esac
 
 $CLI_SRC/cli.sh "$command" "$@";
