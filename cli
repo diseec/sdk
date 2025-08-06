@@ -1,7 +1,6 @@
 #!/bin/bash
 
-. ./common/bin/helpers.sh; command=$1; shift;
-
+export ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"; cd $ROOT_DIR; command=$1; shift; . $ROOT_DIR/src/exports.sh;
 case $command in
     build)
         set -e
@@ -44,7 +43,11 @@ case $command in
             rm -rf /project/node_modules/@diseec/devops 2>/dev/null
             mkdir -p /project/node_modules/@diseec/devops 2>/dev/null
             cp -r $TMPDIR/node_modules/@diseec/devops /project/node_modules/@diseec
-            if [ ! -f /project/cli ]; then cp /app/cli.example /project/cli; fi
+            if [ ! -f /project/cli ]; then cp /app/templates/cli /project/cli; fi
+            if [ ! -f /project/.env.dev ]; then cp /app/templates/.env.dev /project/.env.dev; fi
+            if [ ! -f /project/.env.pro ]; then cp /app/templates/.env.pro /project/.env.pro; fi
+            # if [ ! -f /project/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
+            # if [ ! -f /project/myworkspace.yaml ]; then cp /app/templates/myworkspace.yaml /project/myworkspace.yaml; fi
         fi
     ;;
 

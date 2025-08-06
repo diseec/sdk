@@ -18,9 +18,10 @@ rootdir() {
 }
 if [ -z "$ROOT_DIR" ]; then export ROOT_DIR="$(rootdir)"; fi
 
-export CLI_SRC="$ROOT_DIR/node_modules/@diseec/devops"
+export CLI_ROOT="$ROOT_DIR/node_modules/@diseec/devops"
+export CLI_SRC="$CLI_ROOT/src"
 
-export VERSION=$(grep '"version"' $CLI_SRC/package.json | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
+export VERSION=$(grep '"version"' $CLI_ROOT/package.json | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
 
 # Extract repository URL from .git/config or submodule gitdir without using git command
 GIT_DIR="$ROOT_DIR/.git"

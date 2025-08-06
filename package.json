@@ -1,6 +1,6 @@
 {
   "name": "@diseec/devops",
-  "version": "1.1.19",
+  "version": "0.0.0",
   "description": "A collection of reusable DevOps tools, CLI scripts, Dockerfiles, CI/CD templates, and configuration files to streamline development and deployment workflows across DISEEC projects. Ideal for standardizing project setup and automating common DevOps tasks.",
   "main": "index.js",
   "scripts": {

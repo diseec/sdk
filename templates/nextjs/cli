@@ -2,7 +2,7 @@
 
 cd $(dirname "$0"); command=$1; shift;
 
-. ./node_modules/@diseec/devops/common/bin/helpers.sh
+. ./node_modules/@diseec/devops/src/helpers.sh
 
 case $command in
     install)        

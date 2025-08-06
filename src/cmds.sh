@@ -95,7 +95,7 @@ cmd_shell() {
 }
 
 cmd_test() {
-    . ./bin/test.sh "$@"
+    . $CLI_SRC/test.sh "$@"
 }
 
 cmd_release() {
@@ -115,16 +115,20 @@ cmd_kit() {
 }
 
 cmd_service() {
-    . ./bin/services.sh "$@"
+    . $CLI_SRC/services.sh "$@"
 }
 
 cmd_package() {
-    . ./bin/packages.sh "$@"
+    . $CLI_SRC/packages.sh "$@"
 }
 
 cmd_help() {
     # TODO individual comamnds must be able to register their own help to here
     display_help \
+        "" "" \
+        "$(color 33 'Usage:')" "" \
+        "$(color 32 '    command [options] [arguments]\n')" "" \
+        "$(color 33 'Base Commands:')" "" \
         "    install      "  "Install the dependencies" \
         "    status       "  "Show project status" \
         "    pull         "  "Pull the repo and image from registry" \
