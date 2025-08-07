@@ -1,10 +1,11 @@
 #!/bin/sh
 
+if [ -z "$CLI_ROOT" ]; then export CLI_ROOT="/bin/@diseec/devops"; fi
+
 export IMAGE_REGISTRY_URL="image.registry.diseec.com"
 export REPOSITORY_URL="github.com/diseec"
 export DISEEC_WORKSPACE_DIR="$HOME/diseec"
 
-if [ -z "$CLI_ROOT" ]; then export CLI_ROOT="/bin/@diseec/devops"; fi
 
 auto_discover_project_root_dir() {
     # Canonicalize CLI_ROOT
