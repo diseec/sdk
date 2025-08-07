@@ -1,7 +1,5 @@
 #!/bin/sh
 
-export CLI_SRC="$CLI_ROOT/src"
-
-. $CLI_SRC/envs.sh;
-. $CLI_SRC/helpers.sh;
-. $CLI_SRC/cmds.sh;
+. $CLI_ROOT/src/envs.sh;
+. $CLI_ROOT/src/helpers.sh;
+. $CLI_ROOT/src/cmds.sh;

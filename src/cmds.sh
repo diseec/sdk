@@ -159,7 +159,7 @@ cmd_unknown() {
     if ! grep -Eq '^[[:blank:]]*([A-Za-z0-9-]+\|)*'"$command_re"'(\|[A-Za-z0-9-]+)*\)$' \
             "$ROOT_DIR/cli" >/dev/null
     then
-        message 41 "error" "Unknown command: $command"
+        message 41 "error" "Unknown command: '$command'"
         "$ROOT_DIR/cli" help
         exit 1
     fi

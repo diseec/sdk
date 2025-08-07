@@ -1,6 +1,7 @@
 #!/bin/sh
 
 if [ -z "$CLI_ROOT" ]; then export CLI_ROOT="/bin/@diseec/devops"; fi
+export CLI_SRC="$CLI_ROOT/src"
 
 export IMAGE_REGISTRY_URL="image.registry.diseec.com"
 export REPOSITORY_URL="github.com/diseec"

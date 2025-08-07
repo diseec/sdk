@@ -56,7 +56,7 @@ display_help() {
     color 0 "\n"
     color 0 "\e[1mv$VERSION DISEEC DevOps CLI\e[0m — Automation Toolkit\n"
     printf "\n"
-    color 0 "This software and associated documentation files\n(the \"Software\") are the exclusive property of\nDISEEC L.T.E. and are protected by copyright and\nother intellectual property laws.\nPermission is hereby granted, free of charge, to\nany person obtaining a copy of this Software, to\nse the Software within the organization only.\n\n"
+    color 0 "This software and associated documentation files\n(the \"Software\") are the  exclusive property  of\nDISEEC L.T.E. and are protected by copyright and\nother intellectual property laws.\nPermission is hereby granted, free of charge, to\nany person obtaining a copy of this Software, to\nse the Software within the organization only.\n\n"
     color 0 "\e[1mWebsite \e[0m  https://diseec.com\n"
     color 0 "\e[1mGitHub \e[0m   https://github.com/diseec\n"
     color 0 "\e[1mLinkedIn \e[0m https://linkedin.com/company/diseec\n"

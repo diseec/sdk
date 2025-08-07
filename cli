@@ -1,27 +1,8 @@
 #!/bin/bash
 
-export CLI_ROOT="$(cd "$(dirname "$0")" && pwd)"; command=$1; shift; . $CLI_ROOT/index.sh; cd $ROOT_DIR;
+export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . $CLI_ROOT/index.sh; cd $ROOT_DIR; command=$1; shift;
 
 case $command in
-
-    build) cmd_build "$@" ;;
-
-    # run)
-    #     if [ -f /.dockerenv ]; then
-    #         "$@"
-    #     else
-    #         if [ -z "$CI" ]; then
-    #             IT_OPTION="-it"
-    #         else
-    #             IT_OPTION=""
-    #         fi
-    #             # --pull always \
-    #         docker run --rm $IT_OPTION \
-    #             -v "$(pwd)":/app \
-    #             -w /app \
-    #             image.registry.diseec.com/devops:latest "$@"
-    #     fi
-    # ;;
 
     install)
         set -e
@@ -53,6 +34,11 @@ case $command in
     pull)
         git pull origin main
     ;;
+
+    build) cmd_build "$@" ;;
+    shell) cmd_shell "$@" ;;
+    run) cmd_run "$@" ;;
+    exec) cmd_exec "$@" ;;
 
     # MODIFIERS
 
