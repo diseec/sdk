@@ -1,0 +1,7 @@
+services:
+  devops:
+    image: ${IMAGE_REGISTRY_URL}/${REPO_NAME}
+    build:
+      context: .
+    pull_policy: always
+    restart: unless-stopped

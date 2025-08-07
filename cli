@@ -1,15 +1,14 @@
 #!/bin/bash
 
-export ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"; cd $ROOT_DIR; command=$1; shift; . $ROOT_DIR/src/exports.sh;
+export CLI_ROOT="$(cd "$(dirname "$0")" && pwd)"; command=$1; shift; . $CLI_ROOT/index.sh; cd $ROOT_DIR;
+
+. $ROOT_DIR/src/envs.sh;
+. $ROOT_DIR/src/helpers.sh;
+. $ROOT_DIR/src/cmds.sh;
+
 case $command in
-    build)
-        set -e
-        docker buildx build \
-            --platform linux/arm64 \
-            -t image.registry.diseec.com/devops:latest \
-            --push .
-            # --platform linux/amd64,linux/arm64 \
-    ;;
+
+    build) cmd_build "$@" ;;
 
     # run)
     #     if [ -f /.dockerenv ]; then

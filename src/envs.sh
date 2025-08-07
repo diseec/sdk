@@ -4,22 +4,41 @@ export IMAGE_REGISTRY_URL="image.registry.diseec.com"
 export REPOSITORY_URL="github.com/diseec"
 export DISEEC_WORKSPACE_DIR="$HOME/diseec"
 
-rootdir() {
-  local dir="$(pwd)"
-  while [ "$dir" != "/" ]; do
-    if [ -f "$dir/cli" ]; then
-      echo "$dir"
-      return 0
-    fi
-    dir="$(dirname "$dir")"
-  done
-  echo "Error: Could not find project root containing 'cli' file" >&2
-  return 1
-}
-if [ -z "$ROOT_DIR" ]; then export ROOT_DIR="$(rootdir)"; fi
+if [ -z "$CLI_ROOT" ]; then export CLI_ROOT="/bin/@diseec/devops"; fi
 
-export CLI_ROOT="$ROOT_DIR/node_modules/@diseec/devops"
-export CLI_SRC="$CLI_ROOT/src"
+auto_discover_project_root_dir() {
+    # Canonicalize CLI_ROOT
+    cli_root=$(cd "$CLI_ROOT" 2>/dev/null && pwd -P) || {
+        printf '%s\n' "Error: can't access \$CLI_ROOT" >&2
+        return 1
+    }
+    # Exception: if the script's directory == CLI_ROOT, return the first cli
+    script_dir=$(cd "$(dirname -- "$0")" 2>/dev/null && pwd -P || echo "")
+    if [ -n "$script_dir" ] && [ "$script_dir" = "$cli_root" ] && [ -f "$cli_root/cli" ]; then
+        printf '%s\n' "$cli_root"
+        return 0
+    fi
+    # Start from the parent of CLI_ROOT, as an absolute, canonical path
+    start=$(cd "$cli_root/.." 2>/dev/null && pwd -P) || {
+        printf '%s\n' "Error: can't access \$CLI_ROOT/.." >&2
+        return 1
+    }
+    dir=$start
+    while :; do
+        if [ -f "$dir/cli" ]; then
+            # Skip if it's the same file as $CLI_ROOT/cli
+            if [ ! -e "$cli_root/cli" ] || [ ! "$dir/cli" -ef "$cli_root/cli" ]; then
+                printf '%s\n' "$dir"
+                return 0
+            fi
+        fi
+        [ "$dir" = "/" ] && break
+        dir=$(dirname -- "$dir")
+    done
+    printf '%s\n' "Error: Could not find an ancestor containing a 'cli' other than \$CLI_ROOT/cli" >&2
+    return 1
+}
+export ROOT_DIR="$(auto_discover_project_root_dir)"
 
 export VERSION=$(grep '"version"' $CLI_ROOT/package.json | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
 
