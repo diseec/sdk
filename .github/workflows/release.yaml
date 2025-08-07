@@ -63,7 +63,7 @@ jobs:
 
       - name: Load envs
         run: |
-          . "./common/bin/envs.sh";
+          . "./index.sh";
           echo "IMAGE_REGISTRY_URL=$IMAGE_REGISTRY_URL" >> $GITHUB_ENV
 
       - name: Set up QEMU
