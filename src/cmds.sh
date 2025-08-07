@@ -4,6 +4,10 @@ cmd_version() {
     message 40 "v$VERSION" "DISEEC DevOps CLI — Automation Toolkit"
 }
 
+cmd_install_cli_globally() {
+    npm install -g "$(grep '"name"' $ROOT_DIR/package.json | head -n1 | sed 's/.*: *"\([^"]*\)".*/\1/')@latest"
+}
+
 cmd_install() {
     set -e; cd $ROOT_DIR;
     cmd_version

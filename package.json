@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+https://github.com/diseec/devops.git"
   },
+  "bin": {
+    "d": "./d"
+  },
   "keywords": [
     "kit",
     "devops",
