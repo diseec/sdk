@@ -5,7 +5,7 @@ cmd_version() {
 }
 
 cmd_install_cli_globally() {
-    npm install -g "$(grep '"name"' $ROOT_DIR/package.json | head -n1 | sed 's/.*: *"\([^"]*\)".*/\1/')@latest"
+    npm install -g "$(grep '"name"' $CLI_ROOT/package.json | head -n1 | sed 's/.*: *"\([^"]*\)".*/\1/')@latest"
 }
 
 cmd_install() {
