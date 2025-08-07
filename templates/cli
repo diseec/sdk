@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --pull always --rm -v $(pwd):/project image.registry.diseec.com/devops sh cli install ;; esac; . $CLI_ROOT/index.sh; cd $ROOT_DIR; command=$1; shift;
+export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --pull always --rm -v $(pwd):/project image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh; cd $ROOT_DIR; command=$1; shift;
 
 # -----------------------------------------------------------------------------
 # DISEEC CLI Helper Script

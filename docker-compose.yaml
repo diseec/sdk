@@ -4,4 +4,6 @@ services:
     build:
       context: .
     pull_policy: always
+    volumes:
+      - .:/app
     restart: unless-stopped

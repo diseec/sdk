@@ -59,8 +59,7 @@ case $command in
     ;;
 
     help|--help|-h)
-        color 0 "\n"
-        message "Dev team's toolkit. template, fix, build ..!"
+        printf "\n"
         display_help \
             "run     " "Run a command in fresh instance" \
             "build   " "Build the images push to registry" \
