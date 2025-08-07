@@ -143,6 +143,7 @@ cmd_help() {
         "    kit          "  "Run a command in SDK image, usage: kit <command>" \
         "    service      "  "Run a command in a service, usage: service <command>" \
         "    package      "  "Run a command in a package, usage: package <command>" \
+        "    envs         "  "All exported envs, source project cli to load them!" \
         "    version      "  "Show the current kit version" \
         "$@"
 }

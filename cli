@@ -83,9 +83,5 @@ case $command in
             "devops  " "Run devops commands"
         ;;
 
-    *)
-        echo "Unknown command: $command"
-        bash $0 --help
-        exit 1
-    ;;
+    *) $CLI_SRC/cli.sh "$command" "$@" ;;
 esac
