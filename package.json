@@ -11,7 +11,7 @@
     "url": "git+https://github.com/diseec/devops.git"
   },
   "bin": {
-    "d": "./d"
+    "D": "./D"
   },
   "keywords": [
     "kit",
