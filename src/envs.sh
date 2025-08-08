@@ -42,6 +42,8 @@ auto_discover_project_root_dir() {
 }
 export ROOT_DIR="$(auto_discover_project_root_dir)"
 
+export CLI="$ROOT_DIR/cli"
+
 export VERSION=$(grep '"version"' $CLI_ROOT/package.json | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
 
 # Extract repository URL from .git/config or submodule gitdir without using git command

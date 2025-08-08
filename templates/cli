@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --pull always --rm -v $(pwd):/project image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh; cd $ROOT_DIR; command=$1; shift;
+export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --pull always --rm -v $(pwd):/project image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh; cd $ROOT_DIR;
 
 # -----------------------------------------------------------------------------
 # DISEEC CLI Helper Script
@@ -12,7 +12,20 @@ export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@dis
 #
 # -----------------------------------------------------------------------------
 
-case $command in
+while [ $# -gt 0 ]; do case "$1" in
+    -x=*|--x=*) X="${1#*=}"; shift;;
+*) break;; esac; done;
+
+command=$1; shift; case $command in
+    A)
+        while [ $# -gt 0 ]; do case "$1" in --) shift; break;;
+            -y=*|--y=*) Y="${1#*=}";;
+            *) [ -z "$B" ] && B=$1;;
+            -*|--*|-h|--help) echo "Unknown option: $1"; exit 1;;
+        esac; shift; done;
+        message 44 "example" "B:'$B', X:'$X', Y:'$Y'"
+    ;;
+    
     install) cmd_install "$@" ;;
     status) cmd_status "$@" ;;
     pull) cmd_pull "$@" ;;

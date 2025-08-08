@@ -2,7 +2,7 @@
   "name": "@diseec/devops",
   "version": "0.0.0",
   "description": "A collection of reusable DevOps tools, CLI scripts, Dockerfiles, CI/CD templates, and configuration files to streamline development and deployment workflows across DISEEC projects. Ideal for standardizing project setup and automating common DevOps tasks.",
-  "main": "index.js",
+  "main": "index.sh",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

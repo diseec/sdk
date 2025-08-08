@@ -83,4 +83,4 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          script: d update ${{ env.NAMESPACE }} ${{ env.SERVICE_NAME }}
+          script: D update ${{ env.NAMESPACE }} ${{ env.SERVICE_NAME }}
