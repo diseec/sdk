@@ -12,19 +12,26 @@ export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@dis
 #
 # -----------------------------------------------------------------------------
 
-while [ $# -gt 0 ]; do case "$1" in
-    -x=*|--x=*) X="${1#*=}"; shift;;
-*) break;; esac; done;
+# # Extract options out of order
+# ARGS=""; for arg in "$@"; do case "$arg" in
+#     -x=*|--x=*) X="${arg#*=}";;
+# *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
+# # Extract options in order only belong to command only up to next argument
+# while [ $# -gt 0 ]; do case "$1" in
+#     -x=*|--x=*) X="${1#*=}"; shift;;
+# *) break;; esac; done;
 
 command=$1; shift; case $command in
-    A)
-        while [ $# -gt 0 ]; do case "$1" in --) shift; break;;
-            -y=*|--y=*) Y="${1#*=}";;
-            *) [ -z "$B" ] && B=$1;;
-            -*|--*|-h|--help) echo "Unknown option: $1"; exit 1;;
-        esac; shift; done;
-        message 44 "example" "B:'$B', X:'$X', Y:'$Y'"
-    ;;
+    # A)
+    #     # Extract all options in order
+    #     while [ $# -gt 0 ]; do case "$1" in --) shift; break;;
+    #         -y=*|--y=*) Y="${1#*=}";;
+    #         *) [ -z "$B" ] && B=$1;;
+    #         -*|--*|-h|--help) echo "Unknown option: $1"; exit 1;;
+    #     esac; shift; done;
+    #     message 44 "example" "B:'$B', X:'$X', Y:'$Y'"
+    # ;;
     
     install) cmd_install "$@" ;;
     status) cmd_status "$@" ;;

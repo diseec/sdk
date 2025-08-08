@@ -83,4 +83,4 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          script: D update ${{ env.NAMESPACE }} ${{ env.SERVICE_NAME }}
+          script: D api v1 cd ${{ github.event.repository.name }}
