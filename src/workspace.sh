@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # workspace.sh - Functions for managing workspace-specific module configurations
 
@@ -72,10 +72,13 @@ create_workspace_config() {
         selected_modules="$available_modules"
     else
         # Parse comma-separated selection
-        IFS=',' read -ra indices <<< "$selection"
+        save_IFS="$IFS"
+        IFS=','
+        set -- $selection
+        IFS="$save_IFS"
         i=1
         for module in $available_modules; do
-            for index in "${indices[@]}"; do
+            for index in "$@"; do
                 if [ "$i" -eq "$index" ]; then
                     selected_modules="$selected_modules $module"
                     break
