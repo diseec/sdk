@@ -19,14 +19,14 @@ get_available_modules() {
 
 # Get the workspace configuration file path for the current repository
 get_workspace_config_path() {
-    # Create workspaces directory if it doesn't exist
-    local workspaces_dir="$DISEEC_WORKSPACE_DIR/workspaces"
-    if [ ! -d "$workspaces_dir" ]; then
-        mkdir -p "$workspaces_dir"
+    # Create repository-specific directory if it doesn't exist
+    local repo_dir="$DISEEC_WORKSPACE_DIR/repositories/$REPO_NAME"
+    if [ ! -d "$repo_dir" ]; then
+        mkdir -p "$repo_dir"
     fi
     
-    # Use repository name for the config file
-    echo "$workspaces_dir/${REPO_NAME}.yaml"
+    # Use config.yaml as the standard config file name
+    echo "$repo_dir/config.yaml"
 }
 
 # Create a workspace configuration by letting the user select modules
@@ -106,7 +106,7 @@ create_workspace_config() {
         echo "  - $module" >> "$config_file"
     done
     
-    message 42 "SUCCESS" "Workspace configuration saved to $config_file"
+    message 42 "OKEY" "Workspace configuration saved to $config_file"
     message 34 "MODULES" "Selected modules: $(echo $selected_modules | tr ' ' ', ')"
 }
 
@@ -242,19 +242,105 @@ cmd_workspace_status() {
     
     local config_file="$(get_workspace_config_path)"
     if [ -f "$config_file" ]; then
-        message 34 "CONFIG" "Using config: $config_file"
+        message 34 "CONFIG" "Using repository-specific config: $config_file"
         local selected_modules=$(get_selected_modules)
-        message 34 "MODULES" "Selected modules:"
-        for module in $selected_modules; do
-            echo "  - $module"
-        done
+        if [ -n "$selected_modules" ]; then
+            message 34 "MODULES" "Selected modules:"
+            for module in $selected_modules; do
+                echo "  - $module"
+            done
+        else
+            message 33 "INFO" "No modules selected in workspace configuration"
+        fi
     else
         message 33 "INFO" "No workspace configuration found for $REPO_NAME"
+        message 33 "INFO" "Run 'cli workspace init' to create one"
     fi
+}
+
+# Get the repository cache directory path
+get_repo_cache_dir() {
+    local repo_dir="$DISEEC_WORKSPACE_DIR/repositories/$REPO_NAME"
+    if [ ! -d "$repo_dir" ]; then
+        mkdir -p "$repo_dir"
+    fi
+    
+    # Create cache directory if it doesn't exist
+    local cache_dir="$repo_dir/cache"
+    if [ ! -d "$cache_dir" ]; then
+        mkdir -p "$cache_dir"
+    fi
+    
+    echo "$cache_dir"
+}
+
+# Get the cached version of devops tools
+get_cached_version() {
+    local cache_file="$(get_repo_cache_dir)/devops_version.txt"
+    
+    if [ ! -f "$cache_file" ]; then
+        # Return empty if no cache exists
+        echo ""
+        return 0
+    fi
+    
+    # Return the cached version
+    cat "$cache_file"
+}
+
+# Update the cached version of devops tools
+set_cached_version() {
+    local version="$1"
+    local cache_file="$(get_repo_cache_dir)/devops_version.txt"
+    
+    # Write the new version to the cache file
+    echo "$version" > "$cache_file"
+    
+    message 34 "CACHE" "Updated cached devops version to: $version"
+}
+
+# Check if devops version has changed
+has_version_changed() {
+    local cached_version=$(get_cached_version)
+    
+    # If no cached version, consider it changed
+    if [ -z "$cached_version" ]; then
+        return 0  # True
+    fi
+    
+    # Compare versions
+    if [ "$VERSION" != "$cached_version" ]; then
+        return 0  # True
+    fi
+    
+    return 1  # False
 }
 
 # Select modules for workspace
 cmd_workspace_select() {
     message 34 "WORKSPACE" "Select modules for your workspace"
     create_workspace_config
+}
+
+
+cmd_workspace_sync() {
+    set -e
+    # Check if version has changed
+    if has_version_changed; then
+        local cached_version=$(get_cached_version)
+        if [ -z "$cached_version" ]; then
+            message 43 "SYNC" "First-time sync for devops version $VERSION"
+        else
+            message 43 "SYNC" "Version change: $cached_version -> $VERSION"
+        fi
+        
+        eval "$@"
+        
+        # Update the cached version to current
+        set_cached_version "$VERSION"
+        
+        message 42 "OKEY" "Sync completed successfully for version $VERSION"
+    else
+        message 43 "SYNC" "Already synced to latest version $VERSION"
+    fi
 }

@@ -4,10 +4,6 @@ cmd_version() {
     message 40 "v$VERSION" "DISEEC DevOps CLI — Automation Toolkit"
 }
 
-cmd_install_cli_globally() {
-    npm install -g "$(grep '"name"' $CLI_ROOT/package.json | head -n1 | sed 's/.*: *"\([^"]*\)".*/\1/')@latest"
-}
-
 cmd_install() {
     set -e; cd $ROOT_DIR; cmd_version;
     
@@ -38,7 +34,7 @@ cmd_install() {
     GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
     read -p "$(message 45 "⁇" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
     if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
-    message "Checking out branch '$BRANCH' in super repo..."
+    message "Checking out to branch '$BRANCH'..."
     git fetch && git checkout $BRANCH || git checkout -b $BRANCH origin/$BRANCH || git checkout -b $BRANCH;
     message "Checking out branch '$BRANCH' in selected submodules..."
     checkout_branch() {
@@ -56,7 +52,7 @@ cmd_install() {
         (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli install)
     }
     foreach_selected_module_with_callback install_dependencies
-    message 32 "success" "Workspace configuration initialized successfully."
+    message 42 "OKEY" "Workspace configuration initialized successfully."
 }
 
 cmd_status() {
@@ -72,8 +68,6 @@ cmd_pull() {
     git merge origin/main
     
     if [ "$HAS_SUBMODULES" = "true" ]; then
-        message "Updating workspace submodules .."
-        
         selected_modules=$(get_selected_modules)
         pull_submodule() {
             local module="$1"
@@ -244,20 +238,24 @@ cmd_help() {
         "    workspace init      "  "Initialize workspace configuration" \
         "    workspace select    "  "Select modules for workspace" \
         "    workspace status    "  "Show current workspace configuration" \
+        "    workspace sync      "  "Sync workspace with latest devops tool updates (can pass custom commands)" \
         "$@"
 }
 
 cmd_workspace() {
-    subcommand=$1
+    subcommand=$1; shift
     case "$subcommand" in
         init) cmd_workspace_init ;;
         select) cmd_workspace_select ;;
         status) cmd_workspace_status ;;
+        sync) cmd_workspace_sync "$@" ;;
         *)
             message 33 "WORKSPACE" "Available workspace commands:"
             echo "  init    - Initialize workspace configuration"
             echo "  select  - Select modules for workspace"
             echo "  status  - Show current workspace configuration"
+            echo "  sync    - Sync workspace with latest devops tool updates"
+            echo "           (Can pass custom commands: workspace sync 'command1' 'command2')"
             ;;
     esac
 }

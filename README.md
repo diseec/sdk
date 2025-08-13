@@ -88,9 +88,8 @@ sh cli release      # Release workflow
   - `init` : Initialize workspace configuration
   - `select` : Select modules for your workspace
   - `status` : Show current workspace configuration
-- `help` : Display help message
-
----
+  - `sync` : Sync workspace with latest devops tool updates
+- `help` : Display help message---
 
 ## Workspace Configuration
 
@@ -125,6 +124,32 @@ modules:
 ```
 
 This means operations will only be performed on the d0-www and d0-cms modules, while ai-panel will be ignored.
+
+### Version Syncing
+
+The workspace system includes an automatic version tracking mechanism that helps keep all repositories in sync with the latest devops tool updates:
+
+```sh
+# Check and apply updates from the latest devops version
+sh cli workspace sync
+
+# Run custom commands during sync (for project-specific updates)
+sh cli workspace sync "npm install -g typescript" "echo 'Custom sync complete'"
+
+# Sync multiple commands with line continuation
+D workspace sync \
+  D install; \
+  D pull;
+```
+
+The sync command:
+
+1. Checks if the current devops version differs from the cached version
+2. Runs necessary update steps for the new version
+3. Executes any custom commands you provide
+4. Updates the cached version
+
+This ensures that all team members can easily stay up-to-date with tooling changes.
 
 ---
 

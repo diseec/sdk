@@ -52,7 +52,6 @@ command=$1; shift; case $command in
     service) cmd_service "$@" ;;
     package) cmd_package "$@" ;;
     format) cmd_format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
-    workspace) cmd_workspace "$@" ;;
     help|--help|-h)
         cmd_help \
          "" "" \
