@@ -84,7 +84,47 @@ sh cli release      # Release workflow
 - `kit` : Manage project kits
 - `service` : Add/remove/update service submodules
 - `package` : Add/remove/update package submodules
+- `workspace` : Manage developer workspace module selection
+  - `init` : Initialize workspace configuration
+  - `select` : Select modules for your workspace
+  - `status` : Show current workspace configuration
 - `help` : Display help message
+
+---
+
+## Workspace Configuration
+
+The DevOps toolkit now supports personalized workspace configurations through the `myworkspace.yaml` file, which is gitignored by default. This feature allows team members to select which modules they want to work with, streamlining development by only cloning, installing, and updating the modules relevant to their work.
+
+### How It Works
+
+1. When running `cli install` for the first time, you'll be prompted to select which modules you want to include in your workspace.
+2. Selected modules are saved to `myworkspace.yaml` in your project root.
+3. Subsequent commands like `install`, `pull`, `dev`, and `pro` will only operate on your selected modules.
+
+### Managing Your Workspace
+
+```sh
+# Initialize or reinitialize your workspace configuration
+sh cli workspace init
+
+# Change which modules are included in your workspace
+sh cli workspace select
+
+# View your current workspace configuration
+sh cli workspace status
+```
+
+### Example Workspace Configuration
+
+```yaml
+modules:
+  - d0-www
+  - d0-cms
+  # - ai-panel (commented out means not included)
+```
+
+This means operations will only be performed on the d0-www and d0-cms modules, while ai-panel will be ignored.
 
 ---
 

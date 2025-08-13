@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --pull always --rm -v $(pwd):/project image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh; cd $ROOT_DIR;
+export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --pull always --rm -v $(pwd):/project image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh;
 
 # -----------------------------------------------------------------------------
 # DISEEC CLI Helper Script
@@ -36,7 +36,11 @@ command=$1; shift; case $command in
     install) cmd_install "$@" ;;
     status) cmd_status "$@" ;;
     pull) cmd_pull "$@" ;;
-    dev) cmd_dev "$@" ;;
+    dev)
+        ask_to_run_command "Pull and merge latest changes?" "$ROOT_DIR/cli" pull
+        cmd_dev "$@";
+        $CLI format;
+    ;;
     pro) cmd_pro "$@" ;;
     build) cmd_build "$@" ;;
     run) cmd_run "$@" ;;
@@ -47,6 +51,8 @@ command=$1; shift; case $command in
     kit) cmd_kit "$@" ;;
     service) cmd_service "$@" ;;
     package) cmd_package "$@" ;;
+    format) cmd_format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
+    workspace) cmd_workspace "$@" ;;
     help|--help|-h)
         cmd_help \
          "" "" \
