@@ -63,7 +63,7 @@ create_workspace_config() {
     done
     
     echo ""
-    message 34 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all modules:"
+    message 34 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all modules, press enter to skip:"
     read selection
     
     selected_modules=""
@@ -103,9 +103,10 @@ get_selected_modules() {
     local config_file="$ROOT_DIR/myworkspace.yaml"
     
     if [ ! -f "$config_file" ]; then
-        # If myworkspace.yaml doesn't exist, create it
-        message 33 "INFO" "Workspace configuration not found. Creating..."
-        create_workspace_config
+        # If myworkspace.yaml doesn't exist, just return empty (no modules selected)
+        # This is a valid state - user doesn't have to select any modules
+        echo ""
+        return 0
     fi
     
     # Extract module names from myworkspace.yaml
@@ -146,8 +147,9 @@ foreach_selected_module() {
     local selected_modules=$(get_selected_modules)
     
     if [ -z "$selected_modules" ]; then
+        # No modules selected is a valid state - just return success
         message 33 "INFO" "No modules selected in workspace configuration"
-        return 1
+        return 0
     fi
     
     for module in $selected_modules; do
@@ -157,7 +159,7 @@ foreach_selected_module() {
             message 34 "$module" "Running command: $command"
             (cd "$ROOT_DIR/$module_path" && eval "$command")
         else
-            message 41 "ERROR" "Module path not found for $module"
+            message 33 "WARNING" "Module path not found for $module, skipping"
         fi
     done
 }
@@ -170,8 +172,9 @@ foreach_selected_module_with_callback() {
     local selected_modules=$(get_selected_modules)
     
     if [ -z "$selected_modules" ]; then
+        # No modules selected is a valid state - just return success
         message 33 "INFO" "No modules selected in workspace configuration"
-        return 1
+        return 0
     fi
     
     for module in $selected_modules; do
@@ -180,7 +183,7 @@ foreach_selected_module_with_callback() {
         if [ -n "$module_path" ]; then
             "$callback_function" "$module" "$module_path" "$@"
         else
-            message 41 "ERROR" "Module path not found for $module"
+            message 33 "WARNING" "Module path not found for $module, skipping"
         fi
     done
 }
@@ -202,8 +205,9 @@ get_services_filter() {
         # Try alternative filename
         docker_compose_file="$ROOT_DIR/docker-compose.yml"
         if [ ! -f "$docker_compose_file" ]; then
-            message 41 "ERROR" "Docker Compose file not found"
-            return 1
+            # If no docker-compose file exists, just return empty string
+            # This is not an error condition
+            return 0
         fi
     fi
     
