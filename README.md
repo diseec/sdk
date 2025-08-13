@@ -94,12 +94,12 @@ sh cli release      # Release workflow
 
 ## Workspace Configuration
 
-The DevOps toolkit now supports personalized workspace configurations through the `myworkspace.yaml` file, which is gitignored by default. This feature allows team members to select which modules they want to work with, streamlining development by only cloning, installing, and updating the modules relevant to their work.
+The DevOps toolkit now supports personalized workspace configurations through the workspaces cli. This feature allows team members to select which modules they want to work with, streamlining development by only cloning, installing, and updating the modules relevant to their work.
 
 ### How It Works
 
 1. When running `cli install` for the first time, you'll be prompted to select which modules you want to include in your workspace.
-2. Selected modules are saved to `myworkspace.yaml` in your project root.
+2. Selected modules are saved to `~/diseec/workspaces/REPO_NAME.yaml` in your project root.
 3. Subsequent commands like `install`, `pull`, `dev`, and `pro` will only operate on your selected modules.
 
 ### Managing Your Workspace

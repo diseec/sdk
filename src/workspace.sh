@@ -17,12 +17,24 @@ get_available_modules() {
     grep -E '^\[submodule "' "$gitmodules_file" | sed 's/\[submodule "\(.*\)"\]/\1/' | awk -F'/' '{print $NF}'
 }
 
+# Get the workspace configuration file path for the current repository
+get_workspace_config_path() {
+    # Create workspaces directory if it doesn't exist
+    local workspaces_dir="$DISEEC_WORKSPACE_DIR/workspaces"
+    if [ ! -d "$workspaces_dir" ]; then
+        mkdir -p "$workspaces_dir"
+    fi
+    
+    # Use repository name for the config file
+    echo "$workspaces_dir/${REPO_NAME}.yaml"
+}
+
 # Create a workspace configuration by letting the user select modules
 create_workspace_config() {
-    local config_file="$ROOT_DIR/myworkspace.yaml"
+    local config_file="$(get_workspace_config_path)"
     local template_file="$CLI_ROOT/templates/myworkspace.yaml"
     
-    # If myworkspace.yaml already exists, ask for confirmation to overwrite
+    # If workspace config file already exists, ask for confirmation to overwrite
     if [ -f "$config_file" ]; then
         printf "$(message 45 "?" "Workspace config already exists. Overwrite? \033[35m[y/n]\033[0m")"
         stty -echo -icanon time 0 min 1
@@ -55,7 +67,7 @@ create_workspace_config() {
     fi
     
     # Display available modules and let the user select them
-    message 34 "MODULES" "Available modules:"
+    message 44 "MODULES" "Available modules:"
     i=1
     for module in $available_modules; do
         echo "  $i) $module"
@@ -63,7 +75,7 @@ create_workspace_config() {
     done
     
     echo ""
-    message 34 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all modules, press enter to skip:"
+    message 44 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all modules, press enter to skip:"
     read selection
     
     selected_modules=""
@@ -94,22 +106,22 @@ create_workspace_config() {
         echo "  - $module" >> "$config_file"
     done
     
-    message 32 "SUCCESS" "Workspace configuration saved to $config_file"
+    message 42 "SUCCESS" "Workspace configuration saved to $config_file"
     message 34 "MODULES" "Selected modules: $(echo $selected_modules | tr ' ' ', ')"
 }
 
-# Get the list of selected modules from myworkspace.yaml
+# Get the list of selected modules from workspace config
 get_selected_modules() {
-    local config_file="$ROOT_DIR/myworkspace.yaml"
+    local config_file="$(get_workspace_config_path)"
     
     if [ ! -f "$config_file" ]; then
-        # If myworkspace.yaml doesn't exist, just return empty (no modules selected)
+        # If workspace config doesn't exist, just return empty (no modules selected)
         # This is a valid state - user doesn't have to select any modules
         echo ""
         return 0
     fi
     
-    # Extract module names from myworkspace.yaml
+    # Extract module names from workspace config
     grep -E '^  - ' "$config_file" | sed 's/^  - //'
 }
 
@@ -159,7 +171,7 @@ foreach_selected_module() {
             message 34 "$module" "Running command: $command"
             (cd "$ROOT_DIR/$module_path" && eval "$command")
         else
-            message 33 "WARNING" "Module path not found for $module, skipping"
+            message 43 "WARNING" "Module path not found for $module, skipping"
         fi
     done
 }
@@ -183,7 +195,7 @@ foreach_selected_module_with_callback() {
         if [ -n "$module_path" ]; then
             "$callback_function" "$module" "$module_path" "$@"
         else
-            message 33 "WARNING" "Module path not found for $module, skipping"
+            message 43 "WARNING" "Module path not found for $module, skipping"
         fi
     done
 }
@@ -228,15 +240,16 @@ get_services_filter() {
 cmd_workspace_status() {
     message 34 "WORKSPACE" "Current workspace configuration"
     
-    local config_file="$ROOT_DIR/myworkspace.yaml"
+    local config_file="$(get_workspace_config_path)"
     if [ -f "$config_file" ]; then
+        message 34 "CONFIG" "Using config: $config_file"
         local selected_modules=$(get_selected_modules)
         message 34 "MODULES" "Selected modules:"
         for module in $selected_modules; do
             echo "  - $module"
         done
     else
-        message 33 "INFO" "No workspace configuration found"
+        message 33 "INFO" "No workspace configuration found for $REPO_NAME"
     fi
 }
 

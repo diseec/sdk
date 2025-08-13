@@ -21,7 +21,6 @@ case $command in
             cp -r $TMPDIR/node_modules/@diseec/devops /project/node_modules/@diseec
             if [ ! -f /project/cli ]; then cp /app/templates/cli /project/cli; fi
             # if [ ! -f /project/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
-            # if [ ! -f /project/myworkspace.yaml ]; then cp /app/templates/myworkspace.yaml /project/myworkspace.yaml; fi
         fi
     ;;
 

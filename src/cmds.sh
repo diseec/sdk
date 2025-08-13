@@ -17,7 +17,10 @@ cmd_install() {
     [ "$HAS_SUBMODULES" != "true" ] && { return 0; }
     
     
-    if [ ! -f "$ROOT_DIR/myworkspace.yaml" ]; then
+    # Load workspace functions to get the config path
+    . $CLI_SRC/workspace.sh
+    
+    if [ ! -f "$(get_workspace_config_path)" ]; then
         message 34 "WORKSPACE" "Initializing workspace configuration..."
         cmd_workspace_init
     fi
@@ -53,7 +56,7 @@ cmd_install() {
         (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli install)
     }
     foreach_selected_module_with_callback install_dependencies
-    message 32 "WORKSPACE" "Workspace configuration initialized successfully."
+    message 32 "success" "Workspace configuration initialized successfully."
 }
 
 cmd_status() {
@@ -92,13 +95,20 @@ cmd_dev() {
     if [ "$IS_IN_CONTAINER" = "true" ]; then
         eval $(grep -m 1 'command:' "$ROOT_DIR/docker-compose.override.yaml" | sed 's/.*command: //')
     else
+        # Set up a trap to ensure we stop all containers on exit or interrupt
+        cleanup() {
+            message 43 "CLEANUP" "Stopping all containers..."
+            docker compose down
+            exit 0
+        }
+        # Trap SIGINT (Ctrl+C) and EXIT
+        trap cleanup INT EXIT
+        
         if [ -n "$services_filter" ]; then
             message 34 "WORKSPACE" "Starting selected services: $services_filter"
             docker compose up $services_filter
-            docker compose down $services_filter
         else
             docker compose up
-            docker compose down
         fi
     fi
 }
@@ -110,6 +120,15 @@ cmd_pro() {
 
     # Filter services based on workspace configuration
     services_filter=$(get_services_filter)
+    
+    # Set up a trap to ensure we stop all containers on exit or interrupt
+    cleanup() {
+        message 43 "CLEANUP" "Stopping all containers..."
+        docker compose -f "$ROOT_DIR/docker-compose.yaml" down
+        exit 0
+    }
+    # Trap SIGINT (Ctrl+C) and EXIT
+    trap cleanup INT EXIT
     
     if [ -n "$services_filter" ]; then
         message 34 "WORKSPACE" "Starting selected services in production mode: $services_filter"
@@ -178,7 +197,7 @@ cmd_package() {
 cmd_format() {
     set -e; cd $ROOT_DIR;
     if ! grep -q '"prettier"' "$ROOT_DIR/package.json"; then
-        message 33 "!" "Prettier not found. Installing..."
+        message 43 "!" "Prettier not found. Installing..."
         install_prettier
     fi
     message 34 "Prettier" "Running formatter..."
@@ -231,15 +250,9 @@ cmd_help() {
 cmd_workspace() {
     subcommand=$1
     case "$subcommand" in
-        init)
-            cmd_workspace_init
-            ;;
-        select)
-            cmd_workspace_select
-            ;;
-        status)
-            cmd_workspace_status
-            ;;
+        init) cmd_workspace_init ;;
+        select) cmd_workspace_select ;;
+        status) cmd_workspace_status ;;
         *)
             message 33 "WORKSPACE" "Available workspace commands:"
             echo "  init    - Initialize workspace configuration"
