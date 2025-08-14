@@ -4,7 +4,7 @@ if [ -z "$CLI_ROOT" ]; then export CLI_ROOT="/bin/@diseec/devops"; fi
 export CLI_SRC="$CLI_ROOT/src"
 export IMAGE_REGISTRY_URL="image.registry.diseec.com"
 export REPOSITORY_URL="github.com/diseec"
-export DISEEC_WORKSPACE_DIR="$HOME/diseec"
+export COMPANY_DIR="$HOME/diseec"
 
 
 auto_discover_project_root_dir() {
@@ -71,7 +71,7 @@ fi
 export REPO_NAME
 
 get_cache_dir() {
-  DISEEC_CACHE_DIR="$DISEEC_WORKSPACE_DIR/.cache"
+  DISEEC_CACHE_DIR="$COMPANY_DIR/.cache"
   if [ ! -d "$DISEEC_CACHE_DIR" ]; then
     mkdir -p "$DISEEC_CACHE_DIR"
   fi

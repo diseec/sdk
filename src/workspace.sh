@@ -20,7 +20,7 @@ get_available_modules() {
 # Get the workspace configuration file path for the current repository
 get_workspace_config_path() {
     # Create repository-specific directory if it doesn't exist
-    local repo_dir="$DISEEC_WORKSPACE_DIR/repositories/$REPO_NAME"
+    local repo_dir="$COMPANY_DIR/workspaces/$REPO_NAME"
     if [ ! -d "$repo_dir" ]; then
         mkdir -p "$repo_dir"
     fi
@@ -260,7 +260,7 @@ cmd_workspace_status() {
 
 # Get the repository cache directory path
 get_repo_cache_dir() {
-    local repo_dir="$DISEEC_WORKSPACE_DIR/repositories/$REPO_NAME"
+    local repo_dir="$COMPANY_DIR/workspaces/$REPO_NAME"
     if [ ! -d "$repo_dir" ]; then
         mkdir -p "$repo_dir"
     fi
