@@ -35,7 +35,14 @@ case $command in
     build) cmd_build "$@" ;;
     shell) cmd_shell "$@" ;;
     run) cmd_run "$@" ;;
-    exec) cmd_exec "$@" ;;
+    exec)
+        if ! docker compose ps -q "devops" | grep -q .; then
+            docker compose up --no-recreate -d "devops" >/dev/null 2>&1
+        fi
+        cmd_exec "$@"
+    ;;
+    # up) docker compose up "$@" ;;
+    # down) docker compose down "$@" ;;
 
     # MODIFIERS
 

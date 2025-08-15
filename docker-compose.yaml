@@ -1,6 +1,8 @@
 services:
   devops:
     image: ${IMAGE_REGISTRY_URL}/devops
+    # command: ["sleep", "infinity"]
+    command: ["sleep", "300"]
     build:
       context: ${CLI_ROOT}
     restart: unless-stopped

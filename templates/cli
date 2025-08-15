@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --pull always --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh;
+export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh;
 
 # -----------------------------------------------------------------------------
 # DISEEC CLI Helper Script
@@ -56,6 +56,22 @@ command=$1; shift; case $command in
     service) cmd_service "$@" ;;
     package) cmd_package "$@" ;;
     format) cmd_format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
+
+    # Listeners
+    listen:update)
+        set -e;
+        message 44 "info" "Pulling updates..."
+        $CLI pull;
+        message 44 "info" "Pulling latest devops image..."
+        (cd $CLI_ROOT; docker compose pull);
+        message 44 "info" "Installing dependencies..."
+        $CLI install;
+        message 44 "info" "Pulling latest selected changes..."
+        $CLI pull;
+        message 44 "info" "Installing CLI globally..."
+        # More command on now version available
+    ;;
+
     help|--help|-h)
         cmd_help \
          "" "" \

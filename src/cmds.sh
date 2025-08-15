@@ -38,13 +38,13 @@ cmd_install() {
     if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
     message "Checking out to branch '$BRANCH'..."
     _git fetch && _git checkout $BRANCH || _git checkout -b $BRANCH origin/$BRANCH || _git checkout -b $BRANCH;
-    message "Checking out branch '$BRANCH' in selected submodules..."
-    checkout_branch() {
-        local module="$1"; local module_path="$2"; local branch="$3"
-        message 34 "$module" "Checking out branch..."
-        (cd "$ROOT_DIR/$module_path" && _git fetch && _git checkout $branch || _git checkout -b $branch origin/$branch || _git checkout -b $branch)
-    }
-    foreach_selected_module_with_callback checkout_branch "$BRANCH"
+    # message "Checking out branch '$BRANCH' in selected submodules..."
+    # checkout_branch() {
+    #     local module="$1"; local module_path="$2"; local branch="$3"
+    #     message 34 "$module" "Checking out branch..."
+    #     (cd "$ROOT_DIR/$module_path" && _git fetch && _git checkout $branch || _git checkout -b $branch origin/$branch || _git checkout -b $branch)
+    # }
+    # foreach_selected_module_with_callback checkout_branch "$BRANCH"
     
     message "Installing dependencies in selected submodules..."
     install_dependencies() {
@@ -184,6 +184,10 @@ cmd_package() {
     . $CLI_SRC/packages.sh "$@"
 }
 
+cmd_event() {
+    . $CLI_SRC/events.sh "$@"
+}
+
 cmd_format() {
     set -e; cd $ROOT_DIR;
     if ! grep -q '"prettier"' "$ROOT_DIR/package.json"; then
@@ -207,7 +211,7 @@ cmd_help() {
         "$(color 33 'Base Commands:')" "" \
         "    install      "  "Install the dependencies" \
         "    status       "  "Show project status" \
-        "    pull         "  "Pull the repo and image from registry" \
+        "    pull         "  "Pull and merge latest changes from repository" \
         "    dev          "  "Start the development server" \
         "    pro          "  "Start the production server" \
         "    build        "  "Build the image push to registry" \
@@ -220,14 +224,10 @@ cmd_help() {
         "    kit          "  "Run a command in SDK image, usage: kit <command>" \
         "    service      "  "Run a command in a service, usage: service <command>" \
         "    package      "  "Run a command in a package, usage: package <command>" \
+        "    workspace    "  "Manage workspace configuration [init|select|status]" \
+        "    update       "  "Get latest repo changes" \
         "    envs         "  "All exported envs, source project cli to load them!" \
         "    version      "  "Show the current kit version" \
-        "$(color 33 '\nWorkspace Commands:')" "" \
-        "    workspace           "  "Manage workspace configuration" \
-        "    workspace init      "  "Initialize workspace configuration" \
-        "    workspace select    "  "Select modules for workspace" \
-        "    workspace status    "  "Show current workspace configuration" \
-        "    workspace sync      "  "Sync workspace with latest devops tool updates (can pass custom commands)" \
         "$@"
 }
 
@@ -237,13 +237,11 @@ cmd_workspace() {
         init) cmd_workspace_init ;;
         select) cmd_workspace_select ;;
         status) cmd_workspace_status ;;
-        sync) cmd_workspace_sync "$@" ;;
         *)
             message 33 "WORKSPACE" "Available workspace commands:"
             echo "  init    - Initialize workspace configuration"
             echo "  select  - Select modules for workspace"
             echo "  status  - Show current workspace configuration"
-            echo "  sync    - Sync workspace with latest devops tool updates"
             echo "           (Can pass custom commands: workspace sync 'command1' 'command2')"
             ;;
     esac
