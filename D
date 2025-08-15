@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Cache cli path in environment variable

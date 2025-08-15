@@ -3,6 +3,7 @@
 . $CLI_ROOT/index.sh;
 
 command=$1; shift; case $command in
+    devops) $CLI_ROOT/cli "$@" ;;
     workspace) cmd_workspace "$@" ;;
     version|--version) cmd_version "$@" ;;
     envs)
@@ -10,8 +11,7 @@ command=$1; shift; case $command in
         message 34 "info" "Sourced repo envs"
     ;;
     *) 
-        # Check for updates quietly
-        check_for_updates
+        informer check-for-updates
         cmd_unknown "$@" 
     ;;
 esac

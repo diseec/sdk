@@ -6,11 +6,8 @@ install_cli_globally() {
 }
 
 install_prettier() {
-    docker run --rm \
-        -v $(pwd):/project \
-        --workdir "/project" \
-        $IMAGE_REGISTRY_URL/devops \
-            npm install --save-dev --save-exact prettier; \
-            node --eval "fs.writeFileSync('.prettierrc','{}\n')";
+    $CLI_ROOT/cli run \
+        npm install --save-dev --save-exact prettier; \
+        node --eval "fs.writeFileSync('.prettierrc','{}\n')";
     message 42 "OKEY" "Prettier installed and configured"
 }

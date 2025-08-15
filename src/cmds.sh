@@ -6,7 +6,9 @@ cmd_version() {
 
 cmd_install() {
     set -e; cd $ROOT_DIR; cmd_version;
-    
+
+    git config --global credential.helper store
+
     # Early return in CI environment - silent skip
     [ -n "$CI" ] && { message 33 "CI" "Skipping interactive installation in CI environment"; return 0; }
     # Early return if no submodules
@@ -26,21 +28,21 @@ cmd_install() {
     initialize_submodule() {
         local module="$1"; local module_path="$2"
         message 34 "$module" "Initializing submodule..."
-        git submodule update --init --recursive --remote "$module_path"
+        _git submodule update --init --recursive --remote "$module_path"
     }
     foreach_selected_module_with_callback initialize_submodule
 
     message "Setting up branch tracking..."
-    GH_USERNAME=$(printf '%s' "$(git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
+    GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
     read -p "$(message 45 "⁇" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
     if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
     message "Checking out to branch '$BRANCH'..."
-    git fetch && git checkout $BRANCH || git checkout -b $BRANCH origin/$BRANCH || git checkout -b $BRANCH;
+    _git fetch && _git checkout $BRANCH || _git checkout -b $BRANCH origin/$BRANCH || _git checkout -b $BRANCH;
     message "Checking out branch '$BRANCH' in selected submodules..."
     checkout_branch() {
         local module="$1"; local module_path="$2"; local branch="$3"
         message 34 "$module" "Checking out branch..."
-        (cd "$ROOT_DIR/$module_path" && git fetch && git checkout $branch || git checkout -b $branch origin/$branch || git checkout -b $branch)
+        (cd "$ROOT_DIR/$module_path" && _git fetch && _git checkout $branch || _git checkout -b $branch origin/$branch || _git checkout -b $branch)
     }
     foreach_selected_module_with_callback checkout_branch "$BRANCH"
     
@@ -55,19 +57,12 @@ cmd_install() {
     message 42 "OKEY" "Workspace configuration initialized successfully."
 }
 
-cmd_status() {
-    informer summary-branch-status
-    informer forbid-dev-on-main
-    informer check-for-updates
-}
-
 cmd_pull() {
-    cd $ROOT_DIR;
-    message 34 "$(git branch --show-current)" "Pulling latest changes .."
-    git pull origin
-    message 34 "$(git branch --show-current)" "Merging latest 'main' changes .."
-    git merge origin/main
-    
+    branch="$(_git branch --show-current | tr -d '\r\n')"
+    message 34 "$branch" "Pulling latest changes .."
+    _git pull origin
+    message 34 "$branch" "Merging latest 'main' changes .."
+    _git merge origin/main
     if [ "$HAS_SUBMODULES" = "true" ]; then
         selected_modules=$(get_selected_modules)
         pull_submodule() {
@@ -166,11 +161,11 @@ cmd_test() {
 }
 
 cmd_release() {
-    TAG="v$(date +%Y%m%d%H%M%S)"
-    git checkout main
-    git pull origin main
-    git tag -a $TAG -m "Release $TAG"
-    git push origin $TAG
+    local TAG="v$(date +%Y%m%d%H%M%S)"
+    # git checkout main
+    # git pull origin main
+    # git tag -a $TAG -m "Release $TAG"
+    # git push origin $TAG
 }
 
 cmd_kit() {

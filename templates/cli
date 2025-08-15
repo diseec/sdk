@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --pull always --rm -v $(pwd):/project image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh;
+export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --pull always --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh;
 
 # -----------------------------------------------------------------------------
 # DISEEC CLI Helper Script
@@ -34,7 +34,11 @@ command=$1; shift; case $command in
     # ;;
     
     install) cmd_install "$@" ;;
-    status) cmd_status "$@" ;;
+    status) 
+        informer summary-branch-status
+        informer forbid-dev-on-main
+        informer check-for-updates
+    ;;
     pull) cmd_pull "$@" ;;
     dev)
         ask_to_run_command "Pull and merge latest changes?" "$ROOT_DIR/cli" pull

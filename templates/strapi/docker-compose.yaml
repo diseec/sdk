@@ -2,7 +2,7 @@ services:
   placeholderforservicename:
     image: ${REGISTRY_URL}/${REPO_NAME}
     build:
-      context: .
+      context: ${ROOT_DIR}
     pull_policy: missing
     restart: unless-stopped
     ports:

@@ -1,11 +1,13 @@
 FROM node:alpine
 
+RUN apk add bash curl git git-lfs
+
+RUN npm install -g @diseec/devops
+
 WORKDIR /app
 
-RUN apk add bash
+ENV IS_IN_CONTAINER=true
 
 COPY . .
 
-VOLUME [ "/project" ]
-
-CMD ["sh", "cli", "help"]
+CMD ["bash", "cli", "help"]

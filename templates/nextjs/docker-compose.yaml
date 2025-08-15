@@ -2,7 +2,7 @@ services:
   www:
     image: ${IMAGE_REGISTRY_URL}/${REPO_NAME}
     build:
-      context: .
+      context: ${ROOT_DIR}
     pull_policy: always
     restart: unless-stopped
     ports:

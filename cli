@@ -6,9 +6,9 @@ case $command in
 
     install)
         set -e
-        if [ -f /project/package.json ]; then
+        if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
             message "Installing in Node.js project .."
-            VERSION_SPECIFIER=$(node -p "require('/project/package.json').dependencies['@diseec/devops'] || require('/project/package.json').devDependencies['@diseec/devops']")
+            VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies['@diseec/devops'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/devops']")
             if [ -z "$VERSION_SPECIFIER" ]; then
                 echo "@diseec/devops not found in dependencies or devDependencies."
                 exit 1
@@ -16,16 +16,16 @@ case $command in
             message "Running npm install @diseec/devops@$VERSION_SPECIFIER .."
             TMPDIR=$(mktemp -d)
             (cd $TMPDIR && npm install "@diseec/devops@$VERSION_SPECIFIER")
-            rm -rf /project/node_modules/@diseec/devops 2>/dev/null
-            mkdir -p /project/node_modules/@diseec/devops 2>/dev/null
-            cp -r $TMPDIR/node_modules/@diseec/devops /project/node_modules/@diseec
-            if [ ! -f /project/cli ]; then cp /app/templates/cli /project/cli; fi
-            # if [ ! -f /project/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
+            rm -rf $PROJECT_MOUNT_DIR/node_modules/@diseec/devops 2>/dev/null
+            mkdir -p $PROJECT_MOUNT_DIR/node_modules/@diseec/devops 2>/dev/null
+            cp -r $TMPDIR/node_modules/@diseec/devops $PROJECT_MOUNT_DIR/node_modules/@diseec
+            if [ ! -f $PROJECT_MOUNT_DIR/cli ]; then cp /app/templates/cli $PROJECT_MOUNT_DIR/cli; fi
+            # if [ ! -f $PROJECT_MOUNT_DIR/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
         fi
     ;;
 
     shell)
-        bash $0 run /bin/bash
+        $CLI run /bin/bash
     ;;
 
     pull)
@@ -39,21 +39,21 @@ case $command in
 
     # MODIFIERS
 
-    devops)
-        subcommand=$1 && shift
-        case $subcommand in
-            override)
-                bash bin/apply_templates.sh
-            ;;
-            *)
-                echo "Unknown subcommand: $subcommand"
-                echo "Usage: $0 devops [subcommand]"
-                echo "commands:"
-                echo "   override     Apply the templates"
-                exit 1
-            ;;
-        esac
-    ;;
+    # devops)
+    #     subcommand=$1 && shift
+    #     case $subcommand in
+    #         override)
+    #             bash bin/apply_templates.sh
+    #         ;;
+    #         *)
+    #             echo "Unknown subcommand: $subcommand"
+    #             echo "Usage: $0 devops [subcommand]"
+    #             echo "commands:"
+    #             echo "   override     Apply the templates"
+    #             exit 1
+    #         ;;
+    #     esac
+    # ;;
 
     help|--help|-h)
         printf "\n"

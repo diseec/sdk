@@ -1,9 +1,13 @@
 services:
   devops:
-    image: ${IMAGE_REGISTRY_URL}/${REPO_NAME}
+    image: ${IMAGE_REGISTRY_URL}/devops
     build:
-      context: .
-    pull_policy: always
-    volumes:
-      - .:/app
+      context: ${CLI_ROOT}
     restart: unless-stopped
+    working_dir: ${PROJECT_MOUNT_DIR}
+    # environment:
+    #   - GIT_TERMINAL_PROMPT=0 # avoid interactive prompts
+    volumes:
+      - ${CLI_ROOT}:/app
+      - ~/Projects/diseec-com/codebase-diseec:${PROJECT_MOUNT_DIR}
+      - ${HOME}:/root

@@ -1,5 +1,12 @@
 #!/bin/sh
 
+is_true() {
+  case "${1,,}" in
+    1|true|yes|y|on) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 capitalize() {
   echo "$1" | tr '[:lower:]' '[:upper:]'
 }
@@ -9,7 +16,7 @@ color() {
     printf "\033[${color}m${text}\033[0m"
 }
 
-message(){
+message() {
   local repo_name=${REPO_NAME:-d}
   printf "\e[1;30;47m $(capitalize "$repo_name") \e[0m"
   if [ $# -eq 1 ]; then printf " $1 ";
@@ -17,7 +24,6 @@ message(){
   else color "$1" " $(capitalize "$2") "; printf " $3 "; fi
   printf "\n"
 }
-
 
 ask_to_run_command() {
   local question=$1; shift;
@@ -40,6 +46,10 @@ ask_to_run_command() {
     *)
       ;;
   esac
+}
+
+_git() {
+  $CLI devops run --no-message git "$@"
 }
 
 display_help() {
@@ -108,21 +118,25 @@ informer() {
 
 execute_command_in_container() {
     local SERVICE_NAME=$1; shift;
-
+    
+    while [ $# -gt 0 ]; do case "$1" in
+        --no-message) IS_SILENT="true"; shift;;
+    *) break;; esac; done;
+    
     if [ -n "$CI" ]; 
         then OPTIONS="-e CI=true";
         else OPTIONS="-it";
     fi
 
     if [ "$IS_IN_CONTAINER" = "true" ]; then
-        message 34 $SERVICE_NAME "Inside container, Executing command .."
+      if [ "$IS_SILENT" != "true" ]; then message 34 $SERVICE_NAME "Inside container, Executing command .."; fi
         "$@"
     else
       if docker compose ps -q "$SERVICE_NAME" | grep -q .; then
-          message 34 $SERVICE_NAME "Already running, Executing command .."
+          if [ "$IS_SILENT" != "true" ]; then message 34 $SERVICE_NAME "Already running, Executing command .."; fi
           docker compose exec $OPTIONS "$SERVICE_NAME" "$@"
       else
-          message 34 $SERVICE_NAME "No running container found, Starting a temporary instance .."
+          if [ "$IS_SILENT" != "true" ]; then message 34 $SERVICE_NAME "No running container found, Starting a temporary instance .."; fi
           docker compose run --rm --no-deps $OPTIONS "$SERVICE_NAME" "$@"
       fi
     fi
