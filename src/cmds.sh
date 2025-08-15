@@ -58,6 +58,7 @@ cmd_install() {
 cmd_status() {
     informer summary-branch-status
     informer forbid-dev-on-main
+    informer check-for-updates
 }
 
 cmd_pull() {
@@ -81,7 +82,7 @@ cmd_pull() {
 cmd_dev() {
     set -e
     cmd_version
-    "$ROOT_DIR/cli" status
+    $CLI status
     
     # Filter services based on workspace configuration
     services_filter=$(get_services_filter)
@@ -142,11 +143,11 @@ cmd_build() {
 cmd_run() {
     services=$(docker compose config --services)
     if echo "$services" | grep -qx "$REPO_NAME"; then
-        "$ROOT_DIR/cli" exec "$REPO_NAME" "$@"
+        $CLI exec "$REPO_NAME" "$@"
     else
         message "45" "SERVICES:" "\n$services"
         read -p "$(message 45 "⁇" "Specify a service to run:")" service
-        "$ROOT_DIR/cli" exec "$service" "$@"
+        $CLI exec "$service" "$@"
     fi
 }
 
@@ -157,7 +158,7 @@ cmd_exec() {
 
 cmd_shell() {
     cmd_version
-    "$ROOT_DIR/cli" run /bin/sh
+    $CLI run /bin/sh
 }
 
 cmd_test() {
@@ -195,17 +196,10 @@ cmd_format() {
         install_prettier
     fi
     message 34 "Prettier" "Running formatter..."
-    run_prettier() {
-        docker run --rm \
-            -v $(pwd):/project \
-            --workdir "/project" \
-            $IMAGE_REGISTRY_URL/devops \
-            yarn prettier "$@";
-    }
     if [ "$CI" = "true" ]; then 
-        run_prettier --check --log-level=warn "$@";
+        $CLI run yarn prettier --check --log-level=warn "$@";
     else
-        run_prettier --write --log-level=warn "$@";
+        $CLI run yarn prettier --write --log-level=warn "$@";
     fi
 }
 
@@ -264,18 +258,18 @@ cmd_unknown() {
     # # ── make $command safe for a POSIX Extended Regular Expression ────────────────
     # command_re=$(printf '%s\n' "$command" | sed 's/[][\/.^$*+?{}|()\\-]/\\&/g')
 
-    # # ── look the token up in $ROOT_DIR/cli ────────────────────────────────────────
+    # # ── look the token up in $CLI ────────────────────────────────────────
     # # -E              → use POSIX *Extended* REs (gives us + and | without back-slashes)
     # # -q              → quiet; we only need the exit status
     # # /dev/null redir → silence any accidental stdout on weird greps
     # if ! grep -Eq '^[[:blank:]]*([A-Za-z0-9-]+\|)*'"$command_re"'(\|[A-Za-z0-9-]+)*\)$' \
-    #         "$ROOT_DIR/cli" >/dev/null
+    #         $CLI >/dev/null
     # then
     
     if [ ! -z "$command" ]; then
         message 41 "error" "Unknown command: '$command'"
     fi
-    "$ROOT_DIR/cli" help
+    $CLI help
     exit 1
     # fi
 }

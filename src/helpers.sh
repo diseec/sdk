@@ -90,6 +90,19 @@ informer() {
         fi
       fi
     ;;
+
+    check-for-updates)
+      # Skip if we're just running version or help commands
+      if [ "$command" = "version" ] || [ "$command" = "--version" ] || [ "$command" = "help" ] || [ "$command" = "sync" ]; then
+          return 0
+      fi
+
+      # Check if version changed
+      if has_version_changed; then
+          message 43 "UPDATE" "New updates available!"
+          # ask_to_run_command "Apply updates now?" "$CLI" workspace update
+      fi
+    ;;
   esac
 }
 
