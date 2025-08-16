@@ -1,6 +1,6 @@
 FROM node:alpine
 
-RUN apk add bash curl git git-lfs
+RUN apk add bash curl git git-lfs gh
 
 RUN npm install -g @diseec/devops
 

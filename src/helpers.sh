@@ -48,10 +48,6 @@ ask_to_run_command() {
   esac
 }
 
-_git() {
-  $CLI $KIT_NAME exec $KIT_NAME --no-message git "$@"
-}
-
 display_help() {
     # Loop through the arguments and print them
     while [ "$#" -gt 0 ]; do

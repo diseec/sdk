@@ -33,29 +33,30 @@ command=$1; shift; case $command in
     #     message 44 "example" "B:'$B', X:'$X', Y:'$Y'"
     # ;;
     
-    install) cmd_install "$@" ;;
-    status) 
+    ins|install) cmd_install "$@" ;;
+    sta|status) 
         informer summary-branch-status
         informer forbid-dev-on-main
         informer check-for-updates
     ;;
-    pull) cmd_pull "$@" ;;
+    pul|pull) cmd_pull "$@" ;;
     dev)
         ask_to_run_command "Pull and merge latest changes?" "$ROOT_DIR/cli" pull
         cmd_dev "$@";
         $CLI format;
     ;;
     pro) cmd_pro "$@" ;;
-    build) cmd_build "$@" ;;
+    bui|build) cmd_build "$@" ;;
     run) cmd_run "$@" ;;
-    exec) cmd_exec "$@" ;;
-    shell) cmd_shell "$@" ;;
-    test) cmd_test "$@" ;;
-    release) cmd_release "$@" ;;
-    kit) cmd_kit "$@" ;;
-    service) cmd_service "$@" ;;
-    package) cmd_package "$@" ;;
-    format) cmd_format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
+    exe|exec) cmd_exec "$@" ;;
+    she|shell) cmd_shell "$@" ;;
+    tes|test) cmd_test "$@" ;;
+    for|format) cmd_format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
+    rel|release) cmd_release "$@" ;;
+
+    # Module Managers
+    ser|service) cmd_service "$@" ;;
+    pac|package) cmd_package "$@" ;;
 
     # Listeners
     listen:update)
@@ -63,7 +64,7 @@ command=$1; shift; case $command in
         # # Commands to run on now version available
     ;;
 
-    help|--help|-h)
+    hel|help|--help|-h)
         cmd_help \
          "" "" \
          "$(color 33 'Service Commands:')" "" \

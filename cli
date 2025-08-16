@@ -8,7 +8,7 @@ case $command in
         set -e
         if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
             message "Installing in Node.js project .."
-            . $CLI_ROOT/cmds/update.sh; VERSION_SPECIFIER=$(get_version_specifier)
+            . $CLI_SRC/cmds/update.sh; VERSION_SPECIFIER=$(get_version_specifier)
             if [ -z "$VERSION_SPECIFIER" ]; then
                 echo "@diseec/$KIT_NAME not found in dependencies or devDependencies."
                 exit 1

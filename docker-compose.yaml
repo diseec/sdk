@@ -1,6 +1,6 @@
 services:
   devops:
-    image: ${IMAGE_REGISTRY_URL}/devops
+    image: ${IMAGE_REGISTRY_URL}/${KIT_NAME}
     # command: ["sleep", "infinity"]
     command: ["sleep", "300"]
     build:
@@ -11,5 +11,5 @@ services:
     #   - GIT_TERMINAL_PROMPT=0 # avoid interactive prompts
     volumes:
       - ${CLI_ROOT}:/app
-      - ~/Projects/diseec-com/codebase-diseec:${PROJECT_MOUNT_DIR}
+      - ${ROOT_DIR}:${PROJECT_MOUNT_DIR}
       - ${HOME}:/root
