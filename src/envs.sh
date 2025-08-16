@@ -19,7 +19,7 @@ auto_discover_project_root_dir() {
     # Exception: if the script's directory == CLI_ROOT, return the first cli
     # script_dir=$(cd "$(dirname -- "$0")" 2>/dev/null && pwd -P || echo "")
     # if [ -n "$script_dir" ] && [ "$script_dir" = "$cli_root" ] && [ -f "$cli_root/cli" ]; then
-    if [ $IS_KIT_CLI == "true" ]; then
+    if [ $IS_KIT_CLI = "true" ]; then
         printf '%s\n' "$cli_root"
         return 0
     fi
