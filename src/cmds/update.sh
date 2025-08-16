@@ -1,7 +1,7 @@
 #!/bin/bash
 
 get_version_specifier() {
-    $CLI devops run --no-message node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies['@diseec/devops'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/devops']"
+    $CLI $KIT_NAME run --no-message node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies['@diseec/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/$KIT_NAME']"
 }
 
 # Get the repository cache directory path
@@ -22,7 +22,7 @@ get_repo_cache_dir() {
 
 # Get the cached version of devops tools
 get_cached_version() {
-    local cache_file="$(get_repo_cache_dir)/devops_version.txt"
+    local cache_file="$(get_repo_cache_dir)/$KIT_NAME_version.txt"
     
     if [ ! -f "$cache_file" ]; then
         # Return empty if no cache exists
@@ -34,15 +34,15 @@ get_cached_version() {
     cat "$cache_file"
 }
 
-# Update the cached version of devops tools
+# Update the cached version of $KIT_NAME tools
 set_cached_version() {
     local version="$1"
-    local cache_file="$(get_repo_cache_dir)/devops_version.txt"
+    local cache_file="$(get_repo_cache_dir)/$KIT_NAME_version.txt"
     
     # Write the new version to the cache file
     echo "$version" > "$cache_file"
     
-    message 34 "CACHE" "Updated cached devops version to: $version"
+    message 34 "CACHE" "Updated cached $KIT_NAME version to: $version"
 }
 
 # Check if devops version has changed
@@ -69,7 +69,7 @@ cmd_update() {
     if has_version_changed; then
         local cached_version=$(get_cached_version)
         if [ -z "$cached_version" ]; then
-            message 43 "SYNC" "First-time sync for devops version $VERSION"
+            message 43 "SYNC" "First-time sync for $KIT_NAME version $VERSION"
         else
             message 43 "SYNC" "Version change: $cached_version -> $VERSION_SPECIFIER"
         fi
@@ -78,7 +78,7 @@ cmd_update() {
         set -e;
         message 44 "info" "Pulling updates..."
         $CLI pull;
-        message 44 "info" "Pulling latest devops image..."
+        message 44 "info" "Pulling latest $KIT_NAME image..."
         (cd $CLI_ROOT; docker compose pull);
         message 44 "info" "Installing dependencies..."
         $CLI install;

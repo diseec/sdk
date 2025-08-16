@@ -49,7 +49,7 @@ ask_to_run_command() {
 }
 
 _git() {
-  $CLI devops run --no-message git "$@"
+  $CLI $KIT_NAME exec $KIT_NAME --no-message git "$@"
 }
 
 display_help() {

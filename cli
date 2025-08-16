@@ -8,17 +8,17 @@ case $command in
         set -e
         if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
             message "Installing in Node.js project .."
-            VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies['@diseec/devops'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/devops']")
+            VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies['@diseec/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/$KIT_NAME']")
             if [ -z "$VERSION_SPECIFIER" ]; then
-                echo "@diseec/devops not found in dependencies or devDependencies."
+                echo "@diseec/$KIT_NAME not found in dependencies or devDependencies."
                 exit 1
             fi
-            message "Running npm install @diseec/devops@$VERSION_SPECIFIER .."
+            message "Running npm install @diseec/$KIT_NAME@$VERSION_SPECIFIER .."
             TMPDIR=$(mktemp -d)
-            (cd $TMPDIR && npm install "@diseec/devops@$VERSION_SPECIFIER")
-            rm -rf $PROJECT_MOUNT_DIR/node_modules/@diseec/devops 2>/dev/null
-            mkdir -p $PROJECT_MOUNT_DIR/node_modules/@diseec/devops 2>/dev/null
-            cp -r $TMPDIR/node_modules/@diseec/devops $PROJECT_MOUNT_DIR/node_modules/@diseec
+            (cd $TMPDIR && npm install "@diseec/$KIT_NAME@$VERSION_SPECIFIER")
+            rm -rf $PROJECT_MOUNT_DIR/node_modules/@diseec/$KIT_NAME 2>/dev/null
+            mkdir -p $PROJECT_MOUNT_DIR/node_modules/@diseec/$KIT_NAME 2>/dev/null
+            cp -r $TMPDIR/node_modules/@diseec/$KIT_NAME $PROJECT_MOUNT_DIR/node_modules/@diseec
             if [ ! -f $PROJECT_MOUNT_DIR/cli ]; then cp /app/templates/cli $PROJECT_MOUNT_DIR/cli; fi
             # if [ ! -f $PROJECT_MOUNT_DIR/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
         fi
@@ -36,8 +36,8 @@ case $command in
     shell) cmd_shell "$@" ;;
     run) cmd_run "$@" ;;
     exec)
-        if ! docker compose ps -q "devops" | grep -q .; then
-            docker compose up --no-recreate -d "devops" >/dev/null 2>&1
+        if ! docker compose ps -q "$KIT_NAME" | grep -q .; then
+            docker compose up --no-recreate -d "$KIT_NAME" >/dev/null 2>&1
         fi
         cmd_exec "$@"
     ;;
@@ -54,7 +54,7 @@ case $command in
     #         ;;
     #         *)
     #             echo "Unknown subcommand: $subcommand"
-    #             echo "Usage: $0 devops [subcommand]"
+    #             echo "Usage: $0 $KIT_NAME [subcommand]"
     #             echo "commands:"
     #             echo "   override     Apply the templates"
     #             exit 1
@@ -69,7 +69,7 @@ case $command in
             "build   " "Build the images push to registry" \
             "install " "Install the dependencies" \
             "shell   " "Start the shell" \
-            "devops  " "Run devops commands"
+            "$KIT_NAME  " "Run $KIT_NAME commands"
         ;;
 
     *) $CLI_SRC/cli.sh "$command" "$@" ;;

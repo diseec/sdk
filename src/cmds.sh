@@ -221,7 +221,7 @@ cmd_help() {
         "    test         "  "Run the tests in production mode, see: test -h" \
         "    release      "  "Merge to release branch to trigger CD pipeline" \
         "    format       "  "Check if Prettier exists and run formatting on codebase" \
-        "    kit          "  "Run a command in SDK image, usage: kit <command>" \
+        "    $KIT_NAME       "  "Run a command in SDK image, usage: $KIT_NAME <command>" \
         "    service      "  "Run a command in a service, usage: service <command>" \
         "    package      "  "Run a command in a package, usage: package <command>" \
         "    workspace    "  "Manage workspace configuration [init|select|status]" \
