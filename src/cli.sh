@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. $CLI_ROOT/index.sh;
+. $CLI_ROOT/index.sh; # right here it changes the root dir back to the mono
 
 command=$1; shift; case $command in
     kit|ops|devops) $CLI_ROOT/cli "$@" ;;

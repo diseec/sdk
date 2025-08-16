@@ -1,28 +1,31 @@
 #!/bin/bash
 
+export IS_KIT_CLI="true";
 export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . $CLI_ROOT/index.sh; cd $ROOT_DIR; command=$1; shift;
 
 case $command in
 
-    install)
-        set -e
-        if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
-            message "Installing in Node.js project .."
-            VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@diseec/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/$KIT_NAME']")
-            if [ -z "$VERSION_SPECIFIER" ]; then
-                echo "@diseec/$KIT_NAME not found in dependencies or devDependencies."
-                exit 1
+    vise) command_2=$1; shift; case $command_2 in
+        install)
+            set -e
+            if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
+                message "Installing in Node.js project .."
+                VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@diseec/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/$KIT_NAME']")
+                if [ -z "$VERSION_SPECIFIER" ]; then
+                    echo "@diseec/$KIT_NAME not found in dependencies or devDependencies."
+                    exit 1
+                fi
+                message "Running npm install @diseec/$KIT_NAME@$VERSION_SPECIFIER .."
+                TMPDIR=$(mktemp -d)
+                (cd $TMPDIR && npm install "@diseec/$KIT_NAME@$VERSION_SPECIFIER")
+                rm -rf $PROJECT_MOUNT_DIR/node_modules/@diseec/$KIT_NAME 2>/dev/null
+                mkdir -p $PROJECT_MOUNT_DIR/node_modules/@diseec/$KIT_NAME 2>/dev/null
+                cp -r $TMPDIR/node_modules/@diseec/$KIT_NAME $PROJECT_MOUNT_DIR/node_modules/@diseec
+                if [ ! -f $PROJECT_MOUNT_DIR/cli ]; then cp /app/templates/cli $PROJECT_MOUNT_DIR/cli; fi
+                # if [ ! -f $PROJECT_MOUNT_DIR/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
             fi
-            message "Running npm install @diseec/$KIT_NAME@$VERSION_SPECIFIER .."
-            TMPDIR=$(mktemp -d)
-            (cd $TMPDIR && npm install "@diseec/$KIT_NAME@$VERSION_SPECIFIER")
-            rm -rf $PROJECT_MOUNT_DIR/node_modules/@diseec/$KIT_NAME 2>/dev/null
-            mkdir -p $PROJECT_MOUNT_DIR/node_modules/@diseec/$KIT_NAME 2>/dev/null
-            cp -r $TMPDIR/node_modules/@diseec/$KIT_NAME $PROJECT_MOUNT_DIR/node_modules/@diseec
-            if [ ! -f $PROJECT_MOUNT_DIR/cli ]; then cp /app/templates/cli $PROJECT_MOUNT_DIR/cli; fi
-            # if [ ! -f $PROJECT_MOUNT_DIR/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
-        fi
-    ;;
+        ;;
+    esac;;
 
     shell)
         $CLI run /bin/bash

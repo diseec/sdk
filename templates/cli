@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli install ;; esac; . $CLI_ROOT/index.sh;
+export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli vise install ;; esac; . $CLI_ROOT/index.sh;
 
 # -----------------------------------------------------------------------------
 # DISEEC CLI Helper Script
@@ -47,7 +47,7 @@ command=$1; shift; case $command in
     ;;
     pro) cmd_pro "$@" ;;
     bui|build) cmd_build "$@" ;;
-    run) cmd_run "$@" ;;
+    run) $CLI exec "$REPO_NAME" "$@" ;;
     exe|exec) cmd_exec "$@" ;;
     she|shell) cmd_shell "$@" ;;
     tes|test) cmd_test "$@" ;;
@@ -59,10 +59,8 @@ command=$1; shift; case $command in
     pac|package) cmd_package "$@" ;;
 
     # Listeners
-    listen:update)
-        # message 44 "info" "Running your command..."
-        # # Commands to run on now version available
-    ;;
+    listen:before_update) message 44 "info" "Commands before updating completed..." ;;
+    listen:after_update) message 44 "info" "Commands after updating completed..." ;;
 
     hel|help|--help|-h)
         cmd_help \

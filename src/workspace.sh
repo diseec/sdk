@@ -113,7 +113,7 @@ create_workspace_config() {
 # Get the list of selected modules from workspace config
 get_selected_modules() {
     local config_file="$(get_workspace_config_path)"
-    
+
     if [ ! -f "$config_file" ]; then
         # If workspace config doesn't exist, just return empty (no modules selected)
         # This is a valid state - user doesn't have to select any modules
@@ -179,6 +179,7 @@ foreach_selected_module() {
 # Run a callback function for each selected module
 # Usage: foreach_selected_module_with_callback callback_function [additional_args...]
 foreach_selected_module_with_callback() {
+    if [ $IS_MONOREPO != "true" ]; then return; fi
     local callback_function="$1"
     shift
     local selected_modules=$(get_selected_modules)

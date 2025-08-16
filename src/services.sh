@@ -11,6 +11,17 @@ case $command in
         git submodule update --init --recursive
     ;;
 
+    run)
+        services=$(docker compose config --services)
+        # if echo "$services" | grep -qx "$REPO_NAME"; then
+        #     $CLI exec "$REPO_NAME" "$@"
+        # else
+        message "45" "SERVICES:" "\n$services"
+        read -p "$(message 45 "⁇" "Specify a service to run:")" service
+        $CLI exec "$service" "$@"
+        # fi
+    ;;
+
     remove|rm)
         ask_to_run_command "Are you sure, remove the service '$1'?" \
             set -e; \
@@ -24,7 +35,7 @@ case $command in
     ;;
 
     *)
-        echo "Usage: $0 service [add|remove|update] <service-name>"
+        echo "Usage: $0 service [add|remove|update|run] <service-name>"
         exit 1
     ;;
 esac

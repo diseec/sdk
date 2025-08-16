@@ -19,7 +19,7 @@ cmd_install() {
     . $CLI_SRC/workspace.sh
     
     if [ ! -f "$(get_workspace_config_path)" ]; then
-        message 34 "WORKSPACE" "Initializing workspace configuration..."
+        message 30 "WORKSPACE" "Initializing workspace configuration..."
         cmd_workspace_init
     fi
     selected_modules=$(get_selected_modules)
@@ -27,7 +27,7 @@ cmd_install() {
     message "Cloning selected submodules..."
     initialize_submodule() {
         local module="$1"; local module_path="$2"
-        message 34 "$module" "Initializing submodule..."
+        message 30 "$module" "Initializing submodule..."
         _git submodule update --init --recursive --remote "$module_path"
     }
     foreach_selected_module_with_callback initialize_submodule
@@ -41,7 +41,7 @@ cmd_install() {
     # message "Checking out branch '$BRANCH' in selected submodules..."
     # checkout_branch() {
     #     local module="$1"; local module_path="$2"; local branch="$3"
-    #     message 34 "$module" "Checking out branch..."
+    #     message 30 "$module" "Checking out branch..."
     #     (cd "$ROOT_DIR/$module_path" && _git fetch && _git checkout $branch || _git checkout -b $branch origin/$branch || _git checkout -b $branch)
     # }
     # foreach_selected_module_with_callback checkout_branch "$BRANCH"
@@ -50,7 +50,7 @@ cmd_install() {
     install_dependencies() {
         local module="$1"
         local module_path="$2"
-        message 34 "$module" "Installing dependencies..."
+        message 30 "$module" "Installing dependencies..."
         (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli install)
     }
     foreach_selected_module_with_callback install_dependencies
@@ -59,12 +59,11 @@ cmd_install() {
 
 cmd_pull() {
     branch="$(_git branch --show-current | tr -d '\r\n')"
-    message 34 "$branch" "Pulling latest changes .."
+    message 30 "$branch" "Pulling latest changes .."
     _git pull origin
-    message 34 "$branch" "Merging latest 'main' changes .."
+    message 30 "$branch" "Merging latest 'main' changes .."
     _git merge origin/main
     if [ "$HAS_SUBMODULES" = "true" ]; then
-        selected_modules=$(get_selected_modules)
         pull_submodule() {
             local module="$1"
             local module_path="$2"
@@ -95,7 +94,7 @@ cmd_dev() {
         trap cleanup INT EXIT
         
         if [ -n "$services_filter" ]; then
-            message 34 "WORKSPACE" "Starting selected services: $services_filter"
+            message 30 "WORKSPACE" "Starting selected services: $services_filter"
             docker compose up $services_filter
         else
             docker compose up
@@ -121,7 +120,7 @@ cmd_pro() {
     trap cleanup INT EXIT
     
     if [ -n "$services_filter" ]; then
-        message 34 "WORKSPACE" "Starting selected services in production mode: $services_filter"
+        message 30 "WORKSPACE" "Starting selected services in production mode: $services_filter"
         docker compose -f "$ROOT_DIR/docker-compose.yaml" up $services_filter "$@"
     else
         docker compose -f "$ROOT_DIR/docker-compose.yaml" up "$@"
@@ -133,17 +132,6 @@ cmd_build() {
     cmd_version
     message "Building service images .."
     docker compose build --parallel
-}
-
-cmd_run() {
-    services=$(docker compose config --services)
-    if echo "$services" | grep -qx "$REPO_NAME"; then
-        $CLI exec "$REPO_NAME" "$@"
-    else
-        message "45" "SERVICES:" "\n$services"
-        read -p "$(message 45 "⁇" "Specify a service to run:")" service
-        $CLI exec "$service" "$@"
-    fi
 }
 
 cmd_exec() {
@@ -194,7 +182,7 @@ cmd_format() {
         message 43 "!" "Prettier not found. Installing..."
         install_prettier
     fi
-    message 34 "Prettier" "Running formatter..."
+    message 30 "Prettier" "Running formatter..."
     if [ "$CI" = "true" ]; then 
         $CLI run yarn prettier --check --log-level=warn "$@";
     else
