@@ -64,6 +64,7 @@ has_version_changed() {
 
 cmd_update() {
     set -e
+    _git pull origin >/dev/null 2>&1
     VERSION_SPECIFIER="$(get_version_specifier)"
     # Check if version has changed
     if has_version_changed; then
@@ -74,7 +75,6 @@ cmd_update() {
             message 43 "SYNC" "Version change: $cached_version -> $VERSION_SPECIFIER"
         fi
         
-
         set -e;
         message 44 "info" "Pulling updates..."
         $CLI pull;
@@ -86,6 +86,14 @@ cmd_update() {
         $CLI pull;
 
         $CLI event update
+
+        update_dependencies() {
+            local module="$1"
+            local module_path="$2"
+            message 34 "$module" "Updating dependencies..."
+            (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli update)
+        }
+        foreach_selected_module_with_callback update_dependencies
         
         # Update the cached version to current
         set_cached_version "$VERSION_SPECIFIER"

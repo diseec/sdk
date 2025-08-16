@@ -61,28 +61,24 @@ if [ -n "${CLI-}" ] && [ -x "$CLI" ]; then
     execute_event "$ROOT_DIR" "$CLI" "$EVENT" "root" || true
 fi
 
-# Process each selected module
-process_module() {
-    local module="$1"
-    local module_path="$2"
-    local dir="$ROOT_DIR/$module_path"
-    local cli="$dir/cli"
-    
-    # Skip if directory doesn't exist
-    if [ ! -d "$dir" ]; then
-        return 0
-    fi
-    
-    # Skip if CLI doesn't exist or isn't executable
-    if [ ! -x "$cli" ]; then
-        return 0
-    fi
-    
-    # Execute event in module
-    execute_event "$dir" "$cli" "$EVENT" "$module" || true
-}
-
-# Process all selected modules
-foreach_selected_module_with_callback process_module || true
+# # Process each selected module
+# process_module() {
+#     local module="$1"
+#     local module_path="$2"
+#     local dir="$ROOT_DIR/$module_path"
+#     local cli="$dir/cli"
+#     # Skip if directory doesn't exist
+#     if [ ! -d "$dir" ]; then
+#         return 0
+#     fi
+#     # Skip if CLI doesn't exist or isn't executable
+#     if [ ! -x "$cli" ]; then
+#         return 0
+#     fi
+#     # Execute event in module
+#     execute_event "$dir" "$cli" "$EVENT" "$module" || true
+# }
+# # Process all selected modules
+# foreach_selected_module_with_callback process_module || true
 
 # message 32 "done" "Event '$EVENT' execution completed"
