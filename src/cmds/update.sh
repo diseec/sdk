@@ -1,7 +1,7 @@
 #!/bin/bash
 
 get_version_specifier() {
-    $CLI $KIT_NAME run --no-message node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies['@diseec/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/$KIT_NAME']"
+    $CLI $KIT_NAME exec $KIT_NAME --no-message node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@diseec/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/$KIT_NAME']"
 }
 
 # Get the repository cache directory path
@@ -22,7 +22,7 @@ get_repo_cache_dir() {
 
 # Get the cached version of devops tools
 get_cached_version() {
-    local cache_file="$(get_repo_cache_dir)/$KIT_NAME_version.txt"
+    local cache_file="$(get_repo_cache_dir)/kit_version.txt"
     
     if [ ! -f "$cache_file" ]; then
         # Return empty if no cache exists
@@ -34,10 +34,10 @@ get_cached_version() {
     cat "$cache_file"
 }
 
-# Update the cached version of $KIT_NAME tools
+# Update the cached version of kit tools
 set_cached_version() {
     local version="$1"
-    local cache_file="$(get_repo_cache_dir)/$KIT_NAME_version.txt"
+    local cache_file="$(get_repo_cache_dir)/kit_version.txt"
     
     # Write the new version to the cache file
     echo "$version" > "$cache_file"
