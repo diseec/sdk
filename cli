@@ -5,6 +5,12 @@ export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . $CLI_ROOT/ind
 
 case $command in
 
+    install)
+        # set -e
+        # $CLI run yarn install;
+        cmd_install "$@";
+    ;;
+
     vise) command_2=$1; shift; case $command_2 in
         install)
             set -e
