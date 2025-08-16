@@ -8,7 +8,7 @@ case $command in
         set -e
         if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
             message "Installing in Node.js project .."
-            . $CLI_SRC/cmds/update.sh; VERSION_SPECIFIER=$(get_version_specifier)
+            VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@diseec/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/$KIT_NAME']")
             if [ -z "$VERSION_SPECIFIER" ]; then
                 echo "@diseec/$KIT_NAME not found in dependencies or devDependencies."
                 exit 1
@@ -41,8 +41,44 @@ case $command in
         fi
         cmd_exec "$@"
     ;;
-    # up) docker compose up "$@" ;;
-    # down) docker compose down "$@" ;;
+
+    release)
+        . $CLI_SRC/cmds/update.sh
+        CURRENT_VERSION=$(get_version_specifier)
+        
+        # Extract parts of the semantic version (x.y.z)
+        VERSION_MAJOR=$(echo $CURRENT_VERSION | sed -E 's/^([0-9]+)\.([0-9]+)\.([0-9]+).*$/\1/')
+        VERSION_MINOR=$(echo $CURRENT_VERSION | sed -E 's/^([0-9]+)\.([0-9]+)\.([0-9]+).*$/\2/')
+        VERSION_PATCH=$(echo $CURRENT_VERSION | sed -E 's/^([0-9]+)\.([0-9]+)\.([0-9]+).*$/\3/')
+        
+        # Increment the patch part (z)
+        NEW_PATCH=$((VERSION_PATCH + 1))
+        NEXT_VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${NEW_PATCH}"
+        
+        message 34 "RELEASE" "Incrementing version $CURRENT_VERSION → $NEXT_VERSION"
+        
+        # Update package.json version if needed
+        if [ -f "./package.json" ]; then
+            # Check if we're in the package directory
+            if grep -q "\"name\": \"@diseec/$KIT_NAME\"" "./package.json"; then
+                message 34 "PACKAGE" "Updating package.json version..."
+                sed -i.bak "s/\"version\": \"$CURRENT_VERSION\"/\"version\": \"$NEXT_VERSION\"/" "./package.json"
+                rm -f "./package.json.bak"
+                
+                # Create a tag for the new version
+                message 34 "GIT" "Creating tag v$NEXT_VERSION..."
+                (cd "." && git add package.json && git commit -am "Release v$NEXT_VERSION" && git tag -a "v$NEXT_VERSION" -m "Release v$NEXT_VERSION")
+                
+                # Ask to push
+                message 32 "DONE" "Version updated to $NEXT_VERSION"
+                ask_to_run_command "Push changes and tags to remote?" git push && git push --tags
+            else
+                message 33 "WARNING" "This is not the $KIT_NAME package directory, can't update version directly"
+            fi
+        else
+            message 33 "WARNING" "No package.json found"
+        fi
+    ;;
 
     # MODIFIERS
 
