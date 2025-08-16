@@ -59,17 +59,8 @@ command=$1; shift; case $command in
 
     # Listeners
     listen:update)
-        set -e;
-        message 44 "info" "Pulling updates..."
-        $CLI pull;
-        message 44 "info" "Pulling latest devops image..."
-        (cd $CLI_ROOT; docker compose pull);
-        message 44 "info" "Installing dependencies..."
-        $CLI install;
-        message 44 "info" "Pulling latest selected changes..."
-        $CLI pull;
-        message 44 "info" "Installing CLI globally..."
-        # More command on now version available
+        # message 44 "info" "Running your command..."
+        # # Commands to run on now version available
     ;;
 
     help|--help|-h)

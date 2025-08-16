@@ -1,5 +1,9 @@
 #!/bin/bash
 
+get_version_specifier() {
+    $CLI devops run --no-message node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies['@diseec/devops'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/devops']"
+}
+
 # Get the repository cache directory path
 get_repo_cache_dir() {
     local repo_dir="$COMPANY_DIR/workspaces/$REPO_NAME"
@@ -51,7 +55,7 @@ has_version_changed() {
     fi
     
     # Compare versions
-    if [ "$VERSION" != "$cached_version" ]; then
+    if [ "$VERSION" != "$cached_version" ] || [ "$VERSION" != "$(get_version_specifier)" ]; then
         return 0  # True
     fi
     
@@ -60,22 +64,33 @@ has_version_changed() {
 
 cmd_update() {
     set -e
+    VERSION_SPECIFIER="$(get_version_specifier)"
     # Check if version has changed
     if has_version_changed; then
         local cached_version=$(get_cached_version)
         if [ -z "$cached_version" ]; then
             message 43 "SYNC" "First-time sync for devops version $VERSION"
         else
-            message 43 "SYNC" "Version change: $cached_version -> $VERSION"
+            message 43 "SYNC" "Version change: $cached_version -> $VERSION_SPECIFIER"
         fi
         
+
+        set -e;
+        message 44 "info" "Pulling updates..."
+        $CLI pull;
+        message 44 "info" "Pulling latest devops image..."
+        (cd $CLI_ROOT; docker compose pull);
+        message 44 "info" "Installing dependencies..."
+        $CLI install;
+        message 44 "info" "Pulling latest selected changes..."
+        $CLI pull;
+
         $CLI event update
         
         # Update the cached version to current
-        set_cached_version "$VERSION"
-        
-        message 42 "OKEY" "Sync completed successfully for version $VERSION"
+        set_cached_version "$VERSION_SPECIFIER"
+        message 42 "OKEY" "Sync completed successfully for version $VERSION_SPECIFIER"
     else
-        message 43 "SYNC" "Already synced to latest version $VERSION"
+        message 43 "SYNC" "Already synced to latest version $VERSION_SPECIFIER"
     fi
 }

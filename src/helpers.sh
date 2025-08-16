@@ -110,7 +110,7 @@ informer() {
 
       # Check if version changed or if repo/modules are behind
       if has_version_changed; then
-          message 43 "UPDATE" "New updates available!"
+          message 46 "UPDATE" "New updates available!"
           ask_to_run_command "Apply updates now?" "$CLI" update
       elif [ -d "$ROOT_DIR/.git" ]; then
           # Check if the main repository is behind
