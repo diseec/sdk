@@ -61,8 +61,6 @@ cmd_install() {
 
 cmd_dev() {
     set -e
-    cmd_version
-    $CLI status
     
     # Filter services based on workspace configuration
     services_filter=$(get_services_filter)
@@ -90,7 +88,7 @@ cmd_dev() {
 
 cmd_pro() {
     set -e
-    cmd_version
+
     message "Starting services in production mode .."
 
     # Filter services based on workspace configuration
@@ -115,7 +113,6 @@ cmd_pro() {
 
 cmd_build() {
     set -e
-    cmd_version
     message "Building service images .."
     docker compose build --parallel
 }
@@ -126,7 +123,6 @@ cmd_exec() {
 }
 
 cmd_shell() {
-    cmd_version
     $CLI run /bin/sh
 }
 

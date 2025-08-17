@@ -8,7 +8,8 @@ command=$1; shift; case $command in
     ins|install) cmd_install "$@" ;;
     upd|update) . $KIT_SRC_DIR/cmds/update.sh; cmd_update "$@" ;;
     exe|exec) cmd_exec "$@" ;;
-    sta|status) 
+    sta|status)         
+        cmd_version
         $CLI workspace status
         $CLI git status
         informer check-for-updates

@@ -35,9 +35,11 @@ command=$1; shift; case $command in
     
     ins|install) cmd_install "$@" ;;
     dev)
-        ask_to_run_command "Pull and merge latest changes?" "$ROOT_DIR/cli" pull
+        $CLI status
+        ask_to_run_command "Pull and merge latest changes?" $CLI pull
         cmd_dev "$@";
-        # $CLI format;
+        $CLI format
+        ask_to_run_command "Commit, push and PR changes?" $CLI push
     ;;
     for|format) cmd_format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
     tes|test) cmd_test "$@" ;;
