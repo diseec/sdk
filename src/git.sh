@@ -1,8 +1,6 @@
 #!/bin/sh
 
-_git() {
-  $CLI $KIT_NAME exec $KIT_NAME --no-message git "$@"
-}
+set -e
 
 # Git automation utilities for PR workflows
 # This script provides functions for:
@@ -11,7 +9,7 @@ _git() {
 
 # Check if GitHub CLI is installed
 check_gh_cli() {
-  if ! command -v gh >/dev/null 2>&1; then
+  if ! command -v _gh >/dev/null 2>&1; then
     message 41 "error" "GitHub CLI (gh) is not installed. Please install it first:"
     message 43 "info" "  brew install gh   # For macOS"
     message 43 "info" "  Then authenticate: gh auth login"
@@ -19,7 +17,7 @@ check_gh_cli() {
   fi
   
   # Check if authenticated
-  if ! gh auth status >/dev/null 2>&1; then
+  if ! _gh auth status >/dev/null 2>&1; then
     message 41 "error" "GitHub CLI is not authenticated. Please run: gh auth login"
     return 1
   fi
@@ -29,12 +27,12 @@ check_gh_cli() {
 
 # Generate commit message using AI
 generate_commit_message() {
-  local diff_output="$(git diff --staged)"
+  local diff_output="$(_git diff --staged)"
   
   if [ -z "$diff_output" ]; then
-    message 33 "warn" "No staged changes found. Staging all changes..."
-    git add -A
-    diff_output="$(git diff --staged)"
+    # message 33 "warn" "No staged changes found. Staging all changes..."
+    _git add -A
+    diff_output="$(_git diff --staged)"
     
     if [ -z "$diff_output" ]; then
       message 31 "error" "No changes to commit"
@@ -42,11 +40,11 @@ generate_commit_message() {
     fi
   fi
   
-  message 34 "ai" "Generating commit message..."
+  # message 34 "ai" "Generating commit message..."
   
   # Limit diff size to avoid API limits
-  local diff_summary="$(git diff --staged --stat)"
-  local diff_preview="$(git diff --staged | head -n 300)"
+  local diff_summary="$(_git diff --staged --stat)"
+  local diff_preview="$(_git diff --staged | head -n 300)"
   
   # Use OpenAI API if available, otherwise fall back to a simpler approach
   if command -v curl >/dev/null 2>&1 && [ -n "$OPENAI_API_KEY" ]; then
@@ -60,7 +58,7 @@ generate_commit_message() {
     echo "$response" | grep -o '"content":"[^"]*' | sed 's/"content":"//g' | sed 's/\\n/\n/g'
   else
     # Fallback: generate simple commit message based on modified files
-    local files_changed=$(git diff --staged --name-only | sort | uniq)
+    local files_changed=$(_git diff --staged --name-only | sort | uniq)
     local num_files=$(echo "$files_changed" | wc -l | tr -d ' ')
     local main_file=$(echo "$files_changed" | head -1)
     local file_type=$(echo "$main_file" | grep -o '\.[^.]*$' | tr -d '.')
@@ -78,7 +76,7 @@ generate_commit_message() {
 
 # Get current branch name
 get_current_branch() {
-  git rev-parse --abbrev-ref HEAD
+  _git rev-parse --abbrev-ref HEAD
 }
 
 # Check if current branch has a PR
@@ -87,14 +85,14 @@ has_open_pr() {
   
   if check_gh_cli; then
     # Try to get PR number for current branch
-    pr_number=$(gh pr list --head "$branch" --json number -q '.[0].number' 2>/dev/null)
+    pr_number=$(_gh pr list --head "$branch" --json number -q '.[0].number' 2>/dev/null)
     if [ -n "$pr_number" ] && [ "$pr_number" != "null" ]; then
       echo "$pr_number"
       return 0
     fi
   else
     # Fallback: try to infer from GitHub API via git remote
-    local remote_url=$(git remote get-url origin)
+    local remote_url=$(_git remote get-url origin)
     local repo=$(echo "$remote_url" | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')
     
     if [ -n "$repo" ]; then
@@ -114,6 +112,26 @@ has_open_pr() {
   return 1
 }
 
+pull() {
+    ARGS=""; for arg in "$@"; do case "$arg" in
+        --ignore-submodule-pulling) IGNORE_SUBMODULE_PULLING="true";;
+    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
+    branch="$(_git branch --show-current | tr -d '\r\n')"
+    message 30 "$branch" "Pulling latest changes .."
+    _git pull origin
+    message 30 "$branch" "Merging latest 'main' changes .."
+    _git merge origin/main
+    if [ "$IGNORE_SUBMODULE_PULLING" != "true" ]; then
+        pull_submodule() {
+            local module="$1"
+            local module_path="$2"
+            (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli pull)
+        }
+        foreach_selected_module_with_callback pull_submodule
+    fi
+}
+
 # Commit all changes with AI-generated message and push
 commit_and_push() {
   local branch="$(get_current_branch)"
@@ -125,7 +143,7 @@ commit_and_push() {
   fi
   
   # Stage all changes
-  git add -A
+  _git add -A
   
   # Generate commit message
   local commit_msg=$(generate_commit_message)
@@ -137,12 +155,12 @@ commit_and_push() {
   message 34 "git" "Committing changes with message:"
   message 36 "commit" "$commit_msg"
   echo "$commit_msg" > /tmp/commit-msg.txt
-  git commit -F /tmp/commit-msg.txt
+  _git commit -F /tmp/commit-msg.txt
   rm /tmp/commit-msg.txt
   
   # Push to remote
   message 34 "git" "Pushing to remote..."
-  git push -u origin "$branch"
+  _git push -u origin "$branch"
   
   return 0
 }
@@ -163,7 +181,7 @@ create_or_update_pr() {
     
     # If gh CLI is available, provide a link
     if check_gh_cli; then
-      local pr_url=$(gh pr view "$pr_number" --json url -q .url)
+      local pr_url=$(_gh pr view "$pr_number" --json url -q .url)
       message 36 "url" "$pr_url"
     fi
   else
@@ -172,21 +190,21 @@ create_or_update_pr() {
     
     if check_gh_cli; then
       # Use last commit message as PR title/body
-      local pr_title=$(git log -1 --pretty=%s)
-      local pr_body=$(git log -1 --pretty=%b)
+      local pr_title=$(_git log -1 --pretty=%s)
+      local pr_body=$(_git log -1 --pretty=%b)
       
       if [ -z "$pr_body" ]; then
-        pr_body="Changes in this PR:\n\n$(git diff --stat origin/main..HEAD)"
+        pr_body="Changes in this PR:\n\n$(_git diff --stat origin/main..HEAD)"
       fi
       
       # Create PR using GitHub CLI
-      local pr_url=$(gh pr create --title "$pr_title" --body "$pr_body" --base main)
+      local pr_url=$(_gh pr create --title "$pr_title" --body "$pr_body" --base main)
       
       message 32 "pr" "Created new PR:"
       message 36 "url" "$pr_url"
     else
       message 33 "pr" "Install GitHub CLI (gh) for automatic PR creation"
-      message 33 "pr" "Create PR manually at: https://github.com/$(git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/new/$branch"
+      message 33 "pr" "Create PR manually at: https://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/new/$branch"
     fi
   fi
   
@@ -207,7 +225,7 @@ check_pr_status() {
   
   if check_gh_cli; then
     # Get PR details
-    local pr_data=$(gh pr view "$pr_number" --json title,url,reviewDecision,reviews,comments)
+    local pr_data=$(_gh pr view "$pr_number" --json title,url,reviewDecision,reviews,comments)
     
     # Extract key information
     local pr_title=$(echo "$pr_data" | grep -o '"title": "[^"]*' | sed 's/"title": "//')
@@ -249,32 +267,20 @@ check_pr_status() {
       if [ "$unresolved_count" -gt 5 ]; then
         message 33 "comments" "...and $((unresolved_count - 5)) more comments"
       fi
-    else
-      message 32 "comments" "No unresolved comments"
+    # else
+    #   message 32 "comments" "No unresolved comments"
     fi
   else
     message 33 "pr" "PR #$pr_number exists, but detailed status check requires GitHub CLI"
-    message 33 "pr" "View PR at: https://github.com/$(git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number"
+    message 33 "pr" "View PR at: https://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number"
   fi
 }
 
-cmd_git() {
-  subcommand=$1; shift
-  case "$subcommand" in
-    # Git PR commands
-    pr) subcommand=$1; shift; case "$subcommand" in
-        create) create_or_update_pr ;;
-        check) check_pr_status ;;
-        *)
-            message 33 "usage" "Usage: $CLI git pr {create|check}"
-            echo "  create  - Commit all changes with AI-generated message and create/update PR"
-            echo "  check   - Check status of current branch's PR and show unresolved comments"
-        ;;
-    esac;;
-    *)
-      message 33 "git" "Available git commands:"
-      echo "  pr create - Create/update a PR with AI-generated commit message"
-      echo "  pr check  - Check PR status and show unresolved comments"
-      ;;
-  esac
+release() {
+    local TAG="v$(date +%Y%m%d%H%M%S)"
+    # git checkout main
+    # git pull origin main
+    # git tag -a $TAG -m "Release $TAG"
+    # git push origin $TAG
 }
+

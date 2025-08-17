@@ -34,39 +34,23 @@ command=$1; shift; case $command in
     # ;;
     
     ins|install) cmd_install "$@" ;;
-    sta|status) 
-        informer summary-branch-status
-        informer forbid-dev-on-main
-        informer check-for-updates
-    ;;
-    pul|pull) cmd_pull "$@" ;;
     dev)
         ask_to_run_command "Pull and merge latest changes?" "$ROOT_DIR/cli" pull
         cmd_dev "$@";
-        $CLI format;
+        # $CLI format;
     ;;
-    pro) cmd_pro "$@" ;;
-    bui|build) cmd_build "$@" ;;
-    run) $CLI exec "$REPO_NAME" "$@" ;;
-    exe|exec) cmd_exec "$@" ;;
-    she|shell) cmd_shell "$@" ;;
-    tes|test) cmd_test "$@" ;;
     for|format) cmd_format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
-    rel|release) cmd_release "$@" ;;
-
-    # Module Managers
-    ser|service) cmd_service "$@" ;;
-    pac|package) cmd_package "$@" ;;
+    tes|test) cmd_test "$@" ;;
 
     # Listeners
-    listen:before_update) message 44 "info" "Commands before updating completed..." ;;
-    listen:after_update) message 44 "info" "Commands after updating completed..." ;;
+    # listen:before_update) message 44 "info" "Commands before updating completed..." ;;
+    # listen:after_update) message 44 "info" "Commands after updating completed..." ;;
 
     hel|help|--help|-h)
         cmd_help \
          "" "" \
          "$(color 33 'Service Commands:')" "" \
-         "    help         " "Display the help message";
+         "    hel|help         " "Display the help message";
     ;;
     *) $KIT_SRC_DIR/cli.sh "$command" "$@" ;;
 esac

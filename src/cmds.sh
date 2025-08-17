@@ -7,6 +7,10 @@ cmd_version() {
 cmd_install() {
     set -e; cd $ROOT_DIR; cmd_version;
 
+    ARGS=""; for arg in "$@"; do case "$arg" in
+        --ignore-submodule-installation) IGNORE_SUBMODULE_INSTALLATION="true";;
+    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
     git config --global credential.helper store
 
     # Early return in CI environment - silent skip
@@ -14,15 +18,10 @@ cmd_install() {
     # Early return if no submodules
     [ "$HAS_SUBMODULES" != "true" ] && { return 0; }
     
-    
-    # Load workspace functions to get the config path
-    . $KIT_SRC_DIR/workspace.sh
-    
     if [ ! -f "$(get_workspace_config_path)" ]; then
         message 30 "WORKSPACE" "Initializing workspace configuration..."
         cmd_workspace_init
     fi
-    selected_modules=$(get_selected_modules)
 
     message "Cloning selected submodules..."
     initialize_submodule() {
@@ -46,31 +45,18 @@ cmd_install() {
     # }
     # foreach_selected_module_with_callback checkout_branch "$BRANCH"
     
-    message "Installing dependencies in selected submodules..."
-    install_dependencies() {
-        local module="$1"
-        local module_path="$2"
-        message 30 "$module" "Installing dependencies..."
-        (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli install)
-    }
-    foreach_selected_module_with_callback install_dependencies
-    message 42 "OKEY" "Workspace configuration initialized successfully."
-}
-
-cmd_pull() {
-    branch="$(_git branch --show-current | tr -d '\r\n')"
-    message 30 "$branch" "Pulling latest changes .."
-    _git pull origin
-    message 30 "$branch" "Merging latest 'main' changes .."
-    _git merge origin/main
-    if [ "$HAS_SUBMODULES" = "true" ]; then
-        pull_submodule() {
+    if [ "$IGNORE_SUBMODULE_INSTALLATION" != "true" ]; then
+        message "Installing dependencies in selected submodules..."
+        install_dependencies() {
             local module="$1"
             local module_path="$2"
-            (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli pull)
+            message 30 "$module" "Installing dependencies..."
+            (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli install)
         }
-        foreach_selected_module_with_callback pull_submodule
+        foreach_selected_module_with_callback install_dependencies
     fi
+
+    message 42 "OKEY" "Workspace configuration initialized successfully."
 }
 
 cmd_dev() {
@@ -148,14 +134,6 @@ cmd_test() {
     . $KIT_SRC_DIR/test.sh "$@"
 }
 
-cmd_release() {
-    local TAG="v$(date +%Y%m%d%H%M%S)"
-    # git checkout main
-    # git pull origin main
-    # git tag -a $TAG -m "Release $TAG"
-    # git push origin $TAG
-}
-
 cmd_kit() {
     docker run --rm -it \
         -w /app \
@@ -197,43 +175,28 @@ cmd_help() {
         "$(color 33 'Usage:')" "" \
         "$(color 32 '    command [options] [arguments]\n')" "" \
         "$(color 33 'Base Commands:')" "" \
-        "    install      "  "Install the dependencies" \
-        "    status       "  "Show project status" \
-        "    pull         "  "Pull and merge latest changes from repository" \
-        "    dev          "  "Start the development server" \
-        "    pro          "  "Start the production server" \
-        "    build        "  "Build the image push to registry" \
-        "    run          "  "Run a command in fresh instance, usage: run <command>" \
-        "    exec         "  "Run a command in a service container, usage: exec <service-name> <command>" \
-        "    shell        "  "Start a shell" \
-        "    test         "  "Run the tests in production mode, see: test -h" \
-        "    release      "  "Merge to release branch to trigger CD pipeline" \
-        "    format       "  "Check if Prettier exists and run formatting on codebase" \
-        "    git          "  "Git PR management commands: git pr {create|check}" \
-        "    $KIT_NAME       "  "Run a command in SDK image, usage: $KIT_NAME <command>" \
-        "    service      "  "Run a command in a service, usage: service <command>" \
-        "    package      "  "Run a command in a package, usage: package <command>" \
-        "    workspace    "  "Manage workspace configuration [init|select|status]" \
-        "    update       "  "Get latest repo changes" \
-        "    envs         "  "All exported envs, source project cli to load them!" \
-        "    version      "  "Show the current kit version" \
+        "    ins|install      "  "Install the dependencies" \
+        "    upd|update       "  "Sync project with latest updates" \
+        "    sta|status       "  "Show project status" \
+        "    pul|pull         "  "Pull and merge latest changes from repository. Alias to 'cli git pull'" \
+        "    pus|push         "  "Automated commit->push->pr process with AI generated message. Alias to 'cli git push'" \
+        "    dev              "  "Start the development server" \
+        "    pro              "  "Start the production server" \
+        "    bui|build        "  "Build the image push to registry" \
+        "    run              "  "Run a command in fresh instance, usage: run <command>" \
+        "    exe|exec         "  "Run a command in a service container, usage: exec <service-name> <command>" \
+        "    she|shell        "  "Start a shell" \
+        "    tes|test         "  "Run the tests in production mode, see: test -h" \
+        "    rel|release      "  "Merge to release branch to trigger CD pipeline" \
+        "    for|format       "  "Check if Prettier exists and run formatting on codebase" \
+        "    git              "  "Git management commands run: cli git help" \
+        "    $KIT_NAME           "  "Run a command in SDK image, usage: $KIT_NAME <command>" \
+        "    ser|service      "  "Run a command in a service, usage: cli service <command>" \
+        "    pac|package      "  "Run a command in a package, usage: cli package <command>" \
+        "    wor|workspace    "  "Manage workspace configuration [init|select|status]" \
+        "    env|envs         "  "All exported envs, source project cli to load them!" \
+        "    ver|version      "  "Show the current kit version" \
         "$@"
-}
-
-cmd_workspace() {
-    subcommand=$1; shift
-    case "$subcommand" in
-        init) cmd_workspace_init ;;
-        select) cmd_workspace_select ;;
-        status) cmd_workspace_status ;;
-        *)
-            message 33 "WORKSPACE" "Available workspace commands:"
-            echo "  init    - Initialize workspace configuration"
-            echo "  select  - Select modules for workspace"
-            echo "  status  - Show current workspace configuration"
-            echo "           (Can pass custom commands: workspace sync 'command1' 'command2')"
-            ;;
-    esac
 }
 
 cmd_unknown() {

@@ -71,11 +71,20 @@ display_help() {
     printf "\n"
 }
 
+_git() {
+  $CLI $KIT_NAME exec $KIT_NAME --no-message git "$@"
+}
+
+_gh() {
+  $CLI $KIT_NAME exec $KIT_NAME --no-message gh "$@"
+}
+
 informer() {
   case "$1" in
+    # check-network-status) ;;
 
     forbid-dev-on-main)
-      current_branch=$(git rev-parse --abbrev-ref HEAD)
+      current_branch=$(_git rev-parse --abbrev-ref HEAD)
       if [ "$current_branch" = "main" ]; then
           message 41 "!" "On the 'main' branch, consider switching to a subbranch"
       fi
@@ -83,11 +92,11 @@ informer() {
 
     summary-branch-status)
       if ping -c 1 google.com > /dev/null 2>&1; then
-          git fetch origin
+          _git fetch origin
       fi
-      local_commit=$(git rev-parse @)
-      remote_commit=$(git rev-parse @{u})
-      base_commit=$(git merge-base @ @{u})
+      local_commit=$(_git rev-parse @)
+      remote_commit=$(_git rev-parse @{u})
+      base_commit=$(_git merge-base @ @{u})
       if [ "$local_commit" != "$remote_commit" ]; then
         if [ "$local_commit" = "$base_commit" ]; then
           message 44 "⟳" "Updates available on 'origin/$current_branch'"
