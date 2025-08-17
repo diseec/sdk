@@ -1,38 +1,38 @@
 #!/bin/sh
 
+export ORG_NAME="diseec"
 export KIT_NAME="devops"
+export ORG_DIR="$HOME/$ORG_NAME"
+if [ -z "$KIT_DIR" ]; then export KIT_DIR="/bin/@$ORG_NAME/$KIT_NAME"; fi
+export KIT_SRC_DIR="$KIT_DIR/src"
 export PROJECT_MOUNT_DIR="/vise"
-if [ -z "$CLI_ROOT" ]; then export CLI_ROOT="/bin/@diseec/$KIT_NAME"; fi
-export CLI_SRC="$CLI_ROOT/src"
-export IMAGE_REGISTRY_URL="image.registry.diseec.com"
-export CLI_IMAGE="$IMAGE_REGISTRY_URL/$KIT_NAME"
-export REPOSITORY_URL="github.com/diseec"
-export COMPANY_DIR="$HOME/diseec"
-
+export IMAGE_REGISTRY_URL="image.registry.$ORG_NAME.com"
+export KIT_IMAGE="$IMAGE_REGISTRY_URL/$KIT_NAME"
+export REPO_HUB_URL="github.com/$ORG_NAME"
 
 auto_discover_project_root_dir() {
-    # Canonicalize CLI_ROOT
-    cli_root=$(cd "$CLI_ROOT" 2>/dev/null && pwd -P) || {
-        printf '%s\n' "Error: can't access \$CLI_ROOT" >&2
+    # Canonicalize KIT_DIR
+    KIT_DIR=$(cd "$KIT_DIR" 2>/dev/null && pwd -P) || {
+        printf '%s\n' "Error: can't access \$KIT_DIR" >&2
         return 1
     }
-    # Exception: if the script's directory == CLI_ROOT, return the first cli
+    # Exception: if the script's directory == KIT_DIR, return the first cli
     # script_dir=$(cd "$(dirname -- "$0")" 2>/dev/null && pwd -P || echo "")
-    # if [ -n "$script_dir" ] && [ "$script_dir" = "$cli_root" ] && [ -f "$cli_root/cli" ]; then
+    # if [ -n "$script_dir" ] && [ "$script_dir" = "$KIT_DIR" ] && [ -f "$KIT_DIR/cli" ]; then
     if [ "$IS_KIT_CLI" = "true" ]; then
-        printf '%s\n' "$cli_root"
+        printf '%s\n' "$KIT_DIR"
         return 0
     fi
-    # Start from the parent of CLI_ROOT, as an absolute, canonical path
-    start=$(cd "$cli_root/.." 2>/dev/null && pwd -P) || {
-        printf '%s\n' "Error: can't access \$CLI_ROOT/.." >&2
+    # Start from the parent of KIT_DIR, as an absolute, canonical path
+    start=$(cd "$KIT_DIR/.." 2>/dev/null && pwd -P) || {
+        printf '%s\n' "Error: can't access \$KIT_DIR/.." >&2
         return 1
     }
     dir=$start
     while :; do
         if [ -f "$dir/cli" ]; then
-            # Skip if it's the same file as $CLI_ROOT/cli
-            if [ ! -e "$cli_root/cli" ] || [ ! "$dir/cli" -ef "$cli_root/cli" ]; then
+            # Skip if it's the same file as $KIT_DIR/cli
+            if [ ! -e "$KIT_DIR/cli" ] || [ ! "$dir/cli" -ef "$KIT_DIR/cli" ]; then
                 printf '%s\n' "$dir"
                 return 0
             fi
@@ -40,14 +40,14 @@ auto_discover_project_root_dir() {
         [ "$dir" = "/" ] && break
         dir=$(dirname -- "$dir")
     done
-    printf '%s\n' "Error: Could not find an ancestor containing a 'cli' other than \$CLI_ROOT/cli" >&2
+    printf '%s\n' "Error: Could not find an ancestor containing a 'cli' other than \$KIT_DIR/cli" >&2
     return 1
 }
 export ROOT_DIR="$(auto_discover_project_root_dir)"
 
 export CLI="$ROOT_DIR/cli"
 
-export VERSION=$(grep '"version"' $CLI_ROOT/package.json | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
+export VERSION=$(grep '"version"' $KIT_DIR/package.json | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
 
 # Extract repository URL from .git/config or submodule gitdir without using git command
 GIT_DIR="$ROOT_DIR/.git"
@@ -75,14 +75,14 @@ fi
 export REPO_NAME
 
 get_cache_dir() {
-  DISEEC_CACHE_DIR="$COMPANY_DIR/.cache"
-  if [ ! -d "$DISEEC_CACHE_DIR" ]; then
-    mkdir -p "$DISEEC_CACHE_DIR"
+  ORG_CACHE_DIR="$ORG_DIR/.cache"
+  if [ ! -d "$ORG_CACHE_DIR" ]; then
+    mkdir -p "$ORG_CACHE_DIR"
   fi
   # Return the cache directory
-  echo "$DISEEC_CACHE_DIR"
+  echo "$ORG_CACHE_DIR"
 }
-export DISEEC_CACHE_DIR=$(get_cache_dir)
+export ORG_CACHE_DIR=$(get_cache_dir)
 
 # if [ -n "$NAMESPACE" ] && [ -n "$REPO_NAME" ]; then
 #   SERVICE_NAME="${REPO_NAME#$NAMESPACE}"

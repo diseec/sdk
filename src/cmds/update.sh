@@ -1,12 +1,12 @@
 #!/bin/bash
 
 get_version_specifier() {
-    $CLI $KIT_NAME exec $KIT_NAME --no-message node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@diseec/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/$KIT_NAME']"
+    $CLI $KIT_NAME exec $KIT_NAME --no-message node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']"
 }
 
 # Get the repository cache directory path
 get_repo_cache_dir() {
-    local repo_dir="$COMPANY_DIR/workspaces/$REPO_NAME"
+    local repo_dir="$ORG_DIR/workspaces/$REPO_NAME"
     if [ ! -d "$repo_dir" ]; then
         mkdir -p "$repo_dir"
     fi
@@ -78,8 +78,9 @@ cmd_update() {
 
         $CLI event before_update
 
-        message 44 "info" "Pulling latest $KIT_NAME image..."
-        (cd $CLI_ROOT; docker compose pull);
+        message 44 "info" "Install and pulling latest $KIT_NAME image..."
+        (cd $KIT_DIR; docker compose pull);
+        $CLI $KIT_NAME exec $KIT_NAME vise install;
         message 44 "info" "Installing dependencies..."
         $CLI install;
         message 44 "info" "Pulling latest selected changes..."

@@ -16,7 +16,7 @@ cmd_install() {
     
     
     # Load workspace functions to get the config path
-    . $CLI_SRC/workspace.sh
+    . $KIT_SRC_DIR/workspace.sh
     
     if [ ! -f "$(get_workspace_config_path)" ]; then
         message 30 "WORKSPACE" "Initializing workspace configuration..."
@@ -145,7 +145,7 @@ cmd_shell() {
 }
 
 cmd_test() {
-    . $CLI_SRC/test.sh "$@"
+    . $KIT_SRC_DIR/test.sh "$@"
 }
 
 cmd_release() {
@@ -165,15 +165,15 @@ cmd_kit() {
 }
 
 cmd_service() {
-    . $CLI_SRC/services.sh "$@"
+    . $KIT_SRC_DIR/services.sh "$@"
 }
 
 cmd_package() {
-    . $CLI_SRC/packages.sh "$@"
+    . $KIT_SRC_DIR/packages.sh "$@"
 }
 
 cmd_event() {
-    . $CLI_SRC/events.sh "$@"
+    . $KIT_SRC_DIR/events.sh "$@"
 }
 
 cmd_format() {

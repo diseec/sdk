@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli vise install ;; esac; . $CLI_ROOT/index.sh;
+export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli vise install ;; esac; . $KIT_DIR/index.sh;
 
 # -----------------------------------------------------------------------------
 # DISEEC CLI Helper Script
@@ -68,5 +68,5 @@ command=$1; shift; case $command in
          "$(color 33 'Service Commands:')" "" \
          "    help         " "Display the help message";
     ;;
-    *) $CLI_SRC/cli.sh "$command" "$@" ;;
+    *) $KIT_SRC_DIR/cli.sh "$command" "$@" ;;
 esac

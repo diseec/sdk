@@ -22,12 +22,12 @@ RUN ARCH=$(uname -m) && \
     cd / && \
     rm -rf /tmp/gh
 
-RUN npm install -g @diseec/devops
-
 WORKDIR /app
 
 ENV IS_IN_CONTAINER=true
 
 COPY . .
+
+RUN . ./cli envs; npm install -g @$ORG_NAME/$KIT_NAME
 
 CMD ["bash", "cli", "help"]

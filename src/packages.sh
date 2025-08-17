@@ -7,7 +7,7 @@ case $command in
     add)
         message "Adding package '$1' .."
         set -e;
-        git submodule add https://$REPOSITORY_URL/$1.git packages/$1
+        git submodule add https://$REPO_HUB_URL/$1.git packages/$1
         git submodule update --init --recursive
     ;;
 

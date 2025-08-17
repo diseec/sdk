@@ -98,7 +98,7 @@ informer() {
     ;;
 
     check-for-updates)
-       . $CLI_SRC/cmds/update.sh; 
+       . $KIT_SRC_DIR/cmds/update.sh; 
       # Skip if we're just running version or help commands
       if [ "$command" = "version" ] || [ "$command" = "--version" ] || [ "$command" = "help" ] || [ "$command" = "update" ]; then
           return 0
@@ -121,7 +121,7 @@ informer() {
                   ask_to_run_command "Apply updates now?" "$CLI" update
               else
                   # Check if any of the selected modules are behind
-                  . $CLI_SRC/workspace.sh
+                  . $KIT_SRC_DIR/workspace.sh
                   modules_behind=false
                   
                   check_module_status() {

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-. $CLI_ROOT/src/envs.sh;
-. $CLI_ROOT/src/installers.sh;
-. $CLI_ROOT/src/helpers.sh;
-. $CLI_ROOT/src/git.sh;
-. $CLI_ROOT/src/cmds.sh;
-. $CLI_ROOT/src/workspace.sh;
+. $KIT_DIR/src/envs.sh;
+. $KIT_DIR/src/installers.sh;
+. $KIT_DIR/src/helpers.sh;
+. $KIT_DIR/src/git.sh;
+. $KIT_DIR/src/cmds.sh;
+. $KIT_DIR/src/workspace.sh;

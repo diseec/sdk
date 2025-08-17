@@ -20,7 +20,7 @@ get_available_modules() {
 # Get the workspace configuration file path for the current repository
 get_workspace_config_path() {
     # Create repository-specific directory if it doesn't exist
-    local repo_dir="$COMPANY_DIR/workspaces/$REPO_NAME"
+    local repo_dir="$ORG_DIR/workspaces/$REPO_NAME"
     if [ ! -d "$repo_dir" ]; then
         mkdir -p "$repo_dir"
     fi
@@ -32,7 +32,7 @@ get_workspace_config_path() {
 # Create a workspace configuration by letting the user select modules
 create_workspace_config() {
     local config_file="$(get_workspace_config_path)"
-    local template_file="$CLI_ROOT/templates/myworkspace.yaml"
+    local template_file="$KIT_DIR/templates/myworkspace.yaml"
     
     # If workspace config file already exists, ask for confirmation to overwrite
     if [ -f "$config_file" ]; then

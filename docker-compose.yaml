@@ -4,12 +4,12 @@ services:
     # command: ["sleep", "infinity"]
     command: ["sleep", "300"]
     build:
-      context: ${CLI_ROOT}
+      context: ${KIT_DIR}
     restart: unless-stopped
     working_dir: ${PROJECT_MOUNT_DIR}
     # environment:
     #   - GIT_TERMINAL_PROMPT=0 # avoid interactive prompts
     volumes:
-      - ${CLI_ROOT}:/app
+      - ${KIT_DIR}:/app
       - ${ROOT_DIR}:${PROJECT_MOUNT_DIR}
       - ${HOME}:/root

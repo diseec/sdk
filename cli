@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export IS_KIT_CLI="true";
-export CLI_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . $CLI_ROOT/index.sh; cd $ROOT_DIR; command=$1; shift;
+export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . $KIT_DIR/index.sh; cd $ROOT_DIR; command=$1; shift;
 
 case $command in
 
@@ -16,17 +16,17 @@ case $command in
             set -e
             if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
                 message "Installing in Node.js project .."
-                VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@diseec/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@diseec/$KIT_NAME']")
+                VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
                 if [ -z "$VERSION_SPECIFIER" ]; then
-                    echo "@diseec/$KIT_NAME not found in dependencies or devDependencies."
+                    echo "@$ORG_NAME/$KIT_NAME not found in dependencies or devDependencies."
                     exit 1
                 fi
-                message "Running npm install @diseec/$KIT_NAME@$VERSION_SPECIFIER .."
+                message "Running npm install @$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER .."
                 TMPDIR=$(mktemp -d)
-                (cd $TMPDIR && npm install "@diseec/$KIT_NAME@$VERSION_SPECIFIER")
-                rm -rf $PROJECT_MOUNT_DIR/node_modules/@diseec/$KIT_NAME 2>/dev/null
-                mkdir -p $PROJECT_MOUNT_DIR/node_modules/@diseec/$KIT_NAME 2>/dev/null
-                cp -r $TMPDIR/node_modules/@diseec/$KIT_NAME $PROJECT_MOUNT_DIR/node_modules/@diseec
+                (cd $TMPDIR && npm install "@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER")
+                rm -rf $PROJECT_MOUNT_DIR/node_modules/@$ORG_NAME/$KIT_NAME 2>/dev/null
+                mkdir -p $PROJECT_MOUNT_DIR/node_modules/@$ORG_NAME/$KIT_NAME 2>/dev/null
+                cp -r $TMPDIR/node_modules/@$ORG_NAME/$KIT_NAME $PROJECT_MOUNT_DIR/node_modules/@$ORG_NAME
                 if [ ! -f $PROJECT_MOUNT_DIR/cli ]; then cp /app/templates/cli $PROJECT_MOUNT_DIR/cli; fi
                 # if [ ! -f $PROJECT_MOUNT_DIR/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
             fi
@@ -79,5 +79,5 @@ case $command in
             "$KIT_NAME  " "Run $KIT_NAME commands"
         ;;
 
-    *) $CLI_SRC/cli.sh "$command" "$@" ;;
+    *) $KIT_SRC_DIR/cli.sh "$command" "$@" ;;
 esac
