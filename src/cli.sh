@@ -29,7 +29,7 @@ command=$1; shift; case $command in
     # Managers
     kit|ops|devops) $KIT_DIR/cli "$@" ;;
     
-    wor|workspace) . $KIT_SRC_DIR/workspace.sh; subcommand=$1; shift; case "$subcommand" in
+    wor|workspace) subcommand=$1; shift; case "$subcommand" in
         ini|init) cmd_workspace_init ;;
         sel|select) cmd_workspace_select ;;
         sta|status) cmd_workspace_status ;;
@@ -42,7 +42,7 @@ command=$1; shift; case $command in
         ;;
     esac ;;
 
-    git) . $KIT_SRC_DIR/git.sh; subcommand=$1; shift; case "$subcommand" in
+    git) subcommand=$1; shift; case "$subcommand" in
         status)
             informer forbid-dev-on-main
             informer summary-branch-status
