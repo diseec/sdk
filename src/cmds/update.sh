@@ -80,7 +80,7 @@ cmd_update() {
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
         (cd $KIT_DIR; docker compose pull);
-        $CLI $KIT_NAME exec $KIT_NAME vise install;
+        $CLI $KIT_NAME exec $KIT_NAME /app/cli vise install;
         message 44 "info" "Installing dependencies..."
         $CLI install;
         message 44 "info" "Pulling latest selected changes..."

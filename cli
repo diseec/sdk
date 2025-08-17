@@ -15,7 +15,7 @@ case $command in
         install)
             set -e
             if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
-                message "Installing in Node.js project .."
+                # message "Installing in Node.js project .."
                 VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
                 if [ -z "$VERSION_SPECIFIER" ]; then
                     echo "@$ORG_NAME/$KIT_NAME not found in dependencies or devDependencies."
@@ -31,6 +31,7 @@ case $command in
                 # if [ ! -f $PROJECT_MOUNT_DIR/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
             fi
         ;;
+        *) echo "No command found";;
     esac;;
 
     shell)
