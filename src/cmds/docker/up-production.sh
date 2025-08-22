@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. $KIT_SRC_DIR/cmds/workspace.sh
+
 set -e
 
 message "Starting services in production mode .."

@@ -26,11 +26,17 @@ case $command in
     link)
         message "45" "PACKAGES:" "\n$(ls packages)"
         read -p "$(message 45 "?" "Select a package to link:")" PACKAGE
-        npm link ./packages/$PACKAGE
+        _npm link ./packages/$PACKAGE
     ;;
 
     *)
-        echo "Usage: $0 package [add|remove|update|link] <package-name>"
+        message 33 "PACKAGE" "Available package commands:"
+        echo "  add <name>       - Add package as git submodule"
+        echo "  remove|rm <name> - Remove package submodule"
+        echo "  update           - Update all package submodules"
+        echo "  link             - Link local package for development"
+        echo ""
+        echo "Usage: cli package <command> [package-name]"
         exit 1
     ;;
 esac

@@ -33,21 +33,21 @@ c=$1; shift; case $c in
     #     message 44 "example" "B:'$B', X:'$X', Y:'$Y'"
     # ;;
     
-    ins|install) cmd_install "$@" ;;
+    ins|install) $CLI_BASE install "$@" ;;
     dev)
         $CLI status
         ask_to_run_command "Pull and merge latest changes?" $CLI pull
-        cmd_dev "$@";
+        $CLI_BASE dev "$@";
         $CLI format
         ask_to_run_command "Commit, push and PR changes?" $CLI push
     ;;
-    for|format) cmd_format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
-    tes|test) cmd_test "$@" ;;
+    for|format) $CLI_BASE format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
+    tes|test) $CLI_BASE test "$@" ;;
 
     # Listeners
     # listen:before_update) message 44 "info" "Commands before updating completed..." ;;
     # listen:after_update) message 44 "info" "Commands after updating completed..." ;;
 
-    # hel|help|--help|-h) $KIT_SRC_DIR/cli.sh help "myc|mycommand" "    Display the help message" ;;
-    *) . $KIT_SRC_DIR/cli.sh "$c" "$@" ;;
+    # hel|help|--help|-h) $CLI_BASE help "myc|mycommand" "    Display the help message" ;;
+    *) . $CLI_BASE "$c" "$@" ;;
 esac

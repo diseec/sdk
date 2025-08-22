@@ -1,5 +1,15 @@
 #!/bin/bash
 
+_node() {
+  # $CLI $KIT_NAME run --no-message node "$@"
+  node "$@"
+}
+
+_npm() {
+  # $CLI $KIT_NAME run --no-message npm "$@"
+  npm "$@"
+}
+
 _docker() {
   # $CLI $KIT_NAME run --no-message docker "$@"
   docker "$@"

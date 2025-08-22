@@ -3,7 +3,7 @@
 . $KIT_SRC_DIR/cmds/workspace.sh
 
 get_version_specifier() {
-    $CLI $KIT_NAME exec $KIT_NAME --no-message node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']"
+    $CLI $KIT_NAME exec $KIT_NAME --no-message _node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']"
 }
 
 # Get the repository cache directory path
@@ -78,6 +78,7 @@ cmd_update() {
             message 43 "SYNC" "Version change: $cached_version -> $VERSION_SPECIFIER"
         fi
 
+        $CLI kit start --detach
         $CLI event before_update
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
@@ -90,8 +91,6 @@ cmd_update() {
         message 44 "info" "Pulling latest selected changes..."
         $CLI pull --ignore-submodule-pulling;
 
-        $CLI event after_update
-
         update_dependencies() {
             local module="$1"
             local module_path="$2"
@@ -100,6 +99,9 @@ cmd_update() {
         }
         foreach_selected_module_with_callback update_dependencies
         
+        $CLI event after_update
+        $CLI kit stop
+
         # Update the cached version to current
         set_cached_version "$VERSION_SPECIFIER"
         message 42 "OKEY" "Sync completed successfully for version $VERSION_SPECIFIER"

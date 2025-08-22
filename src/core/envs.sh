@@ -8,7 +8,7 @@ export KIT_IMAGE="$IMAGE_REGISTRY_URL/$KIT_NAME"
 export REPO_HUB_URL="github.com/$ORG_NAME"
 
 # if [ ! -n "$KIT_DIR" ]; then
-#     export KIT_DIR="$(npm config get prefix)/lib/$KIT_RELATIVE_PATH"
+#     export KIT_DIR="$(_npm config get prefix)/lib/$KIT_RELATIVE_PATH"
 # fi
 
 # auto_discover_project_root_dir() {
@@ -59,6 +59,7 @@ if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
 fi
 export KIT_SRC_DIR="$KIT_DIR/src"
 export CLI="$ROOT_DIR/cli"
+export CLI_BASE="$KIT_SRC_DIR/cli.sh"
 
 export TO_MOUNT_DIR="$ROOT_DIR"; 
 export VERSION=$(grep '"version"' $KIT_DIR/package.json | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')

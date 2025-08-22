@@ -35,7 +35,13 @@ case $command in
     ;;
 
     *)
-        echo "Usage: $0 service [add|remove|update|run] <service-name>"
+        message 33 "SERVICE" "Available service commands:"
+        echo "  add <name>      - Add service as git submodule"
+        echo "  run             - Run command in a service container (interactive)"
+        echo "  remove|rm <name> - Remove service submodule" 
+        echo "  update          - Update all service submodules"
+        echo ""
+        echo "Usage: cli service <command> [service-name]"
         exit 1
     ;;
 esac

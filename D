@@ -18,7 +18,7 @@ dir="$PWD"; while :; do
     fi
     if [ "$dir" = "/" ]; then
         printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
-        # export KIT_DIR="$(npm config get prefix)/lib/$KIT_RELATIVE_PATH"
+        # export KIT_DIR="$(_npm config get prefix)/lib/$KIT_RELATIVE_PATH"
         return 1
         break
     fi

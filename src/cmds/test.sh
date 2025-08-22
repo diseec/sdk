@@ -47,9 +47,14 @@ case $TYPE in
         sh $0 test e2e
     ;;
     *|help|--help|-h)
-        echo "Usage: $0"
-        echo "  test [health|smoke|unit|e2e|all]"
-        echo "  test [service] [command]"
+        message 33 "TEST" "Available test commands:"
+        echo "  health          - Check service health endpoint"
+        echo "  smoke           - Run smoke tests (placeholder)"
+        echo "  unit            - Run unit tests (placeholder)"
+        echo "  e2e             - Run end-to-end tests with Playwright"
+        echo "  all             - Run all test suites"
+        echo ""
+        echo "Usage: cli test [health|smoke|unit|e2e|all]"
         exit 1
     ;;
 esac

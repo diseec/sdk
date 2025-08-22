@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. $KIT_SRC_DIR/cmds/workspace.sh
+
 set -e
 
 # Filter services based on workspace configuration
@@ -8,19 +10,26 @@ services_filter=$(get_services_filter)
 if [ "$IS_IN_CONTAINER" = "true" ]; then
     eval $(grep -m 1 'command:' "$ROOT_DIR/docker-compose.override.yaml" | sed 's/.*command: //')
 else
-    # Set up a trap to ensure we stop all containers on exit or interrupt
+    # Set up a trap to ensure we stop all containers on interrupt
     cleanup() {
         message 33 "CLEANUP" "Stopping all containers..."
         _docker compose down
         exit 0
     }
-    # Trap SIGINT (Ctrl+C) and EXIT
-    trap cleanup INT EXIT
+    
+    # Check if running in detached mode
+    if [[ "$*" == *"-d"* ]] || [[ "$*" == *"--detach"* ]]; then
+        # Only trap SIGINT for detached mode (let script exit normally)
+        trap cleanup INT
+    else
+        # Trap both SIGINT and EXIT for interactive mode
+        trap cleanup INT EXIT
+    fi
     
     if [ -n "$services_filter" ]; then
         message 30 "WORKSPACE" "Starting selected services: $services_filter"
-        _docker compose up $services_filter
+        _docker compose up $services_filter "$@"
     else
-        _docker compose up
+        _docker compose up "$@"
     fi
 fi

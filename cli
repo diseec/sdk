@@ -1,19 +1,19 @@
 #!/bin/bash
 
 c=$1; shift; case $c in
-    vise) c=$1; shift; case $c in
-        install)
+    vis|vise) c=$1; shift; case $c in
+        ins|install)
             set -e
             if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
                 # message "Installing in Node.js project .."
-                VERSION_SPECIFIER=$(node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
+                VERSION_SPECIFIER=$(_node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
                 if [ -z "$VERSION_SPECIFIER" ]; then
                     echo "@$ORG_NAME/$KIT_NAME not found in dependencies or devDependencies."
                     exit 1
                 fi
                 message "Running npm install @$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER .."
                 TMPDIR=$(mktemp -d)
-                (cd $TMPDIR && npm install "@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER")
+                (cd $TMPDIR && _npm install "@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER")
                 rm -rf $PROJECT_MOUNT_DIR/node_modules/@$ORG_NAME/$KIT_NAME 2>/dev/null
                 mkdir -p $PROJECT_MOUNT_DIR/node_modules/@$ORG_NAME/$KIT_NAME 2>/dev/null
                 cp -r $TMPDIR/node_modules/@$ORG_NAME/$KIT_NAME $PROJECT_MOUNT_DIR/node_modules/@$ORG_NAME
@@ -22,20 +22,41 @@ c=$1; shift; case $c in
             fi
         ;;
         # templates) bash bin/templates.sh ;;
-        *) echo "No command found";;
+        *)
+            display_help \
+                "" "" \
+                "$(color 30 'Package Visibility Commands')" "" \
+                "    ins|install             " "Install package dependencies in Node.js project"
+        ;;
     esac;;
 
-    pull) git pull origin main ;;
-
-    help|--help|-h)
-        printf "\n"
+    pul|pull) _git pull origin main "$@" ;;
+    sta|start) $CLI docker compose up-development "$@" ;;
+    sto|stop) $CLI docker compose down "$@" ;;
+    hel|help|--help|-h)
         display_help \
-            "run     " "Run a command in fresh instance" \
-            "build   " "Build the images push to registry" \
-            "install " "Install the dependencies" \
-            "shell   " "Start the shell" \
-            "$KIT_NAME  " "Run '$KIT_NAME help' to see commands"
+            "" "" \
+            "$(color 30 'Usage')" "" \
+            "$(color 32 '    kit <command> [subcommand] [options] [arguments]\n')" "" \
+            "$(color 30 'Kit Container Lifecycle')" "" \
+            "    sta|start               " "Start kit container (for fast subsequent ops)" \
+            "    sto|stop                " "Stop kit container" \
+            "    shell                   " "Open shell in kit container (project is mounted)" \
+            "" "" \
+            "$(color 30 'Project Management & Modification')" "" \
+            "    vis|vise <cmd>          " "Run kit-powered commands to manage/modify projects" \
+            "        ins|install         " "Install kit into a managed project" \
+            "        ...                 " "Other project modification commands (see docs)" \
+            "" "" \
+            "$(color 30 'Source Control')" "" \
+            "    pul|pull                " "Pull latest changes from main branch in kit context" \
+            "" "" \
+            "$(color 30 'Information')" "" \
+            "    hel|help                " "Show this help message" \
+            "" "" \
+            "$(color 34 'Note:')" "This CLI manages the kit container and project operations. For project CLI, use the installed cli in your project root." \
+            "$(color 34 'Docs:')" "See https://github.com/diseec/kit for full command reference."
         ;;
 
-    *) . $KIT_SRC_DIR/cli.sh "$c" "$@" ;;
+    *) . $CLI_BASE "$c" "$@" ;;
 esac

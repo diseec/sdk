@@ -4,11 +4,7 @@
 
 c=$1; shift; case $c in
 
-    x) echo 'dddd' ;;
-    env|envs) message 34 "INFO" "Sourced repo envs" ;; # Source projects root cli to load environment variables. example: "source ./cli envs;"
-    kit) export TO_MOUNT_DIR="$ROOT_DIR"; cd $KIT_DIR; D "$@" ;;
-
-    ######################## SETUP CMDS ########################
+    ######################## PROJECT MANAGEMENT ########################
 
     ins|install)
         c=$1; if [ -n "$c" ]; then shift; else . $CLI install project; return 0; fi
@@ -16,36 +12,34 @@ c=$1; shift; case $c in
             pro|project) . $KIT_SRC_DIR/install/project.sh "$@" ;;
             pre|prettier) . $KIT_SRC_DIR/install/prettier.sh "$@" ;;
             glo|globally) . $KIT_SRC_DIR/install/globally.sh "$@" ;;
-            # *) define helps ;;
+            *)
+                display_help \
+                    "" "" \
+                    "$(color 30 'Install Commands')" "" \
+                    "    pro|project     " "Install project dependencies (default)" \
+                    "    pre|prettier    " "Install Prettier formatter" \
+                    "    glo|globally    " "Install global dependencies"
+            ;;
         esac ;;
     upd|update) . $KIT_SRC_DIR/cmds/update.sh; cmd_update "$@" ;;
+    sta|status)         
+        . $CLI version
+        . $CLI workspace status
+        . $CLI git status
+        . $CLI inform check-for-updates
+    ;;
 
-    ######################## DEV CMDS ########################
+    ######################## DEVELOPMENT ENVIRONMENT ########################
 
     dev|develop) . $CLI docker compose up-development "$@" ;;
+    bui|build) . $CLI docker compose build-parallel "$@" ;;
     run) . $CLI docker compose execute "$REPO_NAME" "$@" ;;
     exe|execute) . $CLI docker compose execute "$@" ;;
-    bui|build) . $CLI docker compose build-parallel "$@" ;;
     she|shell) . $CLI run /bin/bash "$@" ;;
-    pul|pull) . $CLI git pull "$@" ;;
-    pus|push) . $CLI git push "$@" ;;
-    for|format) . $KIT_SRC_DIR/cmds/format.sh "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
     tes|test) . $KIT_SRC_DIR/cmds/test.sh "$@" ;;
+    for|format) . $KIT_SRC_DIR/cmds/format.sh "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
 
-    ######################## GROUP CMDS ########################
-
-    doc|docker) c=$1; shift; case $c in
-        com|compose) c=$1; shift; case $c in
-            upd|up-development) . $KIT_SRC_DIR/cmds/docker/up-development.sh "$@" ;;
-            upp|up-production) . $KIT_SRC_DIR/cmds/docker/up-production.sh "$@" ;;
-            exe|execute) . $KIT_SRC_DIR/cmds/docker/execute.sh "$@" ;;
-            bui|build-parallel) _docker compose build --parallel "$@" ;;
-            # hel|help|--help|-h) help docs comes here ;;
-            *) _docker compose "$@" ;;
-        esac ;;
-        # hel|help|--help|-h) help docs comes here ;;
-        *) _docker "$@" ;;
-    esac ;;
+    ######################## SOURCE CONTROL ########################
 
     git) . $KIT_SRC_DIR/cmds/git.sh; c=$1; shift; case "$c" in
         sta|status)
@@ -57,13 +51,86 @@ c=$1; shift; case $c in
         pul|pull) cmd_git_pull "$@" ;;
         rel|release) cmd_git_release "$@" ;;
         *)
-            message 33 "GIT" "Available git commands:"
-            echo "  status   - Check status of current branch's PR and show unresolved comments"
-            echo "  push     - Commit all changes with AI-generated message and create/update PR"
-            echo "  pull     - Fetch/merge all origin changes to local branch"
+            display_help \
+                "" "" \
+                "$(color 30 'Git Commands')" "" \
+                "    sta|status   " "Check current branch PR status and unresolved comments" \
+                "    pus|push     " "Auto-commit with AI message and create/update PR" \
+                "    pul|pull     " "Pull latest changes and merge with main" \
+                "    rel|release  " "Create release tag (development command)"
         ;;
     esac;;
+    pul|pull) . $CLI git pull "$@" ;;
+    pus|push) . $CLI git push "$@" ;;
 
+    ######################## INFRASTRUCTURE ########################
+
+    doc|docker) c=$1; shift; case $c in
+        com|compose) c=$1; shift; case $c in
+            upd|up-development) . $KIT_SRC_DIR/cmds/docker/up-development.sh "$@" ;;
+            upp|up-production) . $KIT_SRC_DIR/cmds/docker/up-production.sh "$@" ;;
+            exe|execute) . $KIT_SRC_DIR/cmds/docker/execute.sh "$@" ;;
+            bui|build-parallel) _docker compose build --parallel "$@" ;;
+            *)
+                display_help \
+                    "" "" \
+                    "$(color 30 'Docker Compose Commands')" "" \
+                    "    upd|up-development  " "Start development environment" \
+                    "    upp|up-production   " "Start production environment" \
+                    "    exe|execute         " "Execute command in compose service" \
+                    "    bui|build-parallel  " "Build all services in parallel" \
+                    "    <docker-compose-cmd>" "Pass through to docker compose"
+                _docker compose $c "$@"
+            ;;
+        esac ;;
+        *)
+            display_help \
+                "" "" \
+                "$(color 30 'Docker Commands')" "" \
+                "    com|compose         " "Docker compose operations" \
+                "    <docker-cmd>        " "Pass through to docker"
+            _docker "$@"
+        ;;
+    esac ;;
+    ser|service) . $KIT_SRC_DIR/cmds/services.sh "$@" ;;
+    pac|package) . $KIT_SRC_DIR/cmds/packages.sh "$@" ;;
+    wor|workspace) . $KIT_SRC_DIR/cmds/workspace.sh; c=$1; shift; case "$c" in
+        ini|init) cmd_workspace_init ;;
+        sel|select) cmd_workspace_select ;;
+        sta|status) cmd_workspace_status ;;
+        *)
+            display_help \
+                "" "" \
+                "$(color 30 'Workspace Commands')" "" \
+                "    ini|init      " "Initialize workspace configuration" \
+                "    sel|select    " "Select modules for workspace" \
+                "    sta|status    " "Show current workspace configuration"
+        ;;
+    esac ;;
+
+    ######################## CONFIGURATION ########################
+
+    con|config) . $KIT_SRC_DIR/facades/config.sh; c=$1; shift; case "$c" in
+        get) config_get "$@" ;;
+        set) config_set "$@" ;;
+        del|delete) config_delete "$@" ;;
+        array_add) config_array_add "$@" ;;
+        array_remove) config_array_remove "$@" ;;
+        lis|list) config_keys "$@" ;;
+        pri|print) config_print "$@" ;;
+        *)
+            display_help \
+                "" "" \
+                "$(color 30 'Config Commands')" "" \
+                "    get <key.path>                   " "Get value from configuration" \
+                "    set <key.path> <value>           " "Set value in configuration" \
+                "    del|delete <key.path>            " "Delete key from configuration" \
+                "    array_add <key.path> <val>       " "Add item to array" \
+                "    array_remove <key.path> <val>    " "Remove item from array" \
+                "    lis|list                         " "List all configuration keys" \
+                "    pri|print                        " "Print entire configuration"
+        ;;
+    esac ;;
     sec|secrets) . $KIT_SRC_DIR/cmds/secrets.sh; c=$1; shift; case $c in
         ini|init) cmd_secret_init "$@" ;;
         set|set-key) cmd_secret_set_key "$@" ;;
@@ -77,120 +144,115 @@ c=$1; shift; case $c in
         deb|debug) cmd_secret_debug "$@" ;;
         rem|remove|rm) cmd_secret_remove_secret "$@" ;;
         *)
-            message 33 "SECRETS" "Available secrets commands:"
-            echo "  ini|init               - Initialize encryption key (auto-generated)"
-            echo "  set|set-key            - Set encryption key manually"
-            echo "  res|reset-key          - Generate new encryption key and re-encrypt all secrets"
-            echo "  key|show-key           - Display current encryption key"
-            echo "  add                    - Add a new secret"
-            echo "  sho|show               - Display all secrets in readable format"
-            echo "  get|get-all            - Export all secrets as environment variables"
-            echo "  lis|list               - List all secret names"
-            echo "  cle|clear              - Remove all secrets (requires confirmation)"
-            echo "  debug                  - Test encryption/decryption functionality"
-            echo "  rem|remove <name>      - Remove a secret"
-            echo ""
-            message 34 "INFO" "Secrets are encrypted with AES-256-CBC using auto-generated keys"
-            echo ""
-            message 33 "IMPORTANT" "If secrets exist but no key is configured, you must:"
-            echo "  1. Set the original key manually: secrets set-key"
-            echo "  2. Clear all secrets: secrets clear"
+            display_help \
+                "" "" \
+                "$(color 30 'Secrets Commands')" "" \
+                "    ini|init               " "Initialize encryption key (auto-generated)" \
+                "    set|set-key            " "Set encryption key manually" \
+                "    res|reset-key          " "Generate new key and re-encrypt all secrets" \
+                "    key|show-key           " "Display current encryption key" \
+                "    add                    " "Add a new secret interactively" \
+                "    sho|show               " "Display all secrets in readable format" \
+                "    get|get-all            " "Export all secrets as environment variables" \
+                "    lis|list               " "List all secret names" \
+                "    cle|clear              " "Remove all secrets (requires confirmation)" \
+                "    deb|debug              " "Test encryption/decryption functionality" \
+                "    rem|remove <name>      " "Remove a specific secret" \
+                "" "" \
+                "$(color 34 'Info:')" "Secrets are encrypted with AES-256-CBC using auto-generated keys" \
+                "" "" \
+                "$(color 30 'Important:')" "If secrets exist but no key is configured, you ust:" \
+                "    1. Set the original key manually: secrets set-key" "" \
+                "    2. Clear all secrets: secrets clear" ""
         ;;
     esac;;
+    env|envs) message 34 "INFO" "Sourced repo envs" ;; # Source projects root cli to load environment variables. example: "source ./cli envs;"
 
-    ######################## SUBMODULES ########################
+    ######################## UTILITIES ########################
 
-    ser|service) . $KIT_SRC_DIR/cmds/services.sh "$@" ;;
-    pac|package) . $KIT_SRC_DIR/cmds/packages.sh "$@" ;;
-    wor|workspace) . $KIT_SRC_DIR/cmds/workspace.sh; c=$1; shift; case "$c" in
-        ini|init) cmd_workspace_init ;;
-        sel|select) cmd_workspace_select ;;
-        sta|status) cmd_workspace_status ;;
-        *)
-            message 33 "WORKSPACE" "Available workspace commands:"
-            echo "  ini|init      - Initialize workspace configuration"
-            echo "  sel|select    - Select modules for workspace"
-            echo "  sta|status    - Show current workspace configuration"
-            echo "           (Can pass custom commands: workspace sync 'command1' 'command2')"
-        ;;
-    esac ;;
-
-    ######################## API ########################
-
-    api) c=$1; shift; case "$c" in
-        v1) c=$1; shift; case "$c" in
-            install) . $CLI install "$@" ;;
-        esac ;;
-        # *) write helps here ;;
-    esac ;;
-
-    ######################## FACADES ########################
-
-    saf|safe)
-        $CLI $KIT_NAME execute $KIT_NAME bash -c "D "$@""
-        ;;
-    # saf|safe) . $CLI $KIT_NAME run $CLI "$@" ;;
-    eve|event) . $KIT_SRC_DIR/facades/event.sh "$@" ;;
-    con|config) . $KIT_SRC_DIR/facades/config.sh; c=$1; shift; case "$c" in
-        get) config_get "$@" ;;
-        set) config_set "$@" ;;
-        delete) config_delete "$@" ;;
-        array_add) config_array_add "$@" ;;
-        array_remove) config_array_remove "$@" ;;
-        list) config_keys "$@" ;;
-        print) config_print "$@" ;;
-        # *)  ;;
-    esac ;;
-
-    ######################## INFORMATION ########################
-
-    sta|status)         
-        . $CLI version
-        . $CLI workspace status
-        . $CLI git status
-        . $CLI inform check-for-updates
-    ;;
     inf|inform) c=$1; shift; case $c in
         # check-network-status) ;;
         forbid-dev-on-main) . $KIT_SRC_DIR/informs/forbid-dev-on-main.sh "$@" ;;
         summary-branch-status) . $KIT_SRC_DIR/informs/summary-branch-status.sh "$@" ;;
         check-for-updates) . $KIT_SRC_DIR/informs/check-for-updates.sh "$@" ;;
         *)
-            message 33 "INFORM" "Available inform commands:"
-            echo "  forbid-dev-on-main    - Warn if on 'main' branch"
-            echo "  summary-branch-status - Show local vs remote branch status"
-            echo "  check-for-updates     - Check for updates and notify"
+            display_help \
+                "" "" \
+                "$(color 30 'Inform Commands')" "" \
+                "    forbid-dev-on-main       " "Warn if on 'main' branch" \
+                "    summary-branch-status    " "Show local vs remote branch status" \
+                "    check-for-updates        " "Check for CLI updates and notify"
         ;;
     esac ;;
+    saf|safe) $CLI $KIT_NAME execute $KIT_NAME D "$@" ;;
+    eve|event) . $KIT_SRC_DIR/facades/event.sh "$@" ;;
+    api) c=$1; shift; case "$c" in
+        v1) c=$1; shift; case "$c" in
+            install) . $CLI install "$@" ;;
+            *)
+                display_help \
+                    "" "" \
+                    "$(color 30 'API v1 Commands')" "" \
+                    "    install     " "Install API v1 dependencies"
+            ;;
+        esac ;;
+        *)
+            display_help \
+                "" "" \
+                "$(color 30 'API Commands')" "" \
+                "    v1          " "API version 1 operations"
+        ;;
+    esac ;;
+    kit) export TO_MOUNT_DIR="$ROOT_DIR"; cd $KIT_DIR; D "$@" ;;
+
+    ######################## INFORMATION ########################
+
     ver|version|--version) message 40 "v$VERSION" "DISEEC DevOps CLI — Automation Toolkit" ;;
     hel|help|--help|-h)
         display_help \
             "" "" \
-            "$(color 33 'Usage:')" "" \
-            "$(color 32 '    command [options] [arguments]\n')" "" \
-            "$(color 33 'Base Commands:')" "" \
-            "    ins|install      "  "Install the dependencies" \
-            "    upd|update       "  "Sync project with latest updates" \
-            "    sta|status       "  "Show project status" \
-            "    pul|pull         "  "Pull and merge latest changes from repository. Alias to 'cli git pull'" \
-            "    pus|push         "  "Automated commit->push->pr process with AI generated message. Alias to 'cli git push'" \
-            "    dev              "  "Start the development server" \
-            "    pro              "  "Start the production server" \
-            "    bui|build        "  "Build the image push to registry" \
-            "    run              "  "Run a command in fresh instance, usage: run <command>" \
-            "    exe|exec         "  "Run a command in a service container, usage: exec <service-name> <command>" \
-            "    she|shell        "  "Start a shell" \
-            "    tes|test         "  "Run the tests in production mode, see: test -h" \
-            "    for|format       "  "Check if Prettier exists and run formatting on codebase" \
-            "    git              "  "Git management commands run: cli git help" \
-            "    $KIT_NAME           "  "Run a command in SDK image, usage: $KIT_NAME <command>" \
-            "    ser|service      "  "Run a command in a service, usage: cli service <command>" \
-            "    pac|package      "  "Run a command in a package, usage: cli package <command>" \
-            "    wor|workspace    "  "Manage workspace configuration [init|select|status]" \
-            "    sec|secrets      "  "Manage secrets [init|show-key|regenerate-key|add|get-all|list|remove]" \
-            "    env|envs         "  "All exported envs, source project cli to load them!" \
-            "    ver|version      "  "Show the current kit version" \
-            "    hel|help         "  "Display the help message" \
+            "$(color 30 'Usage')" "" \
+            "$(color 32 '    cli <command> [subcommand] [options] [arguments]\n')" "" \
+            "$(color 30 'Project Management')" "" \
+            "    ins|install              " "Install project dependencies and tools" \
+            "    upd|update               " "Update CLI and sync project" \
+            "    sta|status               " "Show comprehensive project status" \
+            "" "" \
+            "$(color 30 'Development Environment')" "" \
+            "    dev|develop              " "Start development environment" \
+            "    bui|build                " "Build project images" \
+            "    run <command>            " "Execute command in container" \
+            "    exe|execute <svc> <cmd>  " "Execute command in specific service" \
+            "    she|shell                " "Open interactive shell" \
+            "    tes|test [type]          " "Run test suites" \
+            "    for|format               " "Format codebase" \
+            "" "" \
+            "$(color 30 'Source Control')" "" \
+            "    git                      " "Git workflow management" \
+            "    pul|pull                 " "Pull and merge latest changes" \
+            "    pus|push                 " "Auto-commit and create PR" \
+            "" "" \
+            "$(color 30 'Infrastructure')" "" \
+            "    doc|docker               " "Docker operations" \
+            "    ser|service              " "Service management" \
+            "    pac|package              " "Package management" \
+            "    wor|workspace            " "Workspace configuration" \
+            "" "" \
+            "$(color 30 'Configuration')" "" \
+            "    con|config               " "Configuration management" \
+            "    sec|secrets              " "Encrypted secrets management" \
+            "    env|envs                 " "Environment variables. Usage: source D envs" \
+            "" "" \
+            "$(color 30 'Utilities')" "" \
+            "    inf|inform               " "Information and validation" \
+            "    saf|safe <command>       " "Safe command execution" \
+            "    eve|event                " "Event handling" \
+            "    api                      " "API operations" \
+            "    kit <command>            " "SDK container operations" \
+            "" "" \
+            "$(color 30 'Information')" "" \
+            "    ver|version              " "Show version information" \
+            "    hel|help                 " "Show this help message" \
             "$@"
     ;;
     *)
