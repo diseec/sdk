@@ -83,7 +83,7 @@ cmd_update() {
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
         cd $KIT_DIR; $CLI kit docker compose pull;
-        $CLI safe kit vise initialize;
+        $CLI kit run npm update @$ORG_NAME/$KIT_NAME;
 
         message 44 "info" "Installing dependencies..."
         $CLI install --ignore-submodule-installation;
