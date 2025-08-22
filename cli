@@ -1,5 +1,11 @@
 #!/bin/bash
 
+export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)";
+export ROOT_DIR="$KIT_DIR";
+export IS_KIT_CLI="true";
+cd $ROOT_DIR;
+. $KIT_DIR/index.sh;
+
 c=$1; shift; case $c in
     vis|vise) c=$1; shift; case $c in
         ini|initialize)
@@ -30,6 +36,7 @@ c=$1; shift; case $c in
         ;;
     esac;;
 
+    run) $CLI execute $KIT_NAME "$@" ;;
     pul|pull) _git pull origin main "$@" ;;
     sta|start) $CLI docker compose up-development "$@" ;;
     sto|stop) $CLI docker compose down "$@" ;;

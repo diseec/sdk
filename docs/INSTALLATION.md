@@ -52,6 +52,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 COPY . .
+
+# REQUIRED: Set container environment variable for DISEEC kit compatibility
+ENV IS_IN_CONTAINER=true
+
 EXPOSE 3000
 CMD ["npm", "start"]
 ```

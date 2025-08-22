@@ -7,9 +7,9 @@ c=$1; shift; case $c in
     ins|install)
         c=$1; if [ -n "$c" ]; then shift; else . $CLI install project; return 0; fi
         case "$c" in
-            pro|project) . $KIT_SRC_DIR/install/project.sh "$@" ;;
-            pre|prettier) . $KIT_SRC_DIR/install/prettier.sh "$@" ;;
-            glo|globally) . $KIT_SRC_DIR/install/globally.sh "$@" ;;
+            pro|project) . $KIT_SRC_DIR/cmds/install/project.sh "$@" ;;
+            pre|prettier) . $KIT_SRC_DIR/cmds/install/prettier.sh "$@" ;;
+            glo|globally) . $KIT_SRC_DIR/cmds/install/globally.sh "$@" ;;
             *)
                 display_help \
                     "" "" \
@@ -201,7 +201,7 @@ c=$1; shift; case $c in
                 "    v1          " "API version 1 operations"
         ;;
     esac ;;
-    kit) export TO_MOUNT_DIR="$ROOT_DIR"; cd $KIT_DIR; D "$@" ;;
+    kit) export TO_MOUNT_DIR="$ROOT_DIR"; . $KIT_DIR/cli "$@" ;;
 
     ######################## INFORMATION ########################
 

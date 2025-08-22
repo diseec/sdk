@@ -3,20 +3,14 @@
 dir="$PWD"; while :; do
     if [ -f "$dir/cli" ]; then
         export ROOT_DIR="$dir"
-        if [ -f "$ROOT_DIR/D" ]; then 
-            export IS_KIT_CLI="true";
-            export KIT_DIR="$ROOT_DIR";
-        else
-            export KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
-            if [ ! -d "$KIT_DIR" ]; then
-                docker run --rm -v $dir:/vise image.registry.diseec.com/kit bash cli vise initialize
-            fi
+        export KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
+        if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ]; then 
+            docker run --rm -v $dir:/vise image.registry.diseec.com/kit D vise initialize
         fi
         break
     fi
     if [ "$dir" = "/" ]; then
         printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
-        # export KIT_DIR="$(_npm config get prefix)/lib/$KIT_RELATIVE_PATH"
         return 1
         break
     fi
