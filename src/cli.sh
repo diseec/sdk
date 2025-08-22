@@ -182,7 +182,7 @@ c=$1; shift; case $c in
                 "    check-for-updates        " "Check for CLI updates and notify"
         ;;
     esac ;;
-    saf|safe) $CLI $KIT_NAME execute $KIT_NAME D "$@" ;;
+    saf|safe) $CLI kit run $PROJECT_MOUNT_DIR/cli "$@" ;;
     eve|event) . $KIT_SRC_DIR/facades/event.sh "$@" ;;
     api) c=$1; shift; case "$c" in
         v1) c=$1; shift; case "$c" in

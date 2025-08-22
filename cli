@@ -7,7 +7,9 @@ cd $ROOT_DIR;
 . $KIT_DIR/index.sh;
 
 c=$1; shift; case $c in
-    vis|vise) c=$1; shift; case $c in
+    vis|vise)
+    if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then message 41 error "The vise command works only on bench! (the kit container)"; exit 1; fi
+    c=$1; shift; case $c in
         ini|initialize)
             set -e
             if [ -f $PROJECT_MOUNT_DIR/package.json ]; then

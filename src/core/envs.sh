@@ -8,9 +8,9 @@ export KIT_IMAGE="$IMAGE_REGISTRY_URL/$KIT_NAME"
 export REPO_HUB_URL="github.com/$ORG_NAME"
 export KIT_RELATIVE_PATH="node_modules/@diseec/kit"
 
-if [ ! -n "$KIT_DIR" ]; then
-    export KIT_DIR="$(_npm config get prefix)/lib/$KIT_RELATIVE_PATH"
-fi
+# if [ ! -n "$KIT_DIR" ]; then
+#     export KIT_DIR="$(_npm config get prefix)/lib/$KIT_RELATIVE_PATH"
+# fi
 
 auto_discover_project_root_dir() {
     # Canonicalize KIT_DIR

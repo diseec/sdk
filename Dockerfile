@@ -28,7 +28,7 @@ COPY . .
 
 ENV IS_IN_CONTAINER=true
 
-RUN . D envs && \
+RUN . /kit/cli envs && \
     mkdir $PROJECT_MOUNT_DIR && \
     npm install -g /kit
 

@@ -17,4 +17,6 @@ dir="$PWD"; while :; do
     dir=$(dirname -- "$dir")
 done
 
-cd $ROOT_DIR; . $KIT_DIR/index.sh; . $CLI "$@";
+cd $ROOT_DIR;
+. $KIT_DIR/index.sh;
+. $CLI "$@";

@@ -3,7 +3,7 @@
 . $KIT_SRC_DIR/cmds/workspace.sh
 
 get_version_specifier() {
-    $CLI $KIT_NAME exec $KIT_NAME --no-message _node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']"
+    _node -p "require('$ROOT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$ROOT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']"
 }
 
 # Get the repository cache directory path
@@ -67,7 +67,7 @@ has_version_changed() {
 cmd_update() {
     set -e
     message 44 "info" "Pulling changes..."
-    _git pull origin
+    # _git pull origin
     VERSION_SPECIFIER="$(get_version_specifier)"
     # Check if version has changed
     if has_version_changed; then
@@ -82,8 +82,8 @@ cmd_update() {
         $CLI event before_update
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
-        (cd $KIT_DIR; docker compose pull);
-        $CLI $KIT_NAME exec $KIT_NAME /$KIT_NAME/cli vise initialize;
+        # cd $KIT_DIR; _docker compose pull;
+        $CLI safe kit vise initialize;
 
         message 44 "info" "Installing dependencies..."
         $CLI install --ignore-submodule-installation;
