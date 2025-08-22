@@ -11,7 +11,7 @@
     "url": "git+https://github.com/diseec/kit.git"
   },
   "bin": {
-    "D": "./D"
+    "D": "D"
   },
   "publishConfig": {
     "access": "public"
