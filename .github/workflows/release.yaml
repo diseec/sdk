@@ -20,6 +20,9 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
 
+      - name: Install git
+        run: apk add --no-cache git
+
       - name: Configure git
         run: |
           git config --global user.name "github-actions[bot]"
