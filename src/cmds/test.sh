@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 HEALTH_CHECK_STATE_FILE="/tmp/health_check_passed"
 
@@ -7,14 +7,14 @@ if [ -z "$1" ]; then TYPE="all"; else TYPE=$1; shift; fi
 case $TYPE in
     health)
         if [ -f "$HEALTH_CHECK_STATE_FILE" ]; then
-            message 42 'HEALTHY' "Health check already passed previously. Skipping."
+            message 42 'SUCCESS' "Health check already passed previously. Skipping."
             exit 0
         fi
 
         message "Running health check .."
         PORT=$(grep -A 1 'ports:' docker-compose.yaml | awk -F ':' 'NR==2 {print $2}' | tr -d ' ')
         if [ -z "$PORT" ]; then
-            message 45 'ERROR' "Could not find the port binding in docker-compose.yaml"
+            message 33 'WARNING' "Could not find the port binding in docker-compose.yaml"
             exit 1
         fi
 
@@ -22,11 +22,11 @@ case $TYPE in
         RESPONSE_CODE=$(wget --spider --server-response "$HEALTH_TEST_URL" 2>&1 | awk '/HTTP\/[0-9.]+ [0-9]+/ {print $2}' | head -n 1)
 
         if [ "$RESPONSE_CODE" -eq 200 ]; then
-            message 42 'HEALTHY' "Health check passed. Endpoint $HEALTH_TEST_URL returned: $RESPONSE_CODE."
+            message 42 'SUCCESS' "Health check passed. Endpoint $HEALTH_TEST_URL returned: $RESPONSE_CODE."
             touch "$HEALTH_CHECK_STATE_FILE"
             exit 0
         else
-            message 41 'ERROR' "Health check failed. Endpoint $HEALTH_TEST_URL returned: $RESPONSE_CODE."
+            message 31 'ERROR' "Health check failed. Endpoint $HEALTH_TEST_URL returned: $RESPONSE_CODE."
             exit 1
         fi
     ;;

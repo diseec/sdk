@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 ROOT_DIR="${ROOT_DIR:-$(pwd)}"
 EVENT="${1-}"

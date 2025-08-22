@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd $ROOT_DIR; command=$1; shift;
 
@@ -25,7 +25,7 @@ case $command in
 
     link)
         message "45" "PACKAGES:" "\n$(ls packages)"
-        read -p "$(message 45 "⁇" "Select a package to link:")" PACKAGE
+        read -p "$(message 45 "?" "Select a package to link:")" PACKAGE
         npm link ./packages/$PACKAGE
     ;;
 

@@ -1,7 +1,7 @@
 FROM node:alpine
 
 # Install base dependencies
-RUN apk add --no-cache bash curl git git-lfs
+RUN apk add --no-cache bash curl git yq openssl git-lfs
 
 # Install GitHub CLI using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \
@@ -22,12 +22,16 @@ RUN ARCH=$(uname -m) && \
     cd / && \
     rm -rf /tmp/gh
 
-WORKDIR /app
-
-ENV IS_IN_CONTAINER=true
+WORKDIR /kit
 
 COPY . .
 
-RUN . ./cli envs; npm install -g @$ORG_NAME/$KIT_NAME
+ENV IS_IN_CONTAINER=true
+
+RUN . D envs && \
+    mkdir $PROJECT_MOUNT_DIR && \
+    npm install -g /kit
+
+ENV IS_IN_KIT_CONTAINER=true
 
 CMD ["bash", "cli", "help"]

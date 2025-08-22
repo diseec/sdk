@@ -239,14 +239,12 @@ get_services_filter() {
 
 # Show workspace status
 cmd_workspace_status() {
-    message 34 "WORKSPACE" "Current workspace configuration"
-    
     local config_file="$(get_workspace_config_path)"
     if [ -f "$config_file" ]; then
-        message 34 "CONFIG" "Using repository-specific config: $config_file"
+        echo "Using workspace config: $config_file"
         local selected_modules=$(get_selected_modules)
         if [ -n "$selected_modules" ]; then
-            message 34 "MODULES" "Selected modules:"
+            echo "Selected modules:"
             for module in $selected_modules; do
                 echo "  - $module"
             done
@@ -255,7 +253,7 @@ cmd_workspace_status() {
         fi
     else
         message 33 "INFO" "No workspace configuration found for $REPO_NAME"
-        message 33 "INFO" "Run 'cli workspace init' to create one"
+        echo "Run 'cli workspace init' to create one"
     fi
 }
 

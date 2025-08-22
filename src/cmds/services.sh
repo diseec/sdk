@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd $ROOT_DIR; command=$1; shift;
 
@@ -17,7 +17,7 @@ case $command in
         #     $CLI exec "$REPO_NAME" "$@"
         # else
         message "45" "SERVICES:" "\n$services"
-        read -p "$(message 45 "⁇" "Specify a service to run:")" service
+        read -p "$(message 45 "?" "Specify a service to run:")" service
         $CLI exec "$service" "$@"
         # fi
     ;;

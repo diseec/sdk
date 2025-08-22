@@ -51,12 +51,12 @@ Build the Docker images and push them to the registry.
 sh cli build
 ```
 
-#### `devops`
+#### `kit`
 
 Run DevOps commands.
 
 ```sh
-sh cli devops [subcommand]
+sh cli kit [subcommand]
 ```
 
 Subcommands:
@@ -102,7 +102,7 @@ Here is an example of how you might use the CLI script in your development workf
 5. **Apply DevOps templates**:
 
    ```sh
-   sh cli devops override
+   sh cli kit override
    ```
 
 ## Internal Use Only ⚠️

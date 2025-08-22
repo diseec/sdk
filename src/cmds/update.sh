@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. $KIT_SRC_DIR/cmds/workspace.sh
+
 get_version_specifier() {
     $CLI $KIT_NAME exec $KIT_NAME --no-message node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']"
 }
@@ -20,7 +22,7 @@ get_repo_cache_dir() {
     echo "$cache_dir"
 }
 
-# Get the cached version of devops tools
+# Get the cached version of kit tools
 get_cached_version() {
     local cache_file="$(get_repo_cache_dir)/kit_version.txt"
     
@@ -45,7 +47,7 @@ set_cached_version() {
     message 34 "CACHE" "Updated cached $KIT_NAME version to: $version"
 }
 
-# Check if devops version has changed
+# Check if kit version has changed
 has_version_changed() {
     local cached_version=$(get_cached_version)
     
@@ -80,7 +82,7 @@ cmd_update() {
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
         (cd $KIT_DIR; docker compose pull);
-        $CLI $KIT_NAME exec $KIT_NAME /app/cli vise install;
+        $CLI $KIT_NAME exec $KIT_NAME /$KIT_NAME/cli vise install;
 
         message 44 "info" "Installing dependencies..."
         $CLI install --ignore-submodule-installation;

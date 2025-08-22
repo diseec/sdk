@@ -1,8 +1,5 @@
-#!/bin/sh
+#!/bin/bash
 
-. $KIT_DIR/src/envs.sh;
-. $KIT_SRC_DIR/installers.sh;
-. $KIT_SRC_DIR/helpers.sh;
-. $KIT_SRC_DIR/cmds.sh;
-. $KIT_SRC_DIR/workspace.sh; 
-. $KIT_SRC_DIR/git.sh; 
+. $KIT_DIR/src/core/envs.sh;
+. $KIT_DIR/src/core/output.sh;
+. $KIT_DIR/src/core/wrappers.sh;

@@ -1,12 +1,11 @@
 #!/bin/bash
 
-export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/devops"; case $1 in install) docker run --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli vise install ;; esac; . $KIT_DIR/index.sh;
-
 # -----------------------------------------------------------------------------
-# DISEEC CLI Helper Script
+#
+# DISEEC DevOps Toolkit
 #
 # This script provides a unified command-line interface for project-level
-# DevOps and automation tasks. It leverages the @diseec/devops Node.js package
+# DevOps and automation tasks. It leverages the @diseec/kit Node.js package
 # for core functionality and can be extended here to add or modify commands
 # specific to this project.
 #
@@ -20,9 +19,10 @@ export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@dise
 # # Extract options in order only belong to command only up to next argument
 # while [ $# -gt 0 ]; do case "$1" in
 #     -x=*|--x=*) X="${1#*=}"; shift;;
+#     -x|--x) X="$2"; shift 2;; (this doesnt work!?)
 # *) break;; esac; done;
 
-command=$1; shift; case $command in
+c=$1; shift; case $c in
     # A)
     #     # Extract all options in order
     #     while [ $# -gt 0 ]; do case "$1" in --) shift; break;;
@@ -48,11 +48,6 @@ command=$1; shift; case $command in
     # listen:before_update) message 44 "info" "Commands before updating completed..." ;;
     # listen:after_update) message 44 "info" "Commands after updating completed..." ;;
 
-    hel|help|--help|-h)
-        cmd_help \
-         "" "" \
-         "$(color 33 'Service Commands:')" "" \
-         "    hel|help         " "Display the help message";
-    ;;
-    *) $KIT_SRC_DIR/cli.sh "$command" "$@" ;;
+    # hel|help|--help|-h) $KIT_SRC_DIR/cli.sh help "myc|mycommand" "    Display the help message" ;;
+    *) . $KIT_SRC_DIR/cli.sh "$c" "$@" ;;
 esac

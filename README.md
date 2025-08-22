@@ -1,4 +1,4 @@
-# @diseec/devops
+# @diseec/kit
 
 > Enterprise DevOps Toolkit for DISEEC Monorepos
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-`@diseec/devops` is a comprehensive, enterprise-grade DevOps toolkit designed to standardize, automate, and streamline development, CI/CD, and deployment workflows across DISEEC projects. It provides reusable CLI scripts, Dockerfiles, configuration templates, and submodule management utilities for modern monorepo environments.
+`@diseec/kit` is a comprehensive, enterprise-grade DevOps toolkit designed to standardize, automate, and streamline development, CI/CD, and deployment workflows across DISEEC projects. It provides reusable CLI scripts, Dockerfiles, configuration templates, and submodule management utilities for modern monorepo environments.
 
 Currently distributed as an npm package, it can be installed in any Node.js project and activated by creating a CLI entrypoint in your project root. Future releases will support additional languages and ecosystems for cross-platform DevOps automation.
 
@@ -30,24 +30,24 @@ Currently distributed as an npm package, it can be installed in any Node.js proj
 
 - Docker
 - Git
-- Bash/SH compatible shell
+- Bash compatible shell
 - Node.js (for npm installation)
 
 ### Installation (Node.js projects)
 
-Add `@diseec/devops` to your project:
+Add `@diseec/kit` to your project:
 
 ```sh
-npm install --save-dev @diseec/devops
+npm install --save-dev @diseec/kit
 # or
-yarn add -DW @diseec/devops
+yarn add -DW @diseec/kit
 ```
 
 Create a CLI entrypoint in your project root (e.g., `cli`):
 
 ```sh
-#!/bin/sh
-. ./node_modules/@diseec/devops/common/cli.sh
+#!/bin/bash
+. ./node_modules/@diseec/kit/common/cli.sh
 ```
 
 Run the CLI for available commands:
@@ -88,7 +88,7 @@ sh cli release      # Release workflow
   - `init` : Initialize workspace configuration
   - `select` : Select modules for your workspace
   - `status` : Show current workspace configuration
-  - `sync` : Sync workspace with latest devops tool updates
+  - `sync` : Sync workspace with latest kit tool updates
 - `help` : Display help message---
 
 ## Workspace Configuration
@@ -127,10 +127,10 @@ This means operations will only be performed on the d0-www and d0-cms modules, w
 
 ### Version Syncing
 
-The workspace system includes an automatic version tracking mechanism that helps keep all repositories in sync with the latest devops tool updates:
+The workspace system includes an automatic version tracking mechanism that helps keep all repositories in sync with the latest kit tool updates:
 
 ```sh
-# Check and apply updates from the latest devops version
+# Check and apply updates from the latest kit version
 sh cli workspace sync
 
 # Run custom commands during sync (for project-specific updates)
@@ -144,7 +144,7 @@ D workspace sync \
 
 The sync command:
 
-1. Checks if the current devops version differs from the cached version
+1. Checks if the current kit version differs from the cached version
 2. Runs necessary update steps for the new version
 3. Executes any custom commands you provide
 4. Updates the cached version
@@ -188,7 +188,7 @@ Stay tuned for updates as we expand beyond Node.js and npm.
 
 ## Support & Contribution
 
-- For issues, use [GitHub Issues](https://github.com/diseec/devops/issues)
+- For issues, use [GitHub Issues](https://github.com/diseec/kit/issues)
 - For feature requests, contact the DISEEC DevOps team.
 - Contributions are welcome for internal improvements only.
 

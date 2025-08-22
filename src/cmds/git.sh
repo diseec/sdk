@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. $KIT_SRC_DIR/cmds/workspace.sh
+
 set -e
 
 # Git automation utilities for PR workflows
@@ -10,15 +12,13 @@ set -e
 # Check if GitHub CLI is installed
 check_gh_cli() {
   if ! command -v _gh >/dev/null 2>&1; then
-    message 41 "error" "GitHub CLI (gh) is not installed. Please install it first:"
-    message 43 "info" "  brew install gh   # For macOS"
-    message 43 "info" "  Then authenticate: gh auth login"
+    message 31 "ERROR" "GitHub CLI (gh) is not installed. Please install it first:"
     return 1
   fi
   
   # Check if authenticated
   if ! _gh auth status >/dev/null 2>&1; then
-    message 41 "error" "GitHub CLI is not authenticated. Please run: gh auth login"
+    message 31 "ERROR" "GitHub CLI is not authenticated."
     return 1
   fi
   
@@ -30,17 +30,17 @@ generate_commit_message() {
   local diff_output="$(_git diff --staged)"
   
   if [ -z "$diff_output" ]; then
-    # message 33 "warn" "No staged changes found. Staging all changes..."
+    # message 33 "WARN" "No staged changes found. Staging all changes..."
     _git add -A
     diff_output="$(_git diff --staged)"
     
     if [ -z "$diff_output" ]; then
-      message 31 "error" "No changes to commit"
+      message 31 "ERROR" "No changes to commit"
       return 1
     fi
   fi
   
-  # message 34 "ai" "Generating commit message..."
+  # message 34 "INFO" "Generating commit message..."
   
   # Limit diff size to avoid API limits
   local diff_summary="$(_git diff --staged --stat)"
@@ -112,7 +112,7 @@ has_open_pr() {
   return 1
 }
 
-pull() {
+cmd_git_pull() {
     ARGS=""; for arg in "$@"; do case "$arg" in
         --ignore-submodule-pulling) IGNORE_SUBMODULE_PULLING="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
@@ -126,7 +126,7 @@ pull() {
         pull_submodule() {
             local module="$1"
             local module_path="$2"
-            (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli pull)
+            (cd "$ROOT_DIR/$module_path" && D git pull)
         }
         foreach_selected_module_with_callback pull_submodule
     fi
@@ -138,7 +138,7 @@ commit_and_push() {
   
   # Don't allow commits directly to main
   if [ "$branch" = "main" ]; then
-    message 41 "error" "Cannot commit directly to main branch. Please create a feature branch first."
+    message 31 "ERROR" "Cannot commit directly to main branch. Please create a feature branch first."
     return 1
   fi
   
@@ -152,21 +152,21 @@ commit_and_push() {
   fi
   
   # Commit changes
-  message 34 "git" "Committing changes with message:"
-  message 36 "commit" "$commit_msg"
+  message 34 "GIT" "Committing changes with message:"
+  message 36 "COMMIT" "$commit_msg"
   echo "$commit_msg" > /tmp/commit-msg.txt
   _git commit -F /tmp/commit-msg.txt
   rm /tmp/commit-msg.txt
   
   # Push to remote
-  message 34 "git" "Pushing to remote..."
+  message 34 "GIT" "Pushing to remote..."
   _git push -u origin "$branch"
   
   return 0
 }
 
 # Create a new PR or update existing one
-create_or_update_pr() {
+cmd_git_create_or_update_pr() {
   local pr_number=$(has_open_pr)
   local branch="$(get_current_branch)"
   
@@ -177,16 +177,16 @@ create_or_update_pr() {
   fi
   
   if [ -n "$pr_number" ]; then
-    message 32 "pr" "Updated existing PR #$pr_number"
+    message 32 "PR" "Updated existing PR #$pr_number"
     
     # If gh CLI is available, provide a link
     if check_gh_cli; then
       local pr_url=$(_gh pr view "$pr_number" --json url -q .url)
-      message 36 "url" "$pr_url"
+      message 36 "URL" "$pr_url"
     fi
   else
     # Create a new PR
-    message 34 "pr" "Creating new PR for branch: $branch"
+    message 34 "PR" "Creating new PR for branch: $branch"
     
     if check_gh_cli; then
       # Use last commit message as PR title/body
@@ -200,11 +200,11 @@ create_or_update_pr() {
       # Create PR using GitHub CLI
       local pr_url=$(_gh pr create --title "$pr_title" --body "$pr_body" --base main)
       
-      message 32 "pr" "Created new PR:"
-      message 36 "url" "$pr_url"
+      message 32 "PR" "Created new PR:"
+      message 36 "URL" "$pr_url"
     else
-      message 33 "pr" "Install GitHub CLI (gh) for automatic PR creation"
-      message 33 "pr" "Create PR manually at: https://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/new/$branch"
+      message 33 "PR" "Install GitHub CLI (gh) for automatic PR creation"
+      message 33 "PR" "Create PR manually at: https://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/new/$branch"
     fi
   fi
   
@@ -212,7 +212,7 @@ create_or_update_pr() {
 }
 
 # Check PR status and show comments/issues
-check_pr_status() {
+cmd_git_check_pr_status() {
   local pr_number=$(has_open_pr)
   local branch="$(get_current_branch)"
   
@@ -276,7 +276,7 @@ check_pr_status() {
   fi
 }
 
-release() {
+cmd_git_release() {
     local TAG="v$(date +%Y%m%d%H%M%S)"
     # git checkout main
     # git pull origin main

@@ -1,17 +1,7 @@
 #!/bin/bash
 
-export IS_KIT_CLI="true";
-export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . $KIT_DIR/index.sh; cd $ROOT_DIR; command=$1; shift;
-
-case $command in
-
-    install)
-        # set -e
-        # $CLI run yarn install;
-        cmd_install "$@";
-    ;;
-
-    vise) command_2=$1; shift; case $command_2 in
+c=$1; shift; case $c in
+    vise) c=$1; shift; case $c in
         install)
             set -e
             if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
@@ -27,48 +17,15 @@ case $command in
                 rm -rf $PROJECT_MOUNT_DIR/node_modules/@$ORG_NAME/$KIT_NAME 2>/dev/null
                 mkdir -p $PROJECT_MOUNT_DIR/node_modules/@$ORG_NAME/$KIT_NAME 2>/dev/null
                 cp -r $TMPDIR/node_modules/@$ORG_NAME/$KIT_NAME $PROJECT_MOUNT_DIR/node_modules/@$ORG_NAME
-                if [ ! -f $PROJECT_MOUNT_DIR/cli ]; then cp /app/templates/cli $PROJECT_MOUNT_DIR/cli; fi
-                # if [ ! -f $PROJECT_MOUNT_DIR/.gitignore ]; then cp /app/templates/.gitignore /project/.gitignore; fi
+                if [ ! -f $PROJECT_MOUNT_DIR/cli ]; then cp /kit/templates/cli $PROJECT_MOUNT_DIR/cli; fi
+                # if [ ! -f $PROJECT_MOUNT_DIR/.gitignore ]; then cp /kit/templates/.gitignore /project/.gitignore; fi
             fi
         ;;
+        # templates) bash bin/templates.sh ;;
         *) echo "No command found";;
     esac;;
 
-    shell)
-        $CLI run /bin/bash
-    ;;
-
-    pull)
-        git pull origin main
-    ;;
-
-    build) cmd_build "$@" ;;
-    shell) cmd_shell "$@" ;;
-    run) cmd_run "$@" ;;
-    exec)
-        if ! docker compose ps -q "$KIT_NAME" | grep -q .; then
-            docker compose up --no-recreate -d "$KIT_NAME" >/dev/null 2>&1
-        fi
-        cmd_exec "$@"
-    ;;
-
-    # MODIFIERS
-
-    # devops)
-    #     subcommand=$1 && shift
-    #     case $subcommand in
-    #         override)
-    #             bash bin/apply_templates.sh
-    #         ;;
-    #         *)
-    #             echo "Unknown subcommand: $subcommand"
-    #             echo "Usage: $0 $KIT_NAME [subcommand]"
-    #             echo "commands:"
-    #             echo "   override     Apply the templates"
-    #             exit 1
-    #         ;;
-    #     esac
-    # ;;
+    pull) git pull origin main ;;
 
     help|--help|-h)
         printf "\n"
@@ -77,8 +34,8 @@ case $command in
             "build   " "Build the images push to registry" \
             "install " "Install the dependencies" \
             "shell   " "Start the shell" \
-            "$KIT_NAME  " "Run $KIT_NAME commands"
+            "$KIT_NAME  " "Run '$KIT_NAME help' to see commands"
         ;;
 
-    *) $KIT_SRC_DIR/cli.sh "$command" "$@" ;;
+    *) . $KIT_SRC_DIR/cli.sh "$c" "$@" ;;
 esac

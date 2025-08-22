@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 cd $(dirname "$0"); command=$1; shift;
 
-. ./node_modules/@diseec/devops/src/helpers.sh
+. ./node_modules/@diseec/kit/src/helpers.sh
 
 case $command in
     install)        
@@ -15,18 +15,18 @@ case $command in
             # fi
         fi
 
-        "./node_modules/@diseec/devops/cli.sh" install "$@" 
+        "./node_modules/@diseec/kit/cli.sh" install "$@" 
     ;;
 
     help|-h)        
-        "./node_modules/@diseec/devops/cli.sh" "$command" \
+        "./node_modules/@diseec/kit/cli.sh" "$command" \
          "" "" \
          "$(color 33 "Service Commands:")" "" \
          "    help         " "Display this help message"
     ;;
 
     *)              
-        "./node_modules/@diseec/devops/cli.sh" "$command" "$@" 
+        "./node_modules/@diseec/kit/cli.sh" "$command" "$@" 
     ;;
 
 esac

@@ -8,7 +8,7 @@ node_modules
 *test.sqlite*
 # *.sqlite3*
 # media
-secrets
+# secrets
 *.pem
 
 # Logs

@@ -1,15 +1,14 @@
 services:
-  devops:
-    image: ${IMAGE_REGISTRY_URL}/${KIT_NAME}
-    # command: ["sleep", "infinity"]
-    command: ["sleep", "300"]
+  kit:
+    image: $IMAGE_REGISTRY_URL/$KIT_NAME
+    command: ["sleep", "infinity"]
     build:
-      context: ${KIT_DIR}
-    restart: unless-stopped
-    working_dir: ${PROJECT_MOUNT_DIR}
+      context: $KIT_DIR
+    working_dir: $PROJECT_MOUNT_DIR
     # environment:
-    #   - GIT_TERMINAL_PROMPT=0 # avoid interactive prompts
+    # - GIT_DISCOVERY_ACROSS_FILESYSTEM=1
+    # - GIT_TERMINAL_PROMPT=0 # avoid interactive prompts
     volumes:
-      - ${KIT_DIR}:/app
-      - ${ROOT_DIR}:${PROJECT_MOUNT_DIR}
-      - ${HOME}:/root
+      - $KIT_DIR:/kit
+      - $TO_MOUNT_DIR:$PROJECT_MOUNT_DIR
+      - $HOME:/root

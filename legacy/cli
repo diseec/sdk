@@ -48,7 +48,7 @@ case $command in
 
     # MODIFIERS
 
-    devops)
+    kit)
         subcommand=$1 && shift
         case $subcommand in
             override)
@@ -56,7 +56,7 @@ case $command in
             ;;
             *)
                 echo "Unknown subcommand: $subcommand"
-                echo "Usage: $0 devops [subcommand]"
+                echo "Usage: $0 kit [subcommand]"
                 echo "commands:"
                 echo "   override     Apply the templates"
                 exit 1
@@ -72,7 +72,7 @@ case $command in
             "build   " "Build the images push to registry" \
             "install " "Install the dependencies" \
             "shell   " "Start the shell" \
-            "devops  " "Run devops commands"
+            "kit  " "Run kit commands"
         ;;
 
     *)

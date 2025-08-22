@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 export REGISTRY_URL="registry.diseec.com"
 
