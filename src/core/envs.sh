@@ -6,7 +6,7 @@ export PROJECT_MOUNT_DIR="/vise"
 export IMAGE_REGISTRY_URL="image.registry.$ORG_NAME.com"
 export KIT_IMAGE="$IMAGE_REGISTRY_URL/$KIT_NAME"
 export REPO_HUB_URL="github.com/$ORG_NAME"
-export KIT_RELATIVE_PATH="node_modules/@diseec/kit"
+export KIT_RELATIVE_PATH="node_modules/@diseec/$KIT_NAME"
 
 if [ ! -n "$KIT_DIR" ]; then
     export KIT_DIR="$(_npm config get prefix)/lib/$KIT_RELATIVE_PATH"
