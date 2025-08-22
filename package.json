@@ -1,5 +1,5 @@
 {
-  "name": "@diseec/devops",
+  "name": "@diseec/kit",
   "version": "0.0.0",
   "description": "A collection of reusable DevOps tools, CLI scripts, Dockerfiles, CI/CD templates, and configuration files to streamline development and deployment workflows across DISEEC projects. Ideal for standardizing project setup and automating common DevOps tasks.",
   "main": "index.sh",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/diseec/devops.git"
+    "url": "git+https://github.com/diseec/kit.git"
   },
   "bin": {
     "D": "./D"
@@ -18,13 +18,13 @@
     "devops",
     "diseec",
     "dev",
-    "deveopment",
+    "development",
     "cicd"
   ],
   "author": "diseec",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/diseec/devops/issues"
+    "url": "https://github.com/diseec/kit/issues"
   },
-  "homepage": "https://github.com/diseec/devops#readme"
+  "homepage": "https://github.com/diseec/kit#readme"
 }
