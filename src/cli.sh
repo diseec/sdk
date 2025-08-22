@@ -6,6 +6,7 @@ c=$1; shift; case $c in
 
     x) echo 'dddd' ;;
     env|envs) message 34 "INFO" "Sourced repo envs" ;; # Source projects root cli to load environment variables. example: "source ./cli envs;"
+    kit) export TO_MOUNT_DIR="$ROOT_DIR"; cd $KIT_DIR; D "$@" ;;
 
     ######################## SETUP CMDS ########################
 
@@ -24,6 +25,7 @@ c=$1; shift; case $c in
     dev|develop) . $CLI docker compose up-development "$@" ;;
     run) . $CLI docker compose execute "$REPO_NAME" "$@" ;;
     exe|execute) . $CLI docker compose execute "$@" ;;
+    bui|build) . $CLI docker compose build-parallel "$@" ;;
     she|shell) . $CLI run /bin/bash "$@" ;;
     pul|pull) . $CLI git pull "$@" ;;
     pus|push) . $CLI git push "$@" ;;
@@ -32,14 +34,12 @@ c=$1; shift; case $c in
 
     ######################## GROUP CMDS ########################
 
-    kit) export TO_MOUNT_DIR="$ROOT_DIR"; cd $KIT_DIR; D "$@" ;;
-
     doc|docker) c=$1; shift; case $c in
         com|compose) c=$1; shift; case $c in
             upd|up-development) . $KIT_SRC_DIR/cmds/docker/up-development.sh "$@" ;;
             upp|up-production) . $KIT_SRC_DIR/cmds/docker/up-production.sh "$@" ;;
             exe|execute) . $KIT_SRC_DIR/cmds/docker/execute.sh "$@" ;;
-            bui|build) _docker compose build --parallel "$@" ;;
+            bui|build-parallel) _docker compose build --parallel "$@" ;;
             # hel|help|--help|-h) help docs comes here ;;
             *) _docker compose "$@" ;;
         esac ;;
