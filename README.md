@@ -36,6 +36,36 @@ npm install @diseec/kit --save-dev
 D install
 ```
 
+### Required Project Files
+
+Before using the kit, create these required Docker files:
+
+1. **Dockerfile** - Production-ready container configuration
+2. **docker-compose.yaml** - Production services configuration  
+3. **docker-compose.override.yaml** - Development environment overrides
+
+The main service must have the same name as your project repository and is considered the primary service.
+
+```yaml
+# docker-compose.yaml (production)
+version: '3.8'
+services:
+  my-project:  # Must match repository name
+    build: .
+    ports:
+      - "3000:3000"
+
+# docker-compose.override.yaml (development)
+version: '3.8'
+services:
+  my-project:
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+```
+
 ### Project Structure
 
 The `D install` command creates a project `cli` file that:
@@ -61,8 +91,8 @@ install() {
 # Start development environment
 D dev
 
-# Run tests
-D test
+# Get a shell in project main service
+D shell
 
 # Build and deploy
 D build
