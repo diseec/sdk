@@ -1,0 +1,83 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: self-hosted
+    container:
+      image: node:20-alpine
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          clean: true
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set package.json version from release tag
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          npm version --no-git-tag-version $TAG_VERSION
+
+      - name: Configure npm auth
+        run: echo "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" > ~/.npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          npm publish --registry=https://npm.pkg.github.com/
+
+  build:
+    needs: publish
+    if: github.event_name == 'release'
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Load envs
+        run: |
+          . D envs; # need to cd to the root of the project this way it uses the servers global D envs
+          echo "IMAGE_REGISTRY_URL=$IMAGE_REGISTRY_URL" >> $GITHUB_ENV
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.IMAGE_REGISTRY_URL }}/kit:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_REGISTRY_URL }}/kit:cache
+          cache-to: type=registry,ref=${{ env.IMAGE_REGISTRY_URL }}/kit:cache,mode=max
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GH_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Pull image from registry
+        run: docker pull ${{ env.IMAGE_REGISTRY_URL }}/kit:latest
+      - name: Tag image for GitHub Container Registry
+        run: docker tag ${{ env.IMAGE_REGISTRY_URL }}/kit:latest ghcr.io/${{ github.repository }}:latest
+
+      - name: Push image to GitHub Container Registry (latest tag)
+        run: docker push ghcr.io/${{ github.repository }}:latest
