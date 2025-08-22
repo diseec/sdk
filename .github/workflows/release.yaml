@@ -8,9 +8,15 @@ jobs:
   create-release-patch:
     runs-on: self-hosted
     container:
-      image: ghcr.io/actions/actions-runner:latest
+      image: alpine:latest
+      options: --user root
 
     steps:
+      - name: Install dependencies
+        run: |
+          apk update
+          apk add --no-cache git curl
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -22,6 +28,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory /__w/kit/kit
 
       - name: Get latest tag and increment patch
         id: version
