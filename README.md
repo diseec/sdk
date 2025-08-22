@@ -12,47 +12,65 @@ The DISEEC DevOps Kit is a comprehensive automation toolkit designed to standard
 
 ### Key Features
 
-- 🚀 **Unified CLI Interface** - Single command interface for all development operations
-- 🐳 **Container Orchestration** - Docker and Docker Compose automation
-- 🔐 **Secure Secrets Management** - AES-256 encrypted secrets with automatic key generation
-- 🌊 **Git Workflow Automation** - AI-powered commit messages and PR management
-- 📦 **Package & Service Management** - Automated submodule and dependency management
-- ⚙️ **Workspace Configuration** - Personalized development environment setup
-- 🧪 **Testing Automation** - Health checks, unit, integration, and E2E testing
-- 🔧 **Infrastructure as Code** - Standardized project templates and configurations
+- **Unified CLI Interface** - Single command interface for all development operations
+- **Container Orchestration** - Docker and Docker Compose automation
+- **Secure Secrets Management** - AES-256 encrypted secrets with automatic key generation
+- **Git Workflow Automation** - AI-powered commit messages and PR management
+- **Package & Service Management** - Automated submodule and dependency management
+- **Workspace Configuration** - Personalized development environment setup
+- **Testing Automation** - Health checks, unit, integration, and E2E testing
+- **Infrastructure as Code** - Standardized project templates and configurations
 
 ## Quick Start
 
 ### Installation
 
 ```bash
-# Install in your project
-npm install --save-dev @diseec/kit
+# Install globally
+npm install -g @diseec/kit
 
-# Create CLI entrypoint
-echo '#!/bin/bash\n. ./node_modules/@diseec/kit/index.sh' > cli
-chmod +x cli
+# Install in project
+npm install @diseec/kit --save-dev
 
-# Initialize project
-./cli install
+# Initialize project (copies templates including customizable cli)
+D install
+```
+
+### Project Structure
+
+The `D install` command creates a project `cli` file that:
+
+- Makes the directory a recognized project (like `.git` for git)
+- Allows full customization of kit behavior
+- Can override, add, or remove functionalities
+- Use `$CLI_BASE` to call original commands
+- Use `$CLI` to call the project cli itself
+
+```bash
+# Example project cli customization
+install() {
+    echo "Installing project dependencies..."
+    npm install
+    $CLI_BASE install  # Call original install command
+}
 ```
 
 ### Basic Usage
 
 ```bash
 # Start development environment
-./cli dev
+D dev
 
 # Run tests
-./cli test
+D test
 
 # Build and deploy
-./cli build
+D build
 
 # Get help for any command
-./cli help
-./cli git help
-./cli secrets help
+D help
+D git help
+D secrets help
 ```
 
 ## Documentation
@@ -61,7 +79,6 @@ chmod +x cli
 
 | Guide                                       | Description                                            |
 | ------------------------------------------- | ------------------------------------------------------ |
-| [CLI Reference](docs/CLI-REFERENCE.md)      | Complete command reference and usage examples          |
 | [Installation Guide](docs/INSTALLATION.md)  | Detailed setup instructions for different environments |
 | [Configuration](docs/CONFIGURATION.md)      | Project and workspace configuration options            |
 | [Development Workflow](docs/DEVELOPMENT.md) | Day-to-day development operations                      |
@@ -142,45 +159,45 @@ kit/
 
 ```bash
 # Setup new project
-./cli install project
-./cli workspace init
+D install project
+D workspace init
 
 # Daily development
-./cli dev                    # Start development environment
-./cli test health           # Quick health check
-./cli format                # Format code
+D dev                    # Start development environment
+D test health           # Quick health check
+D format                # Format code
 
 # Git workflow with AI
-./cli git status            # Check PR status
-./cli git push              # Auto-commit with AI message and create PR
+D git status            # Check PR status
+D git push              # Auto-commit with AI message and create PR
 ```
 
 ### Secrets Management
 
 ```bash
 # Initialize secrets (first time)
-./cli secrets init
+D secrets init
 
 # Add secrets interactively
-./cli secrets add
+D secrets add
 # Enter: OPENAI_API_KEY
 # Value: sk-your-key-here
 
 # Export to environment
-source <(./cli secrets get-all)
+source <(D secrets get-all)
 
 # Use in development
-./cli git push              # Uses OPENAI_API_KEY for AI commits
+D git push              # Uses OPENAI_API_KEY for AI commits
 ```
 
 ### Container Operations
 
 ```bash
 # Container lifecycle
-./cli docker compose up-development    # Start services
-./cli shell                           # Interactive shell
-./cli run npm test                    # Execute commands
-./cli docker compose down            # Stop services
+D docker compose up-development    # Start services
+D shell                           # Interactive shell
+D run npm test                    # Execute commands
+D docker compose down            # Stop services
 ```
 
 ## Requirements
@@ -188,7 +205,7 @@ source <(./cli secrets get-all)
 - **Docker** - Container orchestration
 - **Git** - Version control
 - **Bash 4.0+** - Shell compatibility
-- **Node.js 16+** - For npm installation (optional)
+- **Node.js 16+** - For npm global installation
 
 ### Optional Dependencies
 
@@ -207,10 +224,10 @@ This is an internal DISEEC tool. For contributions:
 
 ## Security
 
-- 🔐 All secrets encrypted with AES-256-CBC
-- 🛡️ Auto-generated encryption keys
-- 🚫 No plaintext credential storage
-- ✅ Internal use only - do not distribute
+- All secrets encrypted with AES-256-CBC
+- Auto-generated encryption keys
+- No plaintext credential storage
+- Internal use only - do not distribute
 
 ## License
 
@@ -224,4 +241,4 @@ MIT License - Internal DISEEC use only. See [LICENSE](LICENSE) for details.
 
 ---
 
-**Made with ❤️ by DISEEC Engineering**
+**DISEEC Engineering**

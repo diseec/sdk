@@ -211,8 +211,7 @@ c=$1; shift; case $c in
     hel|help|--help|-h)
         display_help \
             "" "" \
-            "$(color 30 'Usage')" "" \
-            "$(color 32 '    cli <command> [subcommand] [options] [arguments]\n')" "" \
+            "$(color 30 'Usage:    cli <command> [subcommand] [options] [arguments]\n')" "" \
             "$(color 30 'Project Management')" "" \
             "    ins|install              " "Install project dependencies and tools" \
             "    upd|update               " "Update CLI and sync project" \

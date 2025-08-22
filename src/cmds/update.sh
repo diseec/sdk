@@ -83,7 +83,7 @@ cmd_update() {
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
         (cd $KIT_DIR; docker compose pull);
-        $CLI $KIT_NAME exec $KIT_NAME /$KIT_NAME/cli vise install;
+        $CLI $KIT_NAME exec $KIT_NAME /$KIT_NAME/cli vise initialize;
 
         message 44 "info" "Installing dependencies..."
         $CLI install --ignore-submodule-installation;

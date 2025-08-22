@@ -2,7 +2,7 @@
 
 c=$1; shift; case $c in
     vis|vise) c=$1; shift; case $c in
-        ins|install)
+        ini|initialize)
             set -e
             if [ -f $PROJECT_MOUNT_DIR/package.json ]; then
                 # message "Installing in Node.js project .."
@@ -37,7 +37,7 @@ c=$1; shift; case $c in
         display_help \
             "" "" \
             "$(color 30 'Usage')" "" \
-            "$(color 32 '    kit <command> [subcommand] [options] [arguments]\n')" "" \
+            "$(color 30 '    kit <command> [subcommand] [options] [arguments]\n')" "" \
             "$(color 30 'Kit Container Lifecycle')" "" \
             "    sta|start               " "Start kit container (for fast subsequent ops)" \
             "    sto|stop                " "Stop kit container" \
@@ -45,7 +45,7 @@ c=$1; shift; case $c in
             "" "" \
             "$(color 30 'Project Management & Modification')" "" \
             "    vis|vise <cmd>          " "Run kit-powered commands to manage/modify projects" \
-            "        ins|install         " "Install kit into a managed project" \
+            "        ini|initialize      " "Install kit into a managed project" \
             "        ...                 " "Other project modification commands (see docs)" \
             "" "" \
             "$(color 30 'Source Control')" "" \

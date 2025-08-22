@@ -6,48 +6,49 @@ export PROJECT_MOUNT_DIR="/vise"
 export IMAGE_REGISTRY_URL="image.registry.$ORG_NAME.com"
 export KIT_IMAGE="$IMAGE_REGISTRY_URL/$KIT_NAME"
 export REPO_HUB_URL="github.com/$ORG_NAME"
+export KIT_RELATIVE_PATH="node_modules/@diseec/kit"
 
-# if [ ! -n "$KIT_DIR" ]; then
-#     export KIT_DIR="$(_npm config get prefix)/lib/$KIT_RELATIVE_PATH"
-# fi
+if [ ! -n "$KIT_DIR" ]; then
+    export KIT_DIR="$(_npm config get prefix)/lib/$KIT_RELATIVE_PATH"
+fi
 
-# auto_discover_project_root_dir() {
-#     # Canonicalize KIT_DIR
-#     KIT_DIR=$(cd "$KIT_DIR" 2>/dev/null && pwd -P) || {
-#         printf '%s\n' "Error: can't access \$KIT_DIR" >&2
-#         return 1
-#     }
-#     # Exception: if the script's directory == KIT_DIR, return the first cli
-#     # script_dir=$(cd "$(dirname -- "$0")" 2>/dev/null && pwd -P || echo "")
-#     # if [ -n "$script_dir" ] && [ "$script_dir" = "$KIT_DIR" ] && [ -f "$KIT_DIR/cli" ]; then
-#     if [ "$IS_KIT_CLI" = "true" ]; then
-#         printf '%s\n' "$KIT_DIR"
-#         return 0
-#     fi
-#     # Start from the parent of KIT_DIR, as an absolute, canonical path
-#     start=$(cd "$KIT_DIR/.." 2>/dev/null && pwd -P) || {
-#         printf '%s\n' "Error: can't access \$KIT_DIR/.." >&2
-#         return 1
-#     }
-#     dir=$start
-#     while :; do
-#         if [ -f "$dir/cli" ]; then
-#             # Skip if it's the same file as $KIT_DIR/cli
-#             if [ ! -e "$KIT_DIR/cli" ] || [ ! "$dir/cli" -ef "$KIT_DIR/cli" ]; then
-#                 printf '%s\n' "$dir"
-#                 return 0
-#             fi
-#         fi
-#         [ "$dir" = "/" ] && break
-#         dir=$(dirname -- "$dir")
-#     done
-#     printf '%s\n' "Error: Could not find an ancestor containing a 'cli' other than \$KIT_DIR/cli" >&2
-#     return 1
-# }
-# if [ -z "$ROOT_DIR" ]; then
-# # if [ ! -f "$ROOT_DIR/cli" ]; then
-#     export ROOT_DIR="$(auto_discover_project_root_dir)"
-# fi
+auto_discover_project_root_dir() {
+    # Canonicalize KIT_DIR
+    KIT_DIR=$(cd "$KIT_DIR" 2>/dev/null && pwd -P) || {
+        printf '%s\n' "Error: can't access \$KIT_DIR" >&2
+        return 1
+    }
+    # Exception: if the script's directory == KIT_DIR, return the first cli
+    # script_dir=$(cd "$(dirname -- "$0")" 2>/dev/null && pwd -P || echo "")
+    # if [ -n "$script_dir" ] && [ "$script_dir" = "$KIT_DIR" ] && [ -f "$KIT_DIR/cli" ]; then
+    if [ "$IS_KIT_CLI" = "true" ]; then
+        printf '%s\n' "$KIT_DIR"
+        return 0
+    fi
+    # Start from the parent of KIT_DIR, as an absolute, canonical path
+    start=$(cd "$KIT_DIR/.." 2>/dev/null && pwd -P) || {
+        printf '%s\n' "Error: can't access \$KIT_DIR/.." >&2
+        return 1
+    }
+    dir=$start
+    while :; do
+        if [ -f "$dir/cli" ]; then
+            # Skip if it's the same file as $KIT_DIR/cli
+            if [ ! -e "$KIT_DIR/cli" ] || [ ! "$dir/cli" -ef "$KIT_DIR/cli" ]; then
+                printf '%s\n' "$dir"
+                return 0
+            fi
+        fi
+        [ "$dir" = "/" ] && break
+        dir=$(dirname -- "$dir")
+    done
+    printf '%s\n' "Error: Could not find an ancestor containing a 'cli' other than \$KIT_DIR/cli" >&2
+    return 1
+}
+if [ -z "$ROOT_DIR" ]; then
+# if [ ! -f "$ROOT_DIR/cli" ]; then
+    export ROOT_DIR="$(auto_discover_project_root_dir)"
+fi
 
 if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then 
     export ROOT_DIR="$PROJECT_MOUNT_DIR";

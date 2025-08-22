@@ -11,6 +11,9 @@
 #
 # -----------------------------------------------------------------------------
 
+# # Uncomment to enable standalone and the 'bash cli <cmd>' api
+# export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit"; case $1 in install) docker run --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli vise initialize ;; esac; cd $ROOT_DIR; . $KIT_DIR/index.sh;
+
 # # Extract options out of order
 # ARGS=""; for arg in "$@"; do case "$arg" in
 #     -x=*|--x=*) X="${arg#*=}";;
@@ -33,7 +36,10 @@ c=$1; shift; case $c in
     #     message 44 "example" "B:'$B', X:'$X', Y:'$Y'"
     # ;;
     
-    ins|install) $CLI_BASE install "$@" ;;
+    ins|install)
+        # yarn install # Add project specific install commands here
+        $CLI_BASE install "$@"
+    ;;
     dev)
         $CLI status
         ask_to_run_command "Pull and merge latest changes?" $CLI pull
