@@ -1,7 +1,5 @@
 # Installation Guide
 
-# Installation Guide
-
 > **Setup DISEEC DevOps Kit for your project**
 
 ## Prerequisites
@@ -47,6 +45,7 @@ This creates:
 **REQUIRED**: Create these Docker files manually for the kit to work:
 
 1. **Dockerfile** (production-ready):
+
 ```dockerfile
 FROM node:18-alpine
 WORKDIR /app
@@ -58,25 +57,23 @@ CMD ["npm", "start"]
 ```
 
 2. **docker-compose.yaml** (production):
+
 ```yaml
-version: '3.8'
 services:
-  my-project:  # Must match repository name
-    build: .
+  my-project: # Must match repository name
+    build:
+      context: ${ROOT_DIR}
     ports:
-      - "3000:3000"
+      - 80:3000
 ```
 
 3. **docker-compose.override.yaml** (development):
+
 ```yaml
-version: '3.8'
 services:
-  my-project:  # Must match repository name
+  my-project: # Must match repository name
     volumes:
       - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
     command: npm run dev
 ```
 
@@ -210,7 +207,6 @@ sudo systemctl start docker  # Linux
 
 ## Next Steps
 
-1. **[Learn Commands](CLI-REFERENCE.md)** - Explore available commands
-2. **[Configure Project](CONFIGURATION.md)** - Setup project configuration
-3. **[Setup Secrets](SECRETS.md)** - Configure secure credential storage
-4. **[Git Workflows](GIT-WORKFLOWS.md)** - Master automated git operations
+1. **[Configure Project](CONFIGURATION.md)** - Setup project configuration
+2. **[Setup Secrets](SECRETS.md)** - Configure secure credential storage
+<!-- 3. **[Git Workflows](GIT-WORKFLOWS.md)** - Master automated git operations -->
