@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  patch:
+  create-release-patch:
     runs-on: self-hosted
     container:
       image: node:20-alpine
@@ -16,6 +16,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
+          ref: main
 
       - name: Install git
         run: apk add --no-cache git
@@ -24,10 +25,15 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory /github/workspace
 
       - name: Get latest tag and increment patch
         id: version
         run: |
+          # Ensure we're in the right directory and fetch all tags
+          cd /github/workspace
+          git fetch --tags --force
+
           # Get the latest tag, default to v0.0.0 if no tags exist
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "Latest tag: $LATEST_TAG"
@@ -52,6 +58,7 @@ jobs:
 
       - name: Create and push tag
         run: |
+          cd /github/workspace
           git tag ${{ steps.version.outputs.tag }}
           git push origin ${{ steps.version.outputs.tag }}
 
