@@ -4,13 +4,11 @@ c=$1; shift; case $c in
 
     ######################## PROJECT MANAGEMENT ########################
 
-    ins|install)
-        c=$1; if [ -n "$c" ]; then shift; else . $CLI install project; return 0; fi
-        case "$c" in
+    ins|install) c=$1; shift; case "$c" in
             pro|project) . $KIT_SRC_DIR/cmds/install/project.sh "$@" ;;
             pre|prettier) . $KIT_SRC_DIR/cmds/install/prettier.sh "$@" ;;
             glo|globally) . $KIT_SRC_DIR/cmds/install/globally.sh "$@" ;;
-            *)
+            hel|help|--help|-h)
                 display_help \
                     "" "" \
                     "$(color 30 'Install Commands')" "" \
@@ -18,6 +16,7 @@ c=$1; shift; case $c in
                     "    pre|prettier    " "Install Prettier formatter" \
                     "    glo|globally    " "Install global dependencies"
             ;;
+            *) . $CLI install project "$@" ;;
         esac ;;
     upd|update) . $KIT_SRC_DIR/cmds/update.sh; cmd_update "$@" ;;
     sta|status)         
@@ -40,26 +39,27 @@ c=$1; shift; case $c in
     ######################## SOURCE CONTROL ########################
 
     git) . $KIT_SRC_DIR/cmds/git.sh; c=$1; shift; case "$c" in
-        sta|status)
+        sum|summary)
             . $CLI inform forbid-dev-on-main
             . $CLI inform summary-branch-status
             cmd_git_check_pr_status "$@"
         ;;
-        pus|push) cmd_git_create_or_update_pr "$@" ;;
-        pul|pull) cmd_git_pull "$@" ;;
+        prc|pr-create) cmd_git_create_or_update_pr "$@" ;;
+        mer|merge-pull) cmd_git_pull "$@" ;;
         rel|release) cmd_git_release "$@" ;;
-        *)
+        hel|help|--help|-h)
             display_help \
                 "" "" \
                 "$(color 30 'Git Commands')" "" \
-                "    sta|status   " "Check current branch PR status and unresolved comments" \
-                "    pus|push     " "Auto-commit with AI message and create/update PR" \
-                "    pul|pull     " "Pull latest changes and merge with main" \
-                "    rel|release  " "Create release tag (development command)"
+                "    sum|summary       " "Check current branch PR status and unresolved comments" \
+                "    prc|pr-create     " "Auto-commit with AI message and create/update PR" \
+                "    mer|merge-pull    " "Pull latest changes and merge with main" \
+                "    rel|release       " "Create release tag (development command)"
         ;;
+        *) _git "$@" ;;
     esac;;
-    pul|pull) . $CLI git pull "$@" ;;
-    pus|push) . $CLI git push "$@" ;;
+    pus|push) . $CLI git pr-create "$@" ;;
+    pul|pull) . $CLI git merge-pull "$@" ;;
 
     ######################## INFRASTRUCTURE ########################
 
@@ -69,7 +69,7 @@ c=$1; shift; case $c in
             upp|up-production) . $KIT_SRC_DIR/cmds/docker/up-production.sh "$@" ;;
             exe|execute) . $KIT_SRC_DIR/cmds/docker/execute.sh "$@" ;;
             bui|build-parallel) _docker compose build --parallel "$@" ;;
-            *)
+            hel|help|--help|-h)
                 display_help \
                     "" "" \
                     "$(color 30 'Docker Compose Commands')" "" \
@@ -78,17 +78,17 @@ c=$1; shift; case $c in
                     "    exe|execute         " "Execute command in compose service" \
                     "    bui|build-parallel  " "Build all services in parallel" \
                     "    <docker-compose-cmd>" "Pass through to docker compose"
-                _docker compose $c "$@"
             ;;
+            *) _docker compose $c "$@" ;;
         esac ;;
-        *)
+        hel|help|--help|-h)
             display_help \
                 "" "" \
                 "$(color 30 'Docker Commands')" "" \
                 "    com|compose         " "Docker compose operations" \
                 "    <docker-cmd>        " "Pass through to docker"
-            _docker "$@"
         ;;
+        *) _docker "$@" ;;
     esac ;;
     ser|service) . $KIT_SRC_DIR/cmds/services.sh "$@" ;;
     pac|package) . $KIT_SRC_DIR/cmds/packages.sh "$@" ;;
@@ -182,7 +182,7 @@ c=$1; shift; case $c in
                 "    check-for-updates        " "Check for CLI updates and notify"
         ;;
     esac ;;
-    saf|safe) $CLI kit run $PROJECT_MOUNT_DIR/cli "$@" ;;
+    saf|safe) $CLI $KIT_NAME execute $KIT_NAME D "$@" ;;
     eve|event) . $KIT_SRC_DIR/facades/event.sh "$@" ;;
     api) c=$1; shift; case "$c" in
         v1) c=$1; shift; case "$c" in
@@ -201,7 +201,12 @@ c=$1; shift; case $c in
                 "    v1          " "API version 1 operations"
         ;;
     esac ;;
-    kit) export TO_MOUNT_DIR="$ROOT_DIR"; . $KIT_DIR/cli "$@" ;;
+    kit)
+        if [ "$TO_MOUNT_DIR" != "$KIT_DIR" ]; then
+            export TO_MOUNT_DIR="$ROOT_DIR";
+        fi
+        . $KIT_DIR/cli "$@"
+    ;;
 
     ######################## INFORMATION ########################
 

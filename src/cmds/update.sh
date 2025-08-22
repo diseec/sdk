@@ -67,7 +67,7 @@ has_version_changed() {
 cmd_update() {
     set -e
     message 44 "info" "Pulling changes..."
-    # _git pull origin
+    _git pull origin
     VERSION_SPECIFIER="$(get_version_specifier)"
     # Check if version has changed
     if has_version_changed; then
@@ -82,7 +82,7 @@ cmd_update() {
         $CLI event before_update
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
-        # cd $KIT_DIR; _docker compose pull;
+        cd $KIT_DIR; $CLI kit docker compose pull;
         $CLI safe kit vise initialize;
 
         message 44 "info" "Installing dependencies..."
