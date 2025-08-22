@@ -11,8 +11,7 @@
 #
 # -----------------------------------------------------------------------------
 
-# # Uncomment to enable standalone and the 'bash cli <cmd>' api
-# export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit"; case $1 in install) docker run --rm -v $(pwd):/vise image.registry.diseec.com/devops bash cli vise initialize ;; esac; cd $ROOT_DIR; . $KIT_DIR/index.sh;
+export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit"; . $KIT_DIR/index.sh; cd $ROOT_DIR;
 
 # # Extract options out of order
 # ARGS=""; for arg in "$@"; do case "$arg" in

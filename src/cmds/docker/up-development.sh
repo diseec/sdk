@@ -8,7 +8,11 @@ set -e
 services_filter=$(get_services_filter)
 
 if [ "$IS_IN_CONTAINER" = "true" ]; then
-    eval $(grep -m 1 'command:' "$ROOT_DIR/docker-compose.override.yaml" | sed 's/.*command: //')
+    if [ -f "$ROOT_DIR/docker-compose.override.yaml" ]; then
+        eval $(grep -m 1 'command:' "$ROOT_DIR/docker-compose.override.yaml" | sed 's/.*command: //')
+    else
+        eval $(grep -m 1 'command:' "$ROOT_DIR/docker-compose.yaml" | sed 's/.*command: //')
+    fi
 else
     # Set up a trap to ensure we stop all containers on interrupt
     cleanup() {

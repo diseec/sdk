@@ -63,7 +63,7 @@ jobs:
 
       - name: Load envs
         run: |
-          . D envs;
+          . D envs; # need to cd to the root of the project this way it uses the servers global D envs
           echo "IMAGE_REGISTRY_URL=$IMAGE_REGISTRY_URL" >> $GITHUB_ENV
 
       - name: Set up QEMU

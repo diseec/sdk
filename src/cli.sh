@@ -1,7 +1,5 @@
 #!/bin/sh
 
-. $KIT_DIR/index.sh;
-
 c=$1; shift; case $c in
 
     ######################## PROJECT MANAGEMENT ########################

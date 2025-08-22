@@ -91,6 +91,7 @@ D secrets help
 | [Configuration](docs/CONFIGURATION.md)      | Project and workspace configuration options            |
 | [Development Workflow](docs/DEVELOPMENT.md) | Day-to-day development operations                      |
 
+<!--
 ### Feature Documentation
 
 | Feature                                   | Documentation                              |
@@ -108,7 +109,7 @@ D secrets help
 | [Custom Commands](docs/EXTENDING.md)       | Adding custom commands and integrations     |
 | [CI/CD Integration](docs/CICD.md)          | Continuous integration and deployment setup |
 | [Style Guide](docs/STYLE-GUIDE.md)         | CLI styling and color conventions           |
-| [Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues and solutions                 |
+| [Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues and solutions                 | -->
 
 ## Project Structure
 
@@ -130,36 +131,38 @@ kit/
 
 ### Project Management
 
-- `install` - Install dependencies and setup tools
-- `update` - Update CLI and sync project
-- `status` - Show comprehensive project status
+- `ins|install` - Install dependencies and setup tools
+- `upd|update` - Update CLI and sync project
+- `sta|status` - Show comprehensive project status
 
 ### Development Environment
 
-- `dev` - Start development environment
-- `build` - Build project images
-- `run` - Execute commands in containers
-- `test` - Run test suites
-- `format` - Format codebase
+- `dev|develop` - Start development environment
+- `bui|build` - Build project images
+- `run` - Execute commands in main container
+- `exe|execute` - Execute commands in specific container
+- `she|shell` - Open a shell in main service
+- `tes|test` - Run test suites
+- `for|format` - Format codebase
 
 ### Source Control
 
 - `git` - Git workflow management
-- `pull` - Pull and merge latest changes
-- `push` - Auto-commit and create PR
+- `pul|pull` - Pull and merge latest changes
+- `pus|push` - Auto-commit and create PR
 
 ### Infrastructure
 
-- `docker` - Docker operations
-- `service` - Service management
-- `package` - Package management
-- `workspace` - Workspace configuration
+- `doc|docker` - Docker operations
+- `ser|service` - Service management
+- `pac|package` - Package management
+- `wor|workspace` - Workspace configuration
 
 ### Configuration & Security
 
-- `config` - Configuration management
-- `secrets` - Encrypted secrets management
-- `env` - Environment variables
+- `con|config` - Configuration management
+- `sec|secrets` - Encrypted secrets management
+- `env|envs` - Environment variables (Usage: source D envs)
 
 ## Examples
 
