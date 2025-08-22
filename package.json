@@ -13,6 +13,9 @@
   "bin": {
     "D": "./D"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "kit",
     "devops",
