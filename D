@@ -5,7 +5,15 @@ dir="$PWD"; while :; do
         export ROOT_DIR="$dir"
         export KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
         if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ]; then 
-            docker run --rm -v $dir:/vise image.registry.diseec.com/kit D vise initialize
+            docker run --rm -v $dir:/vise -w /vise image.registry.diseec.com/kit \
+                bash -c "D kit vise initialize"
+            # docker run --rm -v $dir:/vise -w /vise image.registry.diseec.com/kit \
+            #     bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
+            #         cp -r /kit /vise/node_modules/@diseec"
+            if [ ! -d "$KIT_DIR" ]; then
+                printf '%s\n' "Error: 'node_modules/@diseec/kit' not found, try running 'D kit vise initialize' in project root" >&2
+                exit 1
+            fi
         fi
         break
     fi
