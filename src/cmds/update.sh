@@ -66,6 +66,7 @@ has_version_changed() {
 
 cmd_update() {
     set -e
+    $CLI version
     message 44 "info" "Pulling changes..."
     _git pull origin
     VERSION_SPECIFIER="$(get_version_specifier)"
