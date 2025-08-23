@@ -50,36 +50,33 @@ cmd_update() {
     set -e
     echo "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
     echo "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
+
     _git pull origin
     $CLI safe kit vise patch;
     echo "$KIT_NAME version patched to: $VERSION"
 
     # Check if version has changed
-    if has_version_changed; then
-        $CLI event before_update
+    $CLI event before_update
 
-        message 44 "info" "Install and pulling latest $KIT_NAME image..."
-        cd $KIT_DIR; $CLI kit docker compose pull;
+    message 44 "info" "Install and pulling latest $KIT_NAME image..."
+    cd $KIT_DIR; $CLI kit docker compose pull;
 
-        message 44 "info" "Installing dependencies..."
-        $CLI install --ignore-submodule-installation;
+    message 44 "info" "Installing dependencies..."
+    $CLI install --ignore-submodule-installation;
 
-        message 44 "info" "Pulling latest selected changes..."
-        $CLI pull --ignore-submodule-pulling;
+    message 44 "info" "Pulling latest selected changes..."
+    $CLI pull --ignore-submodule-pulling;
 
-        update_dependencies() {
-            local module="$1"
-            local module_path="$2"
-            echo "Updating dependencies for '$module'..."
-            (cd "$ROOT_DIR/$module_path" && D update)
-            echo "Updated dependencies for '$module'."
-        }
-        foreach_selected_module_with_callback update_dependencies
-        
-        $CLI event after_update
+    update_dependencies() {
+        local module="$1"
+        local module_path="$2"
+        echo "Updating dependencies for '$module'..."
+        (cd "$ROOT_DIR/$module_path" && D update)
+        echo "Updated dependencies for '$module'."
+    }
+    foreach_selected_module_with_callback update_dependencies
+    
+    $CLI event after_update
 
-        message 42 "OKEY" "Update completed successfully"
-    else
-        message 42 "OKEY" "Already up to date"
-    fi
+    message 42 "OKEY" "Update completed successfully"
 }
