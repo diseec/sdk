@@ -9,9 +9,9 @@ c=$1; shift; case $c in
     upd|update) . $KIT_SRC_DIR/cmds/update.sh; cmd_update "$@" ;;
     sta|status)         
         . $CLI version
+        . $CLI workspace status
         . $CLI inform check-system-dependencies
         . $CLI inform check-internet-connection
-        . $CLI workspace status
         . $CLI git summary
         . $CLI inform check-for-updates
     ;;

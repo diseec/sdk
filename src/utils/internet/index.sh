@@ -53,7 +53,7 @@ main() {
             test_international_sites || overall_status=false
             test_regional_sites || overall_status=false
             test_cdn_connectivity || overall_status=false
-            ask_to_run_command "Run stability tests? (~30sec)" test_connection_quality
+            ask_to_run_command "Run stability tests? ~30 seconds" test_connection_quality
             ;;
     esac
     

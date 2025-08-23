@@ -17,6 +17,24 @@ test_international_sites() {
         ping_timeout_opt="-t 5"
     fi
     
+    # Simple ping test function
+    ping_test() {
+        local target="$1"
+        local timeout_sec="5"
+        
+        if ping -c 2 -W "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif ping -c 2 -w "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif ping -c 2 -t "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif command -v timeout >/dev/null 2>&1 && timeout "${timeout_sec}s" ping -c 2 "$target" >/dev/null 2>&1; then
+            return 0
+        else
+            return 1
+        fi
+    }
+    
     for site in "${INTERNATIONAL_SITES[@]}"; do
         # Use HEAD request first (faster), then fall back to GET if needed
         if curl -s --max-time $timeout --connect-timeout 5 -I "https://$site" >/dev/null 2>&1 || \
@@ -25,8 +43,7 @@ test_international_sites() {
             INTERNATIONAL_HTTPS_COUNT=$((INTERNATIONAL_HTTPS_COUNT + 1))
             international_working=true
         else
-            if timeout 5s ping -c 2 $ping_timeout_opt "$site" >/dev/null 2>&1 || \
-               ping -c 2 $ping_timeout_opt "$site" >/dev/null 2>&1; then
+            if ping_test "$site"; then
                 log_status "WARNING" "Site pingable, HTTPS blocked" "$site"
                 INTERNATIONAL_PING_COUNT=$((INTERNATIONAL_PING_COUNT + 1))
             else
@@ -53,14 +70,31 @@ test_regional_sites() {
         ping_timeout_opt="-t 5"
     fi
     
+    # Simple ping test function
+    ping_test() {
+        local target="$1"
+        local timeout_sec="5"
+        
+        if ping -c 2 -W "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif ping -c 2 -w "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif ping -c 2 -t "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif command -v timeout >/dev/null 2>&1 && timeout "${timeout_sec}s" ping -c 2 "$target" >/dev/null 2>&1; then
+            return 0
+        else
+            return 1
+        fi
+    }
+    
     for site in "${REGIONAL_SITES[@]}"; do
         if curl -s --max-time $timeout --connect-timeout 5 "https://$site" >/dev/null 2>&1; then
             log_status "SUCCESS" "Regional site reachable" "$site (HTTPS)"
             REGIONAL_HTTPS_COUNT=$((REGIONAL_HTTPS_COUNT + 1))
             regional_working=true
         else
-            if timeout 5s ping -c 2 $ping_timeout_opt "$site" >/dev/null 2>&1 || \
-               ping -c 2 $ping_timeout_opt "$site" >/dev/null 2>&1; then
+            if ping_test "$site"; then
                 log_status "WARNING" "Site pingable, HTTPS filtered" "$site"
                 REGIONAL_PING_COUNT=$((REGIONAL_PING_COUNT + 1))
                 regional_working=true

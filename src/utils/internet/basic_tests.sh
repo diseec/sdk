@@ -8,26 +8,30 @@ quick_check() {
     local overall_status=true
     local start_time=$(date +%s.%N)
     
-    # Detect ping command options based on OS
-    local ping_cmd="ping"
-    local ping_timeout_opt=""
-    if ping -W 1 -c 1 127.0.0.1 >/dev/null 2>&1; then
-        # Linux ping (supports -W for timeout)
-        ping_timeout_opt="-W $timeout"
-    elif ping -t $timeout -c 1 127.0.0.1 >/dev/null 2>&1; then
-        # macOS ping (supports -t for timeout)
-        ping_timeout_opt="-t $timeout"
-    else
-        # Fallback: no timeout option
-        ping_timeout_opt=""
-    fi
+    # Simple ping test function that works on all systems
+    ping_test() {
+        local target="$1"
+        local timeout_sec="$2"
+        
+        # Try different ping syntaxes to find what works
+        if ping -c 1 -W "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif ping -c 1 -w "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif ping -c 1 -t "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif command -v timeout >/dev/null 2>&1 && timeout "${timeout_sec}s" ping -c 1 "$target" >/dev/null 2>&1; then
+            return 0
+        else
+            return 1
+        fi
+    }
     
     # Test gateway
     get_gateway
     if [ -n "$LOCAL_GATEWAY" ]; then
         local test_start=$(date +%s.%N)
-        if timeout ${timeout}s ping -c 1 $ping_timeout_opt "$LOCAL_GATEWAY" >/dev/null 2>&1 || \
-           ping -c 1 $ping_timeout_opt "$LOCAL_GATEWAY" >/dev/null 2>&1; then
+        if ping_test "$LOCAL_GATEWAY" "$timeout"; then
             local test_end=$(date +%s.%N)
             local duration=$(calculate_duration "$test_start" "$test_end")
             log_status "SUCCESS" "Gateway ping" "$LOCAL_GATEWAY" "${duration}s"
@@ -47,8 +51,7 @@ quick_check() {
     
     # Test DNS
     local test_start=$(date +%s.%N)
-    if timeout ${timeout}s ping -c 1 $ping_timeout_opt "$QUICK_DNS" >/dev/null 2>&1 || \
-       ping -c 1 $ping_timeout_opt "$QUICK_DNS" >/dev/null 2>&1; then
+    if ping_test "$QUICK_DNS" "$timeout"; then
         local test_end=$(date +%s.%N)
         local duration=$(calculate_duration "$test_start" "$test_end")
         log_status "SUCCESS" "DNS server ping" "$QUICK_DNS" "${duration}s"
@@ -72,8 +75,7 @@ quick_check() {
         INTERNATIONAL_HTTPS_COUNT=$((INTERNATIONAL_HTTPS_COUNT + 1))
     else
         # Try ping if HTTPS fails
-        if timeout ${timeout}s ping -c 1 $ping_timeout_opt "$QUICK_SITE" >/dev/null 2>&1 || \
-           ping -c 1 $ping_timeout_opt "$QUICK_SITE" >/dev/null 2>&1; then
+        if ping_test "$QUICK_SITE" "$timeout"; then
             local test_end=$(date +%s.%N)
             local duration=$(calculate_duration "$test_start" "$test_end")
             log_status "FAIL" "Internet connectivity" "$QUICK_SITE - ping OK but HTTPS blocked/filtered" "${duration}s"

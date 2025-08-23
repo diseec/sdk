@@ -9,17 +9,27 @@ test_connection_quality() {
     # Extended latency tests with stability analysis
     local stability_issues=false
     
-    # Detect ping command options
-    local ping_timeout_opt=""
-    if ping -W 1 -c 1 127.0.0.1 >/dev/null 2>&1; then
-        ping_timeout_opt="-W 10"
-    elif ping -t 10 -c 1 127.0.0.1 >/dev/null 2>&1; then
-        ping_timeout_opt="-t 10"
-    fi
+    # Simple ping test function for quality tests
+    ping_stability_test() {
+        local target="$1"
+        local count="$2"
+        
+        if ping -c "$count" -W 10 "$target" 2>/dev/null; then
+            return 0
+        elif ping -c "$count" -w 10 "$target" 2>/dev/null; then
+            return 0
+        elif ping -c "$count" -t 10 "$target" 2>/dev/null; then
+            return 0
+        elif command -v timeout >/dev/null 2>&1 && timeout "15s" ping -c "$count" "$target" 2>/dev/null; then
+            return 0
+        else
+            return 1
+        fi
+    }
     
     if [ -n "$LOCAL_GATEWAY" ]; then
         printf "${BLUE}Testing gateway stability...${NC}\n"
-        local gateway_stats=$(timeout 12s ping -c 10 $ping_timeout_opt "$LOCAL_GATEWAY" 2>/dev/null || ping -c 10 "$LOCAL_GATEWAY" 2>/dev/null)
+        local gateway_stats=$(ping_stability_test "$LOCAL_GATEWAY" "10")
         local gateway_avg=$(echo "$gateway_stats" | tail -1 | awk -F '/' '{print $5}' 2>/dev/null)
         local gateway_loss=$(echo "$gateway_stats" | grep "packet loss" | awk '{print $6}' | sed 's/%//' 2>/dev/null)
         
@@ -34,7 +44,7 @@ test_connection_quality() {
     
     # DNS stability test
     printf "${BLUE}Testing DNS stability...${NC}\n"
-    local dns_stats=$(timeout 12s ping -c 10 $ping_timeout_opt 8.8.8.8 2>/dev/null || ping -c 10 8.8.8.8 2>/dev/null)
+    local dns_stats=$(ping_stability_test "8.8.8.8" "10")
     local dns_avg=$(echo "$dns_stats" | tail -1 | awk -F '/' '{print $5}' 2>/dev/null)
     local dns_loss=$(echo "$dns_stats" | grep "packet loss" | awk '{print $6}' | sed 's/%//' 2>/dev/null)
     
@@ -48,7 +58,7 @@ test_connection_quality() {
     
     # International connectivity stability
     printf "${BLUE}Testing international stability...${NC}\n"
-    local intl_stats=$(timeout 12s ping -c 10 $ping_timeout_opt google.com 2>/dev/null || ping -c 10 google.com 2>/dev/null)
+    local intl_stats=$(ping_stability_test "google.com" "10")
     local intl_avg=$(echo "$intl_stats" | tail -1 | awk -F '/' '{print $5}' 2>/dev/null)
     local intl_loss=$(echo "$intl_stats" | grep "packet loss" | awk '{print $6}' | sed 's/%//' 2>/dev/null)
     

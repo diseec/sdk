@@ -23,9 +23,26 @@ test_dns_servers() {
         ping_timeout_opt=""
     fi
     
+    # Simple ping test function
+    ping_test() {
+        local target="$1"
+        local timeout_sec="$2"
+        
+        if ping -c 2 -W "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif ping -c 2 -w "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif ping -c 2 -t "$timeout_sec" "$target" >/dev/null 2>&1; then
+            return 0
+        elif command -v timeout >/dev/null 2>&1 && timeout "$((timeout_sec * 2))s" ping -c 2 "$target" >/dev/null 2>&1; then
+            return 0
+        else
+            return 1
+        fi
+    }
+    
     for dns in "${DNS_SERVERS[@]}"; do
-        if timeout ${timeout}s ping -c 2 $ping_timeout_opt "$dns" >/dev/null 2>&1 || \
-           ping -c 2 $ping_timeout_opt "$dns" >/dev/null 2>&1; then
+        if ping_test "$dns" "$timeout"; then
             log_status "SUCCESS" "DNS server reachable" "$dns"
             dns_working=true
             dns_success_count=$((dns_success_count + 1))
@@ -36,11 +53,21 @@ test_dns_servers() {
     
     # Test DNS resolution using multiple methods
     local dns_resolution_working=false
+    
+    # Method 1: Use nslookup if available
     if command -v nslookup >/dev/null 2>&1 && nslookup google.com >/dev/null 2>&1; then
         dns_resolution_working=true
+    # Method 2: Use dig if available  
     elif command -v dig >/dev/null 2>&1 && dig google.com >/dev/null 2>&1; then
         dns_resolution_working=true
+    # Method 3: Use host if available
     elif command -v host >/dev/null 2>&1 && host google.com >/dev/null 2>&1; then
+        dns_resolution_working=true
+    # Method 4: Try resolving via /etc/hosts or system resolver
+    elif command -v getent >/dev/null 2>&1 && getent hosts google.com >/dev/null 2>&1; then
+        dns_resolution_working=true
+    # Method 5: Use ping as a resolution test (if it fails with unknown host, DNS is broken)
+    elif ping -c 1 google.com >/dev/null 2>&1; then
         dns_resolution_working=true
     fi
     
