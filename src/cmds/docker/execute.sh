@@ -12,15 +12,17 @@ if [ -n "$CI" ];
     else OPTIONS="-it";
 fi
 
+COMMAND_STR="$*"
+
 if [ "$IS_IN_CONTAINER" = "true" ]; then
-    if [ "$IS_SILENT" != "true" ]; then message 40 "▶ $SERVICE_NAME" "Inside container, Executing '$@' .."; fi
+    if [ "$IS_SILENT" != "true" ]; then message 40 "▶ $SERVICE_NAME" "Inside container, Executing '$COMMAND_STR' .."; fi
     "$@"
 else
     if _docker compose ps -q "$SERVICE_NAME" | grep -q .; then
-        if [ "$IS_SILENT" != "true" ]; then message 40 "● $SERVICE_NAME" "Already running, Executing '$@' .."; fi
+        if [ "$IS_SILENT" != "true" ]; then message 40 "● $SERVICE_NAME" "Already running, Executing '$COMMAND_STR' .."; fi
         _docker compose exec $OPTIONS "$SERVICE_NAME" "$@"
     else
-        if [ "$IS_SILENT" != "true" ]; then message 40 "○ $SERVICE_NAME" "Not running, Launching an instance, Executing '$@' .."; fi
+        if [ "$IS_SILENT" != "true" ]; then message 40 "○ $SERVICE_NAME" "Not running, Launching an instance, Executing '$COMMAND_STR' .."; fi
         _docker compose run --rm --no-deps $OPTIONS "$SERVICE_NAME" "$@"
     fi
 fi

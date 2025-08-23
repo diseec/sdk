@@ -15,7 +15,6 @@ dir="$PWD"; while :; do
                     cp -r /kit/* /vise/node_modules/@diseec/kit"
             docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
                 bash -c "D kit vise patch"
-            return 0;
             # docker run --rm -v $dir:$PROJECT_MOUNT_DIR -w $PROJECT_MOUNT_DIR $KIT_IMAGE \
             #     bash -c "mkdir -p $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH && \
             #         cp -r /$KIT_NAME/* $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH"

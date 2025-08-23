@@ -4,7 +4,7 @@ c=$1; shift; case $c in
 
     ######################## PROJECT MANAGEMENT ########################
 
-    ins|install) c=$1; shift; case "$c" in
+    ins|install) c=$1; [ $# -gt 0 ] && shift; case "${c:-project}" in
             pro|project) . $KIT_SRC_DIR/cmds/install/project.sh "$@" ;;
             pre|prettier) . $KIT_SRC_DIR/cmds/install/prettier.sh "$@" ;;
             glo|globally) . $KIT_SRC_DIR/cmds/install/globally.sh "$@" ;;
@@ -16,7 +16,7 @@ c=$1; shift; case $c in
                     "    pre|prettier    " "Install Prettier formatter" \
                     "    glo|globally    " "Install global dependencies"
             ;;
-            *) . $CLI install project "$@" ;;
+            *) message 41 "error" "Unknown command: '$c'";;
         esac ;;
     upd|update) . $KIT_SRC_DIR/cmds/update.sh; cmd_update "$@" ;;
     sta|status)         
@@ -258,7 +258,7 @@ c=$1; shift; case $c in
             "$@"
     ;;
     *)
-        if [ ! -z "$command" ]; then message 41 "error" "Unknown command: '$command'"; fi
+        if [ ! -z "$c" ]; then message 41 "error" "Unknown command: '$c'"; fi
         . $CLI help; exit 1;
     ;;
 esac
