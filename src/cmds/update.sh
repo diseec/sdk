@@ -66,9 +66,10 @@ has_version_changed() {
 
 cmd_update() {
     set -e
-    $CLI version
     message 44 "info" "Pulling changes..."
     _git pull origin
+    $CLI safe kit vise initialize;
+    $CLI version
     VERSION_SPECIFIER="$(get_version_specifier)"
     # Check if version has changed
     if has_version_changed; then

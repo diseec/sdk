@@ -28,11 +28,11 @@ initialize_submodule() {
 }
 foreach_selected_module_with_callback initialize_submodule
 
-message "Setting up branch tracking..."
+echo "Setting up branch tracking..."
 GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
 read -p "$(message 45 "?" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
 if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
-message "Checking out to branch '$BRANCH'..."
+echo "Checking out to branch '$BRANCH'..."
 _git fetch && _git checkout $BRANCH || _git checkout -b $BRANCH origin/$BRANCH || _git checkout -b $BRANCH;
 # message "Checking out branch '$BRANCH' in selected submodules..."
 # checkout_branch() {
