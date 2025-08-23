@@ -3,6 +3,11 @@
 . $KIT_SRC_DIR/cmds/update.sh
 . $KIT_SRC_DIR/cmds/workspace.sh
 
+if ! "$CLI" internet is-online; then
+    message 41 ⊘ "Disconnected, skipping update check..."
+    return 0
+fi
+
 # Skip if we're just running version or help commands
 if [ "$command" = "version" ] || [ "$command" = "--version" ] || [ "$command" = "help" ] || [ "$command" = "update" ]; then
     return 0
@@ -10,8 +15,7 @@ fi
 
 # Check if version changed or if repo/modules are behind
 if has_version_changed; then
-    message 46 "UPDATE" "New updates available!"
-    ask_to_run_command "Apply updates now?" "$CLI" update
+    ask_to_run_command "New kit version available, download updates?" "$CLI" update
 elif [ -d "$ROOT_DIR/.git" ]; then
     # Check if the main repository is behind
     current_branch=$(_git -C "$ROOT_DIR" rev-parse --abbrev-ref HEAD)
@@ -21,8 +25,7 @@ elif [ -d "$ROOT_DIR/.git" ]; then
         remote_commit=$(_git -C "$ROOT_DIR" rev-parse "@{u}")
         
         if [ $? -eq 0 ] && [ "$local_commit" != "$remote_commit" ]; then
-            message 33 "UPDATE" "Repository is behind the remote branch!"
-            ask_to_run_command "Apply updates now?" "$CLI" update
+            ask_to_run_command "Repository is behind the remote branch, apply update?" "$CLI" update
         else
             # Check if any of the selected modules are behind
             modules_behind=false
@@ -47,8 +50,7 @@ elif [ -d "$ROOT_DIR/.git" ]; then
             foreach_selected_module_with_callback check_module_status
             
             if $modules_behind; then
-                message 33 "UPDATE" "Modules are behind their remote branches!"
-                ask_to_run_command "Apply updates now?" "$CLI" update
+                ask_to_run_command "Modules are behind their remote branches, update them?" "$CLI" update
             fi
         fi
     fi

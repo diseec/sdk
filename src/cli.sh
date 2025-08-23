@@ -8,6 +8,7 @@ c=$1; shift; case $c in
     upd|update) . $KIT_SRC_DIR/cmds/update.sh; cmd_update "$@" ;;
     sta|status)         
         . $CLI version
+        . $CLI inform check-internet-connection
         . $CLI workspace status
         . $CLI git summary
         . $CLI inform check-for-updates
@@ -156,21 +157,23 @@ c=$1; shift; case $c in
     ######################## UTILITIES ########################
 
     inf|inform) c=$1; shift; case $c in
-        # check-network-status) ;;
-        forbid-dev-on-main) . $KIT_SRC_DIR/informs/forbid-dev-on-main.sh "$@" ;;
-        summary-branch-status) . $KIT_SRC_DIR/informs/summary-branch-status.sh "$@" ;;
-        check-for-updates) . $KIT_SRC_DIR/informs/check-for-updates.sh "$@" ;;
+        cic|check-internet-connection) . $KIT_SRC_DIR/informs/check-internet-connection.sh "$@" ;;
+        fdm|forbid-dev-on-main) . $KIT_SRC_DIR/informs/forbid-dev-on-main.sh "$@" ;;
+        sbs|summary-branch-status) . $KIT_SRC_DIR/informs/summary-branch-status.sh "$@" ;;
+        cfu|check-for-updates) . $KIT_SRC_DIR/informs/check-for-updates.sh "$@" ;;
         *)
             display_help \
                 "" "" \
                 "$(color 30 'Inform Commands')" "" \
-                "    forbid-dev-on-main       " "Warn if on 'main' branch" \
-                "    summary-branch-status    " "Show local vs remote branch status" \
-                "    check-for-updates        " "Check for CLI updates and notify"
+                "    cic|check-internet-connection   " "Check if the internet connection is active" \
+                "    fdm|forbid-dev-on-main          " "Warn if on 'main' branch" \
+                "    sbs|summary-branch-status       " "Show local vs remote branch status" \
+                "    cfu|check-for-updates           " "Check for CLI updates and notify"
         ;;
     esac ;;
     saf|safe) $CLI $KIT_NAME execute $KIT_NAME D "$@" ;;
     eve|event) . $KIT_SRC_DIR/facades/event.sh "$@" ;;
+    int|internet) . $KIT_SRC_DIR/utils/internet.sh "$@" ;;
     api) c=$1; shift; case "$c" in
         v1) c=$1; shift; case "$c" in
             install) . $CLI install "$@" ;;

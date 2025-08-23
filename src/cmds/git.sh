@@ -30,7 +30,7 @@ generate_commit_message() {
   local diff_output="$(_git diff --staged)"
   
   if [ -z "$diff_output" ]; then
-    # message 33 "WARN" "No staged changes found. Staging all changes..."
+    # message 43 "!" "No staged changes found. Staging all changes..."
     _git add -A
     diff_output="$(_git diff --staged)"
     
@@ -198,8 +198,8 @@ cmd_git_create_or_update_pr() {
       message 32 "PR" "Created new PR:"
       message 36 "URL" "$pr_url"
     else
-      message 33 "PR" "Install GitHub CLI (gh) for automatic PR creation"
-      message 33 "PR" "Create PR manually at: https://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/new/$branch"
+      message 43 "!" "Install GitHub CLI (gh) for automatic PR creation"
+      message 43 "!" "Create PR manually at: https://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/new/$branch"
     fi
   fi
   
@@ -208,11 +208,16 @@ cmd_git_create_or_update_pr() {
 
 # Check PR status and show comments/issues
 cmd_git_check_pr_status() {
+  if ! "$CLI" internet is-online; then
+      message 41 ⊘ "Disconnected, skipping PR status check..."
+      return 0
+  fi
+
   local pr_number=$(has_open_pr)
   local branch="$CURRENT_BRANCH"
   
   if [ -z "$pr_number" ]; then
-    message 33 "pr" "No open PR found for branch: $branch"
+    # message 43 "!" "No open PR found for branch: $branch"
     return 0
   fi
   
@@ -245,10 +250,10 @@ cmd_git_check_pr_status() {
         message 31 "review" "Changes requested. See comments below."
         ;;
       "REVIEW_REQUIRED")
-        message 33 "review" "Waiting for review"
+        message 43 "!" "Waiting for review"
         ;;
       *)
-        message 33 "review" "No reviews yet"
+        message 43 "!" "No reviews yet"
         ;;
     esac
     
@@ -260,14 +265,14 @@ cmd_git_check_pr_status() {
       echo "$pr_data" | grep -A 3 '"isResolved": false' | grep '"body": "' | sed 's/"body": "/- /' | sed 's/\\r\\n/\n/g' | head -5
       
       if [ "$unresolved_count" -gt 5 ]; then
-        message 33 "comments" "...and $((unresolved_count - 5)) more comments"
+        message 43 "!" "...and $((unresolved_count - 5)) more comments"
       fi
     # else
     #   message 32 "comments" "No unresolved comments"
     fi
   else
-    message 33 "pr" "PR #$pr_number exists, but detailed status check requires GitHub CLI"
-    message 33 "pr" "View PR at: https://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number"
+    message 43 "!" "PR #$pr_number exists, but detailed status check requires GitHub CLI"
+    message 43 "!" "View PR at: https://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number"
   fi
 }
 

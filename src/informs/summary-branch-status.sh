@@ -1,7 +1,9 @@
 #!/bin/bash
 
-if ping -c 1 google.com > /dev/null 2>&1; then
+if "$CLI" internet is-online; then
   _git fetch origin
+else
+  message 41 ⊘ "Disconnected, cannot fetch branch status..."
 fi
 
 local_commit=$(_git rev-parse @)

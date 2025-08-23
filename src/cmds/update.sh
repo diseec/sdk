@@ -41,10 +41,13 @@ set_cached_version() {
     local version="$1"
     local cache_file="$(get_repo_cache_dir)/kit_version.txt"
     
-    # Write the new version to the cache file
-    echo "$version" > "$cache_file"
+    # Clean version string by removing ^ ~ and other version range symbols
+    local clean_version=$(echo "$version" | sed 's/[^~]//g')
     
-    message 34 "CACHE" "Updated cached $KIT_NAME version to: $version"
+    # Write the cleaned version to the cache file
+    echo "$clean_version" > "$cache_file"
+    
+    message 34 "CACHE" "Updated cached $KIT_NAME version to: $clean_version"
 }
 
 # Check if kit version has changed
@@ -56,8 +59,9 @@ has_version_changed() {
         return 0  # True
     fi
     
-    # Compare versions
-    if [ "$VERSION" != "$cached_version" ] || [ "$VERSION" != "$(get_version_specifier)" ]; then
+    # Clean the current version for comparison (remove ^ ~ and other version range symbols)
+    local clean_current_version=$(echo "$(get_version_specifier)" | sed 's/[^~]//g')
+    if [ "$clean_current_version" != "$cached_version" ] || [ "$clean_current_version" != "$VERSION" ]; then
         return 0  # True
     fi
     
@@ -75,10 +79,13 @@ cmd_update() {
     # Check if version has changed
     if has_version_changed; then
         local cached_version=$(get_cached_version)
+        # Clean the version specifier for display and caching
+        local clean_version_specifier=$(echo "$VERSION_SPECIFIER" | sed 's/[^~]//g')
+        
         if [ -z "$cached_version" ]; then
-            message 43 "SYNC" "First-time sync for $KIT_NAME version $VERSION"
+            message 43 "SYNC" "First-time sync for $KIT_NAME version $clean_version_specifier"
         else
-            message 43 "SYNC" "Version change: $cached_version -> $VERSION_SPECIFIER"
+            message 43 "SYNC" "Version change: $cached_version -> $clean_version_specifier"
         fi
 
         $CLI event before_update
@@ -103,10 +110,12 @@ cmd_update() {
         
         $CLI event after_update
 
-        # Update the cached version to current
-        set_cached_version "$VERSION_SPECIFIER"
-        message 42 "OKEY" "Sync completed successfully for version $VERSION_SPECIFIER"
+        # Update the cached version to current (cleaned version)
+        local clean_version_specifier=$(echo "$VERSION_SPECIFIER" | sed 's/[^~]//g')
+        set_cached_version "$clean_version_specifier"
+        message 42 "OKEY" "Sync completed successfully for version $clean_version_specifier"
     else
-        message 43 "SYNC" "Already synced to latest version $VERSION_SPECIFIER"
+        local clean_version_specifier=$(echo "$VERSION_SPECIFIER" | sed 's/[^~]//g')
+        message 43 "SYNC" "Already synced to latest version $clean_version_specifier"
     fi
 }

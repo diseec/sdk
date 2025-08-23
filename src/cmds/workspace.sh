@@ -241,13 +241,18 @@ get_services_filter() {
 cmd_workspace_status() {
     local config_file="$(get_workspace_config_path)"
     if [ -f "$config_file" ]; then
-        echo "Using workspace config: $config_file"
+        echo "Workspace config: $config_file"
         local selected_modules=$(get_selected_modules)
         if [ -n "$selected_modules" ]; then
-            echo "Selected modules:"
+            active_modules=""
             for module in $selected_modules; do
-                echo "  - $module"
+                if [ -n "$active_modules" ]; then
+                    active_modules="$active_modules, $module"
+                else
+                    active_modules="$module"
+                fi
             done
+            echo "Active modules: $active_modules"
         else
             message 33 "INFO" "No modules selected in workspace configuration"
         fi

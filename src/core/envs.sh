@@ -66,6 +66,18 @@ export KIT_SRC_DIR="$KIT_DIR/src"
 export CLI="$ROOT_DIR/cli"
 export CLI_BASE="$KIT_SRC_DIR/cli.sh"
 
+is_online() {
+    if ping -c 1 -W 3 8.8.8.8 >/dev/null 2>&1; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
+if [ -z "$IS_ONLINE" ]; then
+    export IS_ONLINE="$(is_online)"
+fi
+
 export VERSION=$(grep '"version"' $KIT_DIR/package.json | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')
 
 # Extract repository URL from .git/config or submodule gitdir without using git command
