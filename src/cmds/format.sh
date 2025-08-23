@@ -4,7 +4,7 @@ set -e; cd $ROOT_DIR;
 
 if ! grep -q '"prettier"' "$ROOT_DIR/package.json"; then
     message 43 "!" "Prettier not found. Installing..."
-    $CLI install prettier
+    . $KIT_SRC_DIR/cmds/install/prettier.sh
 fi
 
 message 30 "Prettier" "Running formatter..."

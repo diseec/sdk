@@ -10,6 +10,10 @@ color() {
 }
 
 message() {
+  # TODO change api to:
+  #             message <text> # silently echos with only repo name and date (?)
+  #             message <type> <text>
+  #             message --color <color> --title <title> <text>
   local repo_name=${REPO_NAME:-d}
   printf "\e[1;30;47m $(capitalize "$repo_name") \e[0m"
   if [ $# -eq 1 ]; then printf " $1 ";

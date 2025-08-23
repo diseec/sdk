@@ -181,7 +181,7 @@ D help
 D version
 D status
 D docker version
-D git status
+D git summary
 ```
 
 ## Troubleshooting

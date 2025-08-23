@@ -179,7 +179,7 @@ D test health           # Quick health check
 D format                # Format code
 
 # Git workflow with AI
-D git status            # Check PR status
+D git summary            # Check PR status
 D git push              # Auto-commit with AI message and create PR
 ```
 
