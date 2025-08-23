@@ -15,8 +15,8 @@ fi
 auto_discover_project_root_dir() {
     # Canonicalize KIT_DIR
     KIT_DIR=$(cd "$KIT_DIR" 2>/dev/null && pwd -P) || {
-        printf '%s\n' "Error: can't access \$KIT_DIR" >&2
-        return 1
+        message 41 "Error: can't access '$KIT_DIR'" >&2
+        exit 1
     }
     # Exception: if the script's directory == KIT_DIR, return the first cli
     # script_dir=$(cd "$(dirname -- "$0")" 2>/dev/null && pwd -P || echo "")
@@ -27,8 +27,8 @@ auto_discover_project_root_dir() {
     fi
     # Start from the parent of KIT_DIR, as an absolute, canonical path
     start=$(cd "$KIT_DIR/.." 2>/dev/null && pwd -P) || {
-        printf '%s\n' "Error: can't access \$KIT_DIR/.." >&2
-        return 1
+        message 41 error "can't access '$KIT_DIR/..'" >&2
+        exit 1
     }
     dir=$start
     while :; do
@@ -42,10 +42,10 @@ auto_discover_project_root_dir() {
         [ "$dir" = "/" ] && break
         dir=$(dirname -- "$dir")
     done
-    printf '%s\n' "Error: Could not find an ancestor containing a 'cli' other than \$KIT_DIR/cli" >&2
-    return 1
+    message 41 error "Could not find an ancestor containing a 'cli' other than '$KIT_DIR/cli'" >&2
+    exit 1
 }
-if [ -z "$ROOT_DIR" ]; then
+if [ ! -n "$ROOT_DIR" ]; then
 # if [ ! -f "$ROOT_DIR/cli" ]; then
     export ROOT_DIR="$(auto_discover_project_root_dir)"
 fi
