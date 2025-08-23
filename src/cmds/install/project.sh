@@ -20,10 +20,10 @@ if [ ! -f "$(get_workspace_config_path)" ]; then
     cmd_workspace_init
 fi
 
-message "Cloning selected submodules..."
+echo "Cloning selected submodules..."
 initialize_submodule() {
     local module="$1"; local module_path="$2"
-    message 30 "$module" "Initializing submodule..."
+    echo "Initializing submodule $module..."
     _git submodule update --init --recursive --remote "$module_path"
 }
 foreach_selected_module_with_callback initialize_submodule
@@ -43,11 +43,11 @@ _git fetch && _git checkout $BRANCH || _git checkout -b $BRANCH origin/$BRANCH |
 # foreach_selected_module_with_callback checkout_branch "$BRANCH"
 
 if [ "$IGNORE_SUBMODULE_INSTALLATION" != "true" ]; then
-    message "Installing dependencies in selected submodules..."
+    echo "Installing dependencies in selected submodules..."
     install_dependencies() {
         local module="$1"
         local module_path="$2"
-        message 30 "$module" "Installing dependencies..."
+        echo "Installing dependencies for $module..."
         cd "$ROOT_DIR/$module_path" && D install
     }
     foreach_selected_module_with_callback install_dependencies
