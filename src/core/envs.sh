@@ -46,7 +46,7 @@ auto_discover_project_root_dir() {
         [ "$dir" = "/" ] && break
         dir=$(dirname -- "$dir")
     done
-    echo "Error: Could not find an ancestor containing a 'cli' other than '$KIT_DIR/cli'" >&2
+    echo "Error: cli not found, looked up all levels from: $KIT_DIR" >&2
     exit 1
 }
 if [ ! -n "$ROOT_DIR" ]; then

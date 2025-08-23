@@ -10,6 +10,7 @@ dir="$PWD"; while :; do
         export ROOT_DIR="$dir";
         export KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
         if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ]; then 
+            # note: without this below command, get weird error 'docker: command not found'!
             docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
                 bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
                     cp -r /kit/* /vise/node_modules/@diseec/kit"
@@ -19,15 +20,18 @@ dir="$PWD"; while :; do
             #     bash -c "mkdir -p $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH && \
             #         cp -r /$KIT_NAME/* $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH"
             if [ ! -d "$KIT_DIR" ]; then
-                printf '%s\n' "Error: '$KIT_DIR' not found, try running 'D kit vise initialize' in project root" >&2
+                printf '%s\n' "Error: kit at '$KIT_DIR' not found, try running 'D kit vise initialize' in project root" >&2
                 exit 1
             fi
         fi
         break
     fi
     if [ "$dir" = "/" ]; then
-        printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
-        exit 1
+        # echo "info: running detached mode"
+        # echo "info: setting project directory to: $KIT_DIR"
+        export ROOT_DIR="$KIT_DIR";
+        # printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
+        # exit 1
         break
     fi
     dir=$(dirname -- "$dir")
