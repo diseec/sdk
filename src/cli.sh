@@ -28,7 +28,7 @@ c=$1; shift; case $c in
 
     ######################## SOURCE CONTROL ########################
 
-    git) . $KIT_SRC_DIR/cmds/git.sh; c=$1; shift; case "$c" in
+    git) . $KIT_SRC_DIR/cmds/git.sh; c=$1; shift; echo $c; case "$c" in
         sum|summary)
             . $CLI inform forbid-dev-on-main
             . $CLI inform summary-branch-status
@@ -46,7 +46,7 @@ c=$1; shift; case $c in
                 "    mer|merge-pull    " "Pull latest changes and merge with main" \
                 "    rel|release       " "Create release tag (development command)"
         ;;
-        *) _git "$@" ;;
+        *) _git $c "$@" ;;
     esac;;
     pus|push) . $CLI git pr-create "$@" ;;
     pul|pull) . $CLI git merge-pull "$@" ;;
@@ -78,7 +78,7 @@ c=$1; shift; case $c in
                 "    com|compose         " "Docker compose operations" \
                 "    <docker-cmd>        " "Pass through to docker"
         ;;
-        *) _docker "$@" ;;
+        *) _docker $c "$@" ;;
     esac ;;
     ser|service) . $KIT_SRC_DIR/cmds/services.sh "$@" ;;
     pac|package) . $KIT_SRC_DIR/cmds/packages.sh "$@" ;;

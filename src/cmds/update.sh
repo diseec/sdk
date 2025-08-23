@@ -78,8 +78,8 @@ cmd_update() {
         
         $CLI event after_update
 
-        message 42 "OKEY" "Sync completed successfully"
+        message 42 "OKEY" "Update completed successfully"
     else
-        message 43 "SYNC" "Already up to date"
+        message 42 "OKEY" "Already up to date"
     fi
 }

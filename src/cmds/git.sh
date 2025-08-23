@@ -121,7 +121,7 @@ cmd_git_pull() {
         pull_submodule() {
             local module="$1"
             local module_path="$2"
-            (cd "$ROOT_DIR/$module_path" && D git pull)
+            (cd "$ROOT_DIR/$module_path" && D pull)
         }
         foreach_selected_module_with_callback pull_submodule
     fi
