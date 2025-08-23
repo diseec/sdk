@@ -177,7 +177,7 @@ c=$1; shift; case $c in
     esac ;;
     saf|safe) $CLI $KIT_NAME execute $KIT_NAME D "$@" ;;
     eve|event) . $KIT_SRC_DIR/facades/event.sh "$@" ;;
-    int|internet) . $KIT_SRC_DIR/utils/internet.sh "$@" ;;
+    int|internet) . $KIT_SRC_DIR/utils/internet/index.sh "$@" ;;
     api) c=$1; shift; case "$c" in
         v1) c=$1; shift; case "$c" in
             install) . $CLI install "$@" ;;

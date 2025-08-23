@@ -204,6 +204,47 @@ install_git_lfs() {
     install_package "git-lfs"
 }
 
+install_iputils_ping() {
+    local distro=$(detect_distro)
+    if [ "$distro" = "ubuntu" ]; then
+        install_package "iputils-ping"
+    elif [ "$distro" = "alpine" ]; then
+        install_package "iputils"
+    else
+        return 1
+    fi
+}
+
+install_iproute2() {
+    local distro=$(detect_distro)
+    if [ "$distro" = "ubuntu" ]; then
+        install_package "iproute2"
+    elif [ "$distro" = "alpine" ]; then
+        install_package "iproute2"
+    else
+        return 1
+    fi
+}
+
+install_dnsutils() {
+    local distro=$(detect_distro)
+    if [ "$distro" = "ubuntu" ]; then
+        install_package "dnsutils"
+    elif [ "$distro" = "alpine" ]; then
+        install_package "bind-tools"
+    else
+        return 1
+    fi
+}
+
+install_net_tools() {
+    install_package "net-tools"
+}
+
+install_coreutils() {
+    install_package "coreutils"
+}
+
 # Get installer function for a dependency
 get_installer() {
     local dep="$1"
@@ -245,6 +286,7 @@ install_dependency() {
 
 # Main installation function
 install_system_dependencies() {
+    set -e
     # echo -e "${BLUE}=== Installing System Dependencies ===${NC}"
     
     local distro=$(detect_distro)

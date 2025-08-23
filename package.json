@@ -43,6 +43,11 @@
     "yarn",
     "gh",
     "openssl",
-    "git-lfs"
+    "git-lfs",
+    "iputils-ping",
+    "iproute2",
+    "dnsutils",
+    "net-tools",
+    "coreutils"
   ]
 }
