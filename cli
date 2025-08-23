@@ -10,7 +10,7 @@ c=$1; shift; case $c in
     vis|vise)
     if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then message 41 error "The vise command works only on bench! (the kit container)"; exit 1; fi
     c=$1; shift; case $c in
-        ini|initialize)
+        pat|patch)
             set -e
             VERSION_SPECIFIER=$(_node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
             if [ -z "$VERSION_SPECIFIER" ]; then

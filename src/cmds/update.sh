@@ -68,7 +68,7 @@ cmd_update() {
     set -e
     message 44 "info" "Pulling changes..."
     _git pull origin
-    $CLI safe kit vise initialize;
+    $CLI safe kit vise patch;
     $CLI version
     VERSION_SPECIFIER="$(get_version_specifier)"
     # Check if version has changed

@@ -10,11 +10,11 @@ dir="$PWD"; while :; do
         export ROOT_DIR="$dir"
         export KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
         if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ]; then 
-            docker run --rm -v $dir:/vise -w /vise image.registry.diseec.com/kit \
-                bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
-                    cp -r /kit/* /vise/node_modules/@diseec/kit"
             # docker run --rm -v $dir:/vise -w /vise image.registry.diseec.com/kit \
-            #     bash -c "D kit vise initialize"
+            #     bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
+            #         cp -r /kit/* /vise/node_modules/@diseec/kit"
+            docker run --rm -v $dir:/vise -w /vise image.registry.diseec.com/kit \
+                bash -c "D kit vise patch"
             # docker run --rm -v $dir:$PROJECT_MOUNT_DIR -w $PROJECT_MOUNT_DIR $KIT_IMAGE \
             #     bash -c "mkdir -p $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH && \
             #         cp -r /$KIT_NAME/* $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH"
