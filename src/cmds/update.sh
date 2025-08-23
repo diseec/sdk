@@ -47,8 +47,8 @@ has_version_changed() {
 }
 
 cmd_update() {
-    echo "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
     set -e
+    echo "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
     echo "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
     _git pull origin
     $CLI safe kit vise patch;
