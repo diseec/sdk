@@ -82,9 +82,7 @@ cmd_update() {
         $CLI event before_update
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
-        _npm update -g @$ORG_NAME/$KIT_NAME;
         cd $KIT_DIR; $CLI kit docker compose pull;
-        $CLI kit run npm update @$ORG_NAME/$KIT_NAME;
 
         message 44 "info" "Installing dependencies..."
         $CLI install --ignore-submodule-installation;
