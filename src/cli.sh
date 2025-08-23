@@ -4,10 +4,12 @@ c=$1; shift; case $c in
 
     ######################## PROJECT MANAGEMENT ########################
 
+    sys|system) . $KIT_SRC_DIR/cmds/install/system.sh "$@" ;;
     ins|install) . $KIT_SRC_DIR/cmds/install/project.sh "$@" ;;
     upd|update) . $KIT_SRC_DIR/cmds/update.sh; cmd_update "$@" ;;
     sta|status)         
         . $CLI version
+        . $CLI inform check-system-dependencies
         . $CLI inform check-internet-connection
         . $CLI workspace status
         . $CLI git summary
@@ -157,6 +159,7 @@ c=$1; shift; case $c in
     ######################## UTILITIES ########################
 
     inf|inform) c=$1; shift; case $c in
+        csd|check-system-dependencies) . $KIT_SRC_DIR/informs/check-system-dependencies.sh "$@" ;;
         cic|check-internet-connection) . $KIT_SRC_DIR/informs/check-internet-connection.sh "$@" ;;
         fdm|forbid-dev-on-main) . $KIT_SRC_DIR/informs/forbid-dev-on-main.sh "$@" ;;
         sbs|summary-branch-status) . $KIT_SRC_DIR/informs/summary-branch-status.sh "$@" ;;
@@ -165,6 +168,7 @@ c=$1; shift; case $c in
             display_help \
                 "" "" \
                 "$(color 30 'Inform Commands')" "" \
+                "    csd|check-system-dependencies   " "Check for missing system dependencies" \
                 "    cic|check-internet-connection   " "Check if the internet connection is active" \
                 "    fdm|forbid-dev-on-main          " "Warn if on 'main' branch" \
                 "    sbs|summary-branch-status       " "Show local vs remote branch status" \

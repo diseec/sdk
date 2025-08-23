@@ -10,11 +10,23 @@ get_version_info() {
     local outdated_json=$(_npm outdated "$package_name" --json 2>/dev/null)
     
     if [ -n "$outdated_json" ] && [ "$outdated_json" != "{}" ]; then
-        # Extract current and wanted versions
-        local current_version=$(echo "$outdated_json" | _node -pe "JSON.parse(process.stdin.read())['$package_name']?.current || ''")
-        local wanted_version=$(echo "$outdated_json" | _node -pe "JSON.parse(process.stdin.read())['$package_name']?.wanted || ''")
+        # Extract current and wanted versions using echo instead of stdin
+        local current_version=$(echo "$outdated_json" | _node -pe "
+            try { 
+                const data = JSON.parse(require('fs').readFileSync(0, 'utf8')); 
+                data['$package_name']?.current || '' 
+            } catch(e) { '' }")
+        local wanted_version=$(echo "$outdated_json" | _node -pe "
+            try { 
+                const data = JSON.parse(require('fs').readFileSync(0, 'utf8')); 
+                data['$package_name']?.wanted || '' 
+            } catch(e) { '' }")
         
-        echo "$current_version -> $wanted_version"
+        if [ -n "$current_version" ] && [ -n "$wanted_version" ]; then
+            echo "$current_version -> $wanted_version"
+        else
+            echo ""
+        fi
     else
         echo ""
     fi
