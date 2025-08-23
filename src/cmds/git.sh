@@ -108,15 +108,15 @@ has_open_pr() {
 }
 
 cmd_git_pull() {
+    cd "$ROOT_DIR"
     ARGS=""; for arg in "$@"; do case "$arg" in
         --ignore-submodule-pulling) IGNORE_SUBMODULE_PULLING="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    branch="$(_git branch --show-current | tr -d '\r\n')"
-    message 30 "$branch" "Pulling latest changes .."
-    _git pull origin
-    message 30 "$branch" "Merging latest 'main' changes .."
-    _git merge origin/main
+    message 30 "$CURRENT_BRANCH" "Pulling latest changes .."
+    _git -C "$ROOT_DIR" pull origin
+    message 30 "$CURRENT_BRANCH" "Merging latest 'main' changes .."
+    _git -C "$ROOT_DIR" merge origin/main
     if [ "$IGNORE_SUBMODULE_PULLING" != "true" ]; then
         pull_submodule() {
             local module="$1"

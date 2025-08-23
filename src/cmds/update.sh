@@ -58,13 +58,13 @@ cmd_update() {
     # Check if version has changed
     $CLI event before_update
 
-    message 44 "info" "Install and pulling latest $KIT_NAME image..."
+    message 44 "info" "Pulling latest $KIT_NAME image..."
     cd $KIT_DIR; $CLI kit docker compose pull;
 
     message 44 "info" "Installing dependencies..."
     $CLI install --ignore-submodule-installation;
 
-    message 44 "info" "Pulling latest selected changes..."
+    message 44 "info" "Pulling latest changes..."
     $CLI pull --ignore-submodule-pulling;
 
     update_dependencies() {
