@@ -49,6 +49,7 @@ if [ "$IGNORE_SUBMODULE_INSTALLATION" != "true" ]; then
         local module_path="$2"
         echo "Installing dependencies for $module..."
         (cd "$ROOT_DIR/$module_path" && "$ROOT_DIR/$module_path/cli" install)
+        echo "Installed dependencies for $module."
     }
     foreach_selected_module_with_callback install_dependencies
 fi

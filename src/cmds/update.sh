@@ -66,10 +66,10 @@ has_version_changed() {
 
 cmd_update() {
     set -e
-    message 44 "info" "Pulling changes..."
+    echo "Pulling branch changes in '$REPO_NAME'..."
     _git pull origin
     $CLI safe kit vise patch;
-    $CLI version
+    echo "$KIT_NAME version patched, current version: $VERSION"
     VERSION_SPECIFIER="$(get_version_specifier)"
     # Check if version has changed
     if has_version_changed; then
@@ -95,8 +95,9 @@ cmd_update() {
         update_dependencies() {
             local module="$1"
             local module_path="$2"
-            message 30 "$module" "Updating dependencies..."
+            echo "Updating dependencies for '$module'..."
             (cd "$ROOT_DIR/$module_path" && "$ROOT_DIR/$module_path/cli" update)
+            echo "Updated dependencies for '$module'."
         }
         foreach_selected_module_with_callback update_dependencies
         
