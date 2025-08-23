@@ -2,70 +2,36 @@
 
 . $KIT_SRC_DIR/cmds/workspace.sh
 
-get_version_specifier() {
-    _node -p "require('$ROOT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$ROOT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']"
-}
-
-# Get the repository cache directory path
-get_repo_cache_dir() {
-    local repo_dir="$ORG_DIR/workspaces/$REPO_NAME"
-    if [ ! -d "$repo_dir" ]; then
-        mkdir -p "$repo_dir"
-    fi
+# Get version information for a package
+get_version_info() {
+    local package_name="@$ORG_NAME/$KIT_NAME"
     
-    # Create cache directory if it doesn't exist
-    local cache_dir="$repo_dir/.cache"
-    if [ ! -d "$cache_dir" ]; then
-        mkdir -p "$cache_dir"
-    fi
+    # Get outdated info as JSON
+    local outdated_json=$(_npm outdated "$package_name" --json 2>/dev/null)
     
-    echo "$cache_dir"
-}
-
-# Get the cached version of kit tools
-get_cached_version() {
-    local cache_file="$(get_repo_cache_dir)/kit_version.txt"
-    
-    if [ ! -f "$cache_file" ]; then
-        # Return empty if no cache exists
+    if [ -n "$outdated_json" ] && [ "$outdated_json" != "{}" ]; then
+        # Extract current and wanted versions
+        local current_version=$(echo "$outdated_json" | _node -pe "JSON.parse(process.stdin.read())['$package_name']?.current || ''")
+        local wanted_version=$(echo "$outdated_json" | _node -pe "JSON.parse(process.stdin.read())['$package_name']?.wanted || ''")
+        
+        echo "$current_version -> $wanted_version"
+    else
         echo ""
-        return 0
     fi
-    
-    # Return the cached version
-    cat "$cache_file"
-}
-
-# Update the cached version of kit tools
-set_cached_version() {
-    local version="$1"
-    local cache_file="$(get_repo_cache_dir)/kit_version.txt"
-    
-    # Clean version string by removing ^ ~ and other version range symbols
-    local clean_version=$(echo "$version" | sed 's/[^~]//g')
-    
-    # Write the cleaned version to the cache file
-    echo "$clean_version" > "$cache_file"
-    
-    message 34 "CACHE" "Updated cached $KIT_NAME version to: $clean_version"
 }
 
 # Check if kit version has changed
 has_version_changed() {
-    local cached_version=$(get_cached_version)
+    local package_name="@$ORG_NAME/$KIT_NAME"
     
-    # If no cached version, consider it changed
-    if [ -z "$cached_version" ]; then
-        return 0  # True
+    # Get outdated info as JSON
+    local outdated_json=$(_npm outdated "$package_name" --json 2>/dev/null)
+    
+    if [ -n "$outdated_json" ] && [ "$outdated_json" != "{}" ]; then
+        return 0  # Updates available
+    else
+        return 1  # No updates
     fi
-    
-    # Clean the current version for comparison (remove ^ ~ and other version range symbols)
-    local clean_current_version=$(echo "$(get_version_specifier)" | sed 's/[^~]//g')
-    if [ "$clean_current_version" != "$cached_version" ] || [ "$clean_current_version" != "$VERSION" ]; then
-        return 0  # True
-    fi
-    
-    return 1  # False
 }
 
 cmd_update() {
@@ -75,19 +41,9 @@ cmd_update() {
     _git pull origin
     $CLI safe kit vise patch;
     echo "$KIT_NAME version patched to: $VERSION"
-    VERSION_SPECIFIER="$(get_version_specifier)"
+
     # Check if version has changed
     if has_version_changed; then
-        local cached_version=$(get_cached_version)
-        # Clean the version specifier for display and caching
-        local clean_version_specifier=$(echo "$VERSION_SPECIFIER" | sed 's/[^~]//g')
-        
-        if [ -z "$cached_version" ]; then
-            message 43 "SYNC" "First-time sync for $KIT_NAME version $clean_version_specifier"
-        else
-            message 43 "SYNC" "Version change: $cached_version -> $clean_version_specifier"
-        fi
-
         $CLI event before_update
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
@@ -110,12 +66,8 @@ cmd_update() {
         
         $CLI event after_update
 
-        # Update the cached version to current (cleaned version)
-        local clean_version_specifier=$(echo "$VERSION_SPECIFIER" | sed 's/[^~]//g')
-        set_cached_version "$clean_version_specifier"
-        message 42 "OKEY" "Sync completed successfully for version $clean_version_specifier"
+        message 42 "OKEY" "Sync completed successfully"
     else
-        local clean_version_specifier=$(echo "$VERSION_SPECIFIER" | sed 's/[^~]//g')
-        message 43 "SYNC" "Already synced to latest version $clean_version_specifier"
+        message 43 "SYNC" "Already up to date"
     fi
 }

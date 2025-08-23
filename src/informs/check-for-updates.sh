@@ -15,7 +15,8 @@ fi
 
 # Check if version changed or if repo/modules are behind
 if has_version_changed; then
-    ask_to_run_command "New kit version available, download updates?" "$CLI" update
+    version_info=$(get_version_info)
+    ask_to_run_command "New kit version available ($version_info), download updates?" "$CLI" update
 elif [ -d "$ROOT_DIR/.git" ]; then
     # Check if the main repository is behind
     current_branch=$(_git -C "$ROOT_DIR" rev-parse --abbrev-ref HEAD)
