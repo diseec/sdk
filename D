@@ -27,11 +27,12 @@ dir="$PWD"; while :; do
         break
     fi
     if [ "$dir" = "/" ]; then
+        # TODO instead of this ask for initializing current dir
         # echo "info: running detached mode"
         # echo "info: setting project directory to: $KIT_DIR"
-        export ROOT_DIR="$KIT_DIR";
-        # printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
-        # exit 1
+        # export ROOT_DIR="$KIT_DIR";
+        printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
+        exit 1
         break
     fi
     dir=$(dirname -- "$dir")
