@@ -81,7 +81,6 @@ cmd_update() {
             message 43 "SYNC" "Version change: $cached_version -> $VERSION_SPECIFIER"
         fi
 
-        $CLI kit start --detach
         $CLI event before_update
 
         message 44 "info" "Install and pulling latest $KIT_NAME image..."
@@ -103,7 +102,6 @@ cmd_update() {
         foreach_selected_module_with_callback update_dependencies
         
         $CLI event after_update
-        $CLI kit stop
 
         # Update the cached version to current
         set_cached_version "$VERSION_SPECIFIER"

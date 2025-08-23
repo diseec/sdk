@@ -25,6 +25,10 @@ auto_discover_project_root_dir() {
         printf '%s\n' "$KIT_DIR"
         return 0
     fi
+    if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
+        printf '%s\n' "$PROJECT_MOUNT_DIR"
+        return 0
+    fi
     # Start from the parent of KIT_DIR, as an absolute, canonical path
     start=$(cd "$KIT_DIR/.." 2>/dev/null && pwd -P) || {
         echo "Error: can't access '$KIT_DIR/..'" >&2
