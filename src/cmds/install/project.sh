@@ -19,23 +19,24 @@ git config --global credential.helper store
 [ "$HAS_SUBMODULES" != "true" ] && { return 0; }
 
 if [ ! -f "$(get_workspace_config_path)" ]; then
-    message 30 "WORKSPACE" "Initializing workspace configuration..."
+    echo "$REPO_NAME: Initializing workspace configuration..."
     cmd_workspace_init
 fi
 
-echo "Cloning selected submodules..."
+echo "$REPO_NAME: Cloning selected submodules..."
 initialize_submodule() {
     local module="$1"; local module_path="$2"
-    echo "Initializing submodule $module..."
+    echo "Initializing submodule '$module'..."
     _git submodule update --init --recursive --remote "$module_path"
+    echo "Initialized submodule '$module'."
 }
 foreach_selected_module_with_callback initialize_submodule
 
-echo "Setting up branch tracking..."
+echo "$REPO_NAME: Setting up branch tracking..."
 GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
 read -p "$(message 45 "?" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
 if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
-echo "Checking out to branch '$BRANCH'..."
+echo "$REPO_NAME: Checking out to branch '$BRANCH'..."
 _git fetch && _git checkout $BRANCH || _git checkout -b $BRANCH origin/$BRANCH || _git checkout -b $BRANCH;
 # message "Checking out branch '$BRANCH' in selected submodules..."
 # checkout_branch() {
@@ -50,11 +51,12 @@ if [ "$IGNORE_SUBMODULE_INSTALLATION" != "true" ]; then
     install_dependencies() {
         local module="$1"
         local module_path="$2"
-        echo "Installing dependencies for $module..."
+        echo "Installing dependencies for '$module'..."
         (cd "$ROOT_DIR/$module_path" && D install)
-        echo "Installed dependencies for $module."
+        echo "Installed dependencies for '$module'."
     }
     foreach_selected_module_with_callback install_dependencies
 fi
 
-message 32 "SUCCESS" "Workspace configuration initialized successfully."
+echo "$REPO_NAME: Workspace configuration initialized successfully."
+message 32 "SUCCESS" "Installation completed successfully."
