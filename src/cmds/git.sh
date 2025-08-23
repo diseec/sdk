@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. $KIT_SRC_DIR/cmds/workspace.sh
+. $KIT_SRC_DIR/cmds/workspace/index.sh
 
 set -e
 
@@ -27,6 +27,8 @@ check_gh_cli() {
 
 # Generate commit message using AI
 generate_commit_message() {
+  local OPENAI_API_KEY="$("$CLI" safe secret export OPEN_AI_KEY)"
+  echo "$OPENAI_API_KEY";exit 1;
   local diff_output="$(_git diff --staged)"
   
   if [ -z "$diff_output" ]; then

@@ -80,25 +80,31 @@ c=$1; shift; case $c in
         ;;
         *) _docker $c "$@" ;;
     esac ;;
-    ser|service) . $KIT_SRC_DIR/cmds/services.sh "$@" ;;
-    pac|package) . $KIT_SRC_DIR/cmds/packages.sh "$@" ;;
-    wor|workspace) . $KIT_SRC_DIR/cmds/workspace.sh; c=$1; shift; case "$c" in
+    ser|service) . $KIT_SRC_DIR/cmds/service.sh "$@" ;;
+    pac|package) . $KIT_SRC_DIR/cmds/package.sh "$@" ;;
+    wor|workspace)
+        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI safe $c "$@"; return 0; fi
+        . $KIT_SRC_DIR/cmds/workspace/index.sh; c=$1; shift; case "$c" in
         ini|init) cmd_workspace_init ;;
         sel|select) cmd_workspace_select ;;
         sta|status) cmd_workspace_status ;;
+        con|config) cmd_workspace_config "$@" ;;
         *)
             display_help \
                 "" "" \
                 "$(color 30 'Workspace Commands')" "" \
                 "    ini|init      " "Initialize workspace configuration" \
                 "    sel|select    " "Select modules for workspace" \
-                "    sta|status    " "Show current workspace configuration"
+                "    sta|status    " "Show current workspace configuration" \
+                "    con|config    " "Manage workspace configuration (get/set/delete/list)"
         ;;
     esac ;;
 
     ######################## CONFIGURATION ########################
 
-    con|config) . $KIT_SRC_DIR/facades/config.sh; c=$1; shift; case "$c" in
+    con|config)
+        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI safe $c "$@"; return 0; fi
+        . $KIT_SRC_DIR/facades/config.sh; c=$1; shift; case "$c" in
         get) config_get "$@" ;;
         set) config_set "$@" ;;
         del|delete) config_delete "$@" ;;
@@ -119,37 +125,34 @@ c=$1; shift; case $c in
                 "    pri|print                        " "Print entire configuration"
         ;;
     esac ;;
-    sec|secrets) . $KIT_SRC_DIR/cmds/secrets.sh; c=$1; shift; case $c in
-        ini|init) cmd_secret_init "$@" ;;
-        set|set-key) cmd_secret_set_key "$@" ;;
-        res|reset-key) cmd_secret_reset_key "$@" ;;
-        key|show-key) cmd_secret_show_key "$@" ;;
+    sec|secret)
+        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI safe $c "$@"; return 0; fi
+        . $KIT_SRC_DIR/cmds/secret.sh; c=$1; shift; case $c in
+        kse|key-set) cmd_secret_set_key "$@" ;;
+        kre|key-reset) cmd_secret_reset_key "$@" ;;
+        ksh|key-show) cmd_secret_show_key "$@" ;;
         add) cmd_secret_add_secret "$@" ;;
-        get|get-all) cmd_secret_get_all_secrets "$@" ;;
+        exp|export) cmd_secret_export "$@" ;;
         sho|show) cmd_secret_show_secrets "$@" ;;
-        lis|list) cmd_secret_list_secrets "$@" ;;
         cle|clear) cmd_secret_clear_secrets "$@" ;;
-        deb|debug) cmd_secret_debug "$@" ;;
         rem|remove|rm) cmd_secret_remove_secret "$@" ;;
+        # deb|debug) cmd_secret_debug "$@" ;;
         *)
             display_help \
                 "" "" \
                 "$(color 30 'Secrets Commands')" "" \
-                "    ini|init               " "Initialize encryption key (auto-generated)" \
-                "    set|set-key            " "Set encryption key manually" \
-                "    res|reset-key          " "Generate new key and re-encrypt all secrets" \
-                "    key|show-key           " "Display current encryption key" \
+                "    kse|key-set            " "Set encryption key manually" \
+                "    kre|key-reset          " "Generate new key and re-encrypt all secrets" \
+                "    ksh|key-show           " "Display current encryption key" \
                 "    add                    " "Add a new secret interactively" \
                 "    sho|show               " "Display all secrets in readable format" \
-                "    get|get-all            " "Export all secrets as environment variables" \
-                "    lis|list               " "List all secret names" \
+                "    exp|export             " "Export a secret value" \
                 "    cle|clear              " "Remove all secrets (requires confirmation)" \
-                "    deb|debug              " "Test encryption/decryption functionality" \
                 "    rem|remove <name>      " "Remove a specific secret" \
                 "" "" \
-                "$(color 34 'Info:')" "Secrets are encrypted with AES-256-CBC using auto-generated keys" \
+                "$(color 34 'Info: ')" "Secrets are encrypted with AES-256-CBC using auto-generated keys" \
                 "" "" \
-                "$(color 30 'Important:')" "If secrets exist but no key is configured, you ust:" \
+                "$(color 30 'Important: ')" "If secrets exist but no key is configured, you ust:" \
                 "    1. Set the original key manually: secrets set-key" "" \
                 "    2. Clear all secrets: secrets clear" ""
         ;;
@@ -175,7 +178,7 @@ c=$1; shift; case $c in
                 "    cfu|check-for-updates           " "Check for CLI updates and notify"
         ;;
     esac ;;
-    saf|safe) $CLI $KIT_NAME execute $KIT_NAME D "$@" ;;
+    saf|safe) $CLI $KIT_NAME execute --no-message $KIT_NAME D "$@" ;;
     eve|event) . $KIT_SRC_DIR/facades/event.sh "$@" ;;
     int|internet) . $KIT_SRC_DIR/utils/internet/index.sh "$@" ;;
     api) c=$1; shift; case "$c" in
@@ -236,7 +239,7 @@ c=$1; shift; case $c in
             "" "" \
             "$(color 30 'Configuration')" "" \
             "    con|config               " "Configuration management" \
-            "    sec|secrets              " "Encrypted secrets management" \
+            "    sec|secret              " "Encrypted secrets management" \
             "    env|envs                 " "Environment variables. Usage: source D envs" \
             "" "" \
             "$(color 30 'Utilities')" "" \

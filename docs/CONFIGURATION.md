@@ -15,7 +15,7 @@ The kit uses OpenAI to generate intelligent commit messages when you run `D git 
 1. **Initialize secrets system:**
 
    ```bash
-   D secrets init
+   D secret init
    ```
 
    This auto-generates an encryption key and stores it in your config.
@@ -23,7 +23,7 @@ The kit uses OpenAI to generate intelligent commit messages when you run `D git 
 2. **Add your OpenAI API key:**
 
    ```bash
-   D secrets add
+   D secret add
    ```
 
    - Enter `OPENAI_API_KEY` as the name
@@ -31,14 +31,14 @@ The kit uses OpenAI to generate intelligent commit messages when you run `D git 
 
 3. **Load secrets into environment:**
    ```bash
-   source D secrets get
+   source D secret get
    ```
 
 ### Daily Usage
 
-- **View secrets:** `D secrets show`
-- **List secret names:** `D secrets list`
-- **Remove a secret:** `D secrets remove OPENAI_API_KEY`
+- **View secret:** `D secret show`
+- **List secret names:** `D secret list`
+- **Remove a secret:** `D secret remove OPENAI_API_KEY`
 
 The encryption key is stored in `~/.diseec/config.yaml`. Keep it safe - you need it to decrypt your secrets.
 

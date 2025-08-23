@@ -131,8 +131,8 @@ Variables available:
 ### Initialize Secrets
 
 ```bash
-D secrets init
-D secrets add  # Add secrets interactively
+D secret init
+D secret add  # Add secret interactively
 ```
 
 ### Configure Workspace

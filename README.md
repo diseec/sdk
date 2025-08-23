@@ -78,7 +78,7 @@ D build
 # Get help for any command
 D help
 D git help
-D secrets help
+D secret help
 ```
 
 ## Documentation
@@ -161,7 +161,7 @@ kit/
 ### Configuration & Security
 
 - `con|config` - Configuration management
-- `sec|secrets` - Encrypted secrets management
+- `sec|secret` - Encrypted secrets management
 - `env|envs` - Environment variables (Usage: source D envs)
 
 ## Examples
@@ -187,15 +187,15 @@ D git push              # Auto-commit with AI message and create PR
 
 ```bash
 # Initialize secrets (first time)
-D secrets init
+D secret init
 
 # Add secrets interactively
-D secrets add
+D secret add
 # Enter: OPENAI_API_KEY
 # Value: sk-your-key-here
 
 # Export to environment
-source <(D secrets get-all)
+source <(D secret get-all)
 
 # Use in development
 D git push              # Uses OPENAI_API_KEY for AI commits

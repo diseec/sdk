@@ -1,15 +1,15 @@
 #!/bin/bash
 
+ARGS=""; for arg in "$@"; do case "$arg" in
+    --no-message) IS_SILENT="true";;
+*) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
 SERVICE_NAME=$1; shift;
-IS_SILENT=""
 
-while [ $# -gt 0 ]; do case "$1" in
-    --no-message) IS_SILENT="true"; shift;;
-*) break;; esac; done;
-
-if [ -n "$CI" ]; 
-    then OPTIONS="-e CI=true";
-    else OPTIONS="-it";
+if [ -n "$CI" ]; then
+    OPTIONS="-e CI=true";
+else
+    OPTIONS="-it";
 fi
 
 COMMAND_STR="$*"

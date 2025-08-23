@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KIT_SRC_DIR/cmds/workspace.sh
+. $KIT_SRC_DIR/cmds/workspace/index.sh
 
 set -e
 
