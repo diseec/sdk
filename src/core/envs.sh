@@ -89,6 +89,38 @@ if [ -n "$REPO_URL" ]; then
 fi
 export REPO_NAME
 
+get_current_branch() {
+    # replacement for: _git rev-parse --abbrev-ref HEAD
+
+    local git_dir="$ROOT_DIR/.git"
+    local head_file=""
+    
+    if [ -d "$git_dir" ]; then
+        # Standard git repo
+        head_file="$git_dir/HEAD"
+    elif [ -f "$git_dir" ]; then
+        # Submodule or worktree: .git is a file pointing to actual gitdir
+        local gitdir_path="$ROOT_DIR/$(awk -F': ' '/^gitdir:/ {print $2}' "$git_dir")"
+        if [ -n "$gitdir_path" ] && [ -f "$gitdir_path/HEAD" ]; then
+            head_file="$gitdir_path/HEAD"
+        fi
+    fi
+    
+    if [ -f "$head_file" ]; then
+        local head_content=$(cat "$head_file")
+        if [ "${head_content#ref: refs/heads/}" != "$head_content" ]; then
+            # Extract branch name from "ref: refs/heads/branch-name"
+            echo "${head_content#ref: refs/heads/}"
+        else
+            # Detached HEAD state - return first 7 chars of commit hash
+            echo "${head_content:0:7}"
+        fi
+    else
+        echo "unknown"
+    fi
+}
+export CURRENT_BRANCH="$(get_current_branch)"
+
 get_org_dir() {
   ORG_DIR="$HOME/$ORG_NAME"
   if [ ! -d "$ORG_DIR" ]; then mkdir -p "$ORG_DIR"; fi

@@ -2,7 +2,10 @@
 
 . $KIT_SRC_DIR/cmds/workspace.sh
 
-set -e; cd $ROOT_DIR; $CLI version;
+set -e; cd $ROOT_DIR;
+
+$CLI safe kit vise patch;
+echo "$KIT_NAME version patched to: $VERSION"
 
 ARGS=""; for arg in "$@"; do case "$arg" in
     --ignore-submodule-installation) IGNORE_SUBMODULE_INSTALLATION="true";;

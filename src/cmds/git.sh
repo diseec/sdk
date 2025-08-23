@@ -74,14 +74,9 @@ generate_commit_message() {
   fi
 }
 
-# Get current branch name
-get_current_branch() {
-  _git rev-parse --abbrev-ref HEAD
-}
-
 # Check if current branch has a PR
 has_open_pr() {
-  local branch="$(get_current_branch)"
+  local branch="$CURRENT_BRANCH"
   
   if check_gh_cli; then
     # Try to get PR number for current branch
@@ -134,7 +129,7 @@ cmd_git_pull() {
 
 # Commit all changes with AI-generated message and push
 commit_and_push() {
-  local branch="$(get_current_branch)"
+  local branch="$CURRENT_BRANCH"
   
   # Don't allow commits directly to main
   if [ "$branch" = "main" ]; then
@@ -168,7 +163,7 @@ commit_and_push() {
 # Create a new PR or update existing one
 cmd_git_create_or_update_pr() {
   local pr_number=$(has_open_pr)
-  local branch="$(get_current_branch)"
+  local branch="$CURRENT_BRANCH"
   
   # Commit and push changes first
   commit_and_push
@@ -214,7 +209,7 @@ cmd_git_create_or_update_pr() {
 # Check PR status and show comments/issues
 cmd_git_check_pr_status() {
   local pr_number=$(has_open_pr)
-  local branch="$(get_current_branch)"
+  local branch="$CURRENT_BRANCH"
   
   if [ -z "$pr_number" ]; then
     message 33 "pr" "No open PR found for branch: $branch"

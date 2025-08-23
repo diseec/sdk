@@ -65,11 +65,12 @@ has_version_changed() {
 }
 
 cmd_update() {
+    echo "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
     set -e
-    echo "Pulling branch changes in '$REPO_NAME'..."
+    echo "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
     _git pull origin
     $CLI safe kit vise patch;
-    echo "$KIT_NAME version patched, current version: $VERSION"
+    echo "$KIT_NAME version patched to: $VERSION"
     VERSION_SPECIFIER="$(get_version_specifier)"
     # Check if version has changed
     if has_version_changed; then
