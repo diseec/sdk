@@ -37,17 +37,17 @@ c=$1; shift; case $c in
     
     ins|install)
         # yarn install # Add project specific install commands here
-        $CLI_BASE install "$@"
+        . $CLI_BASE install "$@"
     ;;
     dev)
-        $CLI status
-        ask_to_run_command "Pull and merge latest changes?" $CLI pull
-        $CLI_BASE dev "$@";
-        $CLI format
-        ask_to_run_command "Commit, push and PR changes?" $CLI push
+        . $CLI status
+        ask_to_run_command "Pull and merge latest changes?" . $CLI pull
+        . $CLI_BASE dev "$@";
+        . $CLI format
+        ask_to_run_command "Commit, push and PR changes?" . $CLI push
     ;;
-    for|format) $CLI_BASE format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
-    tes|test) $CLI_BASE test "$@" ;;
+    for|format) . $CLI_BASE format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
+    tes|test) . $CLI_BASE test "$@" ;;
 
     # Listeners
     # listen:before_update) message 44 "info" "Commands before updating completed..." ;;

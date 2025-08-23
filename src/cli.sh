@@ -28,7 +28,7 @@ c=$1; shift; case $c in
 
     ######################## SOURCE CONTROL ########################
 
-    git) . $KIT_SRC_DIR/cmds/git.sh; c=$1; shift; echo $c; case "$c" in
+    git) . $KIT_SRC_DIR/cmds/git.sh; c=$1; shift; case "$c" in
         sum|summary)
             . $CLI inform forbid-dev-on-main
             . $CLI inform summary-branch-status
