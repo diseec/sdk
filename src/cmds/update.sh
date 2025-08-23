@@ -96,7 +96,7 @@ cmd_update() {
             local module="$1"
             local module_path="$2"
             echo "Updating dependencies for '$module'..."
-            (cd "$ROOT_DIR/$module_path" && "$ROOT_DIR/$module_path/cli" update)
+            (cd "$ROOT_DIR/$module_path" && D update)
             echo "Updated dependencies for '$module'."
         }
         foreach_selected_module_with_callback update_dependencies
