@@ -2,6 +2,7 @@ FROM node:alpine
 
 # Install base dependencies
 RUN apk add --no-cache bash curl yq jq git openssl git-lfs
+RUN npm install -g prettier
 
 # Install GitHub CLI using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \

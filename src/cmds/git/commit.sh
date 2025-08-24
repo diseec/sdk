@@ -1,20 +1,21 @@
 #!/bin/bash
 
+. $KIT_SRC_DIR/cmds/secret/index.sh
+
 # Generate commit message using AI
 generate_commit_message() {
-  local OPENAI_API_KEY="$("$CLI" on-bench secret export OPENAI_API_KEY)"
-  local diff_output="$(_git diff --staged)"
+    local diff_output="$(_git diff --staged)"
   
-  if [ -z "$diff_output" ]; then
-    # message 43 "!" "No staged changes found. Staging all changes..."
-    _git add -A
-    diff_output="$(_git diff --staged)"
-    
     if [ -z "$diff_output" ]; then
-      message 31 "ERROR" "No changes to commit"
-      return 1
+      # message 43 "!" "No staged changes found. Staging all changes..."
+      _git add -A
+      diff_output="$(_git diff --staged)"
+      
+      if [ -z "$diff_output" ]; then
+        message 31 "ERROR" "No changes to commit"
+        return 1
+      fi
     fi
-  fi
   
   # message 34 "INFO" "Generating commit message..."
   
@@ -123,6 +124,14 @@ cmd_git_commit() {
     return 1
   fi
 
+    if validate_and_prepare_secret "OPENAI_API_KEY"; then
+        # If validation passes, export the secret
+        local OPENAI_API_KEY="$(cmd_secret_export OPENAI_API_KEY)"
+    else
+        message 31 "ERROR" "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2
+        return 1
+    fi
+
   # Generate commit message
   local commit_msg=$(generate_commit_message)
   if [ -z "$commit_msg" ]; then
@@ -139,37 +148,5 @@ cmd_git_commit() {
   rm /tmp/commit-msg.txt
   
   return 0
-}
-
-
-# Create a new PR or update existing one
-cmd_git_commit_get_report() {
-  if check_gh_cli; then
-    local pr_link=$(_gh pr view "$(has_open_pr)" --json url -q .url)
-  fi
-  local commit_link="https://github.com/$ORG_NAME/$REPO_NAME/commit/$(_git rev-parse HEAD)"
-
-  # Commit changes
-  echo ""
-  message 34 "✨" "Excellent! Here's the summary to use in daily insights:"
-  echo ""
-  echo ""
-  echo -e " \033[36mDATE $(date +'%Y-%m-%d')\033[0m"
-  echo -e " \033[36mDEVE $(_git config user.name)\033[0m"
-  echo -e " \033[36mEMAI $(_git config user.email)\033[0m"
-  echo -e " \033[36mREPO $REPO_NAME\033[0m"
-  echo -e " \033[36mBRAN $CURRENT_BRANCH\033[0m"
-  echo -e " \033[36mCOMM \033[4m$commit_link\033[24m\033[0m"
-  echo -e " \033[36mPULL \033[4m$pr_link\033[24m\033[0m"
-  echo ""
-  echo -e "\033[36m--------------------\033[0m"
-  echo ""
-  echo -e " \033[36m$(_git log -1 --pretty=%B)\033[0m"
-  echo ""
-  echo -e "\033[36m--------------------\033[0m"
-  echo ""
-  echo -e "\033[36m$(_git diff HEAD~1 --stat)\033[0m"
-  echo ""
-  echo ""
 }
 

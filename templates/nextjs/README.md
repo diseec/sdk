@@ -88,7 +88,7 @@ sh cli pull
 Merge the `main` branch into the `release` branch and push to trigger the CI/CD pipeline.
 
 ```sh
-sh cli release
+sh cli _release
 ```
 
 #### `pro`
@@ -140,7 +140,7 @@ Here is an example of how you might use the `cli` script in your development wor
 5. **Release the application**:
 
    ```sh
-   sh cli release
+   sh cli _release
    ```
 
 ## Internal Use Only ⚠️

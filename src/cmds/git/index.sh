@@ -1,12 +1,14 @@
 #!/bin/bash
 
 . $KIT_SRC_DIR/cmds/workspace/index.sh
-. $KIT_SRC_DIR/cmds/git/core.sh
+. $KIT_SRC_DIR/cmds/git/exceptions.sh
 . $KIT_SRC_DIR/cmds/git/checkout.sh
 . $KIT_SRC_DIR/cmds/git/pull.sh
 . $KIT_SRC_DIR/cmds/git/commit.sh
 . $KIT_SRC_DIR/cmds/git/push.sh
 . $KIT_SRC_DIR/cmds/git/pr.sh
+. $KIT_SRC_DIR/cmds/git/commit-push-pr.sh
+. $KIT_SRC_DIR/cmds/git/insight.sh
 . $KIT_SRC_DIR/cmds/git/release.sh
 
 # Git automation utilities for PR workflows

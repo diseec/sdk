@@ -14,11 +14,11 @@ case $command in
     run)
         services=$(docker compose config --services)
         # if echo "$services" | grep -qx "$REPO_NAME"; then
-        #     $CLI exec "$REPO_NAME" "$@"
+        #     $CLI execute "$REPO_NAME" "$@"
         # else
         message "45" "SERVICES:" "\n$services"
         read -p "$(message 45 "?" "Specify a service to run:")" service
-        $CLI exec "$service" "$@"
+        $CLI execute "$service" "$@"
         # fi
     ;;
 

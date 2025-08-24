@@ -58,10 +58,10 @@ cmd_git_pr_create() {
         message 41 "ERROR" "Failed to create PR."
         return 1
       fi
-      echo "Created pull request: \033[4m$pr_url\033[24m"
+      echo -e "Created pull request: \033[4m$pr_url\033[24m"
     else
       message 41 "!" "Install GitHub CLI (gh) for automatic PR creation"
-      echo "Create PR manually at: \033[4mhttps://github.com/$ORG_NAME/$REPO_NAME/pull/new/$branch\033[24m"
+      echo -e "Create PR manually at: \033[4mhttps://github.com/$ORG_NAME/$REPO_NAME/pull/new/$branch\033[24m"
       return 1
     fi
   fi

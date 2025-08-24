@@ -10,24 +10,24 @@ The DISEEC Kit provides intelligent git workflow automation that streamlines the
 
 ```bash
 # Most common workflow - commit all changes, push, and create PR
-D push                    # Alias for commit-push-pr
-D git cpp                 # Full command
+D push                    # Alias for _commit-push-pr
+D git pus                 # Full command
 
 # Check current PR status and unresolved comments
-D git summary             # Shows PR status, reviews, and comments
+D git _status             # Shows PR status, reviews, and comments
 
 # Pull latest changes and merge with main
-D pull                    # Alias for pull-merge
-D git pme                 # Full command
+D pull                    # Alias for _pull
+D git pul                 # Full command
 ```
 
 ### Advanced Git Commands
 
 ```bash
 # Individual operations
-D git pcr                 # Create PR only (no commit/push)
-D git cbr                 # Checkout/create branch interactively
-D git cgr                 # Get commit report summary
+D git pre                 # Create PR only (no commit/push)
+D git che                 # Checkout/create branch interactively
+D git cml                 # Get commit report _status
 D git rel                 # Create release tag (dev only)
 
 # Recursive operations (monorepos)
@@ -86,13 +86,13 @@ Modified files:
 
 ```bash
 # 1. Create feature branch (auto-detects username from git email)
-D git cbr
+D git che
 # Enter: feature-name (or press enter for username)
 
 # 2. Make your changes...
 
 # 3. Check status before committing
-D git summary
+D git _status
 # Shows: Current PR status, pending reviews, unresolved comments
 
 # 4. Commit, push, and create PR in one command
@@ -109,7 +109,7 @@ D push
 ```bash
 # Work on multiple packages/services
 D push --recursive
-# Runs commit-push-pr on all selected submodules
+# Runs _commit-push-pr on all selected submodules
 
 D pull --recursive
 # Pulls and merges latest changes in all submodules
@@ -124,7 +124,7 @@ D push
 # Prompts: Type 'PUSH TO MAIN' to confirm
 
 # Quick hotfix PR
-D git pcr           # Create PR without new commits
+D git pre           # Create PR without new commits
 ```
 
 ## PR Status Insights
@@ -171,7 +171,7 @@ D push  # Will use AI for commit message generation
 The kit auto-detects your username from git email format:
 
 - Email: `user+username@domain.com` → Branch: `username`
-- Manual override available during `D git cbr`
+- Manual override available during `D git che`
 
 ## Integration Notes
 
@@ -217,7 +217,7 @@ gh auth login
 
 **"Changes requested on PR"**
 
-- Check `D git summary` for specific feedback
+- Check `D git _status` for specific feedback
 - Address comments before new commits
 
 ### Debug Commands
@@ -237,10 +237,10 @@ D status
 
 ## Best Practices
 
-1. **Regular Status Checks**: Run `D git summary` before major changes
+1. **Regular Status Checks**: Run `D git _status` before major changes
 2. **Descriptive Branches**: Use meaningful branch names beyond username
 3. **Review Before Push**: Check diff with `git diff` before `D push`
-4. **Address Comments**: Use `D git summary` to track PR feedback
+4. **Address Comments**: Use `D git _status` to track PR feedback
 5. **Keep Branches Fresh**: Regular `D pull` to stay current with main
 
 ---

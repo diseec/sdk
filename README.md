@@ -133,13 +133,13 @@ kit/
 ### Project Management
 
 - `ins|install` - Install dependencies and setup tools
-- `upd|update` - Update CLI and sync project
+- `ude|update` - Update CLI and sync project
 - `sta|status` - Show comprehensive project status
 
 ### Development Environment
 
 - `dev|develop` - Start development environment
-- `bui|build` - Build project images
+- `bpa|build` - Build project images
 - `run` - Execute commands in main container
 - `exe|execute` - Execute commands in specific container
 - `she|shell` - Open a shell in main service
@@ -180,7 +180,7 @@ D test health           # Quick health check
 D format                # Format code
 
 # Git workflow with AI
-D git summary            # Check PR status
+D git _status            # Check PR status
 D git push              # Auto-commit with AI message and create PR
 ```
 
@@ -206,7 +206,7 @@ D git push              # Uses OPENAI_API_KEY for AI commits
 
 ```bash
 # Container lifecycle
-D docker compose up-development    # Start services
+D docker compose _up-dev    # Start services
 D shell                           # Interactive shell
 D run npm test                    # Execute commands
 D docker compose down            # Stop services

@@ -37,7 +37,7 @@ c=$1; shift; case $c in
 
     run) $CLI execute $KIT_NAME "$@" ;;
     pul|pull) $CLI git pull origin main "$@" ;;
-    sta|start) $CLI docker compose up-development "$@" ;;
+    sta|start) $CLI docker compose _up-dev "$@" ;;
     sto|stop) $CLI docker compose down "$@" ;;
     hel|help|--help|-h)
         display_help \

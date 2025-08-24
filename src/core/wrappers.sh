@@ -1,5 +1,10 @@
 #!/bin/bash
 
+_prettier() {
+  # $CLI $KIT_NAME run --no-message prettier "$@"
+  prettier "$@"
+}
+
 _node() {
   # $CLI $KIT_NAME run --no-message node "$@"
   node "$@"

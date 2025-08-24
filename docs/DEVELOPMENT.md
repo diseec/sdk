@@ -15,7 +15,7 @@ D ins
 D ins ----recursive
 ```
 
-## update / upd
+## update / ude
 
 Pulls changes and syncs project state intelligently.
 
@@ -25,7 +25,7 @@ Pulls changes and syncs project state intelligently.
 - **Project must define update logic in its cli file**
 
 ```bash
-D upd
+D ude
 ```
 
 ## status / sta
@@ -64,20 +64,20 @@ D tes e2e
 D tes all
 ```
 
-## build / bui
+## build / bpa
 
 Builds images in parallel.
 
 ```bash
-D bui
-D bui --no-cache
+D bpa
+D bpa --no-cache
 ```
 
 ## execute / exe
 
 Executes commands in specific services.
 
-- Running service: `docker compose exec`
+- Running service: `docker compose _exec`
 - Stopped service: `docker compose run --rm --no-deps`
 - In container: direct execution
 

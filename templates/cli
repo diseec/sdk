@@ -52,6 +52,8 @@ c=$1; shift; case $c in
     # Listeners
     # listen:before_update) message 44 "info" "Commands before updating completed..." ;;
     # listen:after_update) message 44 "info" "Commands after updating completed..." ;;
+    # listen:before_pull) message 44 "info" "Commands before pulling changes..." ;;
+    # listen:before_push) message 44 "info" "Commands before pushing changes..." ;;
 
     # hel|help|--help|-h) $CLI_BASE help "myc|mycommand" "    Display the help message" ;;
     *) . $CLI_BASE "$c" "$@" ;;
