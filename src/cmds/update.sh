@@ -48,34 +48,38 @@ has_version_changed() {
 
 cmd_update() {
     set -e
+    ARGS=""; for arg in "$@"; do case "$arg" in
+        -r|--recursive) IS_RECURSIVE="true";;
+    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
     echo "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
     echo "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
 
-    _git pull origin
-    $CLI safe kit vise patch;
+    $CLI git pull origin
+    $CLI kit docker compose pull;
+    $CLI on-bench kit do patch;
     echo "$KIT_NAME version patched to: $VERSION"
 
     # Check if version has changed
     $CLI event before_update
 
-    message 44 "info" "Pulling latest $KIT_NAME image..."
-    cd $KIT_DIR; $CLI kit docker compose pull;
-
     message 44 "info" "Installing dependencies..."
-    $CLI install --ignore-submodule-installation;
+    $CLI install;
 
     message 44 "info" "Pulling latest changes..."
-    $CLI pull --ignore-submodule-pulling;
+    $CLI pull;
 
-    update_dependencies() {
-        local module="$1"
-        local module_path="$2"
-        echo "Updating dependencies for '$module'..."
-        (cd "$ROOT_DIR/$module_path" && D update)
-        echo "Updated dependencies for '$module'."
-    }
-    foreach_selected_module_with_callback update_dependencies
-    
+    if [ "$HAS_SUBMODULES" = "true" ]; then
+        echo "$REPO_NAME: Updating dependencies in selected submodules..."
+        update_dependencies() {
+            local module="$1"
+            local module_path="$2"
+            (cd "$ROOT_DIR/$module_path" && D update --recursive)
+            echo "Updated dependencies for '$module'."
+        }
+        foreach_selected_module_with_callback update_dependencies
+    fi
+
     $CLI event after_update
 
     message 42 "OKEY" "Update completed successfully"

@@ -37,14 +37,14 @@ c=$1; shift; case $c in
     
     ins|install)
         # yarn install # Add project specific install commands here
-        . $CLI_BASE install "$@"
+        . $CLI_BASE install --recursive "$@"
     ;;
     dev)
         . $CLI status
-        ask_to_run_command "Pull and merge latest changes?" . $CLI pull
+        ask_to_run_command "Pull and merge latest changes?" . $CLI pull --recursive
         . $CLI_BASE dev "$@";
         . $CLI format
-        ask_to_run_command "Commit, push and PR changes?" . $CLI push
+        ask_to_run_command "Commit, push and PR changes?" . $CLI push --recursive
     ;;
     for|format) . $CLI_BASE format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
     tes|test) . $CLI_BASE test "$@" ;;

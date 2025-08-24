@@ -7,8 +7,8 @@ case $command in
     add)
         message "Adding service '$1' .."
         set -e;
-        git submodule add https://$REPO_HUB_URL/$1.git services/$1
-        git submodule update --init --recursive
+        _git submodule add https://$REPO_HUB_URL/$1.git services/$1
+        _git submodule update --init --recursive
     ;;
 
     run)
@@ -25,13 +25,13 @@ case $command in
     remove|rm)
         ask_to_run_command "Are you sure, remove the service '$1'?" \
             set -e; \
-            git submodule deinit -f -- services/$1; \
+            _git submodule deinit -f -- services/$1; \
             rm -rf .git/modules/services/$1; \
             git rm -f services/$1;
     ;;
 
     update)
-        git submodule update --remote --merge
+        _git submodule update --remote --merge
     ;;
 
     *)

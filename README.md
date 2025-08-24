@@ -91,13 +91,14 @@ D secret help
 | [Configuration](docs/CONFIGURATION.md)      | Project and workspace configuration options            |
 | [Development Workflow](docs/DEVELOPMENT.md) | Day-to-day development operations                      |
 
-<!--
 ### Feature Documentation
 
-| Feature                                   | Documentation                              |
-| ----------------------------------------- | ------------------------------------------ |
+| Feature                                | Documentation                               |
+| -------------------------------------- | ------------------------------------------- |
+| [Git Workflows](docs/GIT-WORKFLOWS.md) | AI-powered git automation and PR management |
+
+<!--
 | [Secrets Management](docs/SECRETS.md)     | Secure credential storage and management   |
-| [Git Workflows](docs/GIT-WORKFLOWS.md)    | Automated git operations and PR management |
 | [Docker Integration](docs/DOCKER.md)      | Container orchestration and deployment     |
 | [Testing Framework](docs/TESTING.md)      | Automated testing strategies and setup     |
 | [Workspace Management](docs/WORKSPACE.md) | Multi-module project configuration         |

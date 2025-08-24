@@ -16,11 +16,11 @@ case $command in
             set -e; \
             git submodule deinit -f -- packages/$1; \
             rm -rf .git/modules/packages/$1; \
-            git rm -f packages/$1;
+            _git rm -f packages/$1;
     ;;
 
     update)
-        git submodule update --remote --merge
+        _git submodule update --remote --merge
     ;;
 
     link)

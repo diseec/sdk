@@ -4,9 +4,7 @@
   "description": "A collection of reusable DevOps tools, CLI scripts, Dockerfiles, CI/CD templates, and configuration files to streamline development and deployment workflows across DISEEC projects. Ideal for standardizing project setup and automating common DevOps tasks.",
   "main": "index.sh",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "node scripts/system-deps.js interactive",
-    "check-deps": "node scripts/system-deps.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -36,13 +34,6 @@
     "git",
     "curl",
     "bash",
-    "docker",
-    "nodejs",
-    "npm",
-    "yq",
-    "yarn",
-    "gh",
-    "openssl",
-    "git-lfs"
+    "docker"
   ]
 }

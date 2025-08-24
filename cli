@@ -7,8 +7,8 @@ cd $ROOT_DIR;
 . $KIT_DIR/index.sh;
 
 c=$1; shift; case $c in
-    vis|vise)
-    if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then message 41 error "The vise command works only on bench! (the kit container)"; exit 1; fi
+    do)
+    if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then message 41 error "The 'do' command works only on bench! (the kit container)"; exit 1; fi
     c=$1; shift; case $c in
         pat|patch)
             set -e
@@ -36,7 +36,7 @@ c=$1; shift; case $c in
     esac;;
 
     run) $CLI execute $KIT_NAME "$@" ;;
-    pul|pull) _git pull origin main "$@" ;;
+    pul|pull) $CLI git pull origin main "$@" ;;
     sta|start) $CLI docker compose up-development "$@" ;;
     sto|stop) $CLI docker compose down "$@" ;;
     hel|help|--help|-h)
@@ -50,7 +50,7 @@ c=$1; shift; case $c in
             "    shell                   " "Open shell in kit container (project is mounted)" \
             "" "" \
             "$(color 30 'Project Management & Modification')" "" \
-            "    vis|vise <cmd>          " "Run kit-powered commands to manage/modify projects" \
+            "        do <cmd>          " "Run kit-powered commands to manage/modify projects" \
             "        ini|initialize      " "Install kit into a managed project" \
             "        ...                 " "Other project modification commands (see docs)" \
             "" "" \

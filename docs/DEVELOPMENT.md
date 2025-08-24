@@ -12,7 +12,7 @@ Sets up project and workspace from scratch.
 
 ```bash
 D ins
-D ins --ignore-submodule-installation
+D ins ----recursive
 ```
 
 ## update / upd
@@ -130,7 +130,7 @@ Auto-commit with AI and create PR.
 D pus
 ```
 
-## safe / saf
+## on-bench / saf
 
 Runs commands in kit container for guaranteed environment.
 

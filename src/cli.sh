@@ -28,14 +28,19 @@ c=$1; shift; case $c in
 
     ######################## SOURCE CONTROL ########################
 
-    git) . $KIT_SRC_DIR/cmds/git.sh; c=$1; shift; case "$c" in
+    git)
+        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI on-bench $c "$@"; return 0; fi
+        . $KIT_SRC_DIR/cmds/git/index.sh; c=$1; shift; case "$c" in
         sum|summary)
             . $CLI inform forbid-dev-on-main
             . $CLI inform summary-branch-status
-            cmd_git_check_pr_status "$@"
+            cmd_git_pr_check_status "$@"
         ;;
-        prc|pr-create) cmd_git_create_or_update_pr "$@" ;;
-        mer|merge-pull) cmd_git_pull "$@" ;;
+        cpp|commit-push-pr) cmd_git_commit_push_pr "$@" ;;
+        cbr|checkout-branch) cmd_git_checkout_branch "$@" ;;
+        cgr|commit-get-report) cmd_git_commit_get_report "$@" ;;
+        pcr|pr-create) cmd_git_pr_create "$@" ;;
+        pme|pull-merge) cmd_git_pull_merge "$@" ;;
         rel|release) cmd_git_release "$@" ;;
         hel|help|--help|-h)
             display_help \
@@ -43,13 +48,13 @@ c=$1; shift; case $c in
                 "$(color 30 'Git Commands')" "" \
                 "    sum|summary       " "Check current branch PR status and unresolved comments" \
                 "    prc|pr-create     " "Auto-commit with AI message and create/update PR" \
-                "    mer|merge-pull    " "Pull latest changes and merge with main" \
+                "    mer|pull-merge    " "Pull latest changes and merge with main" \
                 "    rel|release       " "Create release tag (development command)"
         ;;
         *) _git $c "$@" ;;
     esac;;
-    pus|push) . $CLI git pr-create "$@" ;;
-    pul|pull) . $CLI git merge-pull "$@" ;;
+    pus|push) . $CLI git commit-push-pr "$@" ;;
+    pul|pull) . $CLI git pull-merge "$@" ;;
 
     ######################## INFRASTRUCTURE ########################
 
@@ -83,7 +88,7 @@ c=$1; shift; case $c in
     ser|service) . $KIT_SRC_DIR/cmds/service.sh "$@" ;;
     pac|package) . $KIT_SRC_DIR/cmds/package.sh "$@" ;;
     wor|workspace)
-        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI safe $c "$@"; return 0; fi
+        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI on-bench $c "$@"; return 0; fi
         . $KIT_SRC_DIR/cmds/workspace/index.sh; c=$1; shift; case "$c" in
         ini|init) cmd_workspace_init ;;
         sel|select) cmd_workspace_select ;;
@@ -103,7 +108,7 @@ c=$1; shift; case $c in
     ######################## CONFIGURATION ########################
 
     con|config)
-        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI safe $c "$@"; return 0; fi
+        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI on-bench $c "$@"; return 0; fi
         . $KIT_SRC_DIR/facades/config.sh; c=$1; shift; case "$c" in
         get) config_get "$@" ;;
         set) config_set "$@" ;;
@@ -126,7 +131,7 @@ c=$1; shift; case $c in
         ;;
     esac ;;
     sec|secret)
-        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI safe $c "$@"; return 0; fi
+        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI on-bench $c "$@"; return 0; fi
         . $KIT_SRC_DIR/cmds/secret.sh; c=$1; shift; case $c in
         kse|key-set) cmd_secret_set_key "$@" ;;
         kre|key-reset) cmd_secret_reset_key "$@" ;;
@@ -178,7 +183,7 @@ c=$1; shift; case $c in
                 "    cfu|check-for-updates           " "Check for CLI updates and notify"
         ;;
     esac ;;
-    saf|safe) $CLI $KIT_NAME execute --no-message $KIT_NAME D "$@" ;;
+    onb|on-bench) $CLI $KIT_NAME execute --no-message $KIT_NAME D "$@" ;;
     eve|event) . $KIT_SRC_DIR/facades/event.sh "$@" ;;
     int|internet) . $KIT_SRC_DIR/utils/internet/index.sh "$@" ;;
     api) c=$1; shift; case "$c" in
@@ -244,7 +249,7 @@ c=$1; shift; case $c in
             "" "" \
             "$(color 30 'Utilities')" "" \
             "    inf|inform               " "Information and validation" \
-            "    saf|safe <command>       " "Safe command execution" \
+            "    onb|on-bench <command>   " "Safe command execution" \
             "    eve|event                " "Event handling" \
             "    api                      " "API operations" \
             "    kit <command>            " "SDK container operations" \
