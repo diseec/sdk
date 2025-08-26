@@ -51,15 +51,15 @@ The `D install` command creates a project `cli` file that:
 - Makes the directory a recognized project (like `.git` for git)
 - Allows full customization of kit behavior
 - Can override, add, or remove functionalities
-- Use `$CLI_BASE` to call original commands
-- Use `$CLI` to call the project cli itself
+- Use `$_CLI_BASE` to call original commands
+- Use `$_CLI` to call the project cli itself
 
 ```bash
 # Example project cli customization
 install() {
     echo "Installing project dependencies..."
     npm install
-    $CLI_BASE install  # Call original install command
+    $_CLI_BASE install  # Call original install command
 }
 ```
 

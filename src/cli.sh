@@ -4,55 +4,54 @@ c=$1; shift; case "$c" in
 
     ######################## PROJECT MANAGEMENT ########################
 
-    sys|system) . "$KIT_SRC_DIR/cmds/install/system.sh" "$@" ;;
-    ins|install) . "$KIT_SRC_DIR/cmds/install/project.sh" "$@" ;;
-    ude|update) . "$KIT_SRC_DIR/cmds/update.sh" "$@" ;;
+    sys|system) SRC "cmds/install/system.sh" "$@" ;;
+    ins|install) SRC "cmds/install/project.sh" "$@" ;;
+    ude|update) SRC "cmds/update.sh" "$@" ;;
     sta|status)         
-        . "$CLI" version
-        . "$CLI" workspace status
-        . "$CLI" inform check-system-dependencies
-        . "$CLI" inform check-internet-connection
-        . "$CLI" git _status
-        . "$CLI" inform check-for-updates
+        CLI version
+        CLI workspace status
+        CLI inform check-system-dependencies
+        CLI inform check-internet-connection
+        CLI git _status
+        CLI inform check-for-updates
     ;;
 
     ######################## DEVELOPMENT ENVIRONMENT ########################
 
-    dev|develop) . "$CLI" docker compose _up-dev "$@" ;;
-    bpa|build) . "$CLI" docker compose _build "$@" ;;
-    run) . "$CLI" docker compose _exec "$REPO_NAME" "$@" ;;
-    exe|execute) . "$CLI" docker compose _exec "$@" ;;
-    she|shell) . "$CLI" run /bin/bash "$@" ;;
-    pus|push) . "$CLI" git _commit-push-pr "$@" ;;
-    pul|pull) . "$CLI" git _pull "$@" ;;
-    ins|insight) . "$CLI" git _insight "$@" ;;
-    tes|test) . "$KIT_SRC_DIR/cmds/test.sh" "$@" ;;
-    for|format) on_bench "$KIT_SRC_DIR/cmds/format.sh" "$@" ;;
+    dev|develop) CLI docker compose _up-dev "$@" ;;
+    bpa|build) CLI docker compose _build "$@" ;;
+    run) CLI docker compose _exec "$REPO_NAME" "$@" ;;
+    exe|execute) CLI docker compose _exec "$@" ;;
+    she|shell) CLI run /bin/bash "$@" ;;
+    pus|push) CLI git _commit-push-pr "$@" ;;
+    pul|pull) CLI git _pull "$@" ;;
+    ins|insight) CLI git _insight "$@" ;;
+    tes|test) SRC "cmds/test.sh" "$@" ;;
+    for|format) SRC_SAFELY "cmds/format.sh" "$@" ;;
 
     ######################## SOURCE CONTROL ########################
 
-    git) . "$KIT_SRC_DIR/facades/git/index.sh" "$@" ;;
-    doc|docker) . "$KIT_SRC_DIR/facades/docker/index.sh" "$@" ;;
+    git) SRC_SAFELY "facades/git/index.sh" "$@" ;;
+    doc|docker) SRC "facades/docker/index.sh" "$@" ;;
 
     ######################## INFRASTRUCTURE ########################
 
-    wor|workspace) on_bench "$KIT_SRC_DIR/facades/workspace/index.sh" "$@" ;;
-    sub|submodule) . "$KIT_SRC_DIR/facades/submodule.sh" "$@" ;;
+    wor|workspace) SRC_SAFELY "facades/workspace/index.sh" "$@" ;;
+    sub|submodule) SRC "facades/submodule.sh" "$@" ;;
 
     ######################## CONFIGURATION ########################
 
-    con|config) on_bench "$KIT_SRC_DIR/facades/config.sh" "$@" ;;
-    sec|secret) on_bench "$KIT_SRC_DIR/facades/secret/index.sh" "$@" ;;
+    con|config) SRC_SAFELY "facades/config.sh" "$@" ;;
+    sec|secret) SRC_SAFELY "facades/secret/index.sh" "$@" ;;
     env|envs) message 34 "INFO" "Sourced repo envs" ;; # Source projects root cli to load environment variables. example: "source ./cli envs;"
 
     ######################## UTILITIES ########################
 
-    x) echo xxx; ls; pwd ;;
-    inf|inform) . "$KIT_SRC_DIR/informs/index.sh" "$@" ;;
+    inf|inform) SRC "informs/index.sh" "$@" ;;
 
     api) c=$1; shift; case "$c" in
         v1) c=$1; shift; case "$c" in
-            install) . "$CLI" install "$@" ;;
+            install) CLI install "$@" ;;
             *) display_help "" "" \
                 "$(color 30 'API v1 Commands')" "" \
                 "    install     " "Install API v1 dependencies"
@@ -66,13 +65,11 @@ c=$1; shift; case "$c" in
 
     kit) export TO_MOUNT_DIR="$ROOT_DIR"; "$KIT_DIR/cli" "$@" ;;
 
-    obe|on-bench) . "$CLI" "$KIT_NAME" execute --no-message "$KIT_NAME" '/vise/cli' "$@" ;;
+    obe|on-bench) CLI "$KIT_NAME" run --no-message "/$PROJECT_MOUNT_DIR_NAME/cli" "$@" ;;
 
-    eve|event) . "$KIT_SRC_DIR/facades/event.sh" "$@" ;;
+    int|internet) SRC "utils/internet/index.sh" "$@" ;;
 
-    int|internet) . "$KIT_SRC_DIR/utils/internet/index.sh" "$@" ;;
-
-    ain|ai) on_bench "$KIT_SRC_DIR/utils/ai/index.sh" "$@" ;;
+    ain|ai) SRC_SAFELY "facades/ai/index.sh" "$@" ;;
 
     ######################## INFORMATION ########################
 
@@ -108,7 +105,6 @@ c=$1; shift; case "$c" in
         "    ins|insight              " "Generate development insights" \
         "    inf|inform               " "Information and validation" \
         "    obe|on-bench <command>   " "Safe command execution" \
-        "    eve|event                " "Event handling" \
         "    api                      " "API operations" \
         "    kit <command>            " "SDK container operations" \
         "" "" "$(color 30 'Information')" "" \
@@ -118,6 +114,6 @@ c=$1; shift; case "$c" in
     ;;
     *)
         if [ ! -z "$c" ]; then message 41 "error" "Unknown command: '$c'"; fi
-        . "$CLI" help; exit 1;
+        CLI help; exit 1;
     ;;
 esac

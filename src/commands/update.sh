@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KIT_SRC_DIR/facades/workspace/index.sh
+SRC facades/workspace/index.sh
 
 # Get version information for a package
 get_version_info() {
@@ -57,19 +57,19 @@ cmd_update() {
     echo "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
     echo "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
 
-    $CLI git pull origin
-    $CLI kit docker compose pull;
-    $CLI on-bench kit do patch;
+    _CLI_ git pull origin
+    _CLI_ kit docker compose pull;
+    _CLI_ on-bench kit do patch;
     echo "$KIT_NAME version patched to: $VERSION"
 
     # Check if version has changed
-    $CLI event before_update
+    fire_event before_update
 
     message 44 "info" "Installing dependencies..."
-    $CLI install;
+    _CLI_ install;
 
     message 44 "info" "Pulling latest changes..."
-    $CLI pull;
+    _CLI_ pull;
 
     if [ "$HAS_SUBMODULES" = "true" ]; then
         echo "$REPO_NAME: Updating dependencies in selected submodules..."
@@ -79,10 +79,10 @@ cmd_update() {
             ("$ROOT_DIR/$module_path/cli" update --recursive)
             echo "Updated dependencies for '$module'."
         }
-        "$CLI" workspace foreach-selected-module-run update_dependencies
+        CLI workspace foreach-selected-module-run update_dependencies
     fi
 
-    $CLI event after_update
+    fire_event after_update
 
     message 42 "OKEY" "Update completed successfully"
 }

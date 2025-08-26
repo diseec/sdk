@@ -90,7 +90,7 @@ echo -e "\n${YELLOW}Loading environment system...${NC}"
 
 # Set up minimal required environment for testing
 export KIT_DIR="$SCRIPT_DIR/.."
-export IS_KIT_CLI="false"
+export IS_KIT_CLI_="false"
 export IS_IN_KIT_CONTAINER="false"
 
 # Source the main environment file

@@ -6,10 +6,10 @@
 # Main environment file that loads all modules and initializes variables
 
 # Source all utility modules
-source $KIT_DIR/src/config/constants.sh
-source $KIT_DIR/src/facades/git/utils.sh
-source $KIT_DIR/src/config/utils/path-discovery.sh
-source $KIT_DIR/src/config/utils/env-detection.sh
+source $KIT_DIR/src/configs/constants.sh
+source $KIT_DIR/src/configs/utils/git-fallback-utils.sh
+source $KIT_DIR/src/configs/utils/path-discovery.sh
+source $KIT_DIR/src/configs/utils/env-detection.sh
 
 # =============================================================================
 # COMPUTED PATHS AND DIRECTORIES
@@ -85,8 +85,8 @@ validate_environment() {
     fi
     
     # Check required files
-    if [ ! -f "$CLI" ]; then
-        echo "Warning: CLI not found: $CLI" >&2
+    if [ ! -f _CLI_ ]; then
+        echo "Warning: CLI not found: $_CLI" >&2
     fi
     
     return $errors

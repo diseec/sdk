@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KIT_SRC_DIR/utils/ai/index.sh
+SRC facades/ai/index.sh
 
 # Generate commit message using AI
 generate_commit_message() {

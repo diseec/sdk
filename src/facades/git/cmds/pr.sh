@@ -4,7 +4,7 @@
 has_open_pr() {
   local branch="$CURRENT_BRANCH"
   
-  if check_gh_cli; then
+  if check_gh_CLI_; then
     # Try to get PR number for current branch
     pr_number=$(_gh pr list --head "$branch" --json number -q '.[0].number' 2>/dev/null)
     if [ -n "$pr_number" ] && [ "$pr_number" != "null" ]; then
@@ -48,7 +48,7 @@ cmd_git_pr_create() {
     else
     # Create a new PR
     echo "Creating new PR for branch: $branch"
-    if check_gh_cli; then
+    if check_gh_CLI_; then
       # Use last commit message as PR title/body
       local pr_title=$(_git log -1 --pretty=%s)
       local pr_body=$(_git log -1 --pretty=%b)
@@ -72,7 +72,7 @@ cmd_git_pr_create() {
   fi
   
   # Provide links
-  if check_gh_cli; then
+  if check_gh_CLI_; then
     local pr_link=$(_gh pr view "$(has_open_pr)" --json url -q .url)
   fi
   local commit_link="https://github.com/$ORG_NAME/$REPO_NAME/commit/$(_git rev-parse HEAD)"
@@ -82,7 +82,7 @@ cmd_git_pr_create() {
 
 # Check PR status and show comments/issues
 cmd_git_pr_check_status() {
-  if ! "$CLI" internet is-online; then
+  if ! _CLI_ internet is-online; then
       message 41 ⊘ "Disconnected, skipping PR status check..."
       return 0
   fi
@@ -97,7 +97,7 @@ cmd_git_pr_check_status() {
   
   message 34 "pr" "Checking PR #$pr_number status..."
   
-  if check_gh_cli; then
+  if check_gh_CLI_; then
     # Get PR details
     local pr_data=$(_gh pr view "$pr_number" --json title,url,reviewDecision,reviews,comments)
     

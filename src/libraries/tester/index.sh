@@ -40,7 +40,7 @@ Arguments:
 Examples:
     $0                           # Run all tests
     $0 --list                    # List all test files
-    $0 utils/ai/tests/index.test.sh  # Run specific test file
+    $0 facades/ai/tests/index.test.sh  # Run specific test file
     $0 --verbose                 # Run all tests with verbose output
     $0 --timeout 60              # Run tests with 60 second timeout
 

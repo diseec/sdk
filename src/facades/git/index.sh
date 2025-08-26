@@ -6,23 +6,22 @@
 # 2. Checking existing PRs for unresolved issues/comments
 
 main() {
-    . $KIT_SRC_DIR/facades/workspace/index.sh
-    . $KIT_SRC_DIR/facades/libraries/ai/index.sh
-    . $KIT_SRC_DIR/facades/git/exceptions.sh
-    . $KIT_SRC_DIR/facades/git/utils.sh
-    . $KIT_SRC_DIR/facades/git/cmds/pull.sh
-    . $KIT_SRC_DIR/facades/git/cmds/commit-push-pr.sh
-    . $KIT_SRC_DIR/facades/git/cmds/checkout.sh
-    . $KIT_SRC_DIR/facades/git/cmds/commit.sh
-    . $KIT_SRC_DIR/facades/git/cmds/push.sh
-    . $KIT_SRC_DIR/facades/git/cmds/pr.sh
-    . $KIT_SRC_DIR/facades/git/cmds/log.sh
-    . $KIT_SRC_DIR/facades/git/cmds/release.sh
+    SRC facades/ai/index.sh
+    SRC facades/git/exceptions.sh
+    SRC facades/git/utils.sh
+    SRC facades/git/cmds/pull.sh
+    SRC facades/git/cmds/commit-push-pr.sh
+    SRC facades/git/cmds/checkout.sh
+    SRC facades/git/cmds/commit.sh
+    SRC facades/git/cmds/push.sh
+    SRC facades/git/cmds/pr.sh
+    SRC facades/git/cmds/log.sh
+    SRC facades/git/cmds/release.sh
 
     c=$1; shift; case "$c" in
         sta|_status)
-            . $CLI inform forbid-dev-on-main
-            . $CLI inform _status-branch-status
+            _CLI_ inform forbid-dev-on-main
+            _CLI_ inform _status-branch-status
             cmd_git_pr_check_status "$@"
         ;;
         cpp|_commit-push-pr) cmd_git_commit_push_pr "$@" ;;

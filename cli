@@ -34,14 +34,14 @@ main() {
         esac;;
 
         tes|test)
-            if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then $CLI on-bench $c "$@"; return 0; fi
-            . $KIT_SRC_DIR/utils/tester/index.sh "$@"
+            if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then CLI on-bench $c "$@"; return 0; fi
+            SRC utils/tester/index.sh "$@"
         ;;
 
-        run) . $CLI docker compose _exec $KIT_NAME "$@" ;;
-        pul|pull) . $CLI git pull origin main "$@" ;;
-        sta|start) . $CLI docker compose _up-dev "$@" ;;
-        sto|stop) . $CLI docker compose down "$@" ;;
+        run) CLI docker compose _exec $KIT_NAME "$@" ;;
+        pul|pull) CLI git pull origin main "$@" ;;
+        sta|start) CLI docker compose _up-dev "$@" ;;
+        sto|stop) CLI docker compose down "$@" ;;
         hel|help|--help|-h)
             display_help \
                 "" "" \
@@ -67,7 +67,7 @@ main() {
                 "$(color 34 'Docs:')" "See https://github.com/diseec/kit for full command reference."
             ;;
 
-        *) . $CLI_BASE "$c" "$@" ;;
+        *) . $_CLI_BASE "$c" "$@" ;;
     esac
 }
 

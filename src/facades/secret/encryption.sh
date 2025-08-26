@@ -25,19 +25,19 @@ decrypt_data() {
 
 # Get stored encryption key
 get_encryption_key() {
-    $CLI workspace config get "secrets.key"
+    _CLI_ workspace config get "secrets.key"
 }
 
 # Store encryption key
 store_encryption_key() {
     local key="$1"
-    $CLI workspace config set "secrets.key" "$key"
+    _CLI_ workspace config set "secrets.key" "$key"
     echo "Encryption key stored in configuration"
 }
 
 # Check if encryption key is configured
 is_key_configured() {
-    local key=$($CLI workspace config get "secrets.key")
+    local key=$(_CLI_ workspace config get "secrets.key")
     [ -n "$key" ] && [ "$key" != "null" ]
 }
 

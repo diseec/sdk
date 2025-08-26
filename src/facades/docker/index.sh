@@ -14,9 +14,9 @@ main() {
             KIT_DIR \
             PROJECT_MOUNT_DIR_NAME
 
-    . "$KIT_SRC_DIR/facades/docker/up-development.sh"
-    . "$KIT_SRC_DIR/facades/docker/up-production.sh"
-    . "$KIT_SRC_DIR/facades/docker/execute.sh"
+    SRC "facades/docker/up-development.sh"
+    SRC "facades/docker/up-production.sh"
+    SRC "facades/docker/execute.sh"
 
     c=$1; shift; case "$c" in
         com|compose) c=$1; shift; case "$c" in

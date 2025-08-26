@@ -4,7 +4,7 @@ set -e; cd $ROOT_DIR;
 
 # if ! grep -q '"prettier"' "$ROOT_DIR/package.json"; then
 #     message 43 "!" "Prettier not found. Installing..."
-#     . $KIT_SRC_DIR/cmds/install/prettier.sh
+#     SRC cmds/install/prettier.sh
 # fi
 
 # Use provided arguments or default file patterns

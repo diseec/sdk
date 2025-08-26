@@ -127,7 +127,7 @@ case $COMMAND in
         services=$(docker compose config --services)
         message "45" "SERVICES:" "\n$services"
         read -p "$(message 45 "?" "Specify a service to run:")" service
-        $CLI execute "$service" "$@"
+        $_CLI execute "$service" "$@"
         ;;
 
     rem|remove|rm)

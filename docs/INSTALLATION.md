@@ -116,15 +116,15 @@ The project `cli` file allows full customization:
 install() {
     echo "Installing project dependencies..."
     npm install
-    $CLI_BASE install  # Call original install command
+    $_CLI_BASE install  # Call original install command
 }
 
 ```
 
 Variables available:
 
-- `$CLI_BASE` - Call original kit commands
-- `$CLI` - Call the project cli itself
+- `$_CLI_BASE` - Call original kit commands
+- `$_CLI` - Call the project cli itself
 
 ## Optional Setup
 

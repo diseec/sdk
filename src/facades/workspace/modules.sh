@@ -84,7 +84,7 @@ foreach_selected_module() {
 }
 
 # Run a callback function for each selected module
-# Usage: "$CLI" workspace foreach-selected-module-run callback_function [additional_args...]
+# Usage: _CLI_ workspace foreach-selected-module-run callback_function [additional_args...]
 foreach_selected_module_with_callback() {
     if [ $IS_MONOREPO != "true" ]; then return; fi
     local callback_function="$1"

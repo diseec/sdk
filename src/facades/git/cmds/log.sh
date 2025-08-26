@@ -3,7 +3,7 @@
 # TODO cache the resutl and make sure is created only once a day
 # TODO extrac the openai call functionalities
 
-. $KIT_SRC_DIR/utils/ai/index.sh
+SRC facades/ai/index.sh
 
 # Generic function to display commit information for any commit ID
 cmd_git_log() {
@@ -152,7 +152,7 @@ $unstaged_diff"
     collect_repo_data "$REPO_NAME" "."
     
     # Process all selected submodules
-    "$CLI" workspace foreach-selected-module-run collect_repo_data
+    _CLI_ workspace foreach-selected-module-run collect_repo_data
     
     # If no data collected, show simple message
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then

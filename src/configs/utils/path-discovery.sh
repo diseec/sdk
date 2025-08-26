@@ -13,13 +13,13 @@ auto_discover_project_root_dir() {
     }
     
     # Exception: if the script's directory == KIT_DIR, return the first cli
-    if [ "$IS_KIT_CLI" = "true" ]; then
+    if [ "$IS_KIT_CLI_" = "true" ]; then
         printf '%s\n' "$kitdir"
         return 0
     fi
     
     if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
-        printf '%s\n' "$PROJECT_MOUNT_DIR_NAME"
+        printf '%s\n' "/$PROJECT_MOUNT_DIR_NAME"
         return 0
     fi
     

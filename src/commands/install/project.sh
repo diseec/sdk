@@ -1,12 +1,12 @@
 #!/bin/bash
 
-. "$KIT_SRC_DIR/facades/workspace/index.sh"
-. "$KIT_SRC_DIR/facades/git/index.sh"
+SRC "facades/workspace/index.sh"
+SRC "facades/git/index.sh"
 
 cmd_install_project() {
     set -e; cd "$ROOT_DIR";
 
-    "$CLI" on-bench kit do patch;
+    _CLI_ on-bench kit do patch;
     echo "$KIT_NAME version patched to: $VERSION"
 
     local IS_RECURSIVE="false"
@@ -31,10 +31,10 @@ cmd_install_project() {
             _git submodule update --init --recursive --remote "$module_path"
             echo "$REPO_NAME: Initialized submodule '$module_path'."
         }
-        "$CLI" workspace foreach-selected-module-run initialize_submodule
+        _CLI_ workspace foreach-selected-module-run initialize_submodule
     fi
 
-    . "$CLI" git _checkout-if-detached
+    _CLI_ git _checkout-if-detached
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Installing dependencies in selected submodules..."
@@ -44,7 +44,7 @@ cmd_install_project() {
             ("$ROOT_DIR/$module_path/cli" install --recursive)
             echo "$REPO_NAME: Installed dependencies for '$module'."
         }
-        "$CLI" workspace foreach-selected-module-run install_dependencies
+        _CLI_ workspace foreach-selected-module-run install_dependencies
     fi
 
     echo "$REPO_NAME: Workspace configuration initialized successfully."

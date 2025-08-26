@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test runner core functionality
 
-# Source required libraries
+# Source required facades
 export TESTER_LIB_DIR="$KIT_SRC_DIR/utils/tester/lib"
 source "$TESTER_LIB_DIR/colors.sh"
 source "$TESTER_LIB_DIR/assertions.sh"
@@ -124,7 +124,7 @@ run_test_file() {
 #!/bin/bash
 set -euo pipefail
 
-# Source all test framework libraries
+# Source all test framework facades
 source "$TESTER_LIB_DIR/colors.sh"
 source "$TESTER_LIB_DIR/assertions.sh" 
 source "$TESTER_LIB_DIR/utils.sh"
