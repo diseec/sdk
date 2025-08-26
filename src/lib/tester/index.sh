@@ -11,7 +11,7 @@ set -euo pipefail
 
 # Get script directory and source the test runner
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib/runner.sh"
+source "$SCRIPT_DIR/runner.sh"
 
 # Ensure KIT_DIR is set
 if [ -z "${KIT_DIR:-}" ]; then
