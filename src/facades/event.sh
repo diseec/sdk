@@ -44,10 +44,24 @@ execute_event() {
     
     # Execute the command directly without capturing output
     # This allows interactive prompts to work properly
-    (cd "$dir" && "$cli" "listen:$event")
-    rc=$?
+    # Check if the CLI has a handler for this event (but not commented out)
+    # This pattern ensures no # appears before listen:$event on the same line
+    (cd "$dir" && grep -q "^[^#]*listen:$event" "$cli") >/dev/null 2>&1
+    has_handler=$?
     
-    # if [ $rc -eq 0 ]; then
+    # Skip if no handler found
+    if [ $has_handler -ne 0 ]; then
+        # message 33 "$name" "No handler for 'listen:$event' found"
+        return 0
+    fi
+    
+    # # Event handler found, execute it
+    # message 34 "$name" "Executing 'listen:$event'"
+    
+    # Execute the command directly without capturing output
+    # This allows interactive prompts to work properly
+    (cd "$dir" && "$cli" "listen:$event")
+    rc=$?    # if [ $rc -eq 0 ]; then
     #     message 32 "$name" "Event '$event' completed successfully"
     # else
     #     message 31 "$name" "Event '$event' failed (exit code $rc)"

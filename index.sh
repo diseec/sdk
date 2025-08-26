@@ -1,6 +1,11 @@
 #!/bin/bash
 
-. $KIT_DIR/src/core/envs.sh;
-. $KIT_DIR/src/core/output.sh;
-. $KIT_DIR/src/core/wrappers.sh;
+# Guard to prevent multiple sourcing
+if [ "$_INDEXED" = "true" ]; then return 0; fi; _INDEXED="true";
 
+KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+source "$KIT_DIR/src/config/index.sh"
+source "$KIT_DIR/src/commons/index.sh"
+
+cd "$ROOT_DIR"

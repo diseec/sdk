@@ -1,7 +1,7 @@
 #!/bin/bash
 
 . $KIT_SRC_DIR/cmds/update.sh
-. $KIT_SRC_DIR/cmds/workspace/index.sh
+. $KIT_SRC_DIR/facades/workspace/index.sh
 
 if ! "$CLI" internet is-online; then
     message 41 ⊘ "Disconnected, skipping update check..."

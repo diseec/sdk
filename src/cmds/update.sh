@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $KIT_SRC_DIR/cmds/workspace/index.sh
+. $KIT_SRC_DIR/facades/workspace/index.sh
 
 # Get version information for a package
 get_version_info() {
@@ -48,6 +48,8 @@ has_version_changed() {
 
 cmd_update() {
     set -e
+    
+    local IS_RECURSIVE="false"
     ARGS=""; for arg in "$@"; do case "$arg" in
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
@@ -74,7 +76,7 @@ cmd_update() {
         update_dependencies() {
             local module="$1"
             local module_path="$2"
-            (cd "$ROOT_DIR/$module_path" && D update --recursive)
+            (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli update --recursive)
             echo "Updated dependencies for '$module'."
         }
         foreach_selected_module_with_callback update_dependencies
@@ -84,3 +86,5 @@ cmd_update() {
 
     message 42 "OKEY" "Update completed successfully"
 }
+
+cmd_update "$@"

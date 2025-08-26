@@ -1,43 +1,40 @@
 #!/bin/bash
 
-if command -v npm >/dev/null 2>&1; then
-    export KIT_DIR="$(npm root -g)/@diseec/kit"; 
-    . $KIT_DIR/index.sh;
-fi
+main() {
+    dir="$PWD"; while :; do
+        if [ -f "$dir/cli" ]; then
+            ROOT_DIR="$dir";
+            KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
 
-dir="$PWD"; while :; do
-    if [ -f "$dir/cli" ]; then
-        export ROOT_DIR="$dir";
-        export KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
-        if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ]; then 
-            # note: without this below command, get weird error 'docker: command not found'!
-            docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
-                bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
-                    cp -r /kit/* /vise/node_modules/@diseec/kit"
-            docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
-                bash -c "D kit do patch"
-            # docker run --rm -v $dir:$PROJECT_MOUNT_DIR -w $PROJECT_MOUNT_DIR $KIT_IMAGE \
-            #     bash -c "mkdir -p $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH && \
-            #         cp -r /$KIT_NAME/* $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH"
-            if [ ! -d "$KIT_DIR" ]; then
-                printf '%s\n' "Error: kit at '$KIT_DIR' not found, try running 'D kit do initialize' in project root" >&2
-                exit 1
+            if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ]; then 
+                # note: without this below command, get weird error 'docker: command not found'!
+                docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
+                    bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
+                        cp -r /kit/* /vise/node_modules/@diseec/kit"
+                docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
+                    bash -c "D kit do patch"
+                # docker run --rm -v $dir:/$PROJECT_MOUNT_DIR_NAME -w /$PROJECT_MOUNT_DIR_NAME $KIT_IMAGE \
+                #     bash -c "mkdir -p /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH && \
+                #         cp -r /$KIT_NAME/* /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH"
+
+                if [ ! -d "$KIT_DIR" ]; then
+                    printf '%s\n' "Error: kit at '$KIT_DIR' not found, try running 'D kit do initialize' in project root" >&2
+                    exit 1
+                fi
             fi
+            break
         fi
-        break
-    fi
-    if [ "$dir" = "/" ]; then
-        # TODO instead of this ask for initializing current dir
-        # echo "info: running detached mode"
-        # echo "info: setting project directory to: $KIT_DIR"
-        # export ROOT_DIR="$KIT_DIR";
-        printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
-        exit 1
-        break
-    fi
-    dir=$(dirname -- "$dir")
-done
 
-cd $ROOT_DIR;
-. $KIT_DIR/index.sh;
-. $CLI "$@";
+        if [ "$dir" = "/" ]; then
+            printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
+            exit 1
+            break
+        fi
+
+        dir=$(dirname -- "$dir")
+    done
+
+    $ROOT_DIR/cli "$@";
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then main "$@"; fi

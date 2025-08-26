@@ -93,9 +93,9 @@ D secret help
 
 ### Feature Documentation
 
-| Feature                                | Documentation                               |
-| -------------------------------------- | ------------------------------------------- |
-| [Git Workflows](docs/GIT-WORKFLOWS.md) | AI-powered git automation and PR management |
+| Feature                                    | Documentation                               |
+| ------------------------------------------ | ------------------------------------------- |
+| [Git Workflows](src/facades/git/README.md) | AI-powered git automation and PR management |
 
 <!--
 | [Secrets Management](docs/SECRETS.md)     | Secure credential storage and management   |
