@@ -24,7 +24,7 @@ generate_commit_message() {
     local diff_preview="$(_git diff --staged | head -n 300)"
   
     # Use AI to generate commit message, with fallback
-    if ai_is_available; then
+    if . "$@" ai ai_is_available; then
         ai_generate_commit_message "$diff_summary" "$diff_preview"
     else
         # Fallback: generate simple commit message based on modified files

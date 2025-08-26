@@ -30,7 +30,7 @@ COPY . .
 ENV IS_IN_CONTAINER=true
 
 RUN . /kit/cli envs && \
-    mkdir /$PROJECT_MOUNT_DIR_NAME && \
+    mkdir /vise && \
     npm install -g /kit
 
 ENV IS_IN_KIT_CONTAINER=true

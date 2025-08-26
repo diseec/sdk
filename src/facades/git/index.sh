@@ -7,12 +7,13 @@
 
 main() {
     . $KIT_SRC_DIR/facades/workspace/index.sh
+    . $KIT_SRC_DIR/facades/libraries/ai/index.sh
     . $KIT_SRC_DIR/facades/git/exceptions.sh
     . $KIT_SRC_DIR/facades/git/utils.sh
+    . $KIT_SRC_DIR/facades/git/cmds/pull.sh
     . $KIT_SRC_DIR/facades/git/cmds/commit-push-pr.sh
     . $KIT_SRC_DIR/facades/git/cmds/checkout.sh
     . $KIT_SRC_DIR/facades/git/cmds/commit.sh
-    . $KIT_SRC_DIR/facades/git/cmds/pull.sh
     . $KIT_SRC_DIR/facades/git/cmds/push.sh
     . $KIT_SRC_DIR/facades/git/cmds/pr.sh
     . $KIT_SRC_DIR/facades/git/cmds/log.sh
@@ -25,13 +26,16 @@ main() {
             cmd_git_pr_check_status "$@"
         ;;
         cpp|_commit-push-pr) cmd_git_commit_push_pr "$@" ;;
-        che|_checkout) cmd_git_checkout "$@" ;;
+        che|_checkout) cmd_git_checkout_branch "$@" ;;
         com|_commit) cmd_git_commit "$@" ;;
-        pul|_pull) cmd_git_pull "$@" ;;
+        pul|_pull) cmd_git_pull_merge "$@" ;;
         pus|_push) cmd_git_push "$@" ;;
-        pre|_pull-request) cmd_git_pr "$@" ;;
+        pre|_pull-request) cmd_git_pr_create "$@" ;;
         log|_log) cmd_git_log "$@" ;;
         rel|_release) cmd_git_release "$@" ;;
+
+        cid|_checkout-if-detached) cmd_git_checkout_if_detached "$@" ;;
+
         hel|help|--help|-h) display_help "" "" \
             "$(color 30 'Git Commands - AI-Powered Workflow Automation')" "" \
             "" "" "$(color 30 'Quick Actions')" "" \

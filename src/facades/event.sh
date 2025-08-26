@@ -93,6 +93,6 @@ fi
 #     execute_event "$dir" "$cli" "$EVENT" "$module" || true
 # }
 # # Process all selected modules
-# foreach_selected_module_with_callback process_module || true
+# "$CLI" workspace foreach-selected-module-run process_module || true
 
 # message 32 "done" "Event '$EVENT' execution completed"

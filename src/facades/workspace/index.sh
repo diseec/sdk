@@ -22,6 +22,7 @@ main() {
         sel|select) cmd_workspace_select ;;
         sta|status) cmd_workspace_status ;;
         con|config) cmd_workspace_config "$@" ;;
+        fsm|foreach-selected-module-run) foreach_selected_module_with_callback "$@" ;;
         *) display_help  "" "" \
             "$(color 30 'Workspace Commands')" "" \
             "    ini|init      " "Initialize workspace configuration" \

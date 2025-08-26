@@ -152,7 +152,7 @@ $unstaged_diff"
     collect_repo_data "$REPO_NAME" "."
     
     # Process all selected submodules
-    foreach_selected_module_with_callback collect_repo_data
+    "$CLI" workspace foreach-selected-module-run collect_repo_data
     
     # If no data collected, show simple message
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then

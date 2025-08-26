@@ -76,10 +76,10 @@ cmd_update() {
         update_dependencies() {
             local module="$1"
             local module_path="$2"
-            (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli update --recursive)
+            ("$ROOT_DIR/$module_path/cli" update --recursive)
             echo "Updated dependencies for '$module'."
         }
-        foreach_selected_module_with_callback update_dependencies
+        "$CLI" workspace foreach-selected-module-run update_dependencies
     fi
 
     $CLI event after_update

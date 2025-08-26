@@ -48,7 +48,7 @@ elif [ -d "$ROOT_DIR/.git" ]; then
                 fi
             }
             
-            foreach_selected_module_with_callback check_module_status
+            "$CLI" workspace foreach-selected-module-run check_module_status
             
             if $modules_behind; then
                 ask_to_run_command "Modules are behind their remote branches, update them?" "$CLI" update --recursive

@@ -31,7 +31,7 @@ c=$1; shift; case "$c" in
 
     ######################## SOURCE CONTROL ########################
 
-    git) on_bench "$KIT_SRC_DIR/facades/git/index.sh" "$@" ;;
+    git) . "$KIT_SRC_DIR/facades/git/index.sh" "$@" ;;
     doc|docker) . "$KIT_SRC_DIR/facades/docker/index.sh" "$@" ;;
 
     ######################## INFRASTRUCTURE ########################
@@ -42,13 +42,12 @@ c=$1; shift; case "$c" in
     ######################## CONFIGURATION ########################
 
     con|config) on_bench "$KIT_SRC_DIR/facades/config.sh" "$@" ;;
-
     sec|secret) on_bench "$KIT_SRC_DIR/facades/secret/index.sh" "$@" ;;
-
     env|envs) message 34 "INFO" "Sourced repo envs" ;; # Source projects root cli to load environment variables. example: "source ./cli envs;"
 
     ######################## UTILITIES ########################
 
+    x) echo xxx; ls; pwd ;;
     inf|inform) . "$KIT_SRC_DIR/informs/index.sh" "$@" ;;
 
     api) c=$1; shift; case "$c" in

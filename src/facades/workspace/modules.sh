@@ -84,7 +84,7 @@ foreach_selected_module() {
 }
 
 # Run a callback function for each selected module
-# Usage: foreach_selected_module_with_callback callback_function [additional_args...]
+# Usage: "$CLI" workspace foreach-selected-module-run callback_function [additional_args...]
 foreach_selected_module_with_callback() {
     if [ $IS_MONOREPO != "true" ]; then return; fi
     local callback_function="$1"
@@ -99,7 +99,6 @@ foreach_selected_module_with_callback() {
     
     for module in $selected_modules; do
         local module_path=$(get_module_path "$module")
-        echo "$ROOT_DIR/$module_path/cli"
         if [ -n "$module_path" ]; then
             "$callback_function" "$module" "$module_path" "$@"
         else

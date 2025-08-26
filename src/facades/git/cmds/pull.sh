@@ -18,10 +18,9 @@ cmd_git_pull_merge() {
         pull_submodule() {
             local module="$1"
             local module_path="$2"
-            (cd "$ROOT_DIR/$module_path" && $ROOT_DIR/$module_path/cli pull --recursive)
-            echo xxxxx
+            ("$ROOT_DIR/$module_path/cli" pull --recursive)
             echo "$REPO_NAME: Pull and merge on '$module_path' complete."
         }
-        foreach_selected_module_with_callback pull_submodule
+        "$CLI" workspace foreach-selected-module-run pull_submodule
     fi
 }
