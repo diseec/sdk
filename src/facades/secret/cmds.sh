@@ -109,7 +109,7 @@ cmd_secret_show_secrets() {
     if [ $secret_count -gt 0 ]; then
         echo "Total: $secret_count secrets"
         echo "To export a secret as environment variables:"
-        echo "export SECRET_NAME=\"\$(\$_CLI secret export 'SECRET_NAME')\""
+        echo "export SECRET_NAME=\"\$(\$CLI_MAIN secret export 'SECRET_NAME')\""
     else
         message 33 "WARNING" "No secrets were displayed"
     fi

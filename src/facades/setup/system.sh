@@ -166,7 +166,7 @@ install_yarn() {
 }
 
 install_gh() {
-    # Custom GitHub CLI installation using the same logic as Dockerfile
+    # Custom GitHub _CLI_ installation using the same logic as Dockerfile
     local arch=$(uname -m)
     local arch_tag
     
@@ -182,7 +182,7 @@ install_gh() {
     local version="2.47.0"
     local url="https://github.com/cli/cli/releases/download/v${version}/gh_${version}_${arch_tag}.tar.gz"
     
-    echo -e "${BLUE}Installing GitHub CLI from binary...${NC}"
+    echo -e "${BLUE}Installing GitHub _CLI_ from binary...${NC}"
     
     mkdir -p /tmp/gh && \
     cd /tmp/gh && \
@@ -305,7 +305,7 @@ install_system_dependencies() {
     fi
 }
 
-# CLI interface
+# _CLI_ interface
 c=$1; shift; case $c in
     dep|dependency-check)
         check_system_dependencies

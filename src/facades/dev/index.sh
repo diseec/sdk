@@ -2,7 +2,7 @@
 
 FACADE dev
 
-# CLI interface
+# _CLI_ interface
 c=$1; shift; case $c in
     for|format) check_system_dependencies ;;
     "");;*)

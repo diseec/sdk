@@ -127,7 +127,7 @@ case $COMMAND in
         services=$(docker compose config --services)
         message "45" "SERVICES:" "\n$services"
         read -p "$(message 45 "?" "Specify a service to run:")" service
-        $_CLI execute "$service" "$@"
+        $CLI_MAIN execute "$service" "$@"
         ;;
 
     rem|remove|rm)
@@ -136,7 +136,7 @@ case $COMMAND in
             exit 1
         fi
         
-        ask_to_run_command "Are you sure, remove the $TYPE '$REPO_NAME'?" \
+        confirm "Are you sure, remove the $TYPE '$REPO_NAME'?" \
             set -e; \
             _git submodule deinit -f -- $TARGET_DIR/$REPO_NAME; \
             rm -rf .git/modules/$TARGET_DIR/$REPO_NAME; \

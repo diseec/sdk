@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SRC_KIT facades/ai/index.sh
+$KIT_SRC_DIR/facades/ai/index.sh
 
 # Generate commit message using AI
 generate_commit_message() {
@@ -24,12 +24,12 @@ generate_commit_message() {
     local diff_preview="$(_git diff --staged | head -n 300)"
   
     # Use AI to generate commit message, with fallback
-    if . "$@" ai ai_is_available; then
-        ai_generate_commit_message "$diff_summary" "$diff_preview"
+    if . "$@" ai fac_ai_is_available; then
+        fac_ai_generate_commit_message "$diff_summary" "$diff_preview"
     else
         # Fallback: generate simple commit message based on modified files
         local files_changed=$(_git diff --staged --name-only | sort | uniq)
-        ai_fallback_commit_message "$files_changed"
+        fac_ai_fallback_commit_message "$files_changed"
     fi
 }
 

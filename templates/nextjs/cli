@@ -9,7 +9,7 @@ case $command in
         if [ -n "$SERVICE_NAME" ]; then
             sh cli run yarn install
             # if [ -z "$CI" ]; then
-            #     ask_to_run_command "Install test utils?" sh cli run yarn playwright install
+            #     confirm "Install test utils?" sh cli run yarn playwright install
             # else
             #     sh cli run yarn playwright install
             # fi

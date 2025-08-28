@@ -38,28 +38,28 @@ c=$1; shift; case $c in
     
     ins|install)
         # yarn install # Add project specific install commands here
-        CLI_BASE install --recursive "$@"
+        cli_core install --recursive "$@"
     ;;
 
     dev)
-        CLI status
-        ask_to_run_command "Pull and merge latest changes?" CLI pull --recursive
-        CLI_BASE dev "$@";
-        CLI format
-        ask_to_run_command "Commit, push and PR changes?" CLI push --recursive
+        cli_main status
+        confirm "Pull and merge latest changes?" cli_main pull --recursive
+        cli_core dev "$@";
+        cli_main format
+        confirm "Commit, push and PR changes?" cli_main push --recursive
     ;;
 
-    for|format) CLI_BASE format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
+    for|format) cli_core format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
 
-    tes|test) CLI_BASE test "$@" ;;
+    tes|test) cli_core test "$@" ;;
 
-    # Listeners
-    # listen:before_update) message 44 "info" "Commands before updating completed..." ;;
-    # listen:after_update) message 44 "info" "Commands after updating completed..." ;;
-    # listen:before_pull) message 44 "info" "Commands before pulling changes..." ;;
-    # listen:before_cpp) message 44 "info" "Commands before pushing changes..." ;;
+    # Hooks
+    # hook:before_update) message 44 "info" "Commands before updating completed..." ;;
+    # hook:after_update) message 44 "info" "Commands after updating completed..." ;;
+    # hook:before_pull) message 44 "info" "Commands before pulling changes..." ;;
+    # hook:before_cpp) message 44 "info" "Commands before pushing changes..." ;;
 
     # hel|help|--help|-h) $CLIBASE help "myc|mycommand" "    Display the help message" ;;
 
-    *) CLI_BASE $c "$@" ;;
+    *) cli_core $c "$@" ;;
 esac

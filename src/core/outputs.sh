@@ -22,7 +22,7 @@ message() {
   printf "\n"
 }
 
-ask_to_run_command() {
+confirm() {
   local question=$1; shift;
   # read -n 1 -p "$(message 45 "?" "$question \033[35m[y/n]\033[0m")" response
 
@@ -57,7 +57,7 @@ display_help() {
 
     color 0 "\n"
     color 0 "\n"
-    color 0 "\e[1mv$VERSION DISEEC DevOps CLI\e[0m — Automation Toolkit\n"
+    color 0 "\e[1mv$VERSION DISEEC DevOps cli_main\e[0m — Automation Toolkit\n"
     printf "\n"
     color 0 "This software and associated documentation files\n(the \"Software\") are the  exclusive property  of\nDISEEC L.T.E. and are protected by copyright and\nother intellectual property laws.\nPermission is hereby granted, free of charge, to\nany person obtaining a copy of this Software, to\nse the Software within the organization only.\n\n"
     color 0 "\e[1mWebsite \e[0m  https://diseec.com\n"

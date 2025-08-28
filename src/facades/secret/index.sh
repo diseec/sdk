@@ -8,13 +8,13 @@ main() {
     SECRETS_DIR="$ROOT_DIR/secrets"
     mkdir -p "$SECRETS_DIR"
 
-    SRC_KIT facades/secret/core.sh
-    SRC_KIT facades/secret/encryption.sh
-    SRC_KIT facades/secret/interactions.sh
-    SRC_KIT facades/secret/key.sh
-    SRC_KIT facades/secret/secret.sh
-    SRC_KIT facades/secret/helpers.sh
-    SRC_KIT facades/secret/cmds.sh
+    $KIT_SRC_DIR/facades/secret/core.sh
+    $KIT_SRC_DIR/facades/secret/encryption.sh
+    $KIT_SRC_DIR/facades/secret/interactions.sh
+    $KIT_SRC_DIR/facades/secret/key.sh
+    $KIT_SRC_DIR/facades/secret/secret.sh
+    $KIT_SRC_DIR/facades/secret/helpers.sh
+    $KIT_SRC_DIR/facades/secret/cmds.sh
 
     c=$1; shift; case "$c" in
         kse|key-set) cmd_secret_set_key "$@" ;;

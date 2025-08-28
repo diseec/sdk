@@ -83,7 +83,7 @@ echo -e "\n${YELLOW}Testing module files...${NC}"
 test_file_exists "$SCRIPT_DIR/config/constants.sh" "Constants module"
 test_file_exists "$SCRIPT_DIR/utils/path-discovery.sh" "Path discovery module"
 test_file_exists "$SCRIPT_DIR/utils/git-utils.sh" "Git utilities module"
-test_file_exists "$SCRIPT_DIR/utils/env-detection.sh" "Environment detection module"
+test_file_exists "$SCRIPT_DIR/utils/env_detection.sh" "Environment detection module"
 test_file_exists "$SCRIPT_DIR/envs.sh" "Main environment"
 
 echo -e "\n${YELLOW}Loading environment system...${NC}"
@@ -105,19 +105,18 @@ fi
 echo -e "\n${YELLOW}Testing functions...${NC}"
 
 # Test that all functions are available
-test_function_exists "auto_discover_project_root_dir"
+test_function_exists "con_uti_cli_auto_discovery"
 test_function_exists "get_org_dir"
 test_function_exists "get_cache_dir"
-test_function_exists "get_git_config_file"
-test_function_exists "get_repo_url"
-test_function_exists "get_repo_name"
-test_function_exists "get_current_branch"
-test_function_exists "is_online"
-test_function_exists "is_in_container"
-test_function_exists "is_monorepo"
-test_function_exists "has_submodules"
-test_function_exists "get_kit_version"
-test_function_exists "validate_environment"
+test_function_exists "con_uti_get_git_config_file"
+test_function_exists "con_uti_get_repo_url"
+test_function_exists "con_uti_get_repo_name"
+test_function_exists "con_uti_get_current_branch"
+test_function_exists "con_uti_is_in_container"
+test_function_exists "con_uti_is_monorepo"
+test_function_exists "con_uti_has_submodules"
+test_function_exists "con_uti_get_kit_version"
+test_function_exists "con_uti_validate_environment"
 
 echo -e "\n${YELLOW}Testing constants...${NC}"
 
@@ -135,11 +134,10 @@ echo -e "\n${YELLOW}Testing computed variables...${NC}"
 # Test computed variables are set
 test_variable_set "ROOT_DIR"
 test_variable_set "KIT_SRC_DIR"
-test_variable_set "CLI"
-test_variable_set "CLI_BASE"
+test_variable_set "_CLI_"
+test_variable_set "cli_core"
 test_variable_set "ORG_DIR"
 test_variable_set "ORG_CACHE_DIR"
-test_variable_set "IS_ONLINE"
 test_variable_set "IS_IN_CONTAINER"
 test_variable_set "IS_MONOREPO"
 test_variable_set "HAS_SUBMODULES"
@@ -149,7 +147,7 @@ test_variable_set "CURRENT_BRANCH"
 echo -e "\n${YELLOW}Testing environment validation...${NC}"
 
 # Test environment validation
-if validate_environment >/dev/null 2>&1; then
+if con_uti_validate_environment >/dev/null 2>&1; then
     test_result "Environment validation passes" "PASS"
 else
     test_result "Environment validation passes" "FAIL"

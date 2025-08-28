@@ -14,7 +14,7 @@ packages/kit/src/core/
 └── utils/
     ├── path-discovery.sh      # Path and directory discovery functions
     ├── git-utils.sh          # Git repository operations
-    └── env-detection.sh      # Environment state detection
+    └── env_detection.sh      # Environment state detection
 ```
 
 ## Modules
@@ -32,7 +32,7 @@ packages/kit/src/core/
 
 - **Purpose**: Functions for discovering project structure and paths
 - **Contents**:
-  - `auto_discover_project_root_dir()`: Finds the project root
+  - `con_uti_cli_auto_discovery()`: Finds the project root
   - `get_org_dir()`: Gets/creates organization directory
   - `get_cache_dir()`: Gets/creates cache directory
 - **Benefits**: Isolated path logic, easier to test and debug
@@ -41,21 +41,20 @@ packages/kit/src/core/
 
 - **Purpose**: Git-related operations without using git commands
 - **Contents**:
-  - `get_git_config_file()`: Locates git config file
-  - `get_repo_url()`: Extracts repository URL
-  - `get_repo_name()`: Extracts repository name
-  - `get_current_branch()`: Gets current branch name
+  - `con_uti_get_git_config_file()`: Locates git config file
+  - `con_uti_get_repo_url()`: Extracts repository URL
+  - `con_uti_get_repo_name()`: Extracts repository name
+  - `con_uti_get_current_branch()`: Gets current branch name
 - **Benefits**: Git operations work even when git is not available
 
-### 4. Environment Detection (`utils/env-detection.sh`)
+### 4. Environment Detection (`utils/env_detection.sh`)
 
 - **Purpose**: Detect various environment states
 - **Contents**:
-  - `is_online()`: Network connectivity check
-  - `is_in_container()`: Container environment detection
-  - `is_monorepo()`: Monorepo structure detection
-  - `has_submodules()`: Git submodules detection
-  - `get_kit_version()`: Extract kit version from package.json
+  - `con_uti_is_in_container()`: Container environment detection
+  - `con_uti_is_monorepo()`: Monorepo structure detection
+  - `con_uti_has_submodules()`: Git submodules detection
+  - `con_uti_get_kit_version()`: Extract kit version from package.json
 - **Benefits**: Clear separation of concerns, reusable functions
 
 ### 5. Main Environment (`envs.sh`)
@@ -134,20 +133,20 @@ All variables are exported and available:
 
 ### Computed Paths
 
-- `ROOT_DIR`, `KIT_SRC_DIR`, `CLI`, `CLI_BASE`
+- `ROOT_DIR`, `KIT_SRC_DIR`, `cli_main`, `cli_core`
 - `ORG_DIR`, `ORG_CACHE_DIR`
 
 ### Environment State
 
-- `IS_ONLINE`, `IS_IN_CONTAINER`, `IS_MONOREPO`, `HAS_SUBMODULES`
+- `IS_IN_CONTAINER`, `IS_MONOREPO`, `HAS_SUBMODULES`
 - `VERSION`, `REPO_URL`, `REPO_NAME`, `CURRENT_BRANCH`
 
 ## Validation
 
-Use the `validate_environment` function to check if the environment is properly set up:
+Use the `con_uti_validate_environment` function to check if the environment is properly set up:
 
 ```bash
-if ! validate_environment; then
+if ! con_uti_validate_environment; then
     echo "Environment validation failed"
     exit 1
 fi

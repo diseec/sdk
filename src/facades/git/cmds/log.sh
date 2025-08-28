@@ -3,7 +3,7 @@
 # TODO cache the resutl and make sure is created only once a day
 # TODO extrac the openai call functionalities
 
-SRC_KIT facades/ai/index.sh
+$KIT_SRC_DIR/facades/ai/index.sh
 
 # Generic function to display commit information for any commit ID
 cmd_git_log() {
@@ -187,8 +187,8 @@ Lines removed: -$total_deletions
     exit 0
     
     # Use AI to generate insight report
-    if ai_is_available; then
-        local ai_insight=$(ai_generate_daily_insight "$analysis_data")
+    if fac_ai_is_available; then
+        local ai_insight=$(fac_ai_generate_daily_insight "$analysis_data")
         
         if [ -n "$ai_insight" ]; then
             echo ""

@@ -3,9 +3,9 @@
 # High-level AI content generation functions
 
 # Generate a commit message from git diff data
-# Usage: ai_generate_commit_message "diff_summary" "diff_preview"
+# Usage: fac_ai_generate_commit_message "diff_summary" "diff_preview"
 # Output: AI-generated commit message
-ai_generate_commit_message() {
+fac_ai_generate_commit_message() {
     local diff_summary="$1"
     local diff_preview="$2"
     
@@ -19,13 +19,13 @@ ${diff_preview}
 
 Please format the response as a commit message with a short title (max 50 chars) on the first line, then a blank line, then bullet points with details if needed."
     
-    ai_generate "$prompt" "$AI_MODEL_GPT4o" "$AI_CREATIVE_TEMPERATURE" "Update files"
+    fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_CREATIVE_TEMPERATURE" "Update files"
 }
 
 # Generate a daily development insight report
-# Usage: ai_generate_daily_insight "analysis_data"
+# Usage: fac_ai_generate_daily_insight "analysis_data"
 # Output: AI-generated insight report
-ai_generate_daily_insight() {
+fac_ai_generate_daily_insight() {
     local analysis_data="$1"
     
     local prompt="Analyze the following development activity and create a concise daily insight report.
@@ -51,5 +51,5 @@ Enhanced Authentication and Performance Optimizations
 
 Total: 15 files changed (+234 -67 lines)"
     
-    ai_generate "$prompt" "$AI_MODEL_GPT4o" "$AI_DEFAULT_TEMPERATURE" "No insights available"
+    fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_DEFAULT_TEMPERATURE" "No insights available"
 }

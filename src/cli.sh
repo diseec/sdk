@@ -4,57 +4,57 @@ c=$1; shift; case "$c" in
 
     ######################## PROJECT MANAGEMENT ########################
 
-    ins|install) CLI setup project "$@" ;;
+    ins|install) cli_main setup project "$@" ;;
 # XXXXXX
-    ude|update) SRC_KIT "cmds/update.sh" "$@" ;;
+    ude|update) "$KIT_SRC_DIR/cmds/update.sh" "$@" ;;
     sta|status)         
-        CLI version
-        CLI workspace status
-        CLI inform check-system-dependencies
-        CLI inform check-internet-connection
-        CLI git status
-        CLI inform check-for-updates
+        cli_main version
+        cli_main workspace status
+        cli_main inform check-system-dependencies
+        cli_main inform check-internet-connection
+        cli_main git status
+        cli_main inform check-for-updates
     ;;
 
     ######################## DEVELOPMENT ENVIRONMENT ########################
 
-    dev|develop) CLI docker compose up-dev "$@" ;;
-    bpa|build)   CLI docker compose build "$@" ;;
-    run)         CLI docker compose exec "$REPO_NAME" "$@" ;;
-    exe|execute) CLI docker compose exec "$@" ;;
-    she|shell)   CLI run /bin/bash "$@" ;;
-    pus|push)    CLI git commit-push-pr "$@" ;;
-    pul|pull)    CLI git pull "$@" ;;
-    ins|insight) CLI git insight "$@" ;;
-    tes|test)    SRC_KIT cmds/test.sh "$@" ;;
-    pru|prune)   CLI docker system prune "$@" ;;
-    for|format)  SAFELY $c "$@" && SRC_KIT cmds/format.sh "$@" ;;
+    dev|develop) cli_main docker compose up-dev "$@" ;;
+    bpa|build)   cli_main docker compose build "$@" ;;
+    run)         cli_main docker compose exec "$REPO_NAME" "$@" ;;
+    exe|execute) cli_main docker compose exec "$@" ;;
+    she|shell)   cli_main run /bin/bash "$@" ;;
+    pus|push)    cli_main git commit-push-pr "$@" ;;
+    pul|pull)    cli_main git pull "$@" ;;
+    ins|insight) cli_main git insight "$@" ;;
+    tes|test)    $KIT_SRC_DIR/cmds/test.sh "$@" ;;
+    pru|prune)   cli_main docker system prune "$@" ;;
+    for|format)  safely $c "$@" && $KIT_SRC_DIR/cmds/format.sh "$@" ;;
 
     ######################## FACADES ########################
 
-    set|setup)     SRC_KIT "facades/setup/index.sh" "$@" ;;
-    sub|submodule) SRC_KIT "facades/submodule/index.sh" "$@" ;;
-    doc|docker)    SRC_KIT "facades/docker/index.sh" "$@" ;;
-    git)           SAFELY_SRC_KIT "facades/git/index.sh" $c "$@" ;;
-    wor|workspace) SAFELY_SRC_KIT "facades/workspace/index.sh" $c "$@" ;;
-    con|config)    SAFELY_SRC_KIT "facades/config/index.sh" $c "$@" ;;
-    sec|secret)    SAFELY_SRC_KIT "facades/secret/index.sh" $c "$@" ;;
-    ain|ai)        SAFELY_SRC_KIT "facades/ai/index.sh" $c "$@" ;;
-    int|internet)  SRC_KIT "facades/internet/index.sh" "$@" ;;
+    set|setup)     source "$KIT_SRC_DIR/facades/setup/cli.sh" "$@" ;;
+    sub|submodule) source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
+    doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
+    git)           safely $c "$@" && source "$KIT_SRC_DIR/facades/git/cli.sh" $c "$@" ;;
+    wor|workspace) safely $c "$@" && source "$KIT_SRC_DIR/facades/workspace/cli.sh" $c "$@" ;;
+    con|config)    safely $c "$@" && source "$KIT_SRC_DIR/facades/config/cli.sh" $c "$@" ;;
+    sec|secret)    safely $c "$@" && source "$KIT_SRC_DIR/facades/secret/cli.sh" $c "$@" ;;
+    ain|ai)        safely $c "$@" && source "$KIT_SRC_DIR/facades/ai/cli.sh" $c "$@" ;;
+    int|internet)  source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
 
     ######################## UTILITIES ########################
 
     env|envs) message 34 "INFO" "Sourced repo envs" ;; # Source projects root cli to load environment variables. example: "source ./cli envs;"
 
-    inf|inform) SRC_KIT "informs/index.sh" "$@" ;;
+    inf|inform) "$KIT_SRC_DIR/informs/index.sh" "$@" ;;
 
     kit) export TO_MOUNT_DIR="$ROOT_DIR"; "$KIT_DIR/cli" "$@" ;;
 
-    saf|safely) CLI "$KIT_NAME" run --no-message "/$PROJECT_MOUNT_DIR_NAME/cli" "$@" ;;
+    saf|safely) cli_main "$KIT_NAME" run --no-message "/$PROJECT_MOUNT_DIR_NAME/cli" "$@" ;;
 
     api) c=$1; shift; case "$c" in
         v1) c=$1; shift; case "$c" in
-            install) CLI install "$@" ;;
+            install) cli_main install "$@" ;;
             *) display_help "" "" \
                 "$(color 30 'API v1 Commands')" "" \
                 "    install     " "Install API v1 dependencies"
@@ -66,13 +66,13 @@ c=$1; shift; case "$c" in
         ;;
     esac ;;
 
-    ver|version|--version) message 40 "v$VERSION" "DISEEC DevOps CLI — Automation Toolkit" ;;
+    ver|version|--version) message 40 "v$VERSION" "DISEEC DevOps cli_main — Automation Toolkit" ;;
 
     hel|help|--help|-h) display_help "" "" \
         "$(color 30 'Usage:    bash cli <command> [subcommand] [options] [arguments]\n')" "" \
         "$(color 30 'Project Management')" "" \
         "    ins|install              " "Install project dependencies and tools" \
-        "    ude|update               " "Update CLI and sync project" \
+        "    ude|update               " "Update cli_main and sync project" \
         "    sta|status               " "Show comprehensive project status" \
         "" "" "$(color 30 'Development Environment')" "" \
         "    dev|develop              " "Start development environment" \
@@ -107,6 +107,6 @@ c=$1; shift; case "$c" in
     ;;
     *)
         if [ ! -z "$c" ]; then message 41 "error" "Unknown command: '$c'"; fi
-        CLI help; exit 1;
+        cli_main help; exit 1;
     ;;
 esac

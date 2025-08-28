@@ -60,29 +60,6 @@ is_module_selected() {
     return 1  # False
 }
 
-# Run a command for each selected module
-foreach_selected_module() {
-    local command="$1"
-    local selected_modules=$(get_selected_modules)
-    
-    if [ -z "$selected_modules" ]; then
-        # No modules selected is a valid state - just return success
-        message 33 "INFO" "No modules selected in workspace configuration"
-        return 0
-    fi
-    
-    for module in $selected_modules; do
-        local module_path=$(get_module_path "$module")
-        
-        if [ -n "$module_path" ]; then
-            message 34 "$module" "Running command: $command"
-            cd "$ROOT_DIR/$module_path" && eval "$command"
-        else
-            message 43 "WARNING" "Module path not found for $module, skipping"
-        fi
-    done
-}
-
 # Run a callback function for each selected module
 # Usage: foreach_selected_module_with_callback callback_function [additional_args...]
 foreach_selected_module_with_callback() {

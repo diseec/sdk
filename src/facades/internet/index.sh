@@ -3,17 +3,17 @@
 # Main entry point for the internet connectivity checker
 
 # Source all required modules
-SRC_KIT utils/internet/os_detection.sh
-SRC_KIT utils/internet/math_utils.sh
-SRC_KIT utils/internet/config.sh
-SRC_KIT utils/internet/logging.sh
-SRC_KIT utils/internet/args.sh
-SRC_KIT utils/internet/network.sh
-SRC_KIT utils/internet/basic_tests.sh
-SRC_KIT utils/internet/dns_tests.sh
-SRC_KIT utils/internet/site_tests.sh
-SRC_KIT utils/internet/quality_tests.sh
-SRC_KIT utils/internet/diagnosis.sh
+$KIT_SRC_DIR/utils/internet/os_detection.sh
+$KIT_SRC_DIR/utils/internet/math_utils.sh
+$KIT_SRC_DIR/utils/internet/config.sh
+$KIT_SRC_DIR/utils/internet/logging.sh
+$KIT_SRC_DIR/utils/internet/args.sh
+$KIT_SRC_DIR/utils/internet/network.sh
+$KIT_SRC_DIR/utils/internet/basic_tests.sh
+$KIT_SRC_DIR/utils/internet/dns_tests.sh
+$KIT_SRC_DIR/utils/internet/site_tests.sh
+$KIT_SRC_DIR/utils/internet/quality_tests.sh
+$KIT_SRC_DIR/utils/internet/diagnosis.sh
 
 # Main execution
 main() {
@@ -53,7 +53,7 @@ main() {
             test_international_sites || overall_status=false
             test_regional_sites || overall_status=false
             test_cdn_connectivity || overall_status=false
-            ask_to_run_command "Run stability tests? ~30 seconds" test_connection_quality
+            confirm "Run stability tests? ~30 seconds" test_connection_quality
             ;;
     esac
     

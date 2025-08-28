@@ -1,7 +1,7 @@
 #!/bin/bash
 
 up_development() {
-    SRC_KIT facades/workspace/index.sh
+    $KIT_SRC_DIR/facades/workspace/index.sh
 
     set -e
 

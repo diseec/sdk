@@ -11,7 +11,7 @@
 
 ### Optional Dependencies
 
-- **GitHub CLI** (`gh`) - Enhanced git workflow features
+- **GitHub cli_main** (`gh`) - Enhanced git workflow features
 - **yq** - Advanced YAML configuration management
 - **OpenAI API Key** - AI-powered git commit messages
 
@@ -36,7 +36,7 @@ D install
 
 This creates:
 
-- `cli` file - Customizable project CLI
+- `cli` file - Customizable project cli_main
 - `.diseec/` directory - Configuration and secrets
 - Template files for customization
 
@@ -86,7 +86,7 @@ services:
 ### Step 4: Verify Installation
 
 ```bash
-# Check CLI is working
+# Check cli_main is working
 D help
 D version
 D status
@@ -99,7 +99,7 @@ After installation:
 ```
 ~/.diseec/
 project/
-├── cli                    # Customizable project CLI
+├── cli                    # Customizable project cli_main
 │   ├── config.yaml       # Project configuration
 │   └── secrets.encrypted # Encrypted secrets (auto-created)
 ├── node_modules/
@@ -107,7 +107,7 @@ project/
 └── package.json          # With @diseec/kit dependency
 ```
 
-## CLI Customization
+## cli_main Customization
 
 The project `cli` file allows full customization:
 
@@ -116,15 +116,15 @@ The project `cli` file allows full customization:
 install() {
     echo "Installing project dependencies..."
     npm install
-    $_CLI_BASE install  # Call original install command
+    $CLI_CORE install  # Call original install command
 }
 
 ```
 
 Variables available:
 
-- `$_CLI_BASE` - Call original kit commands
-- `$_CLI` - Call the project cli itself
+- `$CLI_CORE` - Call original kit commands
+- `$CLI_MAIN` - Call the project cli itself
 
 ## Optional Setup
 

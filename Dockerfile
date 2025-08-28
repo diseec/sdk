@@ -4,7 +4,7 @@ FROM node:alpine
 RUN apk add --no-cache bash curl yq jq git openssl git-lfs
 RUN npm install -g prettier
 
-# Install GitHub CLI using prebuilt binary for the current architecture
+# Install GitHub cli_main using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then \
     ARCH_TAG="linux_amd64"; \

@@ -27,23 +27,23 @@ The AI module is now organized into focused, single-responsibility files:
 
 ### Configuration Functions (`config.sh`)
 
-#### `ai_init()`
+#### `fac_ai_init()`
 
 Initialize AI module and validate API key.
 
 - **Returns**: 0 if successful, 1 if failed
 - **Usage**: Called automatically when module is sourced
 
-#### `ai_is_available()`
+#### `fac_ai_is_available()`
 
 Check if AI is available (API key and curl).
 
 - **Returns**: 0 if available, 1 if not
-- **Usage**: `if ai_is_available; then ... fi`
+- **Usage**: `if fac_ai_is_available; then ... fi`
 
 ### API Functions (`api.sh`)
 
-#### `ai_generate(prompt, model, temperature, fallback)`
+#### `fac_ai_generate(prompt, model, temperature, fallback)`
 
 Generate a completion using AI with error handling.
 
@@ -53,9 +53,9 @@ Generate a completion using AI with error handling.
   - `temperature`: Temperature setting (default: 0.3)
   - `fallback`: Fallback message if AI fails
 - **Returns**: AI-generated content or fallback message
-- **Usage**: `result=$(ai_generate "Your prompt here")`
+- **Usage**: `result=$(fac_ai_generate "Your prompt here")`
 
-#### `ai_call_openai(prompt, model, temperature)`
+#### `fac_ai_call_openai(prompt, model, temperature)`
 
 Make a raw OpenAI API call.
 
@@ -64,45 +64,45 @@ Make a raw OpenAI API call.
   - `model`: Model to use
   - `temperature`: Temperature setting
 - **Output**: Raw API response
-- **Usage**: `response=$(ai_call_openai "$prompt" "gpt-4" "0.3")`
+- **Usage**: `response=$(fac_ai_call_openai "$prompt" "gpt-4" "0.3")`
 
 ### Utility Functions (`utils.sh`)
 
-#### `ai_escape_json(string)`
+#### `fac_ai_escape_json(string)`
 
 Escape a string for JSON format.
 
 - **Parameters**: `string` - String to escape
 - **Output**: JSON-escaped string
-- **Usage**: `escaped=$(ai_escape_json "$input")`
+- **Usage**: `escaped=$(fac_ai_escape_json "$input")`
 
-#### `ai_extract_response(response)`
+#### `fac_ai_extract_response(response)`
 
 Extract content from OpenAI API response.
 
 - **Parameters**: `response` - Raw API response JSON
 - **Output**: Extracted content
-- **Usage**: `content=$(ai_extract_response "$response")`
+- **Usage**: `content=$(fac_ai_extract_response "$response")`
 
-#### `ai_has_error(response)`
+#### `fac_ai_has_error(response)`
 
 Check if OpenAI API response contains an error.
 
 - **Parameters**: `response` - Raw API response JSON
 - **Returns**: 0 if error found, 1 if no error
-- **Usage**: `if ai_has_error "$response"; then ... fi`
+- **Usage**: `if fac_ai_has_error "$response"; then ... fi`
 
-#### `ai_fallback_commit_message(files_changed)`
+#### `fac_ai_fallback_commit_message(files_changed)`
 
 Generate fallback commit message when AI is not available.
 
 - **Parameters**: `files_changed` - List of changed files
 - **Output**: Simple commit message
-- **Usage**: `msg=$(ai_fallback_commit_message "$files")`
+- **Usage**: `msg=$(fac_ai_fallback_commit_message "$files")`
 
 ### Generator Functions (`generators.sh`)
 
-#### `ai_generate_commit_message(diff_summary, diff_preview)`
+#### `fac_ai_generate_commit_message(diff_summary, diff_preview)`
 
 Generate a commit message from git diff data.
 
@@ -110,23 +110,23 @@ Generate a commit message from git diff data.
   - `diff_summary`: Git diff --stat output
   - `diff_preview`: Git diff content preview
 - **Output**: AI-generated commit message
-- **Usage**: `msg=$(ai_generate_commit_message "$summary" "$preview")`
+- **Usage**: `msg=$(fac_ai_generate_commit_message "$summary" "$preview")`
 
-#### `ai_generate_daily_insight(analysis_data)`
+#### `fac_ai_generate_daily_insight(analysis_data)`
 
 Generate a daily development insight report.
 
 - **Parameters**: `analysis_data` - Development activity data
 - **Output**: AI-generated insight report
-- **Usage**: `insight=$(ai_generate_daily_insight "$data")`
+- **Usage**: `insight=$(fac_ai_generate_daily_insight "$data")`
 
 ## Configuration Constants
 
-- `AI_MODEL_GPT35`: "gpt-3.5-turbo"
-- `AI_MODEL_GPT4`: "gpt-4"
-- `AI_DEFAULT_TEMPERATURE`: "0.3"
-- `AI_CREATIVE_TEMPERATURE`: "0.7"
-- `AI_API_ENDPOINT`: "https://api.openai.com/v1/chat/completions"
+- `FAC_AI_MODEL_GPT35`: "gpt-3.5-turbo"
+- `FAC_AI_MODEL_GPT4`: "gpt-4"
+- `FAC_AI_DEFAULT_TEMPERATURE`: "0.3"
+- `FAC_AI_CREATIVE_TEMPERATURE`: "0.7"
+- `FAC_AI_API_ENDPOINT`: "https://api.openai.com/v1/chat/completions"
 
 ## Usage Examples
 
@@ -134,11 +134,11 @@ Generate a daily development insight report.
 
 ```bash
 # Source the AI module
-SRC_KIT facades/ai/index.sh
+$KIT_SRC_DIR/facades/ai/index.sh
 
 # Generate content
-if ai_is_available; then
-    result=$(ai_generate "Explain what this code does: $code")
+if fac_ai_is_available; then
+    result=$(fac_ai_generate "Explain what this code does: $code")
     echo "$result"
 else
     echo "AI not available"
@@ -153,11 +153,11 @@ diff_summary="$(_git diff --staged --stat)"
 diff_preview="$(_git diff --staged | head -n 300)"
 
 # Generate commit message
-if ai_is_available; then
-    commit_msg=$(ai_generate_commit_message "$diff_summary" "$diff_preview")
+if fac_ai_is_available; then
+    commit_msg=$(fac_ai_generate_commit_message "$diff_summary" "$diff_preview")
 else
     files_changed=$(_git diff --staged --name-only)
-    commit_msg=$(ai_fallback_commit_message "$files_changed")
+    commit_msg=$(fac_ai_fallback_commit_message "$files_changed")
 fi
 
 echo "$commit_msg"
@@ -168,7 +168,7 @@ echo "$commit_msg"
 ```bash
 # Use specific model and temperature
 prompt="Write a technical summary of these changes"
-result=$(ai_generate "$prompt" "$AI_MODEL_GPT4o" "$AI_CREATIVE_TEMPERATURE" "Unable to generate summary")
+result=$(fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_CREATIVE_TEMPERATURE" "Unable to generate summary")
 ```
 
 ## Error Handling
@@ -191,8 +191,8 @@ The module provides comprehensive error handling:
 
 This module is designed to integrate seamlessly with existing kit commands:
 
-1. Source the module: `SRC_KIT facades/ai/index.sh`
-2. Check availability: `ai_is_available`
+1. Source the module: `$KIT_SRC_DIR/facades/ai/index.sh`
+2. Check availability: `fac_ai_is_available`
 3. Use appropriate functions for your use case
 4. Handle errors gracefully with provided fallbacks
 
@@ -200,10 +200,10 @@ This module is designed to integrate seamlessly with existing kit commands:
 
 When migrating existing code to use this module:
 
-1. Replace direct OpenAI API calls with `ai_generate()` or `ai_call_openai()`
-2. Remove manual JSON escaping and use `ai_escape_json()`
-3. Replace custom error checking with `ai_has_error()`
-4. Use specialized functions like `ai_generate_commit_message()` for common use cases
+1. Replace direct OpenAI API calls with `fac_ai_generate()` or `fac_ai_call_openai()`
+2. Remove manual JSON escaping and use `fac_ai_escape_json()`
+3. Replace custom error checking with `fac_ai_has_error()`
+4. Use specialized functions like `fac_ai_generate_commit_message()` for common use cases
 5. Implement fallback mechanisms using the provided fallback functions
 
 ### Backward Compatibility

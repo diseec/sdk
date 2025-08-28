@@ -8,11 +8,11 @@
 
 ## Overview
 
-The DISEEC DevOps Kit is a comprehensive automation toolkit designed to standardize and streamline development workflows across projects. It provides a unified CLI interface, container orchestration, secrets management, and project lifecycle automation for teams building modern applications.
+The DISEEC DevOps Kit is a comprehensive automation toolkit designed to standardize and streamline development workflows across projects. It provides a unified cli_main interface, container orchestration, secrets management, and project lifecycle automation for teams building modern applications.
 
 ### Key Features
 
-- **Unified CLI Interface** - Single command interface for all development operations
+- **Unified cli_main Interface** - Single command interface for all development operations
 - **Container Orchestration** - Docker and Docker Compose automation
 - **Secure Secrets Management** - AES-256 encrypted secrets with automatic key generation
 - **Git Workflow Automation** - AI-powered commit messages and PR management
@@ -51,15 +51,15 @@ The `D install` command creates a project `cli` file that:
 - Makes the directory a recognized project (like `.git` for git)
 - Allows full customization of kit behavior
 - Can override, add, or remove functionalities
-- Use `$_CLI_BASE` to call original commands
-- Use `$_CLI` to call the project cli itself
+- Use `$CLI_CORE` to call original commands
+- Use `$CLI_MAIN` to call the project cli itself
 
 ```bash
 # Example project cli customization
 install() {
     echo "Installing project dependencies..."
     npm install
-    $_CLI_BASE install  # Call original install command
+    $CLI_CORE install  # Call original install command
 }
 ```
 
@@ -109,15 +109,15 @@ D secret help
 | ------------------------------------------ | ------------------------------------------- |
 | [Custom Commands](docs/EXTENDING.md)       | Adding custom commands and integrations     |
 | [CI/CD Integration](docs/CICD.md)          | Continuous integration and deployment setup |
-| [Style Guide](docs/STYLE-GUIDE.md)         | CLI styling and color conventions           |
+| [Style Guide](docs/STYLE-GUIDE.md)         | cli_main styling and color conventions           |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues and solutions                 | -->
 
 ## Project Structure
 
 ```
 kit/
-├── src/                    # Core CLI implementation
-│   ├── cli.sh             # Main CLI entry point
+├── src/                    # Core cli_main implementation
+│   ├── cli.sh             # Main cli_main entry point
 │   ├── core/              # Core utilities (env, output, wrappers)
 │   ├── cmds/              # Command implementations
 │   ├── facades/           # High-level API facades
@@ -133,7 +133,7 @@ kit/
 ### Project Management
 
 - `ins|install` - Install dependencies and setup tools
-- `ude|update` - Update CLI and sync project
+- `ude|update` - Update cli_main and sync project
 - `sta|status` - Show comprehensive project status
 
 ### Development Environment
@@ -221,7 +221,7 @@ D docker compose down            # Stop services
 
 ### Optional Dependencies
 
-- **GitHub CLI** (`gh`) - Enhanced git workflow features
+- **GitHub cli_main** (`gh`) - Enhanced git workflow features
 - **yq** - Advanced YAML configuration management
 - **OpenAI API Key** - AI-powered git commit messages
 
