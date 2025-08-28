@@ -180,7 +180,7 @@ D test health           # Quick health check
 D format                # Format code
 
 # Git workflow with AI
-D git _status            # Check PR status
+D git status            # Check PR status
 D git push              # Auto-commit with AI message and create PR
 ```
 
@@ -206,7 +206,7 @@ D git push              # Uses OPENAI_API_KEY for AI commits
 
 ```bash
 # Container lifecycle
-D docker compose _up-dev    # Start services
+D docker compose up    # Start services
 D shell                           # Interactive shell
 D run npm test                    # Execute commands
 D docker compose down            # Stop services

@@ -21,8 +21,8 @@ readonly ROOT_DIR
 
 # Kit and CLI paths
 readonly KIT_SRC_DIR="$KIT_DIR/src"
-readonly CLI="$ROOT_DIR/cli"
-readonly CLI_BASE="$KIT_SRC_DIR/cli.sh"
+readonly _CLI="$ROOT_DIR/cli"
+readonly _CLI_BASE="$KIT_SRC_DIR/cli.sh"
 
 # Organization directories
 ORG_DIR="$(get_org_dir)"
@@ -85,7 +85,7 @@ validate_environment() {
     fi
     
     # Check required files
-    if [ ! -f _CLI_ ]; then
+    if [ ! -f CLI ]; then
         echo "Warning: CLI not found: $_CLI" >&2
     fi
     

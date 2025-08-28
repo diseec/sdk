@@ -3,17 +3,17 @@
 # Main entry point for the internet connectivity checker
 
 # Source all required modules
-SRC utils/internet/os_detection.sh
-SRC utils/internet/math_utils.sh
-SRC utils/internet/config.sh
-SRC utils/internet/logging.sh
-SRC utils/internet/args.sh
-SRC utils/internet/network.sh
-SRC utils/internet/basic_tests.sh
-SRC utils/internet/dns_tests.sh
-SRC utils/internet/site_tests.sh
-SRC utils/internet/quality_tests.sh
-SRC utils/internet/diagnosis.sh
+SRC_KIT utils/internet/os_detection.sh
+SRC_KIT utils/internet/math_utils.sh
+SRC_KIT utils/internet/config.sh
+SRC_KIT utils/internet/logging.sh
+SRC_KIT utils/internet/args.sh
+SRC_KIT utils/internet/network.sh
+SRC_KIT utils/internet/basic_tests.sh
+SRC_KIT utils/internet/dns_tests.sh
+SRC_KIT utils/internet/site_tests.sh
+SRC_KIT utils/internet/quality_tests.sh
+SRC_KIT utils/internet/diagnosis.sh
 
 # Main execution
 main() {

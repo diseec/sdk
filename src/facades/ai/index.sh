@@ -5,13 +5,13 @@
 main() {
 
     # Load dependencies
-    SRC facades/secret/index.sh
+    SRC_KIT facades/secret/index.sh
 
     # Load AI module components
-    SRC facades/ai/config.sh
-    SRC facades/ai/utils.sh
-    SRC facades/ai/api.sh
-    SRC facades/ai/generators.sh
+    SRC_KIT facades/ai/config.sh
+    SRC_KIT facades/ai/utils.sh
+    SRC_KIT facades/ai/api.sh
+    SRC_KIT facades/ai/generators.sh
 
     # Initialize AI module on load
     if ! ai_init; then

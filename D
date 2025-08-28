@@ -1,20 +1,11 @@
 #!/bin/bash
 
-main() {
-case $1 in
-    local-kit-index-path)
-        echo '$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit/index.sh'
-        shift
-        return 0
-    ;;
-esac
-
 dir="$PWD"; while :; do
     if [ -f "$dir/cli" ]; then
         ROOT_DIR="$dir";
         KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
 
-        if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ]; then 
+        if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ] && [ "$IS_IN_CONTAINER" != "true" ]; then 
             # note: without this below command, get weird error 'docker: command not found'!
             docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
                 bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
@@ -27,7 +18,6 @@ dir="$PWD"; while :; do
 
             if [ ! -d "$KIT_DIR" ]; then
                 printf '%s\n' "Error: kit at '$KIT_DIR' not found, try running 'D kit do initialize' in project root" >&2
-                exit 1
             fi
         fi
         break
@@ -35,7 +25,6 @@ dir="$PWD"; while :; do
 
     if [ "$dir" = "/" ]; then
         printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
-        exit 1
         break
     fi
 
@@ -43,7 +32,3 @@ dir="$PWD"; while :; do
 done
 
 $ROOT_DIR/cli "$@";
-
-}
-
-main "$@"

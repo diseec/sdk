@@ -134,7 +134,7 @@ Generate a daily development insight report.
 
 ```bash
 # Source the AI module
-SRC facades/ai/index.sh
+SRC_KIT facades/ai/index.sh
 
 # Generate content
 if ai_is_available; then
@@ -191,7 +191,7 @@ The module provides comprehensive error handling:
 
 This module is designed to integrate seamlessly with existing kit commands:
 
-1. Source the module: `SRC facades/ai/index.sh`
+1. Source the module: `SRC_KIT facades/ai/index.sh`
 2. Check availability: `ai_is_available`
 3. Use appropriate functions for your use case
 4. Handle errors gracefully with provided fallbacks

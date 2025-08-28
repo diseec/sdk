@@ -10,7 +10,7 @@ get_config_file() {
   echo "$CONFIG_FILE"
 }
 
-export CONFIG_FILE=$(get_config_file)
+CONFIG_FILE=$(get_config_file)
 
 # Create config file if not exists
 yaml_config_create() {

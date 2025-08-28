@@ -11,7 +11,7 @@
 #
 # -----------------------------------------------------------------------------
 
-export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit"; . $KIT_DIR/index.sh; cd $ROOT_DIR;
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit/index.sh"
 
 # # Extract options out of order
 # ARGS=""; for arg in "$@"; do case "$arg" in
@@ -25,6 +25,7 @@ export KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@dise
 # *) break;; esac; done;
 
 c=$1; shift; case $c in
+
     # A)
     #     # Extract all options in order
     #     while [ $# -gt 0 ]; do case "$1" in --) shift; break;;
@@ -37,17 +38,20 @@ c=$1; shift; case $c in
     
     ins|install)
         # yarn install # Add project specific install commands here
-        . $_CLI_BASE install --recursive "$@"
+        CLI_BASE install --recursive "$@"
     ;;
+
     dev)
-        _CLI_ status
-        ask_to_run_command "Pull and merge latest changes?" _CLI_ pull --recursive
-        . $_CLI_BASE dev "$@";
-        _CLI_ format
-        ask_to_run_command "Commit, push and PR changes?" _CLI_ push --recursive
+        CLI status
+        ask_to_run_command "Pull and merge latest changes?" CLI pull --recursive
+        CLI_BASE dev "$@";
+        CLI format
+        ask_to_run_command "Commit, push and PR changes?" CLI push --recursive
     ;;
-    for|format) . $_CLI_BASE format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
-    tes|test) . $_CLI_BASE test "$@" ;;
+
+    for|format) CLI_BASE format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
+
+    tes|test) CLI_BASE test "$@" ;;
 
     # Listeners
     # listen:before_update) message 44 "info" "Commands before updating completed..." ;;
@@ -55,6 +59,7 @@ c=$1; shift; case $c in
     # listen:before_pull) message 44 "info" "Commands before pulling changes..." ;;
     # listen:before_cpp) message 44 "info" "Commands before pushing changes..." ;;
 
-    # hel|help|--help|-h) $_CLI_BASE help "myc|mycommand" "    Display the help message" ;;
-    *) . $_CLI_BASE "$c" "$@" ;;
+    # hel|help|--help|-h) $CLIBASE help "myc|mycommand" "    Display the help message" ;;
+
+    *) CLI_BASE $c "$@" ;;
 esac

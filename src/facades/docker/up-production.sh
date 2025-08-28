@@ -2,7 +2,7 @@
 
 up_production() {
 
-    SRC facades/workspace/index.sh
+    SRC_KIT facades/workspace/index.sh
 
     set -e
 

@@ -13,15 +13,15 @@ auto_discover_project_root_dir() {
     }
     
     # Exception: if the script's directory == KIT_DIR, return the first cli
-    if [ "$IS_KIT_CLI_" = "true" ]; then
+    if [ "$IS_KIT_CLI" = "true" ]; then
         printf '%s\n' "$kitdir"
         return 0
     fi
     
-    if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
-        printf '%s\n' "/$PROJECT_MOUNT_DIR_NAME"
-        return 0
-    fi
+    # if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then # this breaks when a parent recursively do something on submodules then all of cli submodules point to the parent
+    #     printf '%s\n' "/$PROJECT_MOUNT_DIR_NAME"
+    #     return 0
+    # fi
     
     # Start from the parent of KIT_DIR, as an absolute, canonical path
     start=$(cd "$kitdir/.." 2>/dev/null && pwd) || {

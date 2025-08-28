@@ -10,14 +10,14 @@ The DISEEC Kit provides intelligent git workflow automation that streamlines the
 
 ```bash
 # Most common workflow - commit all changes, push, and create PR
-D push                    # Alias for _commit-push-pr
+D push                    # Alias for commit-push-pr
 D git pus                 # Full command
 
 # Check current PR status and unresolved comments
-D git _status             # Shows PR status, reviews, and comments
+D git status             # Shows PR status, reviews, and comments
 
 # Pull latest changes and merge with main
-D pull                    # Alias for _pull
+D pull                    # Alias for pull
 D git pul                 # Full command
 ```
 
@@ -27,7 +27,7 @@ D git pul                 # Full command
 # Individual operations
 D git pre                 # Create PR only (no commit/push)
 D git che                 # Checkout/create branch interactively
-D git cml                 # Get commit report _status
+D git cml                 # Get commit report status
 D git rel                 # Create release tag (dev only)
 
 # Recursive operations (monorepos)
@@ -92,7 +92,7 @@ D git che
 # 2. Make your changes...
 
 # 3. Check status before committing
-D git _status
+D git status
 # Shows: Current PR status, pending reviews, unresolved comments
 
 # 4. Commit, push, and create PR in one command
@@ -109,7 +109,7 @@ D push
 ```bash
 # Work on multiple packages/services
 D push --recursive
-# Runs _commit-push-pr on all selected submodules
+# Runs commit-push-pr on all selected submodules
 
 D pull --recursive
 # Pulls and merges latest changes in all submodules
@@ -217,7 +217,7 @@ gh auth login
 
 **"Changes requested on PR"**
 
-- Check `D git _status` for specific feedback
+- Check `D git status` for specific feedback
 - Address comments before new commits
 
 ### Debug Commands
@@ -237,10 +237,10 @@ D status
 
 ## Best Practices
 
-1. **Regular Status Checks**: Run `D git _status` before major changes
+1. **Regular Status Checks**: Run `D git status` before major changes
 2. **Descriptive Branches**: Use meaningful branch names beyond username
 3. **Review Before Push**: Check diff with `git diff` before `D push`
-4. **Address Comments**: Use `D git _status` to track PR feedback
+4. **Address Comments**: Use `D git status` to track PR feedback
 5. **Keep Branches Fresh**: Regular `D pull` to stay current with main
 
 ---

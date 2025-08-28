@@ -1,74 +1,66 @@
 #!/bin/bash
 
+IS_KIT_CLI="true"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
 
-main() {
-    IS_KIT_CLI="true"
-    source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
+c=$1; shift; case $c in
+    do)
+    if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then message 41 error "The 'do' command works only on bench! (the kit container)"; exit 1; fi
     c=$1; shift; case $c in
-        do)
-        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then message 41 error "The 'do' command works only on bench! (the kit container)"; exit 1; fi
-        c=$1; shift; case $c in
-            pat|patch)
-                set -e
-                VERSION_SPECIFIER=$(_node -p "require('/$PROJECT_MOUNT_DIR_NAME/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('/$PROJECT_MOUNT_DIR_NAME/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
-                if [ -z "$VERSION_SPECIFIER" ]; then
-                    message 41 ERROR "@$ORG_NAME/$KIT_NAME not found in '/$PROJECT_MOUNT_DIR_NAME/package.json'."
-                    exit 1
-                fi
-                echo "Running npm install @$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER .."
-                TMPDIR=$(mktemp -d)
-                (cd $TMPDIR && _npm install "@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER")
-                rm -rf /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH 2>/dev/null
-                mkdir -p /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH 2>/dev/null
-                cp -r $TMPDIR/$KIT_RELATIVE_PATH/* /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH
-                if [ ! -f /$PROJECT_MOUNT_DIR_NAME/cli ]; then cp /$KIT_NAME/templates/cli /$PROJECT_MOUNT_DIR_NAME/cli; fi
-                # if [ ! -f /$PROJECT_MOUNT_DIR_NAME/.gitignore ]; then cp /$KIT_NAME/templates/.gitignore /$PROJECT_MOUNT_DIR_NAME/.gitignore; fi
-            ;;
-            # templates) bash bin/templates.sh ;;
-            *)
-                display_help \
-                    "" "" \
-                    "$(color 30 'Package Visibility Commands')" "" \
-                    "    ins|install             " "Install package dependencies in Node.js project"
-            ;;
-        esac;;
-
-        tes|test)
-            if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then CLI on-bench $c "$@"; return 0; fi
-            SRC utils/tester/index.sh "$@"
+        pat|patch)
+            set -e
+            VERSION_SPECIFIER=$(_node -p "require('/$PROJECT_MOUNT_DIR_NAME/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('/$PROJECT_MOUNT_DIR_NAME/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
+            if [ -z "$VERSION_SPECIFIER" ]; then
+                message 41 ERROR "@$ORG_NAME/$KIT_NAME not found in '/$PROJECT_MOUNT_DIR_NAME/package.json'."
+                exit 1
+            fi
+            echo "Running npm install @$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER .."
+            TMPDIR=$(mktemp -d)
+            (cd $TMPDIR && _npm install "@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER")
+            rm -rf /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH 2>/dev/null
+            mkdir -p /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH 2>/dev/null
+            cp -r $TMPDIR/$KIT_RELATIVE_PATH/* /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH
+            if [ ! -f /$PROJECT_MOUNT_DIR_NAME/cli ]; then cp /$KIT_NAME/templates/cli /$PROJECT_MOUNT_DIR_NAME/cli; fi
+            # if [ ! -f /$PROJECT_MOUNT_DIR_NAME/.gitignore ]; then cp /$KIT_NAME/templates/.gitignore /$PROJECT_MOUNT_DIR_NAME/.gitignore; fi
         ;;
-
-        run) CLI docker compose _exec $KIT_NAME "$@" ;;
-        pul|pull) CLI git pull origin main "$@" ;;
-        sta|start) CLI docker compose _up-dev "$@" ;;
-        sto|stop) CLI docker compose down "$@" ;;
-        hel|help|--help|-h)
+        # templates) bash bin/templates.sh ;;
+        *)
             display_help \
                 "" "" \
-                "$(color 30 'Usage')" "" \
-                "$(color 30 '    kit <command> [subcommand] [options] [arguments]\n')" "" \
-                "$(color 30 'Kit Container Lifecycle')" "" \
-                "    sta|start               " "Start kit container (for fast subsequent ops)" \
-                "    sto|stop                " "Stop kit container" \
-                "    shell                   " "Open shell in kit container (project is mounted)" \
-                "" "" \
-                "$(color 30 'Project Management & Modification')" "" \
-                "        do <cmd>          " "Run kit-powered commands to manage/modify projects" \
-                "        ini|initialize      " "Install kit into a managed project" \
-                "        ...                 " "Other project modification commands (see docs)" \
-                "" "" \
-                "$(color 30 'Source Control')" "" \
-                "    pul|pull                " "Pull latest changes from main branch in kit context" \
-                "" "" \
-                "$(color 30 'Information')" "" \
-                "    hel|help                " "Show this help message" \
-                "" "" \
-                "$(color 34 'Note:')" "This CLI manages the kit container and project operations. For project CLI, use the installed cli in your project root." \
-                "$(color 34 'Docs:')" "See https://github.com/diseec/kit for full command reference."
-            ;;
+                "$(color 30 'Package Visibility Commands')" "" \
+                "    ins|install             " "Install package dependencies in Node.js project"
+        ;;
+    esac;;
 
-        *) . $_CLI_BASE "$c" "$@" ;;
-    esac
-}
+    tes|test) SAFELY_SRC_KIT lib/tester/index.sh $c "$@" ;;
+    run) CLI docker compose exec $KIT_NAME "$@" ;;
+    pul|pull) CLI git pull origin main "$@" ;;
+    sta|start) CLI docker compose up "$@" ;;
+    sto|stop) CLI docker compose down "$@" ;;
+    hel|help|--help|-h)
+        display_help \
+            "" "" \
+            "$(color 30 'Usage')" "" \
+            "$(color 30 '    kit <command> [subcommand] [options] [arguments]\n')" "" \
+            "$(color 30 'Kit Container Lifecycle')" "" \
+            "    sta|start               " "Start kit container (for fast subsequent ops)" \
+            "    sto|stop                " "Stop kit container" \
+            "    shell                   " "Open shell in kit container (project is mounted)" \
+            "" "" \
+            "$(color 30 'Project Management & Modification')" "" \
+            "        do <cmd>          " "Run kit-powered commands to manage/modify projects" \
+            "        ini|initialize      " "Install kit into a managed project" \
+            "        ...                 " "Other project modification commands (see docs)" \
+            "" "" \
+            "$(color 30 'Source Control')" "" \
+            "    pul|pull                " "Pull latest changes from main branch in kit context" \
+            "" "" \
+            "$(color 30 'Information')" "" \
+            "    hel|help                " "Show this help message" \
+            "" "" \
+            "$(color 34 'Note:')" "This CLI manages the kit container and project operations. For project CLI, use the installed cli in your project root." \
+            "$(color 34 'Docs:')" "See https://github.com/diseec/kit for full command reference."
+        ;;
 
-main "$@"
+    *) CLI_BASE "$c" "$@" ;;
+esac

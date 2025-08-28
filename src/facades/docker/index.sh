@@ -14,22 +14,22 @@ main() {
             KIT_DIR \
             PROJECT_MOUNT_DIR_NAME
 
-    SRC "facades/docker/up-development.sh"
-    SRC "facades/docker/up-production.sh"
-    SRC "facades/docker/execute.sh"
+    SRC_KIT "facades/docker/up-development.sh"
+    SRC_KIT "facades/docker/up-production.sh"
+    SRC_KIT "facades/docker/execute.sh"
 
     c=$1; shift; case "$c" in
         com|compose) c=$1; shift; case "$c" in
-            ude|_up|_up-dev) up_development "$@" ;;
-            upr|_up-pro) up_production "$@" ;;
-            exe|_exec) cmd_docker_execute "$@" ;;
-            bpa|_build) _docker compose build --parallel "$@" ;;
+            ude|up|up-dev) up_development "$@" ;;
+            upr|up-pro) up_production "$@" ;;
+            exe|exec) cmd_docker_execute "$@" ;;
+            bpa|build) _docker compose build --parallel "$@" ;;
             hel|help|--help|-h) display_help "" "" \
                 "$(color 30 'Docker Compose Commands')" "" \
-                "    ude|_up|_up-dev  " "Start development environment" \
-                "    upr|_up-pro      " "Start production environment" \
-                "    exe|_exec        " "Execute command in compose service" \
-                "    bpa|_build       " "Build all services in parallel" \
+                "    ude|up|up-dev   " "Start development environment" \
+                "    upr|up-pro      " "Start production environment" \
+                "    exe|exec        " "Execute command in compose service" \
+                "    bpa|build       " "Build all services in parallel" \
                 "    <docker-compose-cmd>" "Pass through to docker compose"
             ;;
             *) _docker compose "$c" "$@" ;;

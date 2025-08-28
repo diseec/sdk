@@ -82,7 +82,7 @@ cmd_git_pr_create() {
 
 # Check PR status and show comments/issues
 cmd_git_pr_check_status() {
-  if ! _CLI_ internet is-online; then
+  if ! CLI internet is-online; then
       message 41 ⊘ "Disconnected, skipping PR status check..."
       return 0
   fi

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-SRC cmds/update.sh
-SRC facades/workspace/index.sh
+SRC_KIT cmds/update.sh
+SRC_KIT facades/workspace/index.sh
 
-if ! _CLI_ internet is-online; then
+if ! CLI internet is-online; then
     message 41 ⊘ "Disconnected, skipping update check..."
     return 0
 fi
@@ -16,7 +16,7 @@ fi
 # Check if version changed or if repo/modules are behind
 if has_version_changed; then
     version_info=$(get_version_info)
-    ask_to_run_command "New kit version available $version_info, download updates?" _CLI_ update --recursive
+    ask_to_run_command "New kit version available $version_info, download updates?" CLI update --recursive
 elif [ -d "$ROOT_DIR/.git" ]; then
     # Check if the main repository is behind
     current_branch=$(_git -C "$ROOT_DIR" rev-parse --abbrev-ref HEAD)
@@ -26,7 +26,7 @@ elif [ -d "$ROOT_DIR/.git" ]; then
         remote_commit=$(_git -C "$ROOT_DIR" rev-parse "@{u}")
         
         if [ $? -eq 0 ] && [ "$local_commit" != "$remote_commit" ]; then
-            ask_to_run_command "Repository is behind the remote branch, apply update?" _CLI_ update --recursive
+            ask_to_run_command "Repository is behind the remote branch, apply update?" CLI update --recursive
         else
             # Check if any of the selected modules are behind
             modules_behind=false
@@ -48,10 +48,10 @@ elif [ -d "$ROOT_DIR/.git" ]; then
                 fi
             }
             
-            _CLI_ workspace foreach-selected-module-run check_module_status
+            foreach_selected_module_with_callback check_module_status
             
             if $modules_behind; then
-                ask_to_run_command "Modules are behind their remote branches, update them?" _CLI_ update --recursive
+                ask_to_run_command "Modules are behind their remote branches, update them?" CLI update --recursive
             fi
         fi
     fi

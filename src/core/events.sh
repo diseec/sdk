@@ -73,8 +73,8 @@ fire_event() {
     }
 
     # Execute event in root repo
-    if [ -n "${CLI-}" ] && [ -x _CLI_ ]; then
-        execute_event "$ROOT_DIR" _CLI_ "$EVENT" "root" || true
+    if [ -n "${CLI-}" ] && [ -x CLI ]; then
+        execute_event "$ROOT_DIR" CLI "$EVENT" "root" || true
     fi
 
     # # Process each selected module
@@ -95,7 +95,7 @@ fire_event() {
     #     execute_event "$dir" "$cli" "$EVENT" "$module" || true
     # }
     # # Process all selected modules
-    # _CLI_ workspace foreach-selected-module-run process_module || true
+    # foreach_selected_module_with_callback process_module || true
 
     # message 32 "done" "Event '$EVENT' execution completed"
 }

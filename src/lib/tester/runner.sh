@@ -2,7 +2,7 @@
 # Test runner core functionality
 
 # Source required facades
-export TESTER_LIB_DIR="$KIT_SRC_DIR/utils/tester/lib"
+export TESTER_LIB_DIR="$KIT_SRC_DIR/lib/tester"
 source "$TESTER_LIB_DIR/colors.sh"
 source "$TESTER_LIB_DIR/assertions.sh"
 source "$TESTER_LIB_DIR/utils.sh"

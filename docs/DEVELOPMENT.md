@@ -77,7 +77,7 @@ D bpa --no-cache
 
 Executes commands in specific services.
 
-- Running service: `docker compose _exec`
+- Running service: `docker compose exec`
 - Stopped service: `docker compose run --rm --no-deps`
 - In container: direct execution
 
@@ -130,7 +130,7 @@ Auto-commit with AI and create PR.
 D pus
 ```
 
-## on-bench / saf
+## safely / saf
 
 Runs commands in kit container for guaranteed environment.
 

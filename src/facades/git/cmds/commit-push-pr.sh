@@ -8,35 +8,35 @@ cmd_git_commit_push_pr() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    # _CLI_ inform check-internet-connection
+    # CLI inform check-internet-connection
 
-    # _CLI_ git _checkout-if-detached
-    # _CLI_ git _pull
+    # CLI git _checkout-if-detached
+    # CLI git pull
 
     # fire_event before_cpp
     
     # # Only run commit if there are uncommitted changes
     # if [ -n "$(_git diff --staged)" ]; then
-    #     _CLI_ git _commit
+    #     CLI git _commit
     # fi
 
-    # _CLI_ git _push
+    # CLI git _push
 
     # if [ "$CURRENT_BRANCH" != "main" ]; then
-    #     _CLI_ git _pull-request
+    #     CLI git pull-request
     # fi
 
     echo "$REPO_NAME: Cpp done."
-    _CLI_ git _log "HEAD"
+    CLI git _log "HEAD"
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Cpp for selected submodules..."
         cpp_submodule() {
             local module="$1"; local module_path="$2"
-            ("$ROOT_DIR/$module_path/cli" git _commit-push-pr --recursive)
+            "$ROOT_DIR/$module_path/cli" git commit-push-pr --recursive
             echo "$REPO_NAME: Cpp done for submodule '$module'."
         }
-        _CLI_ workspace foreach-selected-module-run cpp_submodule
+        foreach_selected_module_with_callback cpp_submodule
     fi
 
     fire_event after_cpp
