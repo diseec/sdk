@@ -63,7 +63,8 @@ cor_fire_hook() {
         # Execute the command directly without capturing output
         # This allows interactive prompts to work properly
         (cd "$dir" && "$cli" "listen:$hook")
-        rc=$?    # if [ $rc -eq 0 ]; then
+        rc=$?
+        # if [ $rc -eq 0 ]; then
         #     message 32 "$name" "hook '$hook' completed successfully"
         # else
         #     message 31 "$name" "hook '$hook' failed (exit code $rc)"

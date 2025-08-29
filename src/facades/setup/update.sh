@@ -74,10 +74,10 @@ fac_set_cmd_update() {
         update_dependencies() {
             local module="$1"
             local module_path="$2"
-            "$ROOT_DIR/$module_path/cli" update --recursive
+            cd "$ROOT_DIR/$module_path" && D update --recursive
             echo "Updated dependencies for '$module'."
         }
-        cli_main workspace foreach-selected-module-run update_dependencies
+        fac_wor_foreach_selected_module update_dependencies
     fi
 
     handle_hook after_update

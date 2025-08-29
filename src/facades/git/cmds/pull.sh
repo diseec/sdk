@@ -20,7 +20,7 @@ fac_git_cmd_pull_merge() {
         pull_submodule() {
             local module="$1"
             local module_path="$2"
-            "$ROOT_DIR/$module_path/cli" pull -r
+            cd "$ROOT_DIR/$module_path" && D pull --recursive
         }
         fac_wor_foreach_selected_module pull_submodule
     fi
