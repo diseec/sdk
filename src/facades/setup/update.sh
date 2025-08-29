@@ -57,11 +57,14 @@ fac_set_cmd_update() {
 
     cli_main git pull origin
     cli_main kit docker compose pull;
+
     cli_main safely kit do patch;
     echo "$KIT_NAME version patched to: $VERSION"
 
     # Check if version has changed
     handle_hook before_update
+
+    cli_main kit start --detach
 
     message 44 "info" "Installing dependencies..."
     cli_main install;
@@ -80,7 +83,9 @@ fac_set_cmd_update() {
         fac_wor_foreach_selected_module update_dependencies
     fi
 
+    cli_main kit stop
+
     handle_hook after_update
 
-    message 42 ✔ "Update completed successfully"
+    message 42 "✔" "Update completed successfully"
 }
