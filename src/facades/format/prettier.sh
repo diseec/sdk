@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fac_dev_format() {
+fac_for_prettier() {
 
     set -e;
 
@@ -14,7 +14,7 @@ fac_dev_format() {
         set -- "**/*.{js,jsx,ts,tsx,json,css,scss,md}"
     fi
 
-    message "Running formatter using Prettier..."
+    message 44 "❄︎" "Running formatter using Prettier..."
 
     if [ "$CI" = "true" ]; then 
         _prettier --check --log-level=warn "$@";

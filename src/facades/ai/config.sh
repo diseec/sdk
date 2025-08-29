@@ -25,6 +25,10 @@ fac_ai_init() {
 # Check if AI is available (API key and curl)
 # Returns: 0 if available, 1 if not
 fac_ai_is_available() {
+    if ! fac_ai_init; then
+        message 43 "!" "AI module loaded but API key not available"
+    fi
+
     if command -v curl >/dev/null 2>&1 && [ -n "$OPENAI_API_KEY" ]; then
         return 0
     else

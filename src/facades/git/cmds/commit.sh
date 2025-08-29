@@ -22,7 +22,7 @@ fac_git_cmd_generate_commit_message() {
     local diff_preview="$(_git diff --staged | head -n 300)"
   
     # Use AI to generate commit message, with fallback
-    if . "$@" ai fac_ai_is_available; then
+    if fac_ai_is_available; then
         fac_ai_generate_commit_message "$diff_summary" "$diff_preview"
     else
         # Fallback: generate simple commit message based on modified files
@@ -39,7 +39,7 @@ fac_git_cmd_warn_detached_head() {
     
     # Check if there are any changes
     if [ -n "$(_git status --porcelain)" ]; then
-      message 41 "DANGER" "You have uncommitted changes in detached HEAD state"
+      message 41 "!" "You have uncommitted changes in detached HEAD state"
       return 1
     fi
   fi

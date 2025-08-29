@@ -58,7 +58,7 @@ assert_success() {
     _increment_assertion
     
     if "$@" >/dev/null 2>&1; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -74,7 +74,7 @@ assert_failure() {
     _increment_assertion
     
     if ! "$@" >/dev/null 2>&1; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -91,7 +91,7 @@ assert_equals() {
     _increment_assertion
     
     if [ "$expected" = "$actual" ]; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -109,7 +109,7 @@ assert_not_equals() {
     _increment_assertion
     
     if [ "$not_expected" != "$actual" ]; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -127,7 +127,7 @@ assert_contains() {
     _increment_assertion
     
     if echo "$haystack" | grep -q -F "$needle"; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -145,7 +145,7 @@ assert_not_contains() {
     _increment_assertion
     
     if ! echo "$haystack" | grep -q -F "$needle"; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -163,7 +163,7 @@ assert_matches() {
     _increment_assertion
     
     if echo "$string" | grep -q -E "$pattern"; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -180,7 +180,7 @@ assert_function_exists() {
     _increment_assertion
     
     if declare -f "$function_name" >/dev/null 2>&1; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -196,7 +196,7 @@ assert_variable_set() {
     _increment_assertion
     
     if [ -n "${!variable_name:-}" ]; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -212,7 +212,7 @@ assert_file_exists() {
     _increment_assertion
     
     if [ -f "$file_path" ]; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"
@@ -228,7 +228,7 @@ assert_directory_exists() {
     _increment_assertion
     
     if [ -d "$dir_path" ]; then
-        echo -e "  ${COLOR_SUCCESS}✓${NC} $description"
+        echo -e "  ${COLOR_SUCCESS}✔${NC} $description"
         return 0
     else
         echo -e "  ${COLOR_ERROR}✗${NC} $description"

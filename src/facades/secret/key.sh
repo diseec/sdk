@@ -39,7 +39,7 @@ fac_sec_set_key() {
     fi
     
     fac_sec_store_encryption_key "$encryption_key"
-    message 32 "SUCCESS" "Encryption key configured successfully"
+    message 42 "✔" "Encryption key configured successfully"
 }
 
 # Reset encryption key

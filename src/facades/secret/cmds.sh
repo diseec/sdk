@@ -32,7 +32,7 @@ fac_sec_add_secret() {
     fi
     
     fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
-    message 32 "SUCCESS" "Secret '$secret_name' added successfully"
+    message 42 "✔" "Secret '$secret_name' added successfully"
 }
 
 # Export a single secret by name (returns just the value)
@@ -133,7 +133,7 @@ fac_sec_remove_secret() {
     if fac_sec_get_user_confirmation "Are you sure you want to remove secret '$secret_name'?"; then
         local secret_file=$(fac_sec_secret_file_path "$secret_name")
         rm "$secret_file"
-        message 32 "SUCCESS" "Secret '$secret_name' removed"
+        message 42 "✔" "Secret '$secret_name' removed"
     else
         message 34 "INFO" "Operation cancelled"
     fi

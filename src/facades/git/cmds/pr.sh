@@ -87,66 +87,65 @@ fac_git_cmd_pr_check_status() {
       message 41 ⊘ "Disconnected, skipping PR status check..."
       return 0
   fi
+  echo "Checking PR status..."
 
   local pr_number=$(fac_git_cmd_has_open_pr)
   local branch="$CURRENT_BRANCH"
-  
+
   if [ -z "$pr_number" ]; then
-    # message 43 "!" "No open PR found for branch: $branch"
-    return 0
+      # message 43 "!" "No open PR found for branch: $branch"
+      return 0
   fi
-  
-  message 34 "pr" "Checking PR #$pr_number status..."
-  
+
+  # echo "Checking PR #$pr_number status..."
+
   if fac_git_cmd_check_gh_cli; then
-    # Get PR details
-    local pr_data=$(_gh pr view "$pr_number" --json title,url,reviewDecision,reviews,comments)
-    
-    # Extract key information
-    local pr_title=$(echo "$pr_data" | grep -o '"title": "[^"]*' | sed 's/"title": "//')
-    local pr_url=$(echo "$pr_data" | grep -o '"url": "[^"]*' | sed 's/"url": "//')
-    local review_decision=$(echo "$pr_data" | grep -o '"reviewDecision": "[^"]*' | sed 's/"reviewDecision": "//')
-    
-    # Count unresolved comments
-    local comment_count=$(echo "$pr_data" | grep -o '"body": "[^"]*' | wc -l | tr -d ' ')
-    local resolved_count=$(echo "$pr_data" | grep -o '"isResolved": true' | wc -l | tr -d ' ')
-    local unresolved_count=$((comment_count - resolved_count))
-    
-    # Display info
-    message 36 "title" "$pr_title"
-    message 36 "url" "$pr_url"
-    
-    # Review status
-    case "$review_decision" in
-      "APPROVED")
-        message 32 "review" "Approved! Ready to merge."
-        ;;
-      "CHANGES_REQUESTED")
-        message 31 "review" "Changes requested. See comments below."
-        ;;
-      "REVIEW_REQUIRED")
-        message 43 "!" "Waiting for review"
-        ;;
-      *)
-        message 43 "!" "No reviews yet"
-        ;;
-    esac
+      # Get PR details
+      local pr_data=$(_gh pr view "$pr_number" --json title,url,reviewDecision,reviews,comments)
+
+      # Ensure jq is available for reliable JSON parsing
+      if ! command -v jq >/dev/null 2>&1; then
+          message 43 "!" "jq is required for JSON parsing. Please install jq and try again."
+          return 0
+      fi
+
+      # Extract key information using jq
+      local pr_title=$(echo "$pr_data" | _jq -r '.title // ""')
+      local pr_url=$(echo "$pr_data" | _jq -r '.url // ""')
+      local review_decision=$(echo "$pr_data" | _jq -r '.reviewDecision // ""')
+
+      # Count comments and unresolved comments reliably with jq
+      local comment_count=$(echo "$pr_data" | _jq -r '.comments // [] | length')
+      local resolved_count=$(echo "$pr_data" | _jq -r '[.comments[]? | select(.isResolved == true)] | length')
+      local unresolved_count=$(echo "$pr_data" | _jq -r '[.comments[]? | select(.isResolved != true)] | length')
+      
+      # Display info
+      message 34 "PR#$pr_number" "title: $pr_title"
+      message 34 "PR#$pr_number" "url: $pr_url"
+      
+      # Review status
+      case "$review_decision" in
+          "APPROVED") message 42 "✔" "Approved! Ready to merge." ;;
+          "CHANGES_REQUESTED") message 41 "⊝" "Changes requested. See comments below." ;;
+          "REVIEW_REQUIRED") message 43 "⊙" "Waiting for review" ;;
+          *) message "No reviews yet" ;;
+      esac
     
     # Comment status
-    if [ "$unresolved_count" -gt 0 ]; then
-      message 31 "comments" "$unresolved_count unresolved comments"
-      
-      # Show unresolved comments
-      echo "$pr_data" | grep -A 3 '"isResolved": false' | grep '"body": "' | sed 's/"body": "/- /' | sed 's/\\r\\n/\n/g' | head -5
-      
-      if [ "$unresolved_count" -gt 5 ]; then
-        message 43 "!" "...and $((unresolved_count - 5)) more comments"
+      if [ "$unresolved_count" -gt 0 ]; then
+          message 31 "comments" "$unresolved_count unresolved comments"
+          
+          # Show unresolved comments
+          echo "$pr_data" | grep -A 3 '"isResolved": false' | grep '"body": "' | sed 's/"body": "/- /' | sed 's/\\r\\n/\n/g' | head -5
+          
+          if [ "$unresolved_count" -gt 5 ]; then
+              message 43 "⚭" "...and $((unresolved_count - 5)) more comments"
+          fi
+      # else
+      #   message 32 "comments" "No unresolved comments"
       fi
-    # else
-    #   message 32 "comments" "No unresolved comments"
-    fi
   else
-    message 43 "!" "PR #$pr_number exists, but detailed status check requires GitHub cli_main"
-    message 43 "!" "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
+      message 41 "!" "PR #$pr_number exists, but detailed status check requires GitHub CLI"
+      message 41 "!" "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
   fi
 }

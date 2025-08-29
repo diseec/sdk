@@ -154,7 +154,7 @@ Show configuration value resolution path
 fac_con_which "defaults.shell"
 # Output:
 # Configuration resolution for 'defaults.shell':
-#   ✓ [project] zsh (ACTIVE)
+#   ✔ [project] zsh (ACTIVE)
 #   - [workspace] (not set)
 #   - [user] bash (overridden)
 #   - [global] bash (overridden)

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 c=$1; shift; case $c in
-    pre|prettier) fac_dev_prettier "$@" ;;
+    pre|prettier) fac_for_prettier "$@" ;;
     hel|help|--help|-h)
         display_help "" "" \
             "$(color 30 'Formatting')" "" \

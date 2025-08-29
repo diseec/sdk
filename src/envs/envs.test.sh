@@ -27,7 +27,7 @@ test_result() {
     TESTS_RUN=$((TESTS_RUN + 1))
     
     if [ "$result" = "PASS" ]; then
-        echo -e "${GREEN}✓${NC} $test_name"
+        echo -e "${GREEN}✔${NC} $test_name"
         TESTS_PASSED=$((TESTS_PASSED + 1))
     else
         echo -e "${RED}✗${NC} $test_name${message:+ - $message}"

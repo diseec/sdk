@@ -82,5 +82,5 @@ fac_set_cmd_update() {
 
     handle_hook after_update
 
-    message 42 "OKEY" "Update completed successfully"
+    message 42 ✔ "Update completed successfully"
 }

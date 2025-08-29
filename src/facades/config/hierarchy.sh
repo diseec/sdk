@@ -203,7 +203,7 @@ fac_con_which() {
                 if [ -z "$found_value" ]; then
                     found_value="$value"
                     found_scope="$scope"
-                    echo "  ✓ [$scope] $value (ACTIVE)"
+                    echo "  ✔ [$scope] $value (ACTIVE)"
                 else
                     echo "  - [$scope] $value (overridden)"
                 fi

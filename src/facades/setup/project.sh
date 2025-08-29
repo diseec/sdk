@@ -31,7 +31,7 @@ fac_set_project() {
         fac_wor_foreach_selected_module initialize_submodule
     fi
 
-    cli_main git _checkout-if-detached
+    cli_main git checkout-if-detached
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Installing dependencies in selected submodules..."
@@ -45,6 +45,6 @@ fac_set_project() {
     fi
 
     echo "$REPO_NAME: Workspace configuration initialized successfully."
-    message 32 "SUCCESS" "Installation completed successfully."
+    message 42 "✔" "Installation completed successfully."
 
 }

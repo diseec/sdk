@@ -37,7 +37,12 @@ _docker() {
     docker "$@"
 }
 
-_yq() {
+_jq() {
+    # cli_main $KIT_NAME run --no-message yq "$@"
+    jq "$@"
+}
+
+_jq() {
     # cli_main $KIT_NAME run --no-message yq "$@"
     yq "$@"
 }

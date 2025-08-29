@@ -12,7 +12,7 @@ fac_wor_init() {
 fac_wor_status() {
     local config_file="$(fac_con_get_config_file workspace)"
     if [ -f "$config_file" ]; then
-        echo "Workspace config: $config_file"
+        message 34 "config" "$config_file"
         local selected_modules=$(fac_wor_get_selected_modules)
         if [ -n "$selected_modules" ]; then
             active_modules=""
@@ -23,7 +23,7 @@ fac_wor_status() {
                     active_modules="$module"
                 fi
             done
-            echo "Active submodules: $active_modules"
+            message 34 "modules" "$active_modules"
         else
             message 43 "i" "No submodules selected in workspace configuration"
         fi

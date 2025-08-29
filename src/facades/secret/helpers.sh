@@ -68,7 +68,7 @@ fac_sec_prompt_add_missing_secret() {
         local key=$(fac_sec_get_encryption_key)
         fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
         
-        message 32 "SUCCESS" "Secret '$secret_name' added successfully" >&2
+        message 42 "✔" "Secret '$secret_name' added successfully" >&2
         echo "$secret_value"
         return 0
     else

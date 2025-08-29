@@ -79,12 +79,12 @@ fac_set_check_system_dependencies() {
             missing_deps+=("$dep")
             ((missing_count++))
         # else
-        #     echo -e "${GREEN}✓${NC} $dep"
+        #     echo -e "${GREEN}✔${NC} $dep"
         fi
     done
     
     if [ $missing_count -eq 0 ]; then
-        message 42 "✓" "All system dependencies are installed!"
+        message 42 "✔" "All system dependencies are installed!"
         return 0
     else
         message 41 "✗" "$missing_count missing dependencies found: ${missing_deps[*]}"
@@ -225,7 +225,7 @@ fac_set_install_dependency() {
     if [ -n "$installer" ]; then
         echo -e "${BLUE}Installing $dep...${NC}"
         if $installer; then
-            echo -e "${GREEN}✓ $dep installed${NC}"
+            echo -e "${GREEN}✔ $dep installed${NC}"
             return 0
         else
             echo -e "${RED}✗ Failed to install $dep${NC}"
@@ -234,7 +234,7 @@ fac_set_install_dependency() {
     else
         echo -e "${YELLOW}No custom installer for $dep, trying package manager...${NC}"
         if fac_set_install_package "$dep"; then
-            echo -e "${GREEN}✓ $dep installed${NC}"
+            echo -e "${GREEN}✔ $dep installed${NC}"
             return 0
         else
             echo -e "${RED}✗ Failed to install $dep${NC}"
@@ -279,7 +279,7 @@ fac_set_install_system_dependencies() {
     done
     
     if [ ${#missing_deps[@]} -eq 0 ]; then
-        echo -e "${GREEN}✓ All dependencies already installed${NC}"
+        echo -e "${GREEN}✔ All dependencies already installed${NC}"
         return 0
     fi
     

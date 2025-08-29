@@ -201,7 +201,7 @@ EOF
     # Report result
     if [ $exit_code -eq 0 ]; then
         if [ "$quiet" != "true" ]; then
-            echo -e "${COLOR_SUCCESS}✓ PASSED: $rel_path${NC}"
+            echo -e "${COLOR_SUCCESS}✔ PASSED: $rel_path${NC}"
         fi
         return 0
     else

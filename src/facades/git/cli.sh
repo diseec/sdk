@@ -10,19 +10,22 @@ source "$KIT_SRC_DIR/facades/git/index.sh"
 c=$1; shift; case "$c" in
     sta|status)
         cli_main inform forbid-dev-on-main
-        cli_main inform status-branch-status
-        fac_git_cmd_pr_check_status "$@"
+        cli_main inform summary-branch-status
+        fac_git_cmd_pr_check_status
     ;;
     cpp|commit-push-pr) fac_git_cmd_commit_push_pr "$@" ;;
-    che|_checkout) fac_git_cmd_checkout_branch "$@" ;;
-    com|_commit) fac_git_cmd_commit "$@" ;;
+    che|checkout) fac_git_cmd_checkout_branch "$@" ;;
+    com|commit) fac_git_cmd_commit "$@" ;;
     pul|pull) fac_git_cmd_pull_merge "$@" ;;
-    pus|_push) fac_git_cmd_push "$@" ;;
-    pre|pull-request) fac_git_cmd_pr_create "$@" ;;
-    log|_log) fac_git_cmd_git_log "$@" ;;
-    rel|_release) fac_git_cmd_release "$@" ;;
+    pus|push) fac_git_cmd_push "$@" ;;
+    pre|pull-request|pr) c=$1; shift; case "$c" in
+        cre|create) fac_git_cmd_pr_create "$@" ;;
+        sta|status) fac_git_cmd_pr_check_status "$@" ;;
+    esac ;;
+    log|log) fac_git_cmd_git_log "$@" ;;
+    rel|release) fac_git_cmd_release "$@" ;;
 
-    cid|_checkout-if-detached) fac_git_cmd_checkout_if_detached "$@" ;;
+    cid|checkout-if-detached) fac_git_cmd_checkout_if_detached "$@" ;;
 
     hel|help|--help|-h) display_help "" "" \
         "$(color 30 'Git Commands - AI-Powered Workflow Automation')" "" \
@@ -30,12 +33,12 @@ c=$1; shift; case "$c" in
         "    cpp|commit-push-pr   " "Auto-commit with AI ✨ message, push, and create/update PR" \
         "    sta|status           " "Check current branch PR status and unresolved comments" \
         "    pul|pull             " "Pull latest changes and merge with main branch" \
-        "    com|_commit           " "Commit changes with AI-generated message" \
+        "    com|commit           " "Commit changes with AI-generated message" \
         "" "" "$(color 30 'Individual Operations')" "" \
         "    pre|pull-request     " "Create PR only (no commit/push)" \
-        "    che|_checkout         " "Checkout/create branch interactively" \
+        "    che|checkout         " "Checkout/create branch interactively" \
         "    hea|_head             " "Get detailed commit report status, options: --recursive" \
-        "    rel|_release          " "Create release tag (development command)" \
+        "    rel|release          " "Create release tag (development command)" \
         "" "" "$(color 30 'Aliases & Shortcuts')" "" \
         "    D push [--recursive]  " "Alias for commit-push-pr" \
         "    D pull [--recursive]  " "Alias for pull" \

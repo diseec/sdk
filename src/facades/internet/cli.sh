@@ -99,4 +99,4 @@ if [ "$MODE" != "is-online" ] && [ "$SILENT_MODE" != "true" ]; then
 fi
 
 # Exit with appropriate code
-[ "$overall_status" = "true" ] && exit 0 || exit 1
+[ "$overall_status" = "true" ] && return 0 || return 1
