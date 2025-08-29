@@ -11,7 +11,7 @@
 
 # Check for yq availability and set operation mode
 fac_con_yaml_init() {
-    if command -v _yq >/dev/null 2>&1; then
+    if command -v yq >/dev/null 2>&1; then
         YAML_USE_YQ="true"
         return 0
     else
@@ -149,7 +149,8 @@ fac_con_yaml_keys_fallback() {
 fac_con_yaml_get() {
     local config_file="$1"
     local key_path="$2"
-    
+    fac_con_yaml_init
+
     if [ "$YAML_USE_YQ" = "true" ]; then
         fac_con_yaml_get_yq "$config_file" "$key_path"
     else
@@ -162,7 +163,8 @@ fac_con_yaml_set() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
-    
+    fac_con_yaml_init
+
     if [ "$YAML_USE_YQ" = "true" ]; then
         fac_con_yaml_set_yq "$config_file" "$key_path" "$value"
     else
@@ -174,7 +176,8 @@ fac_con_yaml_set() {
 fac_con_yaml_delete() {
     local config_file="$1"
     local key_path="$2"
-    
+    fac_con_yaml_init
+
     if [ "$YAML_USE_YQ" = "true" ]; then
         fac_con_yaml_delete_yq "$config_file" "$key_path"
     else
@@ -187,7 +190,8 @@ fac_con_yaml_array_add() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
-    
+    fac_con_yaml_init
+
     if [ "$YAML_USE_YQ" = "true" ]; then
         fac_con_yaml_array_add_yq "$config_file" "$key_path" "$value"
     else
@@ -201,7 +205,8 @@ fac_con_yaml_array_remove() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
-    
+    fac_con_yaml_init
+
     if [ "$YAML_USE_YQ" = "true" ]; then
         fac_con_yaml_array_remove_yq "$config_file" "$key_path" "$value"
     else
@@ -213,7 +218,8 @@ fac_con_yaml_array_remove() {
 # List all keys in YAML file
 fac_con_yaml_keys() {
     local config_file="$1"
-    
+    fac_con_yaml_init
+
     if [ "$YAML_USE_YQ" = "true" ]; then
         fac_con_yaml_keys_yq "$config_file"
     else

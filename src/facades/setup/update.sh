@@ -66,10 +66,10 @@ fac_set_cmd_update() {
 
     cli_main kit start --detach
 
-    message 44 "info" "Installing dependencies..."
+    message 44 "ℹ︎" "Installing dependencies..."
     cli_main install;
 
-    message 44 "info" "Pulling latest changes..."
+    message 44 "ℹ︎" "Pulling latest changes..."
     cli_main pull;
 
     if [ "$HAS_SUBMODULES" = "true" ]; then

@@ -23,5 +23,3 @@ source "$KIT_SRC_DIR/facades/config/core.sh"
 source "$KIT_SRC_DIR/facades/config/yaml.sh"
 source "$KIT_SRC_DIR/facades/config/hierarchy.sh"
 
-# # Initialize YAML operations on load
-fac_con_yaml_init >/dev/null

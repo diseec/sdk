@@ -155,7 +155,7 @@ $unstaged_diff"
     
     # If no data collected, show simple message
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then
-        message 43 "i" "No commits or changes found for today"
+        message 43 "ℹ︎" "No commits or changes found for today"
         return 0
     fi
     

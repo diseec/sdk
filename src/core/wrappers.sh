@@ -42,7 +42,7 @@ _jq() {
     jq "$@"
 }
 
-_jq() {
+_yq() {
     # cli_main $KIT_NAME run --no-message yq "$@"
     yq "$@"
 }

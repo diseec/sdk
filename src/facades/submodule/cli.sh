@@ -142,7 +142,7 @@ case $command in
         if [[ -d "$target_dir" ]]; then
             message "45" "${type^^}S in $target_dir:" "\n$(ls $target_dir 2>/dev/null || echo 'No items found')"
         else
-            message 43 "i" "Directory $target_dir does not exist"
+            message 43 "ℹ︎" "Directory $target_dir does not exist"
         fi
         ;;
 

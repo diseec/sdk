@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# -----------------------------------------------------------------------------
+#
+# DISEEC DevOps Toolkit
+#
+# This script provides a unified command-line interface for project-level
+# DevOps and automation tasks. It leverages the @diseec/kit Node.js package
+# for core functionality and can be extended here to add or modify commands
+# specific to this project.
+#
+# -----------------------------------------------------------------------------
+
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit/index.sh"
+
+# # Extract options out of order
+# ARGS=""; for arg in "$@"; do case "$arg" in
+#     -x=*|--x=*) X="${arg#*=}";;
+# *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
+# # Extract options in order only belong to command only up to next argument
+# while [ $# -gt 0 ]; do case "$1" in
+#     -x=*|--x=*) X="${1#*=}"; shift;;
+#     -x|--x) X="$2"; shift 2;; (this doesnt work!?)
+# *) break;; esac; done;
+
+c=$1; shift; case $c in
+
+    # A)
+    #     # Extract all options in order
+    #     while [ $# -gt 0 ]; do case "$1" in --) shift; break;;
+    #         -y=*|--y=*) Y="${1#*=}";;
+    #         *) [ -z "$B" ] && B=$1;;
+    #         -*|--*|-h|--help) echo "Unknown option: $1"; exit 1;;
+    #     esac; shift; done;
+    #     message 44 "example" "B:'$B', X:'$X', Y:'$Y'"
+    # ;;
+    
+    ins|install)
+        # yarn install # Add project specific install commands here
+        cli_core install --recursive "$@"
+    ;;
+
+    dev)
+        cli_main kit start --detach > /dev/null 2>&1
+        confirm "Run post dev ops?" \
+            cli_main status \
+            confirm "Pull and merge latest changes?" cli_main pull --recursive
+        cli_core dev "$@"
+        cli_main format
+        confirm "Commit, push and PR changes?" cli_main push --recursive
+        cli_main kit stop
+    ;;
+
+    for|format) cli_core format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;
+
+    tes|test) cli_core test "$@" ;;
+
+    # Hooks
+    # hook:before_update) message 44 "ℹ︎" "Commands before updating completed..." ;;
+    # hook:after_update) message 44 "ℹ︎" "Commands after updating completed..." ;;
+    # hook:before_pull) message 44 "ℹ︎" "Commands before pulling changes..." ;;
+    # hook:before_cpp) message 44 "ℹ︎" "Commands before pushing changes..." ;;
+
+    # hel|help|--help|-h) $CLIBASE help "myc|mycommand" "    Display the help message" ;;
+
+    *) cli_core $c "$@" ;;
+esac

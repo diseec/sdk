@@ -25,10 +25,10 @@ fac_wor_status() {
             done
             message 34 "modules" "$active_modules"
         else
-            message 43 "i" "No submodules selected in workspace configuration"
+            message 43 "ℹ︎" "No submodules selected in workspace configuration"
         fi
     else
-        message 43 "i" "No workspace configuration found for $REPO_NAME"
+        message 43 "ℹ︎" "No workspace configuration found for $REPO_NAME"
         echo "Run 'cli workspace init' to create one"
     fi
 }
