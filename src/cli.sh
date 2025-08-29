@@ -32,14 +32,14 @@ c=$1; shift; case "$c" in
     ######################## FACADES ########################
 
     set|setup)     source "$KIT_SRC_DIR/facades/setup/cli.sh" "$@" ;;
-    sub|submodule) source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
-    int|internet)  source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
+# XXXXXX
     ain|ai)        force_safe $c "$@" || source "$KIT_SRC_DIR/facades/ai/cli.sh" "$@" ;;
+    git)           force_safe $c "$@" || source "$KIT_SRC_DIR/facades/git/cli.sh" "$@" ;;
+    int|internet)  source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
+    sub|submodule) source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
     con|config)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/config/cli.sh" "$@" ;;
     doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
-# XXXXXX
     sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
-    git)           force_safe $c "$@" || source "$KIT_SRC_DIR/facades/git/cli.sh" "$@" ;;
     wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
 
     ######################## UTILITIES ########################
@@ -66,7 +66,19 @@ c=$1; shift; case "$c" in
         ;;
     esac ;;
 
-    ver|version|--version) message 40 "v$VERSION" "DISEEC DevOps cli_main — Automation Toolkit" ;;
+    ver|version)
+        printf "\n"
+        color 0 "v$VERSION DISEEC DevOps CLI — Automation Toolkit\n"
+        printf "\n"
+        color 0 "This software and associated documentation files\n(the \"Software\") are the  exclusive property  of\nDISEEC L.T.E. and are protected by copyright and\nother intellectual property laws.\nPermission is hereby granted, free of charge, to\nany person obtaining a copy of this Software, to\nse the Software within the organization only.\n"
+        printf "\n"
+        color 0 "\e[1mWebsite \e[0m  https://diseec.com\n"
+        color 0 "\e[1mGitHub \e[0m   https://github.com/diseec\n"
+        color 0 "\e[1mLinkedIn \e[0m https://linkedin.com/company/diseec\n"
+        printf "\n"
+        color 0 "Copyright (c) 2018 DISEEC, all rights reserved.\n"
+        printf "\n"
+    ;;
 
     hel|help|--help|-h) display_help "" "" \
         "$(color 30 'Usage:    bash cli <command> [subcommand] [options] [arguments]\n')" "" \
@@ -106,7 +118,7 @@ c=$1; shift; case "$c" in
         "$@"
     ;;
     *)
-        if [ ! -z "$c" ]; then message 41 "error" "Unknown command: '$c'"; fi
+        if [ ! -z "$c" ]; then message 41 "!" "Unknown command: '$c'"; fi
         cli_main help; exit 1;
     ;;
 esac

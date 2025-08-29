@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p "$SECRETS_DIR"
+
 c=$1; shift; case "$c" in
     kse|key-set) fac_sec_set_key "$@" ;;
     kre|key-reset) fac_sec_reset_key "$@" ;;

@@ -1,6 +1,8 @@
 #!/bin/bash
 
 fac_git_cmd_pull_merge() {
+    set -e
+
     local IS_RECURSIVE="false"
     ARGS=""; for arg in "$@"; do case "$arg" in
         -r|--recursive) IS_RECURSIVE="true";;

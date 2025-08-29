@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# modules.sh - Functions for managing git submodules and module discovery
+# submodules.sh - Functions for managing git submodules and module discovery
 
-# Get the list of selected modules from workspace config
+# Get the list of selected submodules from workspace config
 fac_wor_get_selected_modules() {
-    local config_file="$(fac_wor_get_config_path)"
+    local config_file="$(fac_con_get_config_file workspace)"
 
     if [ ! -f "$config_file" ]; then
-        # If workspace config doesn't exist, just return empty (no modules selected)
-        # This is a valid state - user doesn't have to select any modules
+        # If workspace config doesn't exist, just return empty (no submodules selected)
+        # This is a valid state - user doesn't have to select any submodules
         echo ""
         return 0
     fi
@@ -17,12 +17,12 @@ fac_wor_get_selected_modules() {
     grep -E '^  - ' "$config_file" | sed 's/^  - //'
 }
 
-# Parse the .gitmodules file to extract available modules
+# Parse the .gitmodules file to extract available submodules
 fac_wor_get_available_modules() {
     local gitmodules_file="$ROOT_DIR/.gitmodules"
     
     if [ ! -f "$gitmodules_file" ]; then
-        message 41 "ERROR" ".gitmodules file not found at $gitmodules_file"
+        message 41 "!" ".gitmodules file not found at $gitmodules_file"
         return 1
     fi
     
@@ -69,8 +69,8 @@ fac_wor_foreach_selected_module() {
     local selected_modules=$(fac_wor_get_selected_modules)
 
     if [ -z "$selected_modules" ]; then
-        # No modules selected is a valid state - just return success
-        message 33 "INFO" "No modules selected in workspace configuration"
+        # No submodules selected is a valid state - just return success
+        message 43 "i" "No submodules selected in workspace configuration"
         return 0
     fi
 
@@ -79,7 +79,7 @@ fac_wor_foreach_selected_module() {
         if [ -n "$module_path" ]; then
             "$callback_function" "$module" "$module_path" "$@"
         else
-            message 43 "WARNING" "Module path not found for $module, skipping"
+            message 43 "!" "Module path not found for $module, skipping"
         fi
     done
 }

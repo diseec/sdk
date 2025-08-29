@@ -17,7 +17,7 @@ fac_ai_init() {
         export OPENAI_API_KEY="$(fac_sec_export OPENAI_API_KEY)"
         return 0
     else
-        message 31 "ERROR" "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2
+        message 41 "!" "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2
         return 1
     fi
 }

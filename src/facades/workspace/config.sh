@@ -1,69 +1,47 @@
 #!/bin/bash
 
-# config.sh - Functions for managing workspace configuration files
+# ========================================
+# WORKSPACE CONFIGURATION COMPATIBILITY
+# ========================================
+# Provides backward compatibility for workspace configuration functions
+# while transitioning to the new centralized configuration system
 
-# Get the workspace configuration file path for the current repository
-fac_wor_get_config_path() {
-    # Create repository-specific directory if it doesn't exist
-    local repo_dir="$ORG_DIR/workspaces/$REPO_NAME"
-    if [ ! -d "$repo_dir" ]; then
-        mkdir -p "$repo_dir"
-    fi
-    
-    # Use config.yaml as the standard config file name
-    echo "$repo_dir/config.yaml"
-}
 
-# Get the workspace configuration file for the current repository
-fac_wor_get_config_file() {
-    local config_file="$(fac_wor_get_config_path)"
-    if [ ! -f "$config_file" ]; then
-        local repo_dir="$ORG_DIR/workspaces/$REPO_NAME"
-        mkdir -p "$repo_dir"
-        echo "modules: []" > "$config_file"
-    fi
-    echo "$config_file"
-}
+# =============================================================================
+# ENHANCED WORKSPACE FUNCTIONS
+# =============================================================================
 
-# Create a workspace configuration by letting the user select modules
+# Create workspace configuration with new structure
 fac_wor_create_config() {
-    local config_file="$(fac_wor_get_config_path)"
-    local template_file="$KIT_DIR/templates/myworkspace.yaml"
-    
-    # If workspace config file already exists, ask for confirmation to overwrite
-    if [ -f "$config_file" ]; then
-        printf "$(message 45 "?" "Workspace config already exists. Overwrite? \033[35m[y/n]\033[0m")"
-        stty -echo -icanon time 0 min 1
-        response=$(dd bs=1 count=1 2>/dev/null)
-        stty echo icanon
-        printf "\n"
-        
-        if [ "$response" != "y" ] && [ "$response" != "Y" ]; then
-            message 33 "INFO" "Keeping existing workspace configuration"
-            return 0
+    local config_file="$(fac_con_get_config_file workspace)"
+
+    # Check if workspace config already exists and has content
+    if [ -f "$config_file" ] && [ -s "$config_file" ]; then
+        local submodules="$(fac_con_get submodules workspace 2>/dev/null)"
+        if [ "$submodules" != "null" ] && [ -n "$submodules" ]; then
+            printf "$(message 45 "?" "Workspace config already exists. Overwrite? \033[35m[y/n]\033[0m")"
+            stty -echo -icanon time 0 min 1
+            response=$(dd bs=1 count=1 2>/dev/null)
+            stty echo icanon
+            printf "\n"
+            
+            if [ "$response" != "y" ] && [ "$response" != "Y" ]; then
+                message 43 "i" "Keeping existing workspace configuration"
+                return 0
+            fi
         fi
     fi
-    
-    # Copy the template file if it doesn't exist
-    if [ ! -f "$config_file" ]; then
-        if [ -f "$template_file" ]; then
-            cp "$template_file" "$config_file"
-        else
-            # Create a basic template if the template file doesn't exist
-            echo "modules: []" > "$config_file"
-        fi
-    fi
-    
-    # Get available modules
+
+    # Get available submodules
     available_modules=$(fac_wor_get_available_modules)
     
     if [ -z "$available_modules" ]; then
-        message 33 "INFO" "No modules found in .gitmodules"
+        message 43 "i" "No submodules found in .gitmodules"
         return 1
     fi
     
-    # Display available modules and let the user select them
-    message 44 "MODULES" "Available modules:"
+    # Display available submodules and let user select them
+    message 44 "MODULES" "Available submodules:"
     i=1
     for module in $available_modules; do
         echo "  $i) $module"
@@ -71,7 +49,7 @@ fac_wor_create_config() {
     done
     
     echo ""
-    message 44 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all modules, press enter to skip:"
+    message 44 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all submodules, press enter to skip:"
     read selection
     
     selected_modules=""
@@ -96,12 +74,23 @@ fac_wor_create_config() {
         done
     fi
     
-    # Write the selection to myworkspace.yaml
-    echo "modules:" > "$config_file"
+    # Clear existing submodules and set empty array
+    fac_con_delete submodules workspace 2>/dev/null || true
+    
+    # Always create empty array first, then add modules
+    local config_file="$(fac_con_get_config_file workspace)"
+    if command -v _yq >/dev/null 2>&1; then
+        _yq -i ".submodules = []" "$config_file"
+    else
+        # Fallback: ensure file exists and add empty array
+        echo "submodules: []" >> "$config_file"
+    fi
+    
+    # Add selected modules to the array
     for module in $selected_modules; do
-        echo "  - $module" >> "$config_file"
+        fac_con_array_add submodules "$module" workspace
     done
     
-    message 42 "OKEY" "Workspace configuration saved to $config_file"
-    message 34 "MODULES" "Selected modules: $(echo $selected_modules | tr ' ' ', ')"
+    echo "Workspace configuration saved to $config_file"
+    message 34 "activated modules" "$(echo $selected_modules | tr ' ' ', ')"
 }

@@ -21,7 +21,7 @@ fac_sec_validate_and_prepare_secret() {
     
     # Validate key configuration and prompt to set if missing
     if ! fac_sec_is_key_configured; then
-        message 31 "ERROR" "No encryption key configured" >&2
+        message 41 "!" "No encryption key configured" >&2
         if fac_sec_get_user_confirmation "Would you like to set the encryption key now?"; then
             fac_sec_set_key
             if [ $? -ne 0 ]; then
@@ -58,7 +58,7 @@ fac_sec_prompt_add_missing_secret() {
         fac_sec_get_secret_input "Enter secret value for '$secret_name'" secret_value >&2
         
         if [ -z "$secret_value" ]; then
-            message 31 "ERROR" "Secret value cannot be empty" >&2
+            message 41 "!" "Secret value cannot be empty" >&2
             return 1
         fi
         
@@ -82,9 +82,9 @@ fac_sec_handle_decryption_failure() {
     local secret_name="$1"
     local encrypted_value="$2"
     
-    message 31 "ERROR" "Failed to decrypt secret: $secret_name" >&2
-    message 31 "ERROR" "The encryption key might be incorrect" >&2
-    message 33 "WARNING" "If you've lost the original key, this data cannot be recovered" >&2
+    message 41 "!" "Failed to decrypt secret: $secret_name" >&2
+    message 41 "!" "The encryption key might be incorrect" >&2
+    message 43 "!" "If you've lost the original key, this data cannot be recovered" >&2
     
     echo "Options:" >&2
     echo "1. Try entering the correct key" >&2
@@ -104,7 +104,7 @@ fac_sec_handle_decryption_failure() {
                         echo "$decrypted_value"
                         return 0
                     else
-                        message 31 "ERROR" "Still unable to decrypt - key may be permanently lost" >&2
+                        message 41 "!" "Still unable to decrypt - key may be permanently lost" >&2
                         return 1
                     fi
                 fi

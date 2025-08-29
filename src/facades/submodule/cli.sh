@@ -4,46 +4,44 @@
 # Default behavior follows git submodule conventions
 
 # Parse options
-TYPE=""
-TARGET_DIR=""
-REPO_NAME=""
-COMMAND=""
+type=""
+target_dir=""
+repo_name=""
+command=""
 
 # Function to show help
 show_help() {
-    message 33 "SUBMODULE" "Unified submodule management for packages and services"
-    echo ""
-    echo "Usage: cli submodule [OPTIONS] <command> [arguments]"
-    echo ""
-    echo "Options:"
-    echo "  --type <package|service>   - Specify submodule type (default: auto-detect from target dir)"
-    echo "  --dir <directory>          - Target directory (default: packages/ or services/ based on type)"
-    echo ""
-    echo "Commands:"
-    echo "  add <name>                 - Add submodule from repository"
-    echo "  rem|remove|rm <name>       - Remove submodule"
-    echo "  upd|update                 - Update all submodules"
-    echo "  run                        - Run command in service container (services only)"
-    echo "  lin|link                   - Link local package for development (packages only)"
-    echo ""
-    echo "Examples:"
-    echo "  cli submodule add my-package                    # Adds to packages/"
-    echo "  cli submodule --type service add my-service     # Adds to services/"
-    echo "  cli submodule --dir custom/path add my-repo     # Custom directory"
-    echo "  cli submodule remove my-package"
-    echo "  cli submodule update"
-    echo ""
+    display_help "" "" \
+        "$(color 33 'SUBMODULE')" "" \
+        "$(color 30 'Unified submodule management for packages and services\n')" "" \
+        "$(color 30 'Usage:    cli submodule [options] <command> [arguments]\n')" "" \
+        "$(color 30 'Options:')" "" \
+        "  --type <package|service>   " "Specify submodule type (default: auto-detect from target dir)" \
+        "  --dir <directory>          " "Target directory (default: packages/ or services/ based on type)" \
+        "" "" "$(color 30 'Commands:')" "" \
+        "  add <name>                 " "Add submodule from repository" \
+        "  rem|remove|rm <name>       " "Remove submodule" \
+        "  upd|update                 " "Update all submodules" \
+        "  run                        " "Run command in service container (services only)" \
+        "  lin|link                   " "Link local package for development (packages only)" \
+        "" "" "$(color 30 'Examples:')" "" \
+        "  cli submodule add my-package                    " "Adds to packages/" \
+        "  cli submodule --type service add my-service     " "Adds to services/" \
+        "  cli submodule --dir custom/path add my-repo     " "Custom directory" \
+        "  cli submodule remove my-package                 " "" \
+        "  cli submodule update                             " "" \
+        ""
 }
 
 # Parse command line options
 while [[ $# -gt 0 ]]; do
     case $1 in
         --type)
-            TYPE="$2"
+            type="$2"
             shift 2
             ;;
         --dir)
-            TARGET_DIR="$2"
+            target_dir="$2"
             shift 2
             ;;
         --help|-h)
@@ -51,10 +49,10 @@ while [[ $# -gt 0 ]]; do
             exit 0
             ;;
         *)
-            if [[ -z "$COMMAND" ]]; then
-                COMMAND="$1"
+            if [[ -z "$command" ]]; then
+                command="$1"
             else
-                REPO_NAME="$1"
+                repo_name="$1"
             fi
             shift
             ;;
@@ -62,63 +60,46 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Auto-detect type and directory if not specified
-if [[ -z "$TYPE" && -z "$TARGET_DIR" ]]; then
+if [[ -z "$type" && -z "$target_dir" ]]; then
     # Default to submodules
-    TYPE="submodule"
-    TARGET_DIR="submodules"
-elif [[ -n "$TYPE" && -z "$TARGET_DIR" ]]; then
-    case $TYPE in
-        submodule)
-            TARGET_DIR="submodules"
-            ;;
-        package)
-            TARGET_DIR="packages"
-            ;;
-        service)
-            TARGET_DIR="services"
-            ;;
-        *)
-            message 31 "ERROR" "Unknown type: $TYPE. Use 'package' or 'service'"
-            exit 1
-            ;;
+    type="submodule"
+    target_dir="submodules"
+elif [[ -n "$type" && -z "$target_dir" ]]; then
+    case $type in
+        submodule) target_dir="submodules" ;;
+        package) target_dir="packages" ;;
+        service) target_dir="services" ;;
+        *) message 41 "!" "Unknown type: $type. Use 'package' or 'service'" exit 1 ;;
     esac
-elif [[ -z "$TYPE" && -n "$TARGET_DIR" ]]; then
+elif [[ -z "$type" && -n "$target_dir" ]]; then
     # Auto-detect type from directory
-    case $TARGET_DIR in
-        submodules|submodules/*)
-            TYPE="submodule"
-            ;;
-        packages|packages/*)
-            TYPE="package"
-            ;;
-        services|services/*)
-            TYPE="service"
-            ;;
-        *)
-            TYPE="custom"
-            ;;
+    case $target_dir in
+        submodules|submodules/*) type="submodule" ;;
+        packages|packages/*) type="package" ;;
+        services|services/*) type="service" ;;
+        *) type="custom" ;;
     esac
 fi
 
 # Ensure target directory exists
-mkdir -p "$TARGET_DIR"
+mkdir -p "$target_dir"
 
-case $COMMAND in
+case $command in
     add)
-        if [[ -z "$REPO_NAME" ]]; then
-            message 31 "ERROR" "Repository name is required for add command"
+        if [[ -z "$repo_name" ]]; then
+            message 41 "!" "Repository name is required for add command"
             exit 1
         fi
         
-        message "Adding $TYPE '$REPO_NAME' to $TARGET_DIR/ .."
+        message "Adding $type '$repo_name' to $target_dir/ .."
         set -e
-        _git submodule add https://$REPO_HUB_URL/$REPO_NAME.git $TARGET_DIR/$REPO_NAME
+        _git submodule add https://$REPO_HUB_URL/$repo_name.git $target_dir/$repo_name
         _git submodule update --init --recursive
         ;;
 
     run)
-        if [[ "$TYPE" != "service" ]]; then
-            message 31 "ERROR" "Run command is only available for services"
+        if [[ "$type" != "service" ]]; then
+            message 41 "!" "Run command is only available for services"
             exit 1
         fi
         
@@ -129,47 +110,47 @@ case $COMMAND in
         ;;
 
     rem|remove|rm)
-        if [[ -z "$REPO_NAME" ]]; then
-            message 31 "ERROR" "Repository name is required for remove command"
+        if [[ -z "$repo_name" ]]; then
+            message 41 "!" "Repository name is required for remove command"
             exit 1
         fi
         
-        confirm "Are you sure, remove the $TYPE '$REPO_NAME'?" \
+        confirm "Are you sure, remove the $type '$repo_name'?" \
             set -e; \
-            _git submodule deinit -f -- $TARGET_DIR/$REPO_NAME; \
-            rm -rf .git/modules/$TARGET_DIR/$REPO_NAME; \
-            _git rm -f $TARGET_DIR/$REPO_NAME;
+            _git submodule deinit -f -- $target_dir/$repo_name; \
+            rm -rf .git/modules/$target_dir/$repo_name; \
+            _git rm -f $target_dir/$REPO_NAME;
         ;;
 
     upd|update)
-        message "Updating all submodules in $TARGET_DIR/ .."
+        message "Updating all submodules in $target_dir/ .."
         _git submodule update --remote --merge
         ;;
 
     lin|link)
-        if [[ "$TYPE" != "package" ]]; then
-            message 31 "ERROR" "Link command is only available for packages"
+        if [[ "$type" != "package" ]]; then
+            message 41 "!" "Link command is only available for packages"
             exit 1
         fi
         
-        message "45" "PACKAGES:" "\n$(ls $TARGET_DIR 2>/dev/null || echo 'No packages found')"
+        message 45 "PACKAGES:" "\n$(ls $target_dir 2>/dev/null || echo 'No packages found')"
         read -p "$(message 45 "?" "Select a package to link:")" PACKAGE
-        _npm link ./$TARGET_DIR/$PACKAGE
+        _npm link ./$target_dir/$PACKAGE
         ;;
 
     lis|list|ls)
-        if [[ -d "$TARGET_DIR" ]]; then
-            message "45" "${TYPE^^}S in $TARGET_DIR:" "\n$(ls $TARGET_DIR 2>/dev/null || echo 'No items found')"
+        if [[ -d "$target_dir" ]]; then
+            message "45" "${type^^}S in $target_dir:" "\n$(ls $target_dir 2>/dev/null || echo 'No items found')"
         else
-            message 33 "INFO" "Directory $TARGET_DIR does not exist"
+            message 43 "i" "Directory $target_dir does not exist"
         fi
         ;;
 
     *)
-        if [[ -z "$COMMAND" ]]; then
+        if [[ -z "$command" ]]; then
             show_help
         else
-            message 31 "ERROR" "Unknown command: $COMMAND"
+            message 41 "!" "Unknown command: $command"
             show_help
         fi
         exit 1

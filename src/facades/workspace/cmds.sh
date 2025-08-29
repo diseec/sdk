@@ -10,7 +10,7 @@ fac_wor_init() {
 
 # Show workspace status
 fac_wor_status() {
-    local config_file="$(fac_wor_get_config_path)"
+    local config_file="$(fac_con_get_config_file workspace)"
     if [ -f "$config_file" ]; then
         echo "Workspace config: $config_file"
         local selected_modules=$(fac_wor_get_selected_modules)
@@ -23,18 +23,18 @@ fac_wor_status() {
                     active_modules="$module"
                 fi
             done
-            echo "Active modules: $active_modules"
+            echo "Active submodules: $active_modules"
         else
-            message 33 "INFO" "No modules selected in workspace configuration"
+            message 43 "i" "No submodules selected in workspace configuration"
         fi
     else
-        message 33 "INFO" "No workspace configuration found for $REPO_NAME"
+        message 43 "i" "No workspace configuration found for $REPO_NAME"
         echo "Run 'cli workspace init' to create one"
     fi
 }
 
-# Select modules for workspace
+# Select submodules for workspace
 fac_wor_select() {
-    message 34 "WORKSPACE" "Select modules for your workspace"
+    message 34 "WORKSPACE" "Select submodules for your workspace"
     fac_wor_create_config
 }

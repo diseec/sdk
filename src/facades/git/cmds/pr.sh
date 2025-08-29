@@ -2,6 +2,7 @@
 
 # Check if current branch has a PR
 fac_git_cmd_has_open_pr() {
+  set -e
   local branch="$CURRENT_BRANCH"
   
   if fac_git_cmd_check_gh_cli; then
@@ -60,7 +61,7 @@ fac_git_cmd_pr_create() {
       # Create PR using GitHub cli_main
       local pr_url=$(_gh pr create --title "$pr_title" --body "$pr_body" --base main)
       if [ $? -ne 0 ]; then
-        message 41 "ERROR" "Failed to create PR."
+        message 41 "!" "Failed to create PR."
         return 1
       fi
       echo -e "Created pull request: \033[4m$pr_url\033[24m"

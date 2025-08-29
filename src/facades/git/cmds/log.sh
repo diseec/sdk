@@ -155,7 +155,7 @@ $unstaged_diff"
     
     # If no data collected, show simple message
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then
-        message 33 "INFO" "No commits or changes found for today"
+        message 43 "i" "No commits or changes found for today"
         return 0
     fi
     
@@ -199,12 +199,12 @@ Lines removed: -$total_deletions
                 message 36 "SUMMARY" "Total changes: $total_files_changed files (+$total_insertions -$total_deletions lines)"
             fi
         else
-            message 31 "ERROR" "Failed to generate AI insight. Showing raw data."
+            message 41 "!" "Failed to generate AI insight. Showing raw data."
             echo ""
             echo "$analysis_data"
         fi
     else
-        message 31 "ERROR" "AI not available. Showing raw data instead."
+        message 41 "!" "AI not available. Showing raw data instead."
         echo ""
         echo "$analysis_data"
     fi

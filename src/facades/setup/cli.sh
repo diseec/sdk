@@ -13,20 +13,25 @@ c=$1; shift; case $c in
             fac_set_install_system_dependencies
         ;;
         hel|help|--help|-h)
-            echo "Usage: $0 {dependency-check|install}"
-            echo "  is|is-missing-dependencies - Check for missing system dependencies"
-            echo "  dep|dependency-check - Check system dependencies"
-            echo "  ins|install - Install system dependencies defined in package.json"
+            display_help "" "" \
+                "$(color 30 'System Setup')" "" \
+                "$(color 30 'Usage:    cli setup system <command>\n')" "" \
+                "    dep|dependency-check    " "Check system dependencies required by the project" \
+                "    ins|install             " "Install missing system dependencies defined in project metadata" \
+                "    -h|--help               " "Show this help message" \
+                "$@"
         ;;
     esac ;;
     hel|help|--help|-h)
-        echo "Usage: $0 <command>"
-        echo "Available commands:"
-        echo "    pro|project   Setup project"
-        echo "    pre|prettier  Setup Prettier"
-        echo "    sys|system    Setup system"
-        echo "    upd|update    Setup update"
-        echo "    glo|globally  Setup globally"
+        display_help "" "" \
+            "$(color 30 'Setup Commands')" "" \
+            "$(color 30 'Usage:    cli setup <command> [options]\n')" "" \
+            "    pro|project   " "Setup project (install toolchain and scaffold)" \
+            "    pre|prettier  " "Install or configure Prettier" \
+            "    sys|system    " "System dependency helpers (see 'cli setup system -h')" \
+            "    upd|update    " "Setup update hooks" \
+            "    glo|globally  " "Install tools globally for developer machine" \
+            "$@"
         ;;
     *) if [ ! -z "$c" ]; then echo "Unknown command: '$c'"; fi ;;
 esac

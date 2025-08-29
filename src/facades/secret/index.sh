@@ -4,7 +4,6 @@
 # Uses OpenSSL for encryption/decryption with auto-generated key
 
 SECRETS_DIR="$ROOT_DIR/secrets"
-mkdir -p "$SECRETS_DIR"
 
 source "$KIT_SRC_DIR/facades/secret/core.sh"
 source "$KIT_SRC_DIR/facades/secret/encryption.sh"

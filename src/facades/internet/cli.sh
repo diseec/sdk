@@ -1,13 +1,56 @@
 #!/bin/bash
 
-fac_int_parse_args "$@"
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        iso|is-online)
+            MODE="is-online"
+            SILENT_MODE=true
+            shift
+            ;;
+        tes|test)
+            MODE="test"
+            shift
+            ;;
+        dia|diagnose)
+            MODE="diagnose"
+            shift
+            ;;
+        -s|--silent)
+            SILENT_MODE=true
+            shift
+            ;;
+        hel|--help|help|-h) display_help "" "" \
+                "$(color 30 'Internet Connection Checker with Advanced Diagnostics')" "" \
+                "$(color 30 'Usage:    cli internet <mode> [options]\n')" "" \
+                "$(color 30 'Modes:')" "" \
+                "  iso|is-online         " "Silent boolean check - returns 0 for success, 1 for failure (no output)" \
+                "  tes|test              " "Fast check with output - tests gateway, DNS, and one site (~3 seconds)" \
+                "  dia|diagnose          " "Comprehensive analysis - tests all layers, sites, velocity, and disconnections (~45 seconds)" \
+                "" "" "$(color 30 'Advanced Features (diagnose mode):')" "" \
+                "  • Velocity analysis                  " "Measures request/response speed with variance detection" \
+                "  • Random disconnection testing       " "Detects intermittent connection drops" \
+                "  • Speed consistency analysis         " "Identifies throttling and congestion patterns" \
+                "  • Multi-round throughput testing     " "Comprehensive bandwidth measurement" \
+                "  • Connection quality scoring         " "Combines speed, stability, and consistency metrics" \
+                "" "" "$(color 30 'Options:')" "" \
+                "  --silent              " "Suppress all output except errors" \
+                "  -h|--help             " "Show this help message"
+            exit 0
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
 
 local overall_status=""
 
 case "$MODE" in
     test)
         if [ "$SILENT_MODE" != "true" ]; then
-            message 43 ↔ "Quick internet connectivity check"
+            message 46 ↔ "Quick internet connectivity check"
         fi
         if fac_int_quick_check; then
             overall_status=true

@@ -10,7 +10,7 @@ fac_git_cmd_generate_commit_message() {
       diff_output="$(_git diff --staged)"
       
       if [ -z "$diff_output" ]; then
-        message 31 "ERROR" "No changes to commit"
+        message 41 "!" "No changes to commit"
         return 1
       fi
     fi
@@ -67,7 +67,7 @@ fac_git_cmd_commit() {
   # Stage all changes
   _git add -A
   if [ $? -ne 0 ]; then
-    message 31 "ERROR" "Failed to stage changes."
+    message 41 "!" "Failed to stage changes."
     return 1
   fi
 
@@ -80,14 +80,14 @@ fac_git_cmd_commit() {
   # Generate commit message
   local commit_msg=$(fac_git_cmd_generate_commit_message)
   if [ -z "$commit_msg" ]; then
-    message 31 "ERROR" "Failed to generate commit message."
+    message 41 "!" "Failed to generate commit message."
     return 1
   fi
   
   echo "$commit_msg" > /tmp/commit-msg.txt
   _git commit -F /tmp/commit-msg.txt
   if [ $? -ne 0 ]; then
-    message 31 "ERROR" "Failed to commit changes."
+    message 41 "!" "Failed to commit changes."
     return 1
   fi
   rm /tmp/commit-msg.txt

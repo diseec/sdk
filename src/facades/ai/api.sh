@@ -40,7 +40,7 @@ fac_ai_generate() {
     local response=$(fac_ai_call_openai "$prompt" "$model" "$temperature")
     
     if fac_ai_has_error "$response"; then
-        message 31 "ERROR" "OpenAI API error occurred" >&2
+        message 41 "!" "OpenAI API error occurred" >&2
         echo "$fallback"
         return 1
     fi
@@ -51,7 +51,7 @@ fac_ai_generate() {
         echo "$content"
         return 0
     else
-        message 31 "ERROR" "Failed to extract content from AI response" >&2
+        message 41 "!" "Failed to extract content from AI response" >&2
         echo "$fallback"
         return 1
     fi

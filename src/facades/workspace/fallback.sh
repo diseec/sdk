@@ -25,7 +25,7 @@ fac_wor_config_fallback_set() {
     # Simple key-value setting for fallback
     if echo "$key_path" | grep -q '\.'; then
         # Nested keys not supported in fallback
-        message 31 "ERROR" "Nested keys require yq. Please install yq for full functionality."
+        message 41 "!" "Nested keys require yq. Please install yq for full functionality."
         return 1
     fi
     
@@ -33,5 +33,5 @@ fac_wor_config_fallback_set() {
     grep -v "^${key_path}:" "$config_file" > "${config_file}.tmp" 2>/dev/null || touch "${config_file}.tmp"
     echo "${key_path}: ${value}" >> "${config_file}.tmp"
     mv "${config_file}.tmp" "$config_file"
-    message 42 "SUCCESS" "Set $key_path = $value in workspace config"
+    echo "Set $key_path = $value in workspace config"
 }

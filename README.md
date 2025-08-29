@@ -88,14 +88,14 @@ D secret help
 | Guide                                       | Description                                            |
 | ------------------------------------------- | ------------------------------------------------------ |
 | [Installation Guide](docs/INSTALLATION.md)  | Detailed setup instructions for different environments |
-| [Configuration](docs/CONFIGURATION.md)      | Project and workspace configuration options            |
 | [Development Workflow](docs/DEVELOPMENT.md) | Day-to-day development operations                      |
 
 ### Feature Documentation
 
-| Feature                                    | Documentation                               |
-| ------------------------------------------ | ------------------------------------------- |
-| [Git Workflows](src/facades/git/README.md) | AI-powered git automation and PR management |
+| Feature                                    | Documentation                                 |
+| ------------------------------------------ | --------------------------------------------- | ------------------------------------------- | --- |
+| [Git Workflows](src/facades/git/README.md) | AI-powered git automation and PR management   |
+| <!--                                       | [Configuration](src/facades/config/README.md) | Project and workspace configuration options | --> |
 
 <!--
 | [Secrets Management](docs/SECRETS.md)     | Secure credential storage and management   |
