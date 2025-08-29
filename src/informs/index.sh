@@ -12,6 +12,6 @@ c=$1; shift; case $c in
         "    cic|check-internet-connection   " "Check if the internet connection is active" \
         "    fdm|forbid-dev-on-main          " "Warn if on 'main' branch" \
         "    sbs|status-branch-status       " "Show local vs remote branch status" \
-        "    cfu|check-for-updates           " "Check for _CLI_ updates and notify"
+        "    cfu|check-for-updates           " "Check for cli_main updates and notify"
     ;;
 esac

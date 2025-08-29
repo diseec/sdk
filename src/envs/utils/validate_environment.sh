@@ -15,8 +15,8 @@ env_uti_validate_environment() {
     fi
     
     # Check required files
-    if [ ! -f cli_main ]; then
-        echo "Warning: cli_main not found: $CLI_MAIN" >&2
+    if [ ! -f "$CLI_MAIN" ]; then
+        echo "Warning: CLI_MAIN not found: $CLI_MAIN" >&2
     fi
     
     return $errors

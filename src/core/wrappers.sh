@@ -8,11 +8,11 @@ cli_core() {
     source "$CLI_CORE" "$@"
 }
 
-safely() {
-    if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then 
-        cli_main safely "$@"; return 0
+force_safe() {
+    if [ "$IS_IN_KIT_CONTAINER" = "true" ];
+        then return 1
+        else cli_main safely "$@"; return 0
     fi
-    return 1
 }
 
 # external api wrappers

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if ! _CLI_ internet is-online; then
-    if ! _CLI_ internet test; then
-        confirm "Found connection issues, run diagnostics?" _CLI_ internet diagnose
+if ! cli_main internet is-online; then
+    if ! cli_main internet test; then
+        confirm "Found connection issues, run diagnostics?" cli_main internet diagnose
     fi
 fi

@@ -8,8 +8,9 @@
 # Source all utility modules
 source $KIT_DIR/src/envs/constants.sh
 source $KIT_DIR/src/envs/utils/git_fallback_utils.sh
-source $KIT_DIR/src/envs/utils/path-discovery.sh
+source $KIT_DIR/src/envs/utils/cli_auto_discovery.sh
 source $KIT_DIR/src/envs/utils/env_detection.sh
+source $KIT_DIR/src/envs/utils/validate_environment.sh
 
 # =============================================================================
 # COMPUTED PATHS AND DIRECTORIES
@@ -19,7 +20,7 @@ source $KIT_DIR/src/envs/utils/env_detection.sh
 ROOT_DIR="$(env_uti_cli_auto_discovery)"
 readonly ROOT_DIR
 
-# Kit and cli_main paths
+# Kit and CLI paths
 readonly KIT_SRC_DIR="$KIT_DIR/src"
 readonly CLI_MAIN="$ROOT_DIR/cli"
 readonly CLI_CORE="$KIT_SRC_DIR/cli.sh"

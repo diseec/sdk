@@ -25,19 +25,19 @@ fac_sec_decrypt_data() {
 
 # Get stored encryption key
 fac_sec_get_encryption_key() {
-    _CLI_ workspace config get "secrets.key"
+    cli_main workspace config get "secrets.key"
 }
 
 # Store encryption key
 fac_sec_store_encryption_key() {
     local key="$1"
-    _CLI_ workspace config set "secrets.key" "$key"
+    cli_main workspace config set "secrets.key" "$key"
     echo "Encryption key stored in configuration"
 }
 
 # Check if encryption key is configured
 fac_sec_is_key_configured() {
-    local key=$(_CLI_ workspace config get "secrets.key")
+    local key=$(cli_main workspace config get "secrets.key")
     [ -n "$key" ] && [ "$key" != "null" ]
 }
 

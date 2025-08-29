@@ -134,7 +134,7 @@ echo -e "\n${YELLOW}Testing computed variables...${NC}"
 # Test computed variables are set
 test_variable_set "ROOT_DIR"
 test_variable_set "KIT_SRC_DIR"
-test_variable_set "_CLI_"
+test_variable_set "cli_main"
 test_variable_set "cli_core"
 test_variable_set "ORG_DIR"
 test_variable_set "ORG_CACHE_DIR"

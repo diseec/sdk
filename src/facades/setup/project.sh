@@ -3,50 +3,48 @@
 fac_set_project() {
     set -e;
 
-    # _CLI_ safely kit do patch;
-    # echo "$KIT_NAME version patched to: $VERSION"
+    cli_main safely kit do patch;
+    echo "$KIT_NAME version patched to: $VERSION"
 
-    # local IS_RECURSIVE="false"
-    # ARGS=""; for arg in "$@"; do case "$arg" in
-    #     -r|--recursive) IS_RECURSIVE="true";;
-    # *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+    local IS_RECURSIVE="false"
+    ARGS=""; for arg in "$@"; do case "$arg" in
+        -r|--recursive) IS_RECURSIVE="true";;
+    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    # _git config --global credential.helper store
+    _git config --global credential.helper store
 
-    # # Early return in CI environment - silent skip
-    # [ -n "$CI" ] && { message 33 "CI" "Skipping interactive installation in CI environment"; return 0; }
+    # Early return in CI environment - silent skip
+    [ -n "$CI" ] && { message 33 "CI" "Skipping interactive installation in CI environment"; return 0; }
 
-    # if [ ! -f "$(_CLI_ workspace config path)" ]; then
-    #     echo "$REPO_NAME: Initializing workspace configuration..."
-    #     _CLI_ workspace init
-    # fi
-    echo afsd
-    exit
+    if [ ! -f "$(cli_main workspace config path)" ]; then
+        echo "$REPO_NAME: Initializing workspace configuration..."
+        cli_main workspace init
+    fi
 
     if [ "$HAS_SUBMODULES" = "true" ]; then
         echo "$REPO_NAME: Cloning selected submodules..."
         initialize_submodule() {
             local module="$1"; local module_path="$2"
-            # _git submodule update --init --recursive --remote "$module_path"
+            _git submodule update --init --recursive --remote "$module_path"
             echo "$REPO_NAME: Initialized submodule '$module_path'."
         }
         fac_wor_foreach_selected_module initialize_submodule
     fi
 
-    # _CLI_ git _checkout-if-detached
+    cli_main git _checkout-if-detached
 
-    # if [ "$IS_RECURSIVE" = "true" ]; then
-    #     echo "$REPO_NAME: Installing dependencies in selected submodules..."
-    #     install_dependencies() {
-    #         local module="$1"
-    #         local module_path="$2"
-    #         "$ROOT_DIR/$module_path/cli" install --recursive
-    #         echo "$REPO_NAME: Installed dependencies for '$module'."
-    #     }
-    #     fac_wor_foreach_selected_module install_dependencies
-    # fi
+    if [ "$IS_RECURSIVE" = "true" ]; then
+        echo "$REPO_NAME: Installing dependencies in selected submodules..."
+        install_dependencies() {
+            local module="$1"
+            local module_path="$2"
+            "$ROOT_DIR/$module_path/cli" install --recursive
+            echo "$REPO_NAME: Installed dependencies for '$module'."
+        }
+        fac_wor_foreach_selected_module install_dependencies
+    fi
 
-    # echo "$REPO_NAME: Workspace configuration initialized successfully."
+    echo "$REPO_NAME: Workspace configuration initialized successfully."
     message 32 "SUCCESS" "Installation completed successfully."
 
 }

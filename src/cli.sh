@@ -5,7 +5,6 @@ c=$1; shift; case "$c" in
     ######################## PROJECT MANAGEMENT ########################
 
     ins|install) cli_main setup project "$@" ;;
-# XXXXXX
     ude|update) "$KIT_SRC_DIR/cmds/update.sh" "$@" ;;
     sta|status)         
         cli_main version
@@ -28,19 +27,20 @@ c=$1; shift; case "$c" in
     ins|insight) cli_main git insight "$@" ;;
     tes|test)    $KIT_SRC_DIR/cmds/test.sh "$@" ;;
     pru|prune)   cli_main docker system prune "$@" ;;
-    for|format)  safely $c "$@" && $KIT_SRC_DIR/facades/format/cli.sh prettier "$@" ;;
+    for|format)  force_safe $c "$@" || $KIT_SRC_DIR/facades/format/cli.sh prettier "$@" ;;
 
     ######################## FACADES ########################
 
     set|setup)     source "$KIT_SRC_DIR/facades/setup/cli.sh" "$@" ;;
     sub|submodule) source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
-    doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
-    git)           safely $c "$@" && source "$KIT_SRC_DIR/facades/git/cli.sh" $c "$@" ;;
-    wor|workspace) safely $c "$@" && source "$KIT_SRC_DIR/facades/workspace/cli.sh" $c "$@" ;;
-    con|config)    safely $c "$@" && source "$KIT_SRC_DIR/facades/config/cli.sh" $c "$@" ;;
-    sec|secret)    safely $c "$@" && source "$KIT_SRC_DIR/facades/secret/cli.sh" $c "$@" ;;
-    ain|ai)        safely $c "$@" && source "$KIT_SRC_DIR/facades/ai/cli.sh" $c "$@" ;;
     int|internet)  source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
+    ain|ai)        force_safe $c "$@" || source "$KIT_SRC_DIR/facades/ai/cli.sh" "$@" ;;
+    con|config)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/config/cli.sh" "$@" ;;
+    doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
+# XXXXXX
+    sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
+    git)           force_safe $c "$@" || source "$KIT_SRC_DIR/facades/git/cli.sh" "$@" ;;
+    wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
 
     ######################## UTILITIES ########################
 

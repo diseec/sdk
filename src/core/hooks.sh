@@ -26,12 +26,12 @@ cor_fire_hook() {
         local hook="$3"
         local name="$4"
         
-        # Skip if _CLI_ doesn't exist or isn't executable
+        # Skip if cli_main doesn't exist or isn't executable
         if [ ! -x "$cli" ]; then
             return 0
         fi
         
-        # Check if the _CLI_ has a handler for this hook
+        # Check if the cli_main has a handler for this hook
         (cd "$dir" && grep -q "listen:$hook" "$cli") >/dev/null 2>&1
         has_handler=$?
         
@@ -46,7 +46,7 @@ cor_fire_hook() {
         
         # Execute the command directly without capturing output
         # This allows interactive prompts to work properly
-        # Check if the _CLI_ has a handler for this hook (but not commented out)
+        # Check if the cli_main has a handler for this hook (but not commented out)
         # This pattern ensures no # appears before listen:$hook on the same line
         (cd "$dir" && grep -q "^[^#]*listen:$hook" "$cli") >/dev/null 2>&1
         has_handler=$?
@@ -73,8 +73,8 @@ cor_fire_hook() {
     }
 
     # Execute hook in root repo
-    if [ -n "${_CLI_-}" ] && [ -x _CLI_ ]; then
-        execute_hook "$ROOT_DIR" _CLI_ "$HOOK" "root" || true
+    if [ -n "${cli_main-}" ] && [ -x cli_main ]; then
+        execute_hook "$ROOT_DIR" cli_main "$HOOK" "root" || true
     fi
 
     # # Process each selected module
@@ -87,7 +87,7 @@ cor_fire_hook() {
     #     if [ ! -d "$dir" ]; then
     #         return 0
     #     fi
-    #     # Skip if _CLI_ doesn't exist or isn't executable
+    #     # Skip if cli_main doesn't exist or isn't executable
     #     if [ ! -x "$cli" ]; then
     #         return 0
     #     fi

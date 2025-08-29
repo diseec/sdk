@@ -9,8 +9,8 @@ source "$KIT_SRC_DIR/facades/git/index.sh"
 
 c=$1; shift; case "$c" in
     sta|status)
-        _CLI_ inform forbid-dev-on-main
-        _CLI_ inform status-branch-status
+        cli_main inform forbid-dev-on-main
+        cli_main inform status-branch-status
         fac_git_cmd_pr_check_status "$@"
     ;;
     cpp|commit-push-pr) fac_git_cmd_commit_push_pr "$@" ;;
@@ -41,7 +41,7 @@ c=$1; shift; case "$c" in
         "    D pull [--recursive]  " "Alias for pull" \
         "" "" "$(color 33 'Setup Required')" "" \
         "    D secret add          " "Add OPENAI_API_KEY for AI commit messages" \
-        "    gh auth login         " "Authenticate GitHub _CLI_ for PR management"
+        "    gh auth login         " "Authenticate GitHub cli_main for PR management"
     ;;
     *) _git $c "$@" ;;
 esac

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if _CLI_ internet is-online; then
+if cli_main internet is-online; then
   _git fetch origin
 else
   message 41 ⊘ "Disconnected, cannot fetch branch status..."

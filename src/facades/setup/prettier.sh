@@ -1,7 +1,7 @@
 #!/bin/bash
 
 fac_set_prettier() {
-    _CLI_ kit run \
+    cli_main kit run \
         _npm install --save-dev --save-exact prettier; \
         _node --eval "fs.writeFileSync('.prettierrc','{}\n')";
 

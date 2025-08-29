@@ -32,7 +32,7 @@ c=$1; shift; case $c in
         ;;
     esac;;
 
-    tes|test) safely $c "$@" && source "$KIT_SRC_DIR/lib/tester/index.sh" "$@" ;;
+    tes|test) force_safe $c "$@" || source "$KIT_SRC_DIR/lib/tester/index.sh" "$@" ;;
     run) cli_main docker compose exec $KIT_NAME "$@" ;;
     pul|pull) cli_main git pull origin main "$@" ;;
     sta|start) cli_main docker compose up "$@" ;;

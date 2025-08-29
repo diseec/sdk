@@ -3,7 +3,7 @@
 $KIT_SRC_DIR/cmds/update.sh
 $KIT_SRC_DIR/facades/workspace/index.sh
 
-if ! _CLI_ internet is-online; then
+if ! cli_main internet is-online; then
     message 41 ⊘ "Disconnected, skipping update check..."
     return 0
 fi
@@ -16,7 +16,7 @@ fi
 # Check if version changed or if repo/modules are behind
 if fac_set_has_version_changed; then
     version_info=$(fac_set_get_version_info)
-    confirm "New kit version available $version_info, download updates?" _CLI_ update --recursive
+    confirm "New kit version available $version_info, download updates?" cli_main update --recursive
 elif [ -d "$ROOT_DIR/.git" ]; then
     # Check if the main repository is behind
     current_branch=$(_git -C "$ROOT_DIR" rev-parse --abbrev-ref HEAD)
@@ -26,7 +26,7 @@ elif [ -d "$ROOT_DIR/.git" ]; then
         remote_commit=$(_git -C "$ROOT_DIR" rev-parse "@{u}")
         
         if [ $? -eq 0 ] && [ "$local_commit" != "$remote_commit" ]; then
-            confirm "Repository is behind the remote branch, apply update?" _CLI_ update --recursive
+            confirm "Repository is behind the remote branch, apply update?" cli_main update --recursive
         else
             # Check if any of the selected modules are behind
             modules_behind=false
@@ -51,7 +51,7 @@ elif [ -d "$ROOT_DIR/.git" ]; then
             fac_wor_foreach_selected_module check_module_status
             
             if $modules_behind; then
-                confirm "Modules are behind their remote branches, update them?" _CLI_ update --recursive
+                confirm "Modules are behind their remote branches, update them?" cli_main update --recursive
             fi
         fi
     fi

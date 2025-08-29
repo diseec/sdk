@@ -79,19 +79,6 @@ fac_wor_config_array_remove() {
     fi
 }
 
-# List all keys in workspace config
-# Usage: fac_wor_config_keys
-fac_wor_config_keys() {
-    local config_file="$(fac_wor_get_config_file)"
-    
-    if [ "$yaml_use_yq" = "true" ]; then
-        _yq -r 'paths(scalars) | join(".")' "$config_file"
-    else
-        # Simple fallback - just list top-level keys
-        grep "^[a-zA-Z_][a-zA-Z0-9_]*:" "$config_file" | cut -d: -f1
-    fi
-}
-
 # Print whole workspace config
 # Usage: fac_wor_config_print
 fac_wor_config_print() {

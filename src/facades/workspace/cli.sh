@@ -10,7 +10,6 @@ c=$1; shift; case "$c" in
         del|delete|remove) fac_wor_config_delete "$@" ;;
         array_add) fac_wor_config_array_add "$@" ;;
         array_remove) fac_wor_config_array_remove "$@" ;;
-        lis|list) fac_wor_config_keys "$@" ;;
         pri|print) fac_wor_config_print "$@" ;;
         pat|path) fac_wor_get_config_path "$@" ;;
         hel|help|--help|-h) display_help "" "" \
@@ -20,7 +19,6 @@ c=$1; shift; case "$c" in
             "    del|delete|remove <key.path>     " "Delete key from workspace configuration" \
             "    array_add <key.path> <val>       " "Add item to array in workspace config" \
             "    array_remove <key.path> <val>    " "Remove item from array in workspace config" \
-            "    lis|list                         " "List all workspace configuration keys" \
             "    pri|print                        " "Print entire workspace configuration" \
             "" "" "$(color 34 'Examples:')" "" \
             "    cli workspace config set project.name myproject" "" \

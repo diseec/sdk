@@ -57,7 +57,7 @@ fac_git_cmd_pr_create() {
         pr_body="Changes in this PR:\n\n$(_git diff --stat origin/main..HEAD)"
       fi
       
-      # Create PR using GitHub _CLI_
+      # Create PR using GitHub cli_main
       local pr_url=$(_gh pr create --title "$pr_title" --body "$pr_body" --base main)
       if [ $? -ne 0 ]; then
         message 41 "ERROR" "Failed to create PR."
@@ -65,7 +65,7 @@ fac_git_cmd_pr_create() {
       fi
       echo -e "Created pull request: \033[4m$pr_url\033[24m"
     else
-      message 41 "!" "Install GitHub _CLI_ (gh) for automatic PR creation"
+      message 41 "!" "Install GitHub cli_main (gh) for automatic PR creation"
       echo -e "Create PR manually at: \033[4mhttps://github.com/$ORG_NAME/$REPO_NAME/pull/new/$branch\033[24m"
       return 1
     fi
@@ -82,7 +82,7 @@ fac_git_cmd_pr_create() {
 
 # Check PR status and show comments/issues
 fac_git_cmd_pr_check_status() {
-  if ! _CLI_ internet is-online; then
+  if ! cli_main internet is-online; then
       message 41 ⊘ "Disconnected, skipping PR status check..."
       return 0
   fi
@@ -145,7 +145,7 @@ fac_git_cmd_pr_check_status() {
     #   message 32 "comments" "No unresolved comments"
     fi
   else
-    message 43 "!" "PR #$pr_number exists, but detailed status check requires GitHub _CLI_"
+    message 43 "!" "PR #$pr_number exists, but detailed status check requires GitHub cli_main"
     message 43 "!" "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
   fi
 }
