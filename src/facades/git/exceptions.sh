@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if GitHub _CLI_ is installed
-check_gh_CLI_() {
+fac_git_cmd_check_gh_cli() {
   if ! command -v _gh >/dev/null 2>&1; then
     message 31 "ERROR" "GitHub _CLI_ (gh) is not installed. Please install it first:"
     return 1

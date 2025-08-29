@@ -3,38 +3,38 @@
 # yaml-api.sh - YAML configuration API functions
 
 # Get value from workspace config (supports nested keys)
-# Usage: workspace_config_get <key.path>
-workspace_config_get() {
+# Usage: fac_wor_config_get <key.path>
+fac_wor_config_get() {
     local key_path="$1"
-    local config_file="$(get_workspace_config_file)"
+    local config_file="$(fac_wor_get_config_file)"
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -r ".${key_path}" "$config_file"
     else
-        workspace_config_fallback_get "$key_path" "$config_file"
+        fac_wor_config_fallback_get "$key_path" "$config_file"
     fi
 }
 
 # Set value in workspace config (supports nested keys)
-# Usage: workspace_config_set <key.path> <value>
-workspace_config_set() {
+# Usage: fac_wor_config_set <key.path> <value>
+fac_wor_config_set() {
     local key_path="$1"; shift
     local value="$1"
-    local config_file="$(get_workspace_config_file)"
+    local config_file="$(fac_wor_get_config_file)"
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -i ".${key_path} |= \"${value}\"" "$config_file"
         message 42 "SUCCESS" "Set $key_path = $value in workspace config"
     else
-        workspace_config_fallback_set "$key_path" "$value" "$config_file"
+        fac_wor_config_fallback_set "$key_path" "$value" "$config_file"
     fi
 }
 
 # Delete key from workspace config (supports nested keys)
-# Usage: workspace_config_delete <key.path>
-workspace_config_delete() {
+# Usage: fac_wor_config_delete <key.path>
+fac_wor_config_delete() {
     local key_path="$1"
-    local config_file="$(get_workspace_config_file)"
+    local config_file="$(fac_wor_get_config_file)"
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -i "del(.${key_path})" "$config_file"
@@ -48,11 +48,11 @@ workspace_config_delete() {
 }
 
 # Add item to array in workspace config
-# Usage: workspace_config_array_add <key.path> <value>
-workspace_config_array_add() {
+# Usage: fac_wor_config_array_add <key.path> <value>
+fac_wor_config_array_add() {
     local key_path="$1"; shift
     local value="$1"
-    local config_file="$(get_workspace_config_file)"
+    local config_file="$(fac_wor_get_config_file)"
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -i ".${key_path} += [\"${value}\"]" "$config_file"
@@ -64,11 +64,11 @@ workspace_config_array_add() {
 }
 
 # Remove item from array in workspace config
-# Usage: workspace_config_array_remove <key.path> <value>
-workspace_config_array_remove() {
+# Usage: fac_wor_config_array_remove <key.path> <value>
+fac_wor_config_array_remove() {
     local key_path="$1"; shift
     local value="$1"
-    local config_file="$(get_workspace_config_file)"
+    local config_file="$(fac_wor_get_config_file)"
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -i ".${key_path} |= map(select(. != \"${value}\"))" "$config_file"
@@ -80,9 +80,9 @@ workspace_config_array_remove() {
 }
 
 # List all keys in workspace config
-# Usage: workspace_config_keys
-workspace_config_keys() {
-    local config_file="$(get_workspace_config_file)"
+# Usage: fac_wor_config_keys
+fac_wor_config_keys() {
+    local config_file="$(fac_wor_get_config_file)"
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -r 'paths(scalars) | join(".")' "$config_file"
@@ -93,9 +93,9 @@ workspace_config_keys() {
 }
 
 # Print whole workspace config
-# Usage: workspace_config_print
-workspace_config_print() {
-    local config_file="$(get_workspace_config_file)"
+# Usage: fac_wor_config_print
+fac_wor_config_print() {
+    local config_file="$(fac_wor_get_config_file)"
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq "$config_file"

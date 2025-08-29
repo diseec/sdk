@@ -32,7 +32,7 @@ packages/kit/src/core/
 
 - **Purpose**: Functions for discovering project structure and paths
 - **Contents**:
-  - `con_uti_cli_auto_discovery()`: Finds the project root
+  - `env_uti_cli_auto_discovery()`: Finds the project root
   - `get_org_dir()`: Gets/creates organization directory
   - `get_cache_dir()`: Gets/creates cache directory
 - **Benefits**: Isolated path logic, easier to test and debug
@@ -41,20 +41,20 @@ packages/kit/src/core/
 
 - **Purpose**: Git-related operations without using git commands
 - **Contents**:
-  - `con_uti_get_git_config_file()`: Locates git config file
-  - `con_uti_get_repo_url()`: Extracts repository URL
-  - `con_uti_get_repo_name()`: Extracts repository name
-  - `con_uti_get_current_branch()`: Gets current branch name
+  - `env_uti_get_git_config_file()`: Locates git config file
+  - `env_uti_get_repo_url()`: Extracts repository URL
+  - `env_uti_get_repo_name()`: Extracts repository name
+  - `env_uti_get_current_branch()`: Gets current branch name
 - **Benefits**: Git operations work even when git is not available
 
 ### 4. Environment Detection (`utils/env_detection.sh`)
 
 - **Purpose**: Detect various environment states
 - **Contents**:
-  - `con_uti_is_in_container()`: Container environment detection
-  - `con_uti_is_monorepo()`: Monorepo structure detection
-  - `con_uti_has_submodules()`: Git submodules detection
-  - `con_uti_get_kit_version()`: Extract kit version from package.json
+  - `env_uti_is_in_container()`: Container environment detection
+  - `env_uti_is_monorepo()`: Monorepo structure detection
+  - `env_uti_has_submodules()`: Git submodules detection
+  - `env_uti_get_kit_version()`: Extract kit version from package.json
 - **Benefits**: Clear separation of concerns, reusable functions
 
 ### 5. Main Environment (`envs.sh`)
@@ -143,10 +143,10 @@ All variables are exported and available:
 
 ## Validation
 
-Use the `con_uti_validate_environment` function to check if the environment is properly set up:
+Use the `env_uti_validate_environment` function to check if the environment is properly set up:
 
 ```bash
-if ! con_uti_validate_environment; then
+if ! env_uti_validate_environment; then
     echo "Environment validation failed"
     exit 1
 fi

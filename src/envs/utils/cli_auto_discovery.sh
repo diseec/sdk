@@ -5,7 +5,7 @@
 # =============================================================================
 # Functions for discovering project structure and paths
 
-con_uti_cli_auto_discovery() {
+env_uti_cli_auto_discovery() {
     # Canonicalize KIT_DIR
     kitdir=$(cd "$KIT_DIR" 2>/dev/null && pwd) || {
         echo "Error: can't access '$KIT_DIR'" >&2

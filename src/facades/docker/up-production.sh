@@ -1,15 +1,12 @@
 #!/bin/bash
 
-up_production() {
-
-    $KIT_SRC_DIR/facades/workspace/index.sh
-
+fac_doc_up_production() {
     set -e
 
     message "Starting services in production mode .."
 
     # Filter services based on workspace configuration
-    services_filter=$(get_services_filter)
+    services_filter=$(fac_wor_get_services_filter)
 
     # Set up a trap to ensure we stop all containers on exit or interrupt
     cleanup() {

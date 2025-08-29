@@ -3,7 +3,7 @@
 # OS detection and command compatibility utilities
 
 # Detect operating system
-detect_os() {
+fac_int_detect_os() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "macos"
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -25,9 +25,9 @@ detect_os() {
 }
 
 # Get compatible ping command with timeout options
-get_ping_command() {
+fac_int_get_ping_command() {
     local timeout=${1:-5}
-    local os=$(detect_os)
+    local os=$(fac_int_detect_os)
     
     case "$os" in
         macos)
@@ -53,8 +53,8 @@ get_ping_command() {
 }
 
 # Get compatible network interface listing command
-get_interface_command() {
-    local os=$(detect_os)
+fac_int_get_interface_command() {
+    local os=$(fac_int_detect_os)
     
     case "$os" in
         linux)
@@ -80,8 +80,8 @@ get_interface_command() {
 }
 
 # Get compatible route command
-get_route_command() {
-    local os=$(detect_os)
+fac_int_get_route_command() {
+    local os=$(fac_int_detect_os)
     
     case "$os" in
         linux)
@@ -109,7 +109,7 @@ get_route_command() {
 }
 
 # Get compatible DNS lookup command
-get_dns_command() {
+fac_int_get_dns_command() {
     if command -v nslookup >/dev/null 2>&1; then
         echo "nslookup"
     elif command -v dig >/dev/null 2>&1; then
@@ -122,7 +122,7 @@ get_dns_command() {
 }
 
 # Test if a command exists with proper options
-test_command_compatibility() {
+fac_int_test_command_compatibility() {
     local cmd="$1"
     local test_args="$2"
     
@@ -131,9 +131,9 @@ test_command_compatibility() {
 }
 
 # Export functions for use in other modules
-export -f detect_os
-export -f get_ping_command
-export -f get_interface_command
-export -f get_route_command
-export -f get_dns_command
-export -f test_command_compatibility
+export -f fac_int_detect_os
+export -f fac_int_get_ping_command
+export -f fac_int_get_interface_command
+export -f fac_int_get_route_command
+export -f fac_int_get_dns_command
+export -f fac_int_test_command_compatibility

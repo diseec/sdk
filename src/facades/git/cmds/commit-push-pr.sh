@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cmd_git_commit_push_pr() {
+fac_git_cmd_commit_push_pr() {
     set -e
 
     local IS_RECURSIVE="false"
@@ -36,7 +36,7 @@ cmd_git_commit_push_pr() {
             "$ROOT_DIR/$module_path/cli" git commit-push-pr --recursive
             echo "$REPO_NAME: Cpp done for submodule '$module'."
         }
-        foreach_selected_module_with_callback cpp_submodule
+        fac_wor_foreach_selected_module cpp_submodule
     fi
 
     handle_hook after_cpp

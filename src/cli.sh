@@ -28,7 +28,7 @@ c=$1; shift; case "$c" in
     ins|insight) cli_main git insight "$@" ;;
     tes|test)    $KIT_SRC_DIR/cmds/test.sh "$@" ;;
     pru|prune)   cli_main docker system prune "$@" ;;
-    for|format)  safely $c "$@" && $KIT_SRC_DIR/cmds/format.sh "$@" ;;
+    for|format)  safely $c "$@" && $KIT_SRC_DIR/facades/format/cli.sh prettier "$@" ;;
 
     ######################## FACADES ########################
 

@@ -8,7 +8,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Get system dependencies from package.json
-get_system_deps() {
+fac_set_get_system_deps() {
     local pkg_json="$KIT_DIR/package.json"
     
     # Extract systemDependencies array using grep, sed, and tr
@@ -21,7 +21,7 @@ get_system_deps() {
 }
 
 # Detect Linux distribution
-detect_distro() {
+fac_set_detect_distro() {
     if [ -f /etc/alpine-release ]; then
         echo "alpine"
     elif [ -f /etc/debian_version ] || [ -f /etc/lsb-release ]; then
@@ -36,7 +36,7 @@ detect_distro() {
 }
 
 # Check if running as root/sudo
-check_privileges() {
+fac_set_check_privileges() {
     if [ "$EUID" -ne 0 ]; then
         echo -e "${YELLOW}Warning: Not running as root. You may need sudo for package installation.${NC}"
         SUDO_CMD="sudo"
@@ -46,22 +46,22 @@ check_privileges() {
 }
 
 # Check if a command exists
-command_exists() {
+fac_set_command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
 # Check system dependencies function
-check_system_dependencies() {
+fac_set_check_system_dependencies() {
     # echo -e "${BLUE}=== System Dependencies Check ===${NC}"
     
-    # local distro=$(detect_distro)
+    # local distro=$(fac_set_detect_distro)
     # echo -e "Detected OS: ${YELLOW}$distro${NC}"
     
     # Get dependencies from package.json
     local deps=()
     while IFS= read -r dep; do
         deps+=("$dep")
-    done < <(get_system_deps)
+    done < <(fac_set_get_system_deps)
     
     if [ ${#deps[@]} -eq 0 ]; then
         echo -e "${YELLOW}No system dependencies defined in package.json${NC}"
@@ -74,7 +74,7 @@ check_system_dependencies() {
     # message 44 "Kit system dependencies"
 
     for dep in "${deps[@]}"; do
-        if ! command_exists "$dep"; then
+        if ! fac_set_command_exists "$dep"; then
             # echo -e "${RED}✗${NC} $dep (missing)"
             missing_deps+=("$dep")
             ((missing_count++))
@@ -93,71 +93,71 @@ check_system_dependencies() {
 }
 
 # Package manager utilities
-run_package_manager() {
+fac_set_run_package_manager() {
     local cmd="$1"
     eval "$SUDO_CMD $cmd"
     return $?
 }
 
-install_package() {
+fac_set_install_package() {
     local pkg="$1"
-    local distro=$(detect_distro)
+    local distro=$(fac_set_detect_distro)
     
     if [ "$distro" = "alpine" ]; then
-        run_package_manager "apk add --no-cache $pkg"
+        fac_set_run_package_manager "apk add --no-cache $pkg"
     elif [ "$distro" = "ubuntu" ]; then
-        run_package_manager "apt-get install -y $pkg"
+        fac_set_run_package_manager "apt-get install -y $pkg"
     else
         return 1
     fi
 }
 
-update_package_list() {
-    local distro=$(detect_distro)
+fac_set_update_package_list() {
+    local distro=$(fac_set_detect_distro)
     if [ "$distro" = "ubuntu" ]; then
-        run_package_manager "apt-get update"
+        fac_set_run_package_manager "apt-get update"
     fi
     return 0
 }
 
 # Custom installer functions
-install_git() {
-    install_package "git"
+fac_set_install_git() {
+    fac_set_install_package "git"
 }
 
-install_curl() {
-    install_package "curl"
+fac_set_install_curl() {
+    fac_set_install_package "curl"
 }
 
-install_bash() {
-    install_package "bash"
+fac_set_install_bash() {
+    fac_set_install_package "bash"
 }
 
-install_docker() {
-    local distro=$(detect_distro)
+fac_set_install_docker() {
+    local distro=$(fac_set_detect_distro)
     if [ "$distro" = "alpine" ]; then
-        install_package "docker"
+        fac_set_install_package "docker"
     elif [ "$distro" = "ubuntu" ]; then
-        install_package "docker.io"
+        fac_set_install_package "docker.io"
     else
         return 1
     fi
 }
 
-install_nodejs() {
-    install_package "nodejs"
+fac_set_install_nodejs() {
+    fac_set_install_package "nodejs"
 }
 
-install_npm() {
-    install_package "npm"
+fac_set_install_npm() {
+    fac_set_install_package "npm"
 }
 
-install_yq() {
-    install_package "yq"
+fac_set_install_yq() {
+    fac_set_install_package "yq"
 }
 
-install_yarn() {
-    if command_exists npm; then
+fac_set_install_yarn() {
+    if fac_set_command_exists npm; then
         _npm install -g yarn
     else
         echo -e "${RED}npm is required to install yarn${NC}"
@@ -165,7 +165,7 @@ install_yarn() {
     fi
 }
 
-install_gh() {
+fac_set_install_gh() {
     # Custom GitHub _CLI_ installation using the same logic as Dockerfile
     local arch=$(uname -m)
     local arch_tag
@@ -196,18 +196,18 @@ install_gh() {
     return $?
 }
 
-install_openssl() {
-    install_package "openssl"
+fac_set_install_openssl() {
+    fac_set_install_package "openssl"
 }
 
-install_git_lfs() {
-    install_package "git-lfs"
+fac_set_install_git_lfs() {
+    fac_set_install_package "git-lfs"
 }
 
 # Get installer function for a dependency
-get_installer() {
+fac_set_get_installer() {
     local dep="$1"
-    local installer_fn="install_$(echo "$dep" | tr '-' '_')"
+    local installer_fn="fac_set_install_$(echo "$dep" | tr '-' '_')"
     
     # Check if installer function exists
     if declare -F "$installer_fn" >/dev/null; then
@@ -218,9 +218,9 @@ get_installer() {
 }
 
 # Install a single dependency
-install_dependency() {
+fac_set_install_dependency() {
     local dep="$1"
-    local installer=$(get_installer "$dep")
+    local installer=$(fac_set_get_installer "$dep")
     
     if [ -n "$installer" ]; then
         echo -e "${BLUE}Installing $dep...${NC}"
@@ -233,7 +233,7 @@ install_dependency() {
         fi
     else
         echo -e "${YELLOW}No custom installer for $dep, trying package manager...${NC}"
-        if install_package "$dep"; then
+        if fac_set_install_package "$dep"; then
             echo -e "${GREEN}✓ $dep installed${NC}"
             return 0
         else
@@ -244,11 +244,11 @@ install_dependency() {
 }
 
 # Main installation function
-install_system_dependencies() {
+fac_set_install_system_dependencies() {
     set -e
     # echo -e "${BLUE}=== Installing System Dependencies ===${NC}"
     
-    local distro=$(detect_distro)
+    local distro=$(fac_set_detect_distro)
     # echo -e "Detected OS: ${YELLOW}$distro${NC}"
     
     if [ "$distro" = "unknown" ]; then
@@ -257,13 +257,13 @@ install_system_dependencies() {
         return 1
     fi
     
-    check_privileges
+    fac_set_check_privileges
     
     # Get dependencies from package.json
     local deps=()
     while IFS= read -r dep; do
         deps+=("$dep")
-    done < <(get_system_deps)
+    done < <(fac_set_get_system_deps)
     
     if [ ${#deps[@]} -eq 0 ]; then
         echo -e "${YELLOW}No system dependencies defined in package.json${NC}"
@@ -273,7 +273,7 @@ install_system_dependencies() {
     # Find missing dependencies
     local missing_deps=()
     for dep in "${deps[@]}"; do
-        if ! command_exists "$dep"; then
+        if ! fac_set_command_exists "$dep"; then
             missing_deps+=("$dep")
         fi
     done
@@ -286,12 +286,12 @@ install_system_dependencies() {
     # echo -e "${BLUE}Missing dependencies: ${missing_deps[*]}${NC}"
     
     # Update package list first
-    update_package_list
+    fac_set_update_package_list
     
     # Install missing dependencies
     local all_success=true
     for dep in "${missing_deps[@]}"; do
-        if ! install_dependency "$dep"; then
+        if ! fac_set_install_dependency "$dep"; then
             all_success=false
         fi
     done
@@ -304,19 +304,3 @@ install_system_dependencies() {
         return 1
     fi
 }
-
-# _CLI_ interface
-c=$1; shift; case $c in
-    dep|dependency-check)
-        check_system_dependencies
-        ;;
-    ins|install)
-        install_system_dependencies
-        ;;
-    hel|help|--help|-h)
-        echo "Usage: $0 {dependency-check|install}"
-        echo "  is|is-missing-dependencies - Check for missing system dependencies"
-        echo "  dep|dependency-check - Check system dependencies"
-        echo "  ins|install - Install system dependencies defined in package.json"
-        ;;
-esac

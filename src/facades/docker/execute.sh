@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cmd_docker_execute() {
+fac_doc_cmd_docker_execute() {
+
     local IS_SILENT="false"
     ARGS=""; for arg in "$@"; do case "$arg" in
         --no-message) IS_SILENT="true";;
@@ -20,6 +21,15 @@ cmd_docker_execute() {
         if [ "$IS_SILENT" != "true" ]; then message 40 "▶ $SERVICE_NAME" "Inside container, Executing '$COMMAND_STR' .."; fi
         "$@"
     else
+        export \
+            IMAGE_REGISTRY_URL \
+            REPO_NAME \
+            ROOT_DIR \
+            ORG_CACHE_DIR \
+            KIT_NAME \
+            KIT_DIR \
+            PROJECT_MOUNT_DIR_NAME
+
         if _docker compose ps -q "$SERVICE_NAME" | grep -q .; then
             if [ "$IS_SILENT" != "true" ]; then message 40 "● $SERVICE_NAME" "Already running, Executing '$COMMAND_STR' .."; fi
             _docker compose exec $OPTIONS "$SERVICE_NAME" "$@"

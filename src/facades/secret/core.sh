@@ -5,7 +5,7 @@
 # ========================================
 
 # Helper function to check if OpenSSL is available
-check_openssl() {
+fac_sec_check_openssl() {
     if ! command -v _openssl >/dev/null 2>&1; then
         message 31 "ERROR" "OpenSSL is required but not installed"
         return 1
@@ -14,12 +14,12 @@ check_openssl() {
 }
 
 # Check if secrets exist in the secrets directory
-secrets_exist() {
+fac_sec_secrets_exist() {
     [ -d "$SECRETS_DIR" ] && [ -n "$(ls -A "$SECRETS_DIR" 2>/dev/null)" ]
 }
 
 # Validate secret name format
-validate_secret_name() {
+fac_sec_validate_secret_name() {
     local secret_name="$1"
     
     if [ -z "$secret_name" ]; then
@@ -36,7 +36,7 @@ validate_secret_name() {
 }
 
 # Validate encryption key format
-validate_encryption_key() {
+fac_sec_validate_encryption_key() {
     local key="$1"
     
     if [ -z "$key" ]; then

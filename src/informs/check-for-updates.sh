@@ -14,8 +14,8 @@ if [ "$command" = "version" ] || [ "$command" = "--version" ] || [ "$command" = 
 fi
 
 # Check if version changed or if repo/modules are behind
-if has_version_changed; then
-    version_info=$(get_version_info)
+if fac_set_has_version_changed; then
+    version_info=$(fac_set_get_version_info)
     confirm "New kit version available $version_info, download updates?" _CLI_ update --recursive
 elif [ -d "$ROOT_DIR/.git" ]; then
     # Check if the main repository is behind
@@ -48,7 +48,7 @@ elif [ -d "$ROOT_DIR/.git" ]; then
                 fi
             }
             
-            foreach_selected_module_with_callback check_module_status
+            fac_wor_foreach_selected_module check_module_status
             
             if $modules_behind; then
                 confirm "Modules are behind their remote branches, update them?" _CLI_ update --recursive

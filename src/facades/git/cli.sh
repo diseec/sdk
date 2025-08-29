@@ -11,18 +11,18 @@ c=$1; shift; case "$c" in
     sta|status)
         _CLI_ inform forbid-dev-on-main
         _CLI_ inform status-branch-status
-        cmd_git_pr_check_status "$@"
+        fac_git_cmd_pr_check_status "$@"
     ;;
-    cpp|commit-push-pr) cmd_git_commit_push_pr "$@" ;;
-    che|_checkout) cmd_git_checkout_branch "$@" ;;
-    com|_commit) cmd_git_commit "$@" ;;
-    pul|pull) cmd_git_pull_merge "$@" ;;
-    pus|_push) cmd_git_push "$@" ;;
-    pre|pull-request) cmd_git_pr_create "$@" ;;
-    log|_log) cmd_git_log "$@" ;;
-    rel|_release) cmd_git_release "$@" ;;
+    cpp|commit-push-pr) fac_git_cmd_commit_push_pr "$@" ;;
+    che|_checkout) fac_git_cmd_checkout_branch "$@" ;;
+    com|_commit) fac_git_cmd_commit "$@" ;;
+    pul|pull) fac_git_cmd_pull_merge "$@" ;;
+    pus|_push) fac_git_cmd_push "$@" ;;
+    pre|pull-request) fac_git_cmd_pr_create "$@" ;;
+    log|_log) fac_git_cmd_git_log "$@" ;;
+    rel|_release) fac_git_cmd_release "$@" ;;
 
-    cid|_checkout-if-detached) cmd_git_checkout_if_detached "$@" ;;
+    cid|_checkout-if-detached) fac_git_cmd_checkout_if_detached "$@" ;;
 
     hel|help|--help|-h) display_help "" "" \
         "$(color 30 'Git Commands - AI-Powered Workflow Automation')" "" \

@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # config.sh - YAML config file management API
-# Usage: source this file and use config_get, config_set, config_delete, config_create
+# Usage: source this file and use fac_con_config_get, fac_con_config_set, fac_con_config_delete, config_create
 # Uses $CONFIG_FILE environment variable automatically
 
-get_config_file() {
+fac_con_get_config_file() {
   CONFIG_FILE="$ORG_DIR/config.yaml"
   if [ ! -f "$CONFIG_FILE" ]; then mkdir -p "$(dirname "$CONFIG_FILE")"; touch "$CONFIG_FILE"; fi
   echo "$CONFIG_FILE"
 }
 
 # Create config file if not exists
-yaml_config_create() {
+fac_con_yaml_config_create() {
     if [ ! -f "$CONFIG_FILE" ]; then
         mkdir -p "$(dirname "$CONFIG_FILE")"
         echo "{}" > "$CONFIG_FILE"
@@ -19,37 +19,37 @@ yaml_config_create() {
 }
 
 # Get value from config (supports nested keys, arrays)
-# Usage: config_get <key.path>
-config_get() {
+# Usage: fac_con_config_get <key.path>
+fac_con_config_get() {
     local key_path="$1"
-    yaml_config_create
+    fac_con_yaml_config_create
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -r ".${key_path}" "$CONFIG_FILE"
     else
-        yaml_config_fallback_get "$key_path"
+        fac_con_yaml_config_fallback_get "$key_path"
     fi
 }
 
 # Set value in config (supports nested keys, arrays)
-# Usage: config_set <key.path> <value>
-config_set() {
+# Usage: fac_con_config_set <key.path> <value>
+fac_con_config_set() {
     local key_path="$1"; shift
     local value="$1"
-    yaml_config_create
+    fac_con_yaml_config_create
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -i ".${key_path} |= \"${value}\"" "$CONFIG_FILE"
     else
-        yaml_config_fallback_set "$key_path" "$value"
+        fac_con_yaml_config_fallback_set "$key_path" "$value"
     fi
 }
 
 # Delete key from config (supports nested keys)
-# Usage: config_delete <key.path>
-config_delete() {
+# Usage: fac_con_config_delete <key.path>
+fac_con_config_delete() {
     local key_path="$1"
-    yaml_config_create
+    fac_con_yaml_config_create
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -i "del(.${key_path})" "$CONFIG_FILE"
@@ -61,11 +61,11 @@ config_delete() {
 }
 
 # Add item to array in config
-# Usage: config_array_add <key.path> <value>
-config_array_add() {
+# Usage: fac_con_config_array_add <key.path> <value>
+fac_con_config_array_add() {
     local key_path="$1"; shift
     local value="$1"
-    yaml_config_create
+    fac_con_yaml_config_create
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -i ".${key_path} += [\"${value}\"]" "$CONFIG_FILE"
@@ -76,11 +76,11 @@ config_array_add() {
 }
 
 # Remove item from array in config
-# Usage: config_array_remove <key.path> <value>
-config_array_remove() {
+# Usage: fac_con_config_array_remove <key.path> <value>
+fac_con_config_array_remove() {
     local key_path="$1"; shift
     local value="$1"
-    yaml_config_create
+    fac_con_yaml_config_create
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -i ".${key_path} |= map(select(. != \"${value}\"))" "$CONFIG_FILE"
@@ -91,9 +91,9 @@ config_array_remove() {
 }
 
 # List all keys in config
-# Usage: config_keys
-config_keys() {
-    yaml_config_create
+# Usage: fac_con_config_keys
+fac_con_config_keys() {
+    fac_con_yaml_config_create
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq -r 'paths(scalars) | join(".")' "$CONFIG_FILE"
@@ -104,9 +104,9 @@ config_keys() {
 }
 
 # Print whole config
-# Usage: config_print
-config_print() {
-    yaml_config_create
+# Usage: fac_con_config_print
+fac_con_config_print() {
+    fac_con_yaml_config_create
     
     if [ "$yaml_use_yq" = "true" ]; then
         _yq "$CONFIG_FILE"
@@ -116,7 +116,7 @@ config_print() {
 }
 
 # Check for yq dependency and provide fallback
-yaml_config_require_yq() {
+fac_con_yaml_config_require_yq() {
     if ! command -v _yq >/dev/null 2>&1; then
         message 33 "WARNING" "yq not found. Using fallback methods for YAML parsing."
         return 1
@@ -125,9 +125,9 @@ yaml_config_require_yq() {
 }
 
 # Fallback methods for when yq is not available
-yaml_config_fallback_get() {
+fac_con_yaml_config_fallback_get() {
     local key_path="$1"
-    yaml_config_create
+    fac_con_yaml_config_create
     
     # Simple grep-based extraction for basic key-value pairs
     if echo "$key_path" | grep -q '\.'; then
@@ -139,10 +139,10 @@ yaml_config_fallback_get() {
     fi
 }
 
-yaml_config_fallback_set() {
+fac_con_yaml_config_fallback_set() {
     local key_path="$1"; shift
     local value="$1"
-    yaml_config_create
+    fac_con_yaml_config_create
     
     # Simple key-value setting for fallback
     if echo "$key_path" | grep -q '\.'; then
@@ -156,6 +156,3 @@ yaml_config_fallback_set() {
     echo "${key_path}: ${value}" >> "${CONFIG_FILE}.tmp"
     mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
 }
-
-# Use yq if available, otherwise fallback
-yaml_use_yq=$(yaml_config_require_yq && echo "true" || echo "false")

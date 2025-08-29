@@ -3,7 +3,7 @@
 # Math utilities that work without bc dependency
 
 # Calculate time difference using awk (more portable than bc)
-calculate_duration() {
+fac_int_calculate_duration() {
     local start_time="$1"
     local end_time="$2"
     
@@ -12,7 +12,7 @@ calculate_duration() {
 }
 
 # Compare floating point numbers using awk
-float_compare() {
+fac_int_float_compare() {
     local num1="$1"
     local operator="$2"
     local num2="$3"
@@ -40,28 +40,28 @@ float_compare() {
 }
 
 # Add floating point numbers using awk
-float_add() {
+fac_int_float_add() {
     local num1="$1"
     local num2="$2"
     echo "$num1 $num2" | awk '{printf "%.6f", $1 + $2}'
 }
 
 # Subtract floating point numbers using awk
-float_subtract() {
+fac_int_float_subtract() {
     local num1="$1"
     local num2="$2"
     echo "$num1 $num2" | awk '{printf "%.6f", $1 - $2}'
 }
 
 # Multiply floating point numbers using awk
-float_multiply() {
+fac_int_float_multiply() {
     local num1="$1"
     local num2="$2"
     echo "$num1 $num2" | awk '{printf "%.6f", $1 * $2}'
 }
 
 # Divide floating point numbers using awk
-float_divide() {
+fac_int_float_divide() {
     local num1="$1"
     local num2="$2"
     if [ "$num2" = "0" ] || [ -z "$num2" ]; then
@@ -72,7 +72,7 @@ float_divide() {
 }
 
 # Calculate percentage using awk
-calculate_percentage() {
+fac_int_calculate_percentage() {
     local part="$1"
     local total="$2"
     if [ "$total" = "0" ] || [ -z "$total" ]; then
@@ -83,7 +83,7 @@ calculate_percentage() {
 }
 
 # Calculate average using awk
-calculate_average() {
+fac_int_calculate_average() {
     local sum="$1"
     local count="$2"
     if [ "$count" = "0" ] || [ -z "$count" ]; then
@@ -94,7 +94,7 @@ calculate_average() {
 }
 
 # Calculate variance using awk
-calculate_variance() {
+fac_int_calculate_variance() {
     local variance_sum="$1"
     local count="$2"
     if [ "$count" = "0" ] || [ -z "$count" ]; then
@@ -105,7 +105,7 @@ calculate_variance() {
 }
 
 # Convert bytes to Mbps using awk
-bytes_to_mbps() {
+fac_int_bytes_to_mbps() {
     local bytes="$1"
     local duration="$2"
     if [ "$duration" = "0" ] || [ -z "$duration" ]; then
@@ -116,7 +116,7 @@ bytes_to_mbps() {
 }
 
 # Convert bytes to Kbps using awk
-bytes_to_kbps() {
+fac_int_bytes_to_kbps() {
     local bytes="$1"
     local duration="$2"
     if [ "$duration" = "0" ] || [ -z "$duration" ]; then
@@ -127,14 +127,14 @@ bytes_to_kbps() {
 }
 
 # Export functions for use in other modules
-export -f calculate_duration
-export -f float_compare
-export -f float_add
-export -f float_subtract
-export -f float_multiply
-export -f float_divide
-export -f calculate_percentage
-export -f calculate_average
-export -f calculate_variance
-export -f bytes_to_mbps
-export -f bytes_to_kbps
+export -f fac_int_calculate_duration
+export -f fac_int_float_compare
+export -f fac_int_float_add
+export -f fac_int_float_subtract
+export -f fac_int_float_multiply
+export -f fac_int_float_divide
+export -f fac_int_calculate_percentage
+export -f fac_int_calculate_average
+export -f fac_int_calculate_variance
+export -f fac_int_bytes_to_mbps
+export -f fac_int_bytes_to_kbps

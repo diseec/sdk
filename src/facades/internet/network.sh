@@ -3,7 +3,7 @@
 # Network utility functions for internet connectivity checker
 
 # Get default gateway using native methods
-get_gateway() {
+fac_int_get_gateway() {
     LOCAL_GATEWAY=""
     
     # Try /proc/net/route first (Linux standard)
@@ -45,7 +45,7 @@ get_gateway() {
 }
 
 # Test network interface using native methods
-test_network_interface() {
+fac_int_test_network_interface() {
     if [ "$MODE" != "test" ]; then
         printf "${BLUE}Network Interface Status${NC}\n"
     fi
@@ -100,7 +100,7 @@ test_network_interface() {
                         *) interface_type="Network" ;;
                     esac
                     
-                    log_status "SUCCESS" "$interface_type interface $iface" "IP: $ip, Status: up"
+                    fac_int_log_status "SUCCESS" "$interface_type interface $iface" "IP: $ip, Status: up"
                     
                     if [[ "$iface" =~ ^(eth|en|wl|wlan) ]]; then
                         primary_connection_found=true
@@ -135,7 +135,7 @@ test_network_interface() {
             }
             iface = ""; ip = ""; status = "down"
         }' | while IFS=: read -r type iface ip; do
-            log_status "SUCCESS" "$type interface $iface" "IP: $ip, Status: up"
+            fac_int_log_status "SUCCESS" "$type interface $iface" "IP: $ip, Status: up"
             if [[ "$type" =~ ^(Ethernet|WiFi)$ ]]; then
                 primary_connection_found=true
             fi
@@ -145,20 +145,20 @@ test_network_interface() {
     
     # Method 3: Last resort - just check if we can reach the internet
     if [ "$interfaces_checked" -eq 0 ]; then
-        log_status "WARNING" "Network interface detection" "Unable to enumerate interfaces - using connectivity test"
+        fac_int_log_status "WARNING" "Network interface detection" "Unable to enumerate interfaces - using connectivity test"
         
         # Test if we can reach external hosts
         if curl -s --max-time 3 --connect-timeout 2 -I "https://diseec.com" >/dev/null 2>&1; then
-            log_status "SUCCESS" "Internet connectivity" "External access working (interface details unavailable)"
+            fac_int_log_status "SUCCESS" "Internet connectivity" "External access working (interface details unavailable)"
             primary_connection_found=true
         elif ping -c 1 -W 2 8.8.8.8 >/dev/null 2>&1 || ping -c 1 -t 2 8.8.8.8 >/dev/null 2>&1; then
-            log_status "SUCCESS" "Network connectivity" "Can reach external hosts (interface details unavailable)"
+            fac_int_log_status "SUCCESS" "Network connectivity" "Can reach external hosts (interface details unavailable)"
             primary_connection_found=true
         fi
     fi
     
     if [ "$primary_connection_found" = "false" ]; then
-        log_status "FAIL" "Network interfaces" "No active network interfaces with external connectivity found"
+        fac_int_log_status "FAIL" "Network interfaces" "No active network interfaces with external connectivity found"
         PRIMARY_CONNECTION_STATUS="NO_CONNECTION"
         return 1
     fi

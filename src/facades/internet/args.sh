@@ -3,7 +3,7 @@
 # Command line argument parsing and help functions
 
 # Parse arguments
-parse_args() {
+fac_int_parse_args() {
     while [[ $# -gt 0 ]]; do
         case $1 in
             dia|--diagnose|diagnose)
@@ -24,7 +24,7 @@ parse_args() {
                 shift
                 ;;
             --help|help|-h)
-                show_help
+                fac_int_show_help
                 exit 0
                 ;;
             *)
@@ -34,7 +34,7 @@ parse_args() {
     done
 }
 
-show_help() {
+fac_int_show_help() {
     echo "Internet Connection Checker with Advanced Diagnostics"
     echo "===================================================="
     echo ""

@@ -3,7 +3,7 @@
 # Basic connectivity tests for internet connectivity checker
 
 # Quick connectivity test
-quick_check() {
+fac_int_quick_check() {
     local timeout=$QUICK_TIMEOUT
     local overall_status=true
     local start_time=$(date +%s.%N)
@@ -28,23 +28,23 @@ quick_check() {
     }
     
     # Test gateway
-    get_gateway
+    fac_int_get_gateway
     if [ -n "$LOCAL_GATEWAY" ]; then
         local test_start=$(date +%s.%N)
         if ping_test "$LOCAL_GATEWAY" "$timeout"; then
             local test_end=$(date +%s.%N)
-            local duration=$(calculate_duration "$test_start" "$test_end")
-            log_status "SUCCESS" "Gateway ping" "$LOCAL_GATEWAY" "${duration}s"
+            local duration=$(fac_int_calculate_duration "$test_start" "$test_end")
+            fac_int_log_status "SUCCESS" "Gateway ping" "$LOCAL_GATEWAY" "${duration}s"
             GATEWAY_STATUS="SUCCESS"
         else
             local test_end=$(date +%s.%N)
-            local duration=$(calculate_duration "$test_start" "$test_end")
-            log_status "FAIL" "Gateway ping" "$LOCAL_GATEWAY (timeout after ${timeout}s)" "${duration}s"
+            local duration=$(fac_int_calculate_duration "$test_start" "$test_end")
+            fac_int_log_status "FAIL" "Gateway ping" "$LOCAL_GATEWAY (timeout after ${timeout}s)" "${duration}s"
             GATEWAY_STATUS="FAIL"
             overall_status=false
         fi
     else
-        log_status "FAIL" "Gateway detection" "No default gateway found in routing table"
+        fac_int_log_status "FAIL" "Gateway detection" "No default gateway found in routing table"
         GATEWAY_STATUS="FAIL"
         overall_status=false
     fi
@@ -53,13 +53,13 @@ quick_check() {
     local test_start=$(date +%s.%N)
     if ping_test "$QUICK_DNS" "$timeout"; then
         local test_end=$(date +%s.%N)
-        local duration=$(calculate_duration "$test_start" "$test_end")
-        log_status "SUCCESS" "DNS server ping" "$QUICK_DNS" "${duration}s"
+        local duration=$(fac_int_calculate_duration "$test_start" "$test_end")
+        fac_int_log_status "SUCCESS" "DNS server ping" "$QUICK_DNS" "${duration}s"
         DNS_PING_STATUS="SUCCESS"
     else
         local test_end=$(date +%s.%N)
-        local duration=$(calculate_duration "$test_start" "$test_end")
-        log_status "FAIL" "DNS server ping" "$QUICK_DNS (timeout after ${timeout}s)" "${duration}s"
+        local duration=$(fac_int_calculate_duration "$test_start" "$test_end")
+        fac_int_log_status "FAIL" "DNS server ping" "$QUICK_DNS (timeout after ${timeout}s)" "${duration}s"
         DNS_PING_STATUS="FAIL"
         overall_status=false
     fi
@@ -70,27 +70,27 @@ quick_check() {
     if curl -s --max-time $timeout --connect-timeout 2 -I "https://$QUICK_SITE" >/dev/null 2>&1 || \
        curl -s --max-time 5 --connect-timeout 3 "https://$QUICK_SITE" >/dev/null 2>&1; then
         local test_end=$(date +%s.%N)
-        local duration=$(calculate_duration "$test_start" "$test_end")
-        log_status "SUCCESS" "Internet HTTPS" "$QUICK_SITE" "${duration}s"
+        local duration=$(fac_int_calculate_duration "$test_start" "$test_end")
+        fac_int_log_status "SUCCESS" "Internet HTTPS" "$QUICK_SITE" "${duration}s"
         INTERNATIONAL_HTTPS_COUNT=$((INTERNATIONAL_HTTPS_COUNT + 1))
     else
         # Try ping if HTTPS fails
         if ping_test "$QUICK_SITE" "$timeout"; then
             local test_end=$(date +%s.%N)
-            local duration=$(calculate_duration "$test_start" "$test_end")
-            log_status "FAIL" "Internet connectivity" "$QUICK_SITE - ping OK but HTTPS blocked/filtered" "${duration}s"
+            local duration=$(fac_int_calculate_duration "$test_start" "$test_end")
+            fac_int_log_status "FAIL" "Internet connectivity" "$QUICK_SITE - ping OK but HTTPS blocked/filtered" "${duration}s"
             INTERNATIONAL_PING_COUNT=$((INTERNATIONAL_PING_COUNT + 1))
             overall_status=false  # WARNING should also fail the overall test
         else
             local test_end=$(date +%s.%N)
-            local duration=$(calculate_duration "$test_start" "$test_end")
-            log_status "FAIL" "Internet connectivity" "$QUICK_SITE - both ping and HTTPS failed" "${duration}s"
+            local duration=$(fac_int_calculate_duration "$test_start" "$test_end")
+            fac_int_log_status "FAIL" "Internet connectivity" "$QUICK_SITE - both ping and HTTPS failed" "${duration}s"
             overall_status=false
         fi
     fi
     
     local end_time=$(date +%s.%N)
-    local total_duration=$(calculate_duration "$start_time" "$end_time")
+    local total_duration=$(fac_int_calculate_duration "$start_time" "$end_time")
     if [ "$MODE" = "diagnose" ]; then
         echo "Quick check completed in ${total_duration}s"
     fi

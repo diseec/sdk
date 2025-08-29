@@ -1,20 +1,18 @@
 #!/bin/bash
 
-source $KIT_SRC_DIR/facades/workspace/index.sh
-
 c=$1; shift; case "$c" in
-    ini|init) cmd_workspace_init "$@" ;;
-    sel|select) cmd_workspace_select "$@" ;;
-    sta|status) cmd_workspace_status "$@" ;;
+    ini|init) fac_wor_init "$@" ;;
+    sel|select) fac_wor_select "$@" ;;
+    sta|status) fac_wor_status "$@" ;;
     con|config) c=$1; shift; case "$c" in
-        get) workspace_config_get "$@" ;;
-        set) workspace_config_set "$@" ;;
-        del|delete|remove) workspace_config_delete "$@" ;;
-        array_add) workspace_config_array_add "$@" ;;
-        array_remove) workspace_config_array_remove "$@" ;;
-        lis|list) workspace_config_keys "$@" ;;
-        pri|print) workspace_config_print "$@" ;;
-        pat|path) get_workspace_config_path "$@" ;;
+        get) fac_wor_config_get "$@" ;;
+        set) fac_wor_config_set "$@" ;;
+        del|delete|remove) fac_wor_config_delete "$@" ;;
+        array_add) fac_wor_config_array_add "$@" ;;
+        array_remove) fac_wor_config_array_remove "$@" ;;
+        lis|list) fac_wor_config_keys "$@" ;;
+        pri|print) fac_wor_config_print "$@" ;;
+        pat|path) fac_wor_get_config_path "$@" ;;
         hel|help|--help|-h) display_help "" "" \
             "$(color 30 'Workspace Config Commands')" "" \
             "    get <key.path>                   " "Get value from workspace configuration" \

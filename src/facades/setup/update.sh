@@ -1,9 +1,7 @@
 #!/bin/bash
 
-$KIT_SRC_DIR/facades/workspace/index.sh
-
 # Get version information for a package
-get_version_info() {
+fac_set_get_version_info() {
     local package_name="@$ORG_NAME/$KIT_NAME"
     
     # Get outdated info as JSON
@@ -33,7 +31,7 @@ get_version_info() {
 }
 
 # Check if kit version has changed
-has_version_changed() {
+fac_set_has_version_changed() {
     local package_name="@$ORG_NAME/$KIT_NAME"
     
     # Get outdated info as JSON
@@ -46,7 +44,7 @@ has_version_changed() {
     fi
 }
 
-cmd_update() {
+fac_set_cmd_update() {
     set -e
     
     local IS_RECURSIVE="false"
@@ -86,5 +84,3 @@ cmd_update() {
 
     message 42 "OKEY" "Update completed successfully"
 }
-
-cmd_update "$@"

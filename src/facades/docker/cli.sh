@@ -5,13 +5,11 @@
 # 1. Automatically creating PRs with AI-generated commit messages
 # 2. Checking existing PRs for unresolved issues/comments
 
-source "$KIT_SRC_DIR/facades/docker/index.sh"
-
 c=$1; shift; case "$c" in
     com|compose) c=$1; shift; case "$c" in
-        ude|up|up-dev) up_development "$@" ;;
-        upr|up-pro) up_production "$@" ;;
-        exe|exec) cmd_docker_execute "$@" ;;
+        ude|up|up-dev) fac_doc_up_development "$@" ;;
+        upr|up-pro) fac_doc_up_production "$@" ;;
+        exe|exec) fac_doc_cmd_docker_execute "$@" ;;
         bpa|build) _docker compose build --parallel "$@" ;;
         hel|help|--help|-h) display_help "" "" \
             "$(color 30 'Docker Compose Commands')" "" \

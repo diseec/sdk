@@ -2,7 +2,7 @@
 
 # Logging and output functions for internet connectivity checker
 
-log_status() {
+fac_int_log_status() {
     local status=$1
     local test_name=$2
     local details=$3

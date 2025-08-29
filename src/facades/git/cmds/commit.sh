@@ -1,9 +1,7 @@
 #!/bin/bash
 
-$KIT_SRC_DIR/facades/ai/index.sh
-
 # Generate commit message using AI
-generate_commit_message() {
+fac_git_cmd_generate_commit_message() {
     local diff_output="$(_git diff --staged)"
   
     if [ -z "$diff_output" ]; then
@@ -34,7 +32,7 @@ generate_commit_message() {
 }
 
 # Handle detached HEAD state
-warn_detached_head() {
+fac_git_cmd_warn_detached_head() {
   # Check if we're in detached HEAD state
   if ! _git symbolic-ref HEAD >/dev/null 2>&1; then
     message 41 "!" "Currently in detached HEAD state"
@@ -50,9 +48,9 @@ warn_detached_head() {
 }
 
 # Commit all changes with AI-generated message
-cmd_git_commit() {
+fac_git_cmd_commit() {
   # Handle detached HEAD state first
-  warn_detached_head
+  fac_git_cmd_warn_detached_head
   if [ $? -ne 0 ]; then return 1; fi
   
   # Don't allow commits directly to main
@@ -80,7 +78,7 @@ cmd_git_commit() {
   fi
 
   # Generate commit message
-  local commit_msg=$(generate_commit_message)
+  local commit_msg=$(fac_git_cmd_generate_commit_message)
   if [ -z "$commit_msg" ]; then
     message 31 "ERROR" "Failed to generate commit message."
     return 1

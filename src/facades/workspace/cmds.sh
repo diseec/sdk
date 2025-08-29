@@ -3,17 +3,17 @@
 # commands.sh - Command handlers for workspace operations
 
 # Initialize a workspace
-cmd_workspace_init() {
+fac_wor_init() {
     # message 34 "WORKSPACE" "Initializing workspace configuration"
-    create_workspace_config
+    fac_wor_create_config
 }
 
 # Show workspace status
-cmd_workspace_status() {
-    local config_file="$(get_workspace_config_path)"
+fac_wor_status() {
+    local config_file="$(fac_wor_get_config_path)"
     if [ -f "$config_file" ]; then
         echo "Workspace config: $config_file"
-        local selected_modules=$(get_selected_modules)
+        local selected_modules=$(fac_wor_get_selected_modules)
         if [ -n "$selected_modules" ]; then
             active_modules=""
             for module in $selected_modules; do
@@ -34,7 +34,7 @@ cmd_workspace_status() {
 }
 
 # Select modules for workspace
-cmd_workspace_select() {
+fac_wor_select() {
     message 34 "WORKSPACE" "Select modules for your workspace"
-    create_workspace_config
+    fac_wor_create_config
 }

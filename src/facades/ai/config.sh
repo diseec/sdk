@@ -13,8 +13,8 @@ export FAC_AI_API_ENDPOINT="https://api.openai.com/v1/chat/completions"
 # Initialize AI module and validate API key
 # Returns: 0 if successful, 1 if failed
 fac_ai_init() {
-    if validate_and_prepare_secret "OPENAI_API_KEY"; then
-        export OPENAI_API_KEY="$(cmd_secret_export OPENAI_API_KEY)"
+    if fac_sec_validate_and_prepare_secret "OPENAI_API_KEY"; then
+        export OPENAI_API_KEY="$(fac_sec_export OPENAI_API_KEY)"
         return 0
     else
         message 31 "ERROR" "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2

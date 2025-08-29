@@ -3,7 +3,7 @@
 # Connection issue diagnosis and failure analysis
 
 # Intelligent failure analysis
-diagnose_connection_issues() {
+fac_int_diagnose_connection_issues() {
     printf "${RED}Connection Issue Diagnosis${NC}\n"
     
     local total_international=${#INTERNATIONAL_SITES[@]}

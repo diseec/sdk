@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cmd_git_pull_merge() {
+fac_git_cmd_pull_merge() {
     local IS_RECURSIVE="false"
     ARGS=""; for arg in "$@"; do case "$arg" in
         -r|--recursive) IS_RECURSIVE="true";;
@@ -20,6 +20,6 @@ cmd_git_pull_merge() {
             local module_path="$2"
             "$ROOT_DIR/$module_path/cli" pull -r
         }
-        foreach_selected_module_with_callback pull_submodule
+        fac_wor_foreach_selected_module pull_submodule
     fi
 }

@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source "$KIT_SRC_DIR/facades/workspace/index.sh"
-source "$KIT_SRC_DIR/facades/ai/index.sh"
-
 source "$KIT_SRC_DIR/facades/git/exceptions.sh"
 source "$KIT_SRC_DIR/facades/git/cmds/pull.sh"
 source "$KIT_SRC_DIR/facades/git/cmds/commit-push-pr.sh"

@@ -5,7 +5,7 @@
 # =============================================================================
 # Git-related functions and operations
 
-con_uti_get_git_config_file() {
+env_uti_get_git_config_file() {
     local git_dir="$ROOT_DIR/.git"
     local git_config_file=""
     
@@ -23,18 +23,18 @@ con_uti_get_git_config_file() {
     echo "$git_config_file"
 }
 
-con_uti_get_repo_url() {
+env_uti_get_repo_url() {
     local git_config_file
-    git_config_file=$(con_uti_get_git_config_file)
+    git_config_file=$(env_uti_get_git_config_file)
     
     if [ -f "$git_config_file" ]; then
         awk -F' = ' '/\[remote "origin"\]/ {found=1} found && /url =/ {print $2; exit}' "$git_config_file"
     fi
 }
 
-con_uti_get_repo_name() {
+env_uti_get_repo_name() {
     local repo_url
-    repo_url=$(con_uti_get_repo_url)
+    repo_url=$(env_uti_get_repo_url)
     
     if [ -n "$repo_url" ]; then
         # Remove trailing .git if present
@@ -42,7 +42,7 @@ con_uti_get_repo_name() {
     fi
 }
 
-con_uti_get_current_branch() {
+env_uti_get_current_branch() {
     # Replacement for: git rev-parse --abbrev-ref HEAD
     local git_dir="$ROOT_DIR/.git"
     local head_file=""

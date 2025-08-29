@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cmd_git_push() {
+fac_git_cmd_push() {
   # Push to remote
   echo "Pushing to remote..."
   _git push -u origin "$CURRENT_BRANCH"

@@ -95,7 +95,7 @@ cor_fire_hook() {
     #     execute_hook "$dir" "$cli" "$HOOK" "$module" || true
     # }
     # # Process all selected modules
-    # foreach_selected_module_with_callback process_module || true
+    # fac_wor_foreach_selected_module process_module || true
 
     # message 32 "done" "hook '$HOOK' execution completed"
 }

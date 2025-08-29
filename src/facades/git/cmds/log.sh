@@ -3,10 +3,9 @@
 # TODO cache the resutl and make sure is created only once a day
 # TODO extrac the openai call functionalities
 
-$KIT_SRC_DIR/facades/ai/index.sh
 
 # Generic function to display commit information for any commit ID
-cmd_git_log() {
+fac_git_cmd_git_log() {
     local commit_id="${1:-HEAD}"
     
     # Validate commit exists
@@ -20,7 +19,7 @@ cmd_git_log() {
     local commit_link="https://github.com/$ORG_NAME/$REPO_NAME/commit/$commit_hash"
     
     # Get PR link only if requested and we're checking HEAD
-    local pr_link=$(_gh pr view "$(has_open_pr)" --json url -q .url)
+    local pr_link=$(_gh pr view "$(fac_git_cmd_has_open_pr)" --json url -q .url)
     
     # Get commit info
     local commit_date=$(_git log -1 --pretty=%cd --date=iso "$commit_id")
@@ -62,7 +61,7 @@ cmd_git_log() {
     echo ""
 }
 
-cmd_git_daily_insight() {
+fac_git_cmd_daily_insight() {
     # Get today's date range (00:00 to now)
     local today_start=$(date '+%Y-%m-%d 00:00:00')
     local today_end=$(date '+%Y-%m-%d %H:%M:%S')
@@ -152,7 +151,7 @@ $unstaged_diff"
     collect_repo_data "$REPO_NAME" "."
     
     # Process all selected submodules
-    foreach_selected_module_with_callback collect_repo_data
+    fac_wor_foreach_selected_module collect_repo_data
     
     # If no data collected, show simple message
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then

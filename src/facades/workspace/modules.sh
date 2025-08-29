@@ -3,8 +3,8 @@
 # modules.sh - Functions for managing git submodules and module discovery
 
 # Get the list of selected modules from workspace config
-get_selected_modules() {
-    local config_file="$(get_workspace_config_path)"
+fac_wor_get_selected_modules() {
+    local config_file="$(fac_wor_get_config_path)"
 
     if [ ! -f "$config_file" ]; then
         # If workspace config doesn't exist, just return empty (no modules selected)
@@ -18,7 +18,7 @@ get_selected_modules() {
 }
 
 # Parse the .gitmodules file to extract available modules
-get_available_modules() {
+fac_wor_get_available_modules() {
     local gitmodules_file="$ROOT_DIR/.gitmodules"
     
     if [ ! -f "$gitmodules_file" ]; then
@@ -33,7 +33,7 @@ get_available_modules() {
 }
 
 # Get the module path from a module name
-get_module_path() {
+fac_wor_get_module_path() {
     local module_name="$1"
     
     if [ -z "$module_name" ]; then
@@ -47,9 +47,9 @@ get_module_path() {
 }
 
 # Check if a module is selected in the workspace configuration
-is_module_selected() {
+fac_wor_is_module_selected() {
     local module_name="$1"
-    local selected_modules=$(get_selected_modules)
+    local selected_modules=$(fac_wor_get_selected_modules)
     
     for selected_module in $selected_modules; do
         if [ "$selected_module" = "$module_name" ]; then
@@ -61,12 +61,12 @@ is_module_selected() {
 }
 
 # Run a callback function for each selected module
-# Usage: foreach_selected_module_with_callback callback_function [additional_args...]
-foreach_selected_module_with_callback() {
+# Usage: fac_wor_foreach_selected_module callback_function [additional_args...]
+fac_wor_foreach_selected_module() {
     if [ $IS_MONOREPO != "true" ]; then return; fi
     local callback_function="$1"
     shift
-    local selected_modules=$(get_selected_modules)
+    local selected_modules=$(fac_wor_get_selected_modules)
 
     if [ -z "$selected_modules" ]; then
         # No modules selected is a valid state - just return success
@@ -75,7 +75,7 @@ foreach_selected_module_with_callback() {
     fi
 
     for module in $selected_modules; do
-        local module_path=$(get_module_path "$module")
+        local module_path=$(fac_wor_get_module_path "$module")
         if [ -n "$module_path" ]; then
             "$callback_function" "$module" "$module_path" "$@"
         else
@@ -85,8 +85,8 @@ foreach_selected_module_with_callback() {
 }
 
 # Get a space-separated list of services based on selected modules
-get_services_filter() {
-    local selected_modules=$(get_selected_modules)
+fac_wor_get_services_filter() {
+    local selected_modules=$(fac_wor_get_selected_modules)
     local services_filter=""
     local docker_compose_file="$ROOT_DIR/docker-compose.yaml"
     

@@ -3,7 +3,7 @@
 # DNS testing functions for internet connectivity checker
 
 # Test DNS servers (diagnose mode only)
-test_dns_servers() {
+fac_int_test_dns_servers() {
     printf "${BLUE}DNS Server Connectivity${NC}\n"
 
     local dns_working=false
@@ -43,11 +43,11 @@ test_dns_servers() {
     
     for dns in "${DNS_SERVERS[@]}"; do
         if ping_test "$dns" "$timeout"; then
-            log_status "SUCCESS" "DNS server reachable" "$dns"
+            fac_int_log_status "SUCCESS" "DNS server reachable" "$dns"
             dns_working=true
             dns_success_count=$((dns_success_count + 1))
         else
-            log_status "FAIL" "DNS server unreachable" "$dns"
+            fac_int_log_status "FAIL" "DNS server unreachable" "$dns"
         fi
     done
     
@@ -72,11 +72,11 @@ test_dns_servers() {
     fi
     
     if [ "$dns_resolution_working" = "true" ]; then
-        log_status "SUCCESS" "DNS resolution working"
+        fac_int_log_status "SUCCESS" "DNS resolution working"
         DNS_RESOLUTION_STATUS="SUCCESS"
         dns_working=true
     else
-        log_status "FAIL" "DNS resolution failed"
+        fac_int_log_status "FAIL" "DNS resolution failed"
         DNS_RESOLUTION_STATUS="FAIL"
     fi
     

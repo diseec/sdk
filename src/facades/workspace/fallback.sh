@@ -3,7 +3,7 @@
 # fallback.sh - Fallback methods for when yq is not available
 
 # Fallback methods for when yq is not available
-workspace_config_fallback_get() {
+fac_wor_config_fallback_get() {
     local key_path="$1"
     local config_file="$2"
     
@@ -17,7 +17,7 @@ workspace_config_fallback_get() {
     fi
 }
 
-workspace_config_fallback_set() {
+fac_wor_config_fallback_set() {
     local key_path="$1"; shift
     local value="$1"
     local config_file="$2"

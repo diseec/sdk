@@ -1,12 +1,10 @@
 #!/bin/bash
 
-up_development() {
-    $KIT_SRC_DIR/facades/workspace/index.sh
-
+fac_doc_up_development() {
     set -e
 
     # Filter services based on workspace configuration
-    services_filter=$(get_services_filter)
+    services_filter=$(fac_wor_get_services_filter)
 
     if [ "$IS_IN_CONTAINER" = "true" ]; then
         if [ -f "$ROOT_DIR/docker-compose.override.yaml" ]; then
