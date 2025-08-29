@@ -129,11 +129,3 @@ fac_int_test_command_compatibility() {
     eval "$cmd $test_args" >/dev/null 2>&1
     return $?
 }
-
-# Export functions for use in other modules
-export -f fac_int_detect_os
-export -f fac_int_get_ping_command
-export -f fac_int_get_interface_command
-export -f fac_int_get_route_command
-export -f fac_int_get_dns_command
-export -f fac_int_test_command_compatibility

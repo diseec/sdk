@@ -126,15 +126,3 @@ fac_int_bytes_to_kbps() {
     fi
 }
 
-# Export functions for use in other modules
-export -f fac_int_calculate_duration
-export -f fac_int_float_compare
-export -f fac_int_float_add
-export -f fac_int_float_subtract
-export -f fac_int_float_multiply
-export -f fac_int_float_divide
-export -f fac_int_calculate_percentage
-export -f fac_int_calculate_average
-export -f fac_int_calculate_variance
-export -f fac_int_bytes_to_mbps
-export -f fac_int_bytes_to_kbps

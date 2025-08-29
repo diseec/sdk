@@ -29,8 +29,8 @@ COPY . .
 
 ENV IS_IN_CONTAINER=true
 
-RUN . /kit/cli envs && \
-    mkdir /vise && \
+RUN set -a && eval "$(/kit/cli envs)" && set +a && \
+    mkdir -p /$PROJECT_MOUNT_DIR_NAME && \
     npm install -g /kit
 
 ENV IS_IN_KIT_CONTAINER=true

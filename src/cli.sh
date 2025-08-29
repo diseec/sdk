@@ -44,7 +44,7 @@ c=$1; shift; case "$c" in
 
     ######################## UTILITIES ########################
 
-    env|envs) message 34 "INFO" "Sourced repo envs" ;; # Source projects root cli to load environment variables. example: "source ./cli envs;"
+    env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;; # external usage example: "set -a; eval "$(./cli envs)"; set +a;" | internal usage example: "cli_main envs > /dev/null"
 
     inf|inform) "$KIT_SRC_DIR/informs/index.sh" "$@" ;;
 

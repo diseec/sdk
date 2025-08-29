@@ -8,7 +8,7 @@ c=$1; shift; case "$c" in
     ksh|key-show) fac_sec_show_key "$@" ;;
     add) fac_sec_add_secret "$@" ;;
     exp|export) fac_sec_export "$@" ;;
-    sho|show) fac_sec_show_secrets "$@" ;;
+    pri|print) fac_sec_show_secrets "$@" ;;
     cle|clear) fac_sec_clear_secrets "$@" ;;
     rem|remove|rm|del|delete) fac_sec_remove_secret "$@" ;;
     *) display_help "" "" \
@@ -17,7 +17,7 @@ c=$1; shift; case "$c" in
         "    kre|key-reset          " "Generate new key and re-encrypt all secrets" \
         "    ksh|key-show           " "Display current encryption key" \
         "    add                    " "Add a new secret interactively" \
-        "    sho|show               " "Display all secrets in readable format" \
+        "    pri|print              " "Display all secrets in readable format" \
         "    exp|export             " "Export a secret value" \
         "    cle|clear              " "Remove all secrets (requires confirmation)" \
         "    rem|remove <name>      " "Remove a specific secret" \

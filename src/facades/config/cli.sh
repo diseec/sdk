@@ -58,12 +58,11 @@ c=$1; shift; case $c in
         "" "" "$(color 30 'Commands')" "" \
         "    get <key.path>           " "Get configuration value with hierarchy resolution" \
         "    set <key.path> <value>   " "Set configuration value in specified scope" \
-        "    del|delete <key.path>    " "Delete configuration key from specified scope" \
-        "    lis|list                 " "List all configuration keys for specified scope" \
-        "    whi|which <key.path>     " "Show configuration value resolution path (no scope needed)" \
-        "    pri|print                " "Print configuration for scope (or all if no scope)" \
         "    add <key.path> <value>   " "Add value to configuration array" \
         "    rem|remove <key.path> <val>" "Remove value from configuration array" \
+        "    del|delete <key.path>    " "Delete configuration key from specified scope" \
+        "    whi|which <key.path>     " "Show configuration value resolution path (no scope needed)" \
+        "    pri|print                " "Print configuration for scope (or all if no scope)" \
         "    hel|help                 " "Show this help message" \
         "" "" "$(color 30 'Scopes')" "" \
         "    project                  " "Project-specific configuration (.kit/project.yaml)" \

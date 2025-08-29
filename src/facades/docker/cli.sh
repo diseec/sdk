@@ -5,6 +5,8 @@
 # 1. Automatically creating PRs with AI-generated commit messages
 # 2. Checking existing PRs for unresolved issues/comments
 
+cli_main envs > /dev/null # export envs so docker compose can pick them
+
 c=$1; shift; case "$c" in
     com|compose) c=$1; shift; case "$c" in
         ude|up|up-dev) fac_doc_up_development "$@" ;;
