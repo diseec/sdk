@@ -40,10 +40,6 @@ readonly ORG_CACHE_DIR
 IS_IN_CONTAINER="$(env_uti_is_in_container)"
 readonly IS_IN_CONTAINER
 
-# Project structure detection
-IS_MONOREPO="$(env_uti_is_monorepo)"
-readonly IS_MONOREPO
-
 HAS_SUBMODULES="$(env_uti_has_submodules)"
 readonly HAS_SUBMODULES
 

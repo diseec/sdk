@@ -72,7 +72,7 @@ fac_set_cmd_update() {
     message 44 "ℹ︎" "Pulling latest changes..."
     cli_main pull
 
-    if [ "$HAS_SUBMODULES" = "true" ]; then
+    if [  "$IS_RECURSIVE" = "true"  ]; then
         echo "$REPO_NAME: Updating dependencies in selected submodules..."
         update_dependencies() {
             local module="$1"

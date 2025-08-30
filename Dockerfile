@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:20-alpine
 
 # Install base dependencies
 RUN apk add --no-cache bash curl yq jq git openssl git-lfs

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if ! cli_main internet is-online; then
-    message 41 ⊘ "Disconnected, skipping update check..."
+    message 41 "⊘" "Disconnected, skipping update check..."
     return 0
 fi
 
@@ -44,7 +44,6 @@ elif [ -d "$ROOT_DIR/.git" ]; then
                     fi
                 fi
             }
-            
             fac_wor_foreach_selected_module check_module_status
             
             if $modules_behind; then

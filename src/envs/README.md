@@ -52,7 +52,6 @@ packages/kit/src/core/
 - **Purpose**: Detect various environment states
 - **Contents**:
   - `env_uti_is_in_container()`: Container environment detection
-  - `env_uti_is_monorepo()`: Monorepo structure detection
   - `env_uti_has_submodules()`: Git submodules detection
   - `env_uti_get_kit_version()`: Extract kit version from package.json
 - **Benefits**: Clear separation of concerns, reusable functions
@@ -138,7 +137,7 @@ All variables are exported and available:
 
 ### Environment State
 
-- `IS_IN_CONTAINER`, `IS_MONOREPO`, `HAS_SUBMODULES`
+- `IS_IN_CONTAINER`, `HAS_SUBMODULES`
 - `VERSION`, `REPO_URL`, `REPO_NAME`, `CURRENT_BRANCH`
 
 ## Validation

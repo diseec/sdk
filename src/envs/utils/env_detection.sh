@@ -13,14 +13,6 @@ env_uti_is_in_container() {
     fi
 }
 
-env_uti_is_monorepo() {
-    if [ -d "$ROOT_DIR/services" ] && [ "$(ls -A "$ROOT_DIR/services" 2>/dev/null)" ]; then
-        echo "true"
-    else
-        echo "false"
-    fi
-}
-
 env_uti_has_submodules() {
     if [ -f "$ROOT_DIR/.gitmodules" ] && [ -s "$ROOT_DIR/.gitmodules" ]; then
         echo "true"

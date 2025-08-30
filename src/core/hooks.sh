@@ -77,25 +77,5 @@ handle_hook() {
         execute_hook "$ROOT_DIR" cli_main "$HOOK" "root" || true
     fi
 
-    # # Process each selected module
-    # process_module() {
-    #     local module="$1"
-    #     local module_path="$2"
-    #     local dir="$ROOT_DIR/$module_path"
-    #     local cli="$dir/cli"
-    #     # Skip if directory doesn't exist
-    #     if [ ! -d "$dir" ]; then
-    #         return 0
-    #     fi
-    #     # Skip if cli_main doesn't exist or isn't executable
-    #     if [ ! -x "$cli" ]; then
-    #         return 0
-    #     fi
-    #     # Execute hook in module
-    #     execute_hook "$dir" "$cli" "$HOOK" "$module" || true
-    # }
-    # # Process all selected modules
-    # fac_wor_foreach_selected_module process_module || true
-
     # message 32 "done" "hook '$HOOK' execution completed"
 }

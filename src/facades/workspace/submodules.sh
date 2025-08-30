@@ -63,7 +63,7 @@ fac_wor_is_module_selected() {
 # Run a callback function for each selected module
 # Usage: fac_wor_foreach_selected_module callback_function [additional_args...]
 fac_wor_foreach_selected_module() {
-    if [ $IS_MONOREPO != "true" ]; then return; fi
+    if [ "$HAS_SUBMODULES" != "true" ]; then return; fi
     local callback_function="$1"
     shift
     local selected_modules=$(fac_wor_get_selected_modules)

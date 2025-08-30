@@ -27,7 +27,7 @@ fac_set_project() {
         cli_main workspace init
     fi
 
-    if [ "$HAS_SUBMODULES" = "true" ]; then
+    if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Cloning selected submodules..."
         initialize_submodule() {
             local module="$1"; local module_path="$2"
