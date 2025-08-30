@@ -13,23 +13,20 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit/i
 
 c=$1; shift; case $c in
 
-    ins|install)
-        # yarn install # Add project specific install commands here
-        cli_core install --recursive "$@"
-    ;;
-
     dev)
-        cli_main kit start --detach > /dev/null 2>&1
         confirm "Run post dev ops?" \
+            cli_main kit start --detach > /dev/null 2>&1 \
             cli_main status \
-            confirm "Pull and merge latest changes?" cli_main pull --recursive
+            confirm "Pull and merge latest changes?" cli_main pull --recursive \
+            cli_main kit stop
+
         cli_core dev "$@"
+
         cli_main format
         confirm "Commit, push and PR changes?" cli_main push --recursive
-        cli_main kit stop
     ;;
 
-    # hook:before_update) message 44 "ℹ︎" "Commands before updating completed..." ;;
+    # hook:before_install) yarn install ;;
 
     # hel|help|--help|-h) $CLIBASE help "myc|mycommand" "    Display the help message" ;;
 

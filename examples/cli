@@ -57,10 +57,12 @@ c=$1; shift; case $c in
     tes|test) cli_core test "$@" ;;
 
     # Hooks
-    # hook:before_update) message 44 "ℹ︎" "Commands before updating completed..." ;;
+    # hook:before_install) message 44 "ℹ︎" "Commands before installing completed..." ;;
+    # hook:after_install) message 44 "ℹ︎" "Commands after installing completed..." ;;
+    # hook:before_update) message 44 "ℹ︎" "Commands after updating completed..." ;;
     # hook:after_update) message 44 "ℹ︎" "Commands after updating completed..." ;;
-    # hook:before_pull) message 44 "ℹ︎" "Commands before pulling changes..." ;;
-    # hook:before_cpp) message 44 "ℹ︎" "Commands before pushing changes..." ;;
+    # hook:before_push) message 44 "ℹ︎" "Commands before pushing changes..." ;;
+    # hook:after_push) message 44 "ℹ︎" "Commands after pushing changes..." ;;
 
     # hel|help|--help|-h) $CLIBASE help "myc|mycommand" "    Display the help message" ;;
 

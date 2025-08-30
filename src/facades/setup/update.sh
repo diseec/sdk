@@ -55,22 +55,22 @@ fac_set_cmd_update() {
     echo "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
     echo "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
 
-    cli_main git pull origin
-    cli_main kit docker compose pull;
+    cli_main kit stop
 
-    cli_main safely kit do patch;
+    cli_main git pull origin
+    cli_main kit docker compose pull
+    cli_main safely kit do patch
     echo "$KIT_NAME version patched to: $VERSION"
 
-    # Check if version has changed
     handle_hook before_update
 
     cli_main kit start --detach
 
     message 44 "ℹ︎" "Installing dependencies..."
-    cli_main install;
+    cli_main install
 
     message 44 "ℹ︎" "Pulling latest changes..."
-    cli_main pull;
+    cli_main pull
 
     if [ "$HAS_SUBMODULES" = "true" ]; then
         echo "$REPO_NAME: Updating dependencies in selected submodules..."
