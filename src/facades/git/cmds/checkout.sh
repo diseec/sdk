@@ -29,7 +29,7 @@ fac_git_cmd_checkout_if_detached() {
         # echo "$REPO_NAME: Already on a branch, no checkout needed."
         return 0
     else
-        message 43 ! "$REPO_NAME: Repository is in detached HEAD state."
+        message 43 "!" "$REPO_NAME: Repository is in detached HEAD state."
         # Check for local changes in detached HEAD
         if [ -n "$(_git status --porcelain)" ]; then
             message 41 "!" "You have local changes in detached HEAD."

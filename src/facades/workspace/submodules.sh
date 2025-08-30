@@ -22,7 +22,7 @@ fac_wor_get_available_modules() {
     local gitmodules_file="$ROOT_DIR/.gitmodules"
     
     if [ ! -f "$gitmodules_file" ]; then
-        message 41 "!" ".gitmodules file not found at $gitmodules_file"
+        message 41 "!" ".gitmodules file not found at $gitmodules_file" >&2
         return 1
     fi
     
