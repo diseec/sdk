@@ -29,10 +29,14 @@ COPY . .
 
 ENV IS_IN_CONTAINER=true
 
-RUN set -a && eval "$(/kit/cli envs)" && set +a && \
-    mkdir -p "$PROJECT_MOUNT_DIR" && \
+RUN eval $(/kit/cli envs) && \
+    mkdir -p "$TARGET_MOUNTED_DIR" && \
     npm install -g /kit
 
 ENV IS_IN_KIT_CONTAINER=true
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["bash", "cli", "help"]

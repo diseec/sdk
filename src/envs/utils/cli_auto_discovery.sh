@@ -19,7 +19,7 @@ env_uti_cli_auto_discovery() {
     fi
     
     # if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then # this breaks when a parent recursively do something on submodules then all of cli submodules point to the parent
-    #     printf '%s\n' "$PROJECT_MOUNT_DIR"
+    #     printf '%s\n' "$TARGET_MOUNTED_DIR"
     #     return 0
     # fi
     

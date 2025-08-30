@@ -8,7 +8,7 @@
 
 readonly ORG_NAME="diseec"
 readonly KIT_NAME="kit"
-readonly PROJECT_MOUNT_DIR="/vise"
+readonly TARGET_MOUNTED_DIR="/vise"
 
 # Registry and repository configuration
 readonly IMAGE_REGISTRY_URL="image.registry.$ORG_NAME.com"

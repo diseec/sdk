@@ -5,14 +5,14 @@ vars=( \
     REPO_NAME \
     KIT_DIR \
     KIT_NAME \
-    GIT_DIR \
+    GIT_DIRECTORY \
     ORG_CACHE_DIR \
     IMAGE_REGISTRY_URL \
-    PROJECT_MOUNT_DIR \
+    TARGET_MOUNTED_DIR \
     GIT_MOUNT_DIR \
 )
 
-export "${vars[@]}"
+# export "${vars[@]}" # reduces control
 
 for v in "${vars[@]}"; do
     val="${!v}"

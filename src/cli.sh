@@ -43,13 +43,13 @@ c=$1; shift; case "$c" in
 
     ######################## UTILITIES ########################
 
-    env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;; # external usage example: "set -a; eval "$(./cli envs)"; set +a;" | internal usage example: "cli_main envs > /dev/null"
+    env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;;
 
     inf|inform) source "$KIT_SRC_DIR/informs/index.sh" "$@" ;;
 
-    kit) export TO_MOUNT_DIR="$ROOT_DIR"; "$KIT_DIR/cli" "$@" ;;
+    kit) env KIT_TARGET_DIR="$ROOT_DIR" "$KIT_DIR/cli" "$@" ;;
 
-    saf|safely) cli_main "$KIT_NAME" run --no-message "$PROJECT_MOUNT_DIR/cli" "$@" ;;
+    saf|safely) cli_main "$KIT_NAME" run --no-message "$TARGET_MOUNTED_DIR/cli" "$@" ;;
 
     api) c=$1; shift; case "$c" in
         v1) c=$1; shift; case "$c" in
@@ -104,7 +104,9 @@ c=$1; shift; case "$c" in
         "" "" "$(color 30 'Configuration')" "" \
         "    con|config               " "Configuration management" \
         "    sec|secret               " "Encrypted secrets management" \
-        "    env|envs                 " "Environment variables. Usage: source D envs" \
+        "    env|envs                 " "Manage environment variables." \
+        "                             " "Export globally: set -a; eval \"\$(D envs)\"; set +a" \
+        "                             " "Use locally: eval \$(cli_main envs) > /dev/null" \
         "" "" "$(color 30 'Utilities')" "" \
         "    ins|insight              " "Generate development insights" \
         "    inf|inform               " "Information and validation" \

@@ -9,19 +9,19 @@ c=$1; shift; case $c in
     c=$1; shift; case $c in
         pat|patch)
             set -e
-            VERSION_SPECIFIER=$(_node -p "require('$PROJECT_MOUNT_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$PROJECT_MOUNT_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
+            VERSION_SPECIFIER=$(_node -p "require('$TARGET_MOUNTED_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$TARGET_MOUNTED_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
             if [ -z "$VERSION_SPECIFIER" ]; then
-                message 41 "!" "@$ORG_NAME/$KIT_NAME not found in '$PROJECT_MOUNT_DIR/package.json'."
+                message 41 "!" "@$ORG_NAME/$KIT_NAME not found in '$TARGET_MOUNTED_DIR/package.json'."
                 exit 1
             fi
             echo "Running npm install @$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER .."
             TMPDIR=$(mktemp -d)
             (cd $TMPDIR && _npm install "@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER")
-            rm -rf "$PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH" 2>/dev/null
-            mkdir -p "$PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH" 2>/dev/null
-            cp -r "$TMPDIR/$KIT_RELATIVE_PATH/*" "$PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH"
-            if [ ! -f "$PROJECT_MOUNT_DIR/cli" ]; then cp "/$KIT_NAME/templates/cli" "$PROJECT_MOUNT_DIR/cli"; fi
-            # if [ ! -f "$PROJECT_MOUNT_DIR/.gitignore" ]; then cp "/$KIT_NAME/templates/.gitignore" "$PROJECT_MOUNT_DIR/.gitignore"; fi
+            rm -rf "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH" 2>/dev/null
+            mkdir -p "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH" 2>/dev/null
+            cp -r "$TMPDIR/$KIT_RELATIVE_PATH/*" "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH"
+            if [ ! -f "$TARGET_MOUNTED_DIR/cli" ]; then cp "/$KIT_NAME/templates/cli" "$TARGET_MOUNTED_DIR/cli"; fi
+            # if [ ! -f "$TARGET_MOUNTED_DIR/.gitignore" ]; then cp "/$KIT_NAME/templates/.gitignore" "$TARGET_MOUNTED_DIR/.gitignore"; fi
         ;;
         # templates) bash bin/templates.sh ;;
         *)

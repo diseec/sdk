@@ -6,20 +6,51 @@
 # Git-related functions and operations
 
 env_uti_get_git_dir() {
-    local git_dir_or_file="$ROOT_DIR/.git"
-    if [ -d "$git_dir_or_file" ]; then
-        # Standard git repo
-        echo "$git_dir_or_file" 
-    elif [ -f "$git_dir_or_file" ]; then
+    find_git_dir_for() {
+        local target="$1"
+        local git_dir_or_file="$target/.git"
+
+        if [ -d "$git_dir_or_file" ]; then
+            # Standard git repo
+            echo "$git_dir_or_file" 
+            return 0
+        fi
+
+        if [ ! -f "$git_dir_or_file" ]; then
+            echo "error: '$git_dir_or_file' is not a valid git reference"
+            return 1
+        fi
+
         # Submodule or worktree: .git is a file pointing to actual gitdir
+        
         gitdir_ref=$(awk -F': ' '/^gitdir:/ {print $2}' "$git_dir_or_file")
-        if [ "$IS_IN_CONTAINER" = "true" ]; then
+
+        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then
+            echo "$target/$gitdir_ref"
+            return 0
+        fi
+
+        # Conclusion is it's running in container, then we:
+
+        if [ "$target" = "$TARGET_MOUNTED_DIR" ]; then
+            echo "$GIT_MOUNT_DIR"
+            return 0
+        else
             # remove any leading ../ or ./ and strip up-to-and-including ".git/"
             module_ref=$(echo "$gitdir_ref" | awk -F'.git/' '{print $2}')
             echo "$GIT_MOUNT_DIR/$module_ref"
-        else
-            echo "$ROOT_DIR/$gitdir_ref"
+            return 0
         fi
+
+        echo "error: no git reference found"
+    }
+
+    if [ "$KIT_TARGET_DIR" != "$KIT_DIR" ]; then
+        find_git_dir_for "$KIT_TARGET_DIR"
+        return
+    else
+        find_git_dir_for "$ROOT_DIR"
+        return
     fi
 }
 

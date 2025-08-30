@@ -25,6 +25,8 @@ readonly KIT_SRC_DIR="$KIT_DIR/src"
 readonly CLI_MAIN="$ROOT_DIR/cli"
 readonly CLI_CORE="$KIT_SRC_DIR/cli.sh"
 
+KIT_TARGET_DIR="$(env_uti_get_kit_target_dit)"
+
 # Organization directories
 ORG_DIR="$(get_org_dir)"
 readonly ORG_DIR
@@ -48,10 +50,8 @@ VERSION="$(env_uti_get_kit_version)"
 readonly VERSION
 
 # Git repository information
-readonly GIT_WORK_TREE="$ROOT_DIR"
-
-GIT_DIR="$(env_uti_get_git_dir)"
-readonly GIT_DIR
+GIT_DIRECTORY="$(env_uti_get_git_dir)"
+readonly GIT_DIRECTORY
 
 REPO_URL="$(env_uti_get_repo_url)"
 readonly REPO_URL

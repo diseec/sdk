@@ -34,6 +34,17 @@ _npm() {
 
 _docker() {
     # cli_main $KIT_NAME run --no-message docker "$@"
+
+    env \
+    ROOT_DIR="$ROOT_DIR" \
+    REPO_NAME="$REPO_NAME" \
+    KIT_DIR="$KIT_DIR" \
+    KIT_NAME="$KIT_NAME" \
+    GIT_DIRECTORY="$GIT_DIRECTORY" \
+    ORG_CACHE_DIR="$ORG_CACHE_DIR" \
+    IMAGE_REGISTRY_URL="$IMAGE_REGISTRY_URL" \
+    TARGET_MOUNTED_DIR="$TARGET_MOUNTED_DIR" \
+    GIT_MOUNT_DIR="$GIT_MOUNT_DIR" \
     docker "$@"
 }
 
@@ -54,10 +65,18 @@ _openssl() {
 
 _git() {
     # cli_main $KIT_NAME run --no-message git "$@"
-    git "$@"
+    if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
+        GIT_WORK_TREE="$ROOT_DIR" GIT_DIR="$GIT_DIRECTORY" git "$@"
+    else
+        git "$@"
+    fi
 }
 
 _gh() {
     # cli_main $KIT_NAME run --no-message gh "$@"
-    gh "$@"
+    if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
+        GIT_WORK_TREE="$ROOT_DIR" GIT_DIR="$GIT_DIRECTORY" gh "$@"
+    else
+        gh "$@"
+    fi
 }

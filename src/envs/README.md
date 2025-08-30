@@ -127,7 +127,7 @@ All variables are exported and available:
 
 ### Constants
 
-- `ORG_NAME`, `KIT_NAME`, `PROJECT_MOUNT_DIR`
+- `ORG_NAME`, `KIT_NAME`, `TARGET_MOUNTED_DIR`
 - `IMAGE_REGISTRY_URL`, `KIT_IMAGE`, `REPO_HUB_URL`, `KIT_RELATIVE_PATH`
 
 ### Computed Paths

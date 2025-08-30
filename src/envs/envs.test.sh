@@ -122,7 +122,7 @@ echo -e "\n${YELLOW}Testing constants...${NC}"
 # Test constants are set
 test_variable_set "ORG_NAME"
 test_variable_set "KIT_NAME"
-test_variable_set "PROJECT_MOUNT_DIR"
+test_variable_set "TARGET_MOUNTED_DIR"
 test_variable_set "IMAGE_REGISTRY_URL"
 test_variable_set "KIT_IMAGE"
 test_variable_set "REPO_HUB_URL"

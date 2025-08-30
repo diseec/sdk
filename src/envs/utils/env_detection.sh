@@ -28,3 +28,11 @@ env_uti_get_kit_version() {
         echo "unknown"
     fi
 }
+
+env_uti_get_kit_target_dit() {
+    if [ -z "$KIT_TARGET_DIR" ]; then
+        echo "$ROOT_DIR"
+    else
+        echo "$KIT_TARGET_DIR" # Is set when the command "D kit" has executed
+    fi
+}
