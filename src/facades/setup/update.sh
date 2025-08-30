@@ -55,16 +55,12 @@ fac_set_cmd_update() {
     echo "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
     echo "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
 
-    cli_main kit stop
-
     cli_main git pull origin
     cli_main kit docker compose pull
     cli_main safely kit do patch
     echo "$KIT_NAME version patched to: $VERSION"
 
     handle_hook before_update
-
-    cli_main kit start --detach
 
     message 44 "ℹ︎" "Installing dependencies..."
     cli_main install
@@ -82,8 +78,6 @@ fac_set_cmd_update() {
         }
         fac_wor_foreach_selected_module update_dependencies
     fi
-
-    cli_main kit stop
 
     handle_hook after_update
 

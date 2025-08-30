@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Main entry point for the internet connectivity checker
-
+# TODO make this force safe asswell
 # Source all required modules
 source "$KIT_SRC_DIR/facades/internet/os_detection.sh"
 source "$KIT_SRC_DIR/facades/internet/math_utils.sh"

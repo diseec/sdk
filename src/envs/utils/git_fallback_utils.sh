@@ -5,22 +5,30 @@
 # =============================================================================
 # Git-related functions and operations
 
-env_uti_get_git_config_file() {
-    local git_dir="$ROOT_DIR/.git"
-    local git_config_file=""
-    
-    if [ -d "$git_dir" ]; then
+env_uti_get_git_dir() {
+    local git_dir_or_file="$ROOT_DIR/.git"
+    if [ -d "$git_dir_or_file" ]; then
         # Standard git repo
-        git_config_file="$git_dir/config"
-    elif [ -f "$git_dir" ]; then
+        echo "$git_dir_or_file" 
+    elif [ -f "$git_dir_or_file" ]; then
         # Submodule or worktree: .git is a file pointing to actual gitdir
-        local gitdir_path="$ROOT_DIR/$(awk -F': ' '/^gitdir:/ {print $2}' "$git_dir")"
-        if [ -n "$gitdir_path" ] && [ -f "$gitdir_path/config" ]; then
-            git_config_file="$gitdir_path/config"
+        gitdir_ref=$(awk -F': ' '/^gitdir:/ {print $2}' "$git_dir_or_file")
+        if [ "$IS_IN_CONTAINER" = "true" ]; then
+            # remove any leading ../ or ./ and strip up-to-and-including ".git/"
+            module_ref=$(echo "$gitdir_ref" | awk -F'.git/' '{print $2}')
+            echo "$GIT_MOUNT_DIR/$module_ref"
+        else
+            echo "$ROOT_DIR/$gitdir_ref"
         fi
     fi
-    
-    echo "$git_config_file"
+}
+
+env_uti_get_git_config_file() {
+    local git_dir
+    git_dir=$(env_uti_get_git_dir)
+    if [ -d "$git_dir" ]; then
+        echo "$git_dir/config"
+    fi
 }
 
 env_uti_get_repo_url() {

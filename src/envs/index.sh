@@ -48,6 +48,11 @@ VERSION="$(env_uti_get_kit_version)"
 readonly VERSION
 
 # Git repository information
+readonly GIT_WORK_TREE="$ROOT_DIR"
+
+GIT_DIR="$(env_uti_get_git_dir)"
+readonly GIT_DIR
+
 REPO_URL="$(env_uti_get_repo_url)"
 readonly REPO_URL
 

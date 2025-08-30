@@ -12,9 +12,9 @@ dir="$PWD"; while :; do
                     cp -r /kit/* /vise/node_modules/@diseec/kit"
             docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
                 bash -c "D kit do patch"
-            # docker run --rm -v $dir:/$PROJECT_MOUNT_DIR_NAME -w /$PROJECT_MOUNT_DIR_NAME $KIT_IMAGE \
-            #     bash -c "mkdir -p /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH && \
-            #         cp -r /$KIT_NAME/* /$PROJECT_MOUNT_DIR_NAME/$KIT_RELATIVE_PATH"
+            # docker run --rm -v $dir:$PROJECT_MOUNT_DIR -w $PROJECT_MOUNT_DIR $KIT_IMAGE \
+            #     bash -c "mkdir -p $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH && \
+            #         cp -r /$KIT_NAME/* $PROJECT_MOUNT_DIR/$KIT_RELATIVE_PATH"
 
             if [ ! -d "$KIT_DIR" ]; then
                 printf '%s\n' "Error: kit at '$KIT_DIR' not found, try running 'D kit do initialize' in project root" >&2

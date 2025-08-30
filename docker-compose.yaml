@@ -4,10 +4,11 @@ services:
     command: ["sleep", "infinity"]
     build:
       context: "$KIT_DIR"
-    working_dir: "/$PROJECT_MOUNT_DIR_NAME"
+    working_dir: "$PROJECT_MOUNT_DIR"
     # environment:
     # - GIT_DISCOVERY_ACROSS_FILESYSTEM=1
     # - GIT_TERMINAL_PROMPT=0 # avoid interactive prompts
     volumes:
-      - "$TO_MOUNT_DIR:/$PROJECT_MOUNT_DIR_NAME"
+      - "$TO_MOUNT_DIR:$PROJECT_MOUNT_DIR"
       - "$HOME:/root"
+      - "$GIT_DIR:$GIT_MOUNT_DIR"

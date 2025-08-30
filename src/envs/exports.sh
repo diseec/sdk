@@ -5,9 +5,11 @@ vars=( \
     REPO_NAME \
     KIT_DIR \
     KIT_NAME \
+    GIT_DIR \
     ORG_CACHE_DIR \
     IMAGE_REGISTRY_URL \
-    PROJECT_MOUNT_DIR_NAME \
+    PROJECT_MOUNT_DIR \
+    GIT_MOUNT_DIR \
 )
 
 export "${vars[@]}"

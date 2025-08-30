@@ -8,14 +8,10 @@ fac_set_project() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    cli_main kit stop
-
     cli_main safely kit do patch;
     echo "$KIT_NAME version patched to: $VERSION"
 
     handle_hook before_install
-
-    cli_main kit start --detach
 
     _git config --global credential.helper store
 
@@ -32,15 +28,12 @@ fac_set_project() {
         initialize_submodule() {
             local module="$1"; local module_path="$2"
             _git submodule update --init --recursive --remote "$module_path"
-            _git submodule absorbgitdirs 
             echo "$REPO_NAME: Initialized submodule '$module_path'."
         }
         fac_wor_foreach_selected_module initialize_submodule
     fi
 
     cli_main git checkout-if-detached
-
-    cli_main kit stop
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Installing dependencies in selected submodules..."

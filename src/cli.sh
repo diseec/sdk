@@ -31,13 +31,13 @@ c=$1; shift; case "$c" in
 
     ######################## FACADES ########################
 
+    int|internet)  source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
     set|setup)     source "$KIT_SRC_DIR/facades/setup/cli.sh" "$@" ;;
+    doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
     ain|ai)        force_safe $c "$@" || source "$KIT_SRC_DIR/facades/ai/cli.sh" "$@" ;;
     git)           force_safe $c "$@" || source "$KIT_SRC_DIR/facades/git/cli.sh" "$@" ;;
-    int|internet)  source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
-    sub|submodule) source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
+    sub|submodule) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
     con|config)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/config/cli.sh" "$@" ;;
-    doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
     sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
     wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
 
@@ -49,7 +49,7 @@ c=$1; shift; case "$c" in
 
     kit) export TO_MOUNT_DIR="$ROOT_DIR"; "$KIT_DIR/cli" "$@" ;;
 
-    saf|safely) cli_main "$KIT_NAME" run --no-message "/$PROJECT_MOUNT_DIR_NAME/cli" "$@" ;;
+    saf|safely) cli_main "$KIT_NAME" run --no-message "$PROJECT_MOUNT_DIR/cli" "$@" ;;
 
     api) c=$1; shift; case "$c" in
         v1) c=$1; shift; case "$c" in
