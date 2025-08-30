@@ -26,7 +26,7 @@ c=$1; shift; case $c in
         confirm "Commit, push and PR changes?" cli_main push --recursive
     ;;
 
-    # hook:before_install) yarn install ;;
+    # hook:after_install) yarn install ;;
 
     # hel|help|--help|-h) $CLIBASE help "myc|mycommand" "    Display the help message" ;;
 

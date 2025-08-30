@@ -57,7 +57,7 @@ c=$1; shift; case $c in
     tes|test) cli_core test "$@" ;;
 
     # Hooks
-    # hook:before_install) message 44 "ℹ︎" "Commands before installing completed..." ;;
+    # hook:after_install) message 44 "ℹ︎" "Commands before installing completed..." ;;
     # hook:after_install) message 44 "ℹ︎" "Commands after installing completed..." ;;
     # hook:before_update) message 44 "ℹ︎" "Commands after updating completed..." ;;
     # hook:after_update) message 44 "ℹ︎" "Commands after updating completed..." ;;

@@ -29,8 +29,6 @@ fac_git_cmd_commit_push_pr() {
     echo "$REPO_NAME: Cpp done."
     cli_main git log "HEAD"
 
-    handle_hook after_push
-
     if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Cpp for selected submodules..."
         cpp_submodule() {
@@ -40,6 +38,8 @@ fac_git_cmd_commit_push_pr() {
         }
         fac_wor_foreach_selected_module cpp_submodule
     fi
+
+    handle_hook after_push
 
     return 0
 }

@@ -32,6 +32,7 @@ fac_set_project() {
         initialize_submodule() {
             local module="$1"; local module_path="$2"
             _git submodule update --init --recursive --remote "$module_path"
+            _git submodule absorbgitdirs 
             echo "$REPO_NAME: Initialized submodule '$module_path'."
         }
         fac_wor_foreach_selected_module initialize_submodule
@@ -40,8 +41,6 @@ fac_set_project() {
     cli_main git checkout-if-detached
 
     cli_main kit stop
-
-    handle_hook after_install
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Installing dependencies in selected submodules..."
@@ -53,6 +52,8 @@ fac_set_project() {
         }
         fac_wor_foreach_selected_module install_dependencies
     fi
+
+    handle_hook after_install
 
     echo "$REPO_NAME: Workspace configuration initialized successfully."
     message 42 "✔" "Installation completed successfully."
