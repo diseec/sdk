@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cor_fire_hook() {
+handle_hook() {
     set -e
     ROOT_DIR="${ROOT_DIR:-$(pwd)}"
     HOOK="${1-}"
