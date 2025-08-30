@@ -2,7 +2,6 @@
 
 handle_hook() {
     set -e
-    ROOT_DIR="${ROOT_DIR:-$(pwd)}"
     HOOK="${1-}"
 
     # Fallback if `message` is not defined; keeps your interface
