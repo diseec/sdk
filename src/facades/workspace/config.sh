@@ -32,11 +32,12 @@ fac_wor_create_config() {
         fi
     fi
 
+    # TODO: this bit must be extracted from here, this file is workspace internal funcitonality but the followings are a specific settings, have a settings dir keep these in
     # Get available submodules
     available_modules=$(fac_wor_get_available_modules)
     
     if [ -z "$available_modules" ]; then
-        message 43 "ℹ︎" "No submodules found in .gitmodules"
+        # message 43 "ℹ︎" "No submodules found in .gitmodules"
         return 1
     fi
     

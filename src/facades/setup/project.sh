@@ -22,7 +22,7 @@ fac_set_project() {
     # Early return in CI environment - silent skip
     [ -n "$CI" ] && { message 33 "CI" "Skipping interactive installation in CI environment"; return 0; }
 
-    if [ ! -f "$(cli_main workspace config path)" ]; then
+    if [ ! -f "$(cli_main workspace config path)" ] && [ "$HAS_SUBMODULES" = "true" ]; then
         echo "$REPO_NAME: Initializing workspace configuration..."
         cli_main workspace init
     fi

@@ -42,6 +42,7 @@ c=$1; shift; case $c in
     add) fac_con_array_add "$@" "$SCOPE" ;;
     rem|remove) fac_con_array_remove "$@" "$SCOPE" ;;
     del|delete) fac_con_delete "$@" "$SCOPE" ;;
+    pat|path) fac_con_get_config_file "$SCOPE" ;;
     whi|which) fac_con_which "$@" ;;
     pri|print) 
         # Print can work without scope (prints all scopes) or with scope
@@ -62,6 +63,7 @@ c=$1; shift; case $c in
         "    rem|remove <key.path> <val>" "Remove value from configuration array" \
         "    del|delete <key.path>    " "Delete configuration key from specified scope" \
         "    whi|which <key.path>     " "Show configuration value resolution path (no scope needed)" \
+        "    pat|path                 " "Show configuration path (no scope needed)" \
         "    pri|print                " "Print configuration for scope (or all if no scope)" \
         "    hel|help                 " "Show this help message" \
         "" "" "$(color 30 'Scopes')" "" \
