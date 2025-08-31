@@ -26,14 +26,14 @@ c=$1; shift; case $c in
 
     dev|develop) cli_main docker compose up-dev "$@" ;;
     bpa|build)   cli_main docker compose build "$@" ;;
-    run)         cli_main docker compose exec "$REPO_NAME" "$@" ;;
-    exe|execute) cli_main docker compose exec "$@" ;;
+    run)         cli_main docker compose execute "$REPO_NAME" "$@" ;;
+    exe|execute) cli_main docker compose execute "$@" ;;
     she|shell)   cli_main run /bin/bash "$@" ;;
     pus|push)    cli_main git commit-push-pr "$@" ;;
     pul|pull)    cli_main git pull "$@" ;;
     dai|daily)   cli_main git insight-day "$@" ;;
     tes|test)    $KIT_SRC_DIR/cmds/test.sh "$@" ;;
-    pru|prune)   cli_main docker system prune "$@" ;;
+    pru|prune)   cli_main docker _ system prune "$@" ;;
     for|format)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/format/cli.sh" prettier "$@" ;;
 
     ######################## FACADES ########################

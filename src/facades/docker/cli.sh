@@ -9,9 +9,9 @@
 
 c=$1; shift; case $c in
     com|compose) c=$1; shift; case $c in
-        ude|up|up-dev) fac_doc_up_development "$@" ;;
+        ude|up-dev|up) fac_doc_up_development "$@" ;;
         upr|up-pro) fac_doc_up_production "$@" ;;
-        exe|exec) fac_doc_cmd_docker_execute "$@" ;;
+        exe|execute|exec) fac_doc_cmd_docker_execute "$@" ;;
         bpa|build) _docker compose build --parallel "$@" ;;
         _) _docker compose "$@" ;;
         hel|help|--help|-h) display_help "" "" \
