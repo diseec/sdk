@@ -5,8 +5,6 @@
 # 1. Automatically creating PRs with AI-generated commit messages
 # 2. Checking existing PRs for unresolved issues/comments
 
-source "$KIT_SRC_DIR/facades/git/index.sh"
-
 c=$1; shift; case $c in
     sta|status)
         cli_main inform forbid-dev-on-main
@@ -23,6 +21,7 @@ c=$1; shift; case $c in
         sta|status) fac_git_cmd_pr_check_status "$@" ;;
     esac ;;
     log|log) fac_git_cmd_git_log "$@" ;;
+    ida|insight_day) fac_git_cmd_daily_insight "$@" ;;
     rel|release) fac_git_cmd_release "$@" ;;
     cid|checkout-if-detached) fac_git_cmd_checkout_if_detached "$@" ;;
     hub) c=$1; shift; case $c in
@@ -43,7 +42,7 @@ c=$1; shift; case $c in
         "" "" "$(color 30 'Individual Operations')" "" \
         "    pre|pull-request     " "Create PR only (no commit/push)" \
         "    che|checkout         " "Checkout/create branch interactively" \
-        "    hea|_head             " "Get detailed commit report status, options: --recursive" \
+        "    hea|head             " "Get detailed commit report status, options: --recursive" \
         "    rel|release          " "Create release tag (development command)" \
         "" "" "$(color 30 'Direct Commands')" "" \
         "    _                    " "Direct git command passthrough" \

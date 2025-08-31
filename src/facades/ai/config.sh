@@ -9,6 +9,7 @@ export FAC_AI_MODEL_GPT4o="gpt-4o-mini"
 export FAC_AI_DEFAULT_TEMPERATURE="0.3"
 export FAC_AI_CREATIVE_TEMPERATURE="0.7"
 export FAC_AI_API_ENDPOINT="https://api.openai.com/v1/chat/completions"
+export FAC_AI_MAX_INPUT_TOKENS="2000"
 
 # Initialize AI module and validate API key
 # Returns: 0 if successful, 1 if failed

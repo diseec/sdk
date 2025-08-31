@@ -7,3 +7,4 @@ source $KIT_SRC_DIR/facades/workspace/config.sh
 source $KIT_SRC_DIR/facades/workspace/submodules.sh
 source $KIT_SRC_DIR/facades/workspace/fallback.sh
 source $KIT_SRC_DIR/facades/workspace/cmds.sh
+source $KIT_SRC_DIR/facades/workspace/cache.sh

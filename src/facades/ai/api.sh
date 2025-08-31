@@ -9,10 +9,18 @@ fac_ai_call_openai() {
     local prompt="$1"
     local model="${2:-$FAC_AI_MODEL_GPT4o}"
     local temperature="${3:-$FAC_AI_DEFAULT_TEMPERATURE}"
+    local max_tokens="${4:-$FAC_AI_MAX_INPUT_TOKENS}"
     
     if ! fac_ai_is_available; then
         echo "ERROR: AI is not available (missing API key or curl)" >&2
         return 1
+    fi
+    
+    # Ensure the prompt doesn't exceed token limit
+    local token_count=$(fac_ai_count_tokens "$prompt")
+    if [ "$token_count" -gt "$max_tokens" ]; then
+        message 43 "!" "Prompt exceeds token limit ($token_count > $max_tokens), truncating..." >&2
+        prompt=$(fac_ai_truncate_to_token_limit "$prompt" "$max_tokens")
     fi
     
     local escaped_prompt=$(fac_ai_escape_json "$prompt")
@@ -24,20 +32,25 @@ fac_ai_call_openai() {
 }
 
 # Generate a completion using AI with error handling
-# Usage: fac_ai_generate "prompt" "model" "temperature" "fallback_message"
+# Usage: fac_ai_generate "prompt" "model" "temperature" "fallback_message" "max_tokens"
 # Output: AI-generated content or fallback message
 fac_ai_generate() {
     local prompt="$1"
     local model="${2:-$FAC_AI_MODEL_GPT4o}"
     local temperature="${3:-$FAC_AI_DEFAULT_TEMPERATURE}"
     local fallback="${4:-Error: Failed to generate AI response}"
+    local max_tokens="${5:-$FAC_AI_MAX_INPUT_TOKENS}"
     
     if ! fac_ai_is_available; then
         echo "$fallback"
         return 1
     fi
     
-    local response=$(fac_ai_call_openai "$prompt" "$model" "$temperature")
+    # Check token count for logging
+    local token_count=$(fac_ai_count_tokens "$prompt")
+    message 34 "INFO" "Sending prompt with ~$token_count tokens to model $model" >&2
+    
+    local response=$(fac_ai_call_openai "$prompt" "$model" "$temperature" "$max_tokens")
     
     if fac_ai_has_error "$response"; then
         message 41 "!" "OpenAI API error occurred" >&2

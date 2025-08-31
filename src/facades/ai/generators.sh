@@ -28,6 +28,13 @@ Please format the response as a commit message with a short title (max 50 chars)
 fac_ai_generate_daily_insight() {
     local analysis_data="$1"
     
+    # Check token count and truncate if necessary
+    local token_count=$(fac_ai_count_tokens "$analysis_data")
+    if [ "$token_count" -gt "$FAC_AI_MAX_INPUT_TOKENS" ]; then
+        message 43 "!" "Analysis data exceeds token limit ($token_count tokens), truncating..." >&2
+        analysis_data=$(fac_ai_truncate_to_token_limit "$analysis_data" "$FAC_AI_MAX_INPUT_TOKENS")
+    fi
+    
     local prompt="Analyze the following development activity and create a concise daily insight report.
 
 $analysis_data
@@ -51,5 +58,5 @@ Enhanced Authentication and Performance Optimizations
 
 Total: 15 files changed (+234 -67 lines)"
     
-    fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_DEFAULT_TEMPERATURE" "No insights available"
+    fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_DEFAULT_TEMPERATURE" "No insights available" "$FAC_AI_MAX_INPUT_TOKENS"
 }
