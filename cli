@@ -27,7 +27,7 @@ c=$1; shift; case $c in
         *)
             display_help \
                 "" "" \
-                "$(color 30 'Package Visibility Commands')" "" \
+                "$(color 37 'Package Visibility Commands')" "" \
                 "    ins|install             " "Install package dependencies in Node.js project"
         ;;
     esac;;
@@ -40,22 +40,22 @@ c=$1; shift; case $c in
     hel|help|--help|-h)
         display_help \
             "" "" \
-            "$(color 30 'Usage')" "" \
-            "$(color 30 '    kit <command> [subcommand] [options] [arguments]\n')" "" \
-            "$(color 30 'Kit Container Lifecycle')" "" \
+            "$(color 37 'Usage')" "" \
+            "$(color 37 '    kit <command> [subcommand] [options] [arguments]\n')" "" \
+            "$(color 37 'Kit Container Lifecycle')" "" \
             "    sta|start               " "Start kit container (for fast subsequent ops)" \
             "    sto|stop                " "Stop kit container" \
             "    shell                   " "Open shell in kit container (project is mounted)" \
             "" "" \
-            "$(color 30 'Project Management & Modification')" "" \
+            "$(color 37 'Project Management & Modification')" "" \
             "        do <cmd>          " "Run kit-powered commands to manage/modify projects" \
             "        ini|initialize      " "Install kit into a managed project" \
             "        ...                 " "Other project modification commands (see docs)" \
             "" "" \
-            "$(color 30 'Source Control')" "" \
+            "$(color 37 'Source Control')" "" \
             "    pul|pull                " "Pull latest changes from main branch in kit context" \
             "" "" \
-            "$(color 30 'Information')" "" \
+            "$(color 37 'Information')" "" \
             "    hel|help                " "Show this help message" \
             "" "" \
             "$(color 34 'Note:')" "This cli_main manages the kit container and project operations. For project cli_main, use the installed cli in your project root." \

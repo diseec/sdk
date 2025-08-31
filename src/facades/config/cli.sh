@@ -50,13 +50,13 @@ c=$1; shift; case $c in
         else fac_con_print "$@"; fi
     ;;
     hel|help|--help|-h) display_help "" "" \
-        "$(color 30 'Configuration Management System\n')" "" \
-        "$(color 30 'Usage:    config [SCOPE_OPTIONS] <command> [arguments]\n')" "" \
-        "$(color 30 'Scope Options (mandatory for most commands)')" "" \
+        "$(color 37 'Configuration Management System\n')" "" \
+        "$(color 37 'Usage:    config [SCOPE_OPTIONS] <command> [arguments]\n')" "" \
+        "$(color 37 'Scope Options (mandatory for most commands)')" "" \
         "    -s=<scope>               " "Set scope (short form)" \
         "    --scope=<scope>          " "Set scope (long form with equals)" \
         "    --scope <scope>          " "Set scope (long form with space)" \
-        "" "" "$(color 30 'Commands')" "" \
+        "" "" "$(color 37 'Commands')" "" \
         "    get <key.path>           " "Get configuration value with hierarchy resolution" \
         "    set <key.path> <value>   " "Set configuration value in specified scope" \
         "    add <key.path> <value>   " "Add value to configuration array" \
@@ -66,15 +66,15 @@ c=$1; shift; case $c in
         "    pat|path                 " "Show configuration path (no scope needed)" \
         "    pri|print                " "Print configuration for scope (or all if no scope)" \
         "    hel|help                 " "Show this help message" \
-        "" "" "$(color 30 'Scopes')" "" \
+        "" "" "$(color 37 'Scopes')" "" \
         "    project                  " "Project-specific configuration (.kit/project.yaml)" \
         "    workspace                " "Workspace-specific configuration (workspaces/\$REPO_NAME/workspace.yaml)" \
         "    user                     " "User-specific configuration (users/\$USER/user.yaml)" \
         "    global                   " "Organization-wide configuration (config.yaml)" \
-        "" "" "$(color 30 'Hierarchy')" "" \
+        "" "" "$(color 37 'Hierarchy')" "" \
         "    Configuration values are resolved in this order of precedence:" \
         "    project > workspace > user > global" \
-        "" "" "$(color 30 'Examples')" "" \
+        "" "" "$(color 37 'Examples')" "" \
         "    config --scope=workspace get workspace.submodules" \
         "    config -s=global set defaults.shell zsh" \
         "    config --scope workspace add workspace.submodules my-service" \

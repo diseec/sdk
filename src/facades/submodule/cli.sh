@@ -13,18 +13,18 @@ command=""
 show_help() {
     display_help "" "" \
         "$(color 33 'SUBMODULE')" "" \
-        "$(color 30 'Unified submodule management for packages and services\n')" "" \
-        "$(color 30 'Usage:    cli submodule [options] <command> [arguments]\n')" "" \
-        "$(color 30 'Options:')" "" \
+        "$(color 37 'Unified submodule management for packages and services\n')" "" \
+        "$(color 37 'Usage:    cli submodule [options] <command> [arguments]\n')" "" \
+        "$(color 37 'Options:')" "" \
         "  --type <package|service>   " "Specify submodule type (default: auto-detect from target dir)" \
         "  --dir <directory>          " "Target directory (default: packages/ or services/ based on type)" \
-        "" "" "$(color 30 'Commands:')" "" \
+        "" "" "$(color 37 'Commands:')" "" \
         "  add <name>                 " "Add submodule from repository" \
         "  rem|remove|rm <name>       " "Remove submodule" \
         "  upd|update                 " "Update all submodules" \
         "  run                        " "Run command in service container (services only)" \
         "  lin|link                   " "Link local package for development (packages only)" \
-        "" "" "$(color 30 'Examples:')" "" \
+        "" "" "$(color 37 'Examples:')" "" \
         "  cli submodule add my-package                    " "Adds to packages/" \
         "  cli submodule --type service add my-service     " "Adds to services/" \
         "  cli submodule --dir custom/path add my-repo     " "Custom directory" \

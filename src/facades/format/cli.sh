@@ -4,8 +4,8 @@ c=$1; shift; case $c in
     pre|prettier) fac_for_prettier "$@" ;;
     hel|help|--help|-h)
         display_help "" "" \
-            "$(color 30 'Formatting')" "" \
-            "$(color 30 'Usage:    cli format <command> [options]\\n')" "" \
+            "$(color 37 'Formatting')" "" \
+            "$(color 37 'Usage:    cli format <command> [options]\\n')" "" \
             "    pre|prettier          " "Run Prettier on repository (respects .prettierrc)" \
             "    --check               " "Run in check mode (no changes, exit non-zero if unformatted)" \
             "    --write               " "Write formatted files (default)" \
@@ -14,8 +14,8 @@ c=$1; shift; case $c in
     ;;
     *)
         display_help "" "" \
-            "$(color 30 'Formatting')" "" \
-            "$(color 30 'Usage:    cli format <command> [options]\n')" "" \
+            "$(color 37 'Formatting')" "" \
+            "$(color 37 'Usage:    cli format <command> [options]\n')" "" \
             "    pre|prettier          " "Run Prettier on repository (respects .prettierrc)" \
             "    --check               " "Run in check mode (no changes, exit non-zero if unformatted)" \
             "    --write               " "Write formatted files (default)" \

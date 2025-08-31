@@ -11,8 +11,8 @@ c=$1; shift; case "$c" in
     fac_ai_is_available) fac_ai_is_available "$@" ;;
     hel|help|--help|-h)
         display_help "" "" \
-            "$(color 30 'AI Commands')" "" \
-            "$(color 30 'Usage:    cli ai <command> [options]\n')" "" \
+            "$(color 37 'AI Commands')" "" \
+            "$(color 37 'Usage:    cli ai <command> [options]\n')" "" \
             "    fac_ai_is_available   " "Check if AI backend is reachable and key is configured" \
             "    <other commands>      " "AI helper commands implemented in this module" \
             "" "" "$(color 33 'Setup Required')" "" \

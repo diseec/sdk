@@ -55,12 +55,12 @@ c=$1; shift; case "$c" in
         v1) c=$1; shift; case "$c" in
             install) cli_main install "$@" ;;
             *) display_help "" "" \
-                "$(color 30 'API v1 Commands')" "" \
+                "$(color 37 'API v1 Commands')" "" \
                 "    install     " "Install API v1 dependencies"
             ;;
         esac ;;
         *) display_help "" "" \
-            "$(color 30 'API Commands')" "" \
+            "$(color 37 'API Commands')" "" \
             "    v1          " "API version 1 operations"
         ;;
     esac ;;
@@ -80,12 +80,18 @@ c=$1; shift; case "$c" in
     ;;
 
     hel|help|--help|-h) display_help "" "" \
-        "$(color 30 'Usage:    bash cli <command> [subcommand] [options] [arguments]\n')" "" \
-        "$(color 30 'Project Management')" "" \
+        "$(color 37 'Usage:    bash cli <command> [subcommand] [options] [arguments]')" "" \
+        "" "" "$(color 37 'Global Manager The D')" "" \
+        "    D [--patch]              " "Project-scoped kit manager" \
+        "    D                        " "Locate project root and invoke the project's ./cli" \
+        "    D --patch                " "Force pull and reinstall kit into project" \
+        "                             " "Note: 'D --patch' ensures a fresh kit binary is used when the local kit is missing," \
+        "                             " "corrupted, or unable to bootstrap the CLI itself." \
+        "" "" "$(color 37 'Project Management')" "" \
         "    ins|install              " "Install project dependencies and tools" \
         "    ude|update               " "Update cli_main and sync project" \
         "    sta|status               " "Show comprehensive project status" \
-        "" "" "$(color 30 'Development Environment')" "" \
+        "" "" "$(color 37 'Development Environment')" "" \
         "    dev|develop              " "Start development environment" \
         "    dai|daily                " "✦ Generate daily insights" \
         "    bpa|build                " "Build project images" \
@@ -94,27 +100,27 @@ c=$1; shift; case "$c" in
         "    she|shell                " "Open interactive shell" \
         "    tes|test [type]          " "Run test suites" \
         "    for|format               " "Format codebase" \
-        "" "" "$(color 30 'Source Control')" "" \
+        "" "" "$(color 37 'Source Control')" "" \
         "    git                      " "Git workflow management" \
         "    pul|pull                 " "Pull and merge latest changes" \
-        "    pus|push                 " "Auto-commit and create PR" \
-        "" "" "$(color 30 'Infrastructure')" "" \
+        "    pus|push                 " "✦ Auto-commit and create PR" \
+        "" "" "$(color 37 'Infrastructure')" "" \
         "    doc|docker               " "Docker operations" \
         "    sub|submodule            " "Unified submodule management (packages & services)" \
         "    wor|workspace            " "Workspace configuration" \
-        "" "" "$(color 30 'Configuration')" "" \
+        "" "" "$(color 37 'Configuration')" "" \
         "    con|config               " "Configuration management" \
         "    sec|secret               " "Encrypted secrets management" \
-        "    env|envs                 " "Manage environment variables." \
-        "                             " "Export globally: set -a; eval \"\$(D envs)\"; set +a" \
-        "                             " "Use locally: eval \$(cli_main envs) > /dev/null" \
-        "" "" "$(color 30 'Utilities')" "" \
+        "    env|envs                 " "Manage environment variables. Example:" \
+        "                             " "set -a; eval \"\$(D envs)\"; set +a" \
+        "                             " "eval \$(cli_main envs) > /dev/null" \
+        "" "" "$(color 37 'Utilities')" "" \
         "    ins|insight              " "Generate development insights" \
         "    inf|inform               " "Information and validation" \
         "    saf|safely <command>     " "Safe command execution" \
         "    api                      " "API operations" \
         "    kit <command>            " "SDK container operations" \
-        "" "" "$(color 30 'Information')" "" \
+        "" "" "$(color 37 'Information')" "" \
         "    ver|version              " "Show version information" \
         "    hel|help                 " "Show this help message" \
         "$@"
