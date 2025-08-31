@@ -1,12 +1,6 @@
 #!/bin/bash
 
-# ======    # If specific scope is provided, only check that scope
-    if [ -n "$specific_scope" ]; then
-        fac_con_validate_scope "$specific_scope" || return 1
-        local config_file="$(fac_con_get_config_file "$specific_scope")"
-        fac_con_yaml_get "$config_file" "$key_path"
-        return $?
-    }===========================
+# ========================================
 # CONFIGURATION HIERARCHY AND RESOLUTION
 # ========================================
 # Handles configuration value resolution with scope precedence
@@ -28,7 +22,7 @@ fac_con_get() {
     # If specific scope is provided, only check that scope
     if [ -n "$specific_scope" ]; then
         fac_con_validate_scope "$specific_scope" || return 1
-        local config_file="$(fac_con_ensure_config_file "$specific_scope")"
+        local config_file="$(fac_con_get_config_file "$specific_scope")"
         fac_con_yaml_get "$config_file" "$key_path"
         return $?
     fi
