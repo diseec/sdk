@@ -299,7 +299,9 @@ $all_changes
 
     # Use AI to generate insight report
     if fac_ai_is_available; then
-        message 40 "✧" "Writing daily insights..."
+        echo ""
+        message 30 "✦" "Writing daily insights..."
+        echo ""
 
         local ai_insight=$(fac_ai_generate_daily_insight "$analysis_data")
         

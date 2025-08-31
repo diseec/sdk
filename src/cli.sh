@@ -87,7 +87,7 @@ c=$1; shift; case "$c" in
         "    sta|status               " "Show comprehensive project status" \
         "" "" "$(color 30 'Development Environment')" "" \
         "    dev|develop              " "Start development environment" \
-        "    dai|daily                " "Generate daily insights" \
+        "    dai|daily                " "✦ Generate daily insights" \
         "    bpa|build                " "Build project images" \
         "    run <command>            " "Execute command in container" \
         "    exe|execute <svc> <cmd>  " "Execute command in specific service" \
