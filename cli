@@ -58,8 +58,8 @@ c=$1; shift; case $c in
             "$(color 37 'Information')" "" \
             "    hel|help                " "Show this help message" \
             "" "" \
-            "$(color 34 'Note:')" "This cli_main manages the kit container and project operations. For project cli_main, use the installed cli in your project root." \
-            "$(color 34 'Docs:')" "See https://github.com/diseec/kit for full command reference."
+            "$(color 34 'Note:')" " This cli manages the kit container and project operations. For project cli, use the installed cli in your project root." \
+            "$(color 34 'Docs:')" " See https://github.com/diseec/kit for full command reference."
         ;;
 
     *) cli_core "$c" "$@" ;;
