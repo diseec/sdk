@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ARGS=""; for arg in "$@"; do case "$arg" in
-    --force-patch) IS_FORCE_PATCH="true";;
+    --patch) IS_FORCE_PATCH="true";;
 *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
 dir="$PWD"; while :; do
@@ -10,7 +10,7 @@ dir="$PWD"; while :; do
         KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
 
     if { [ ! -f "$ROOT_DIR/D" ] && { [ ! -d "$KIT_DIR" ] || [ -z "$(ls -A "$KIT_DIR" 2>/dev/null)" ]; } && [ "$IS_IN_CONTAINER" != "true" ]; } || [ "$IS_FORCE_PATCH" = "true" ]; then
-            docker pull image.registry.diseec.com/kit
+            docker pull image.registry.diseec.com/kit --disable-content-trust 2>/dev/null
             docker run --rm -v $dir:/vise -w /vise image.registry.diseec.com/kit \
                 bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
                     cp -r /kit/* /vise/node_modules/@diseec/kit"

@@ -1,7 +1,7 @@
 FROM node:20-alpine
 
 # Install base dependencies
-RUN apk add --no-cache bash curl yq jq git openssl git-lfs
+RUN apk add --no-cache  bash coreutils curl yq jq git openssl git-lfs
 
 # Install GitHub cli_main using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \

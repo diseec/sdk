@@ -14,7 +14,7 @@ c=$1; shift; case $c in
         MODE="test"
         # Start with a header unless silent mode is enabled
         if [ "$SILENT_MODE" != "true" ]; then
-            message 30 ↔ "Quick internet connectivity check"
+            message 37 "⌁" "Quickly checking internet connectivity...\n"
         fi
         
         # Run basic connectivity test
@@ -24,12 +24,13 @@ c=$1; shift; case $c in
             overall_status=false
         fi
         
+        echo ""
         # Display a summary
         if [ "$SILENT_MODE" != "true" ]; then
             if [ "$overall_status" = "true" ]; then
-                printf "${GREEN}[SUCCESS]${NC} Internet connection working properly\n"
+                message 32 "⊕" "Internet connection working properly"
             else
-                printf "${RED}[FAILED]${NC} Internet connection has issues\n"
+                message 31 "⊘" "Internet connection has issues"
             fi
         fi
         
@@ -38,7 +39,7 @@ c=$1; shift; case $c in
         ;;
     dia|diagnose)
         MODE="diagnose"
-        message 44 "Full internet connection diagnostic"
+        message 37 "⚙" "Diagnosing internet connection ..."
         
         overall_status=true
         quick_check_success=false
@@ -83,11 +84,12 @@ c=$1; shift; case $c in
         # fi
         advanced_diagnostics
         
-        # Display summary
+        echo ""
+        # Display a summary
         if [ "$overall_status" = "true" ]; then
-            printf "${GREEN}[SUCCESS]${NC} Internet connection working properly\n"
+            message 32 "⊕" "Internet connection working properly"
         else
-            printf "${RED}[FAILED]${NC} Internet connection has issues\n"
+            message 31 "⊘" "Internet connection has issues"
         fi
         
         # return with appropriate code
