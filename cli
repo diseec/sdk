@@ -17,7 +17,7 @@ c=$1; shift; case $c in
             echo "Running npm install @$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER .."
             TMPDIR=$(mktemp -d)
             (cd $TMPDIR && _npm install "@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER")
-            rm -rf "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH" 2>/dev/null
+            rm -rf "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH" 2>/dev/null 
             mkdir -p "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH" 2>/dev/null
             cp -r "$TMPDIR/$KIT_RELATIVE_PATH"/* "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH"
             if [ ! -f "$TARGET_MOUNTED_DIR/cli" ]; then cp "/$KIT_NAME/templates/cli" "$TARGET_MOUNTED_DIR/cli"; fi
