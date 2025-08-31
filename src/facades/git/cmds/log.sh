@@ -36,24 +36,24 @@ fac_git_cmd_git_log() {
     
     # Display commit information
     echo ""
-    echo -e " \033[30mDATE $commit_date\033[0m"
-    echo -e " \033[30mDEVE $commit_author\033[0m"
-    echo -e " \033[30mEMAI $commit_email\033[0m"
-    echo -e " \033[30mREPO $REPO_NAME\033[0m"
-    echo -e " \033[30mBRAN $branch_info\033[0m"
-    echo -e " \033[30mCOMM \033[4m$commit_link\033[24m\033[0m"
+    echo -e " \033[37mDate         $commit_date\033[0m"
+    echo -e " \033[37mDeveloper    $commit_author\033[0m"
+    echo -e " \033[37mEmail        $commit_email\033[0m"
+    echo -e " \033[37mRepo         $REPO_NAME\033[0m"
+    echo -e " \033[37mBranch       $branch_info\033[0m"
+    echo -e " \033[37mCommit       \033[4m$commit_link\033[24m\033[0m"
     if [ -n "$pr_link" ]; then
-        echo -e " \033[30mPULL \033[4m$pr_link\033[24m\033[0m"
+        echo -e " \033[37mPR           \033[4m$pr_link\033[24m\033[0m"
     fi
     echo ""
-    echo -e "\033[30m--------------------\033[0m"
+    echo -e "\033[37m--------------------\033[0m"
     echo ""
-    echo -e " \033[30m$commit_message\033[0m"
+    echo -e " \033[37m$commit_message\033[0m"
     echo ""
-    echo -e "\033[30m--------------------\033[0m"
+    echo -e "\033[37m--------------------\033[0m"
     echo ""
     # Show diff stats against previous commit
-    echo -e "\033[30m$(_git diff "$commit_id~1" "$commit_id" --stat 2>/dev/null || echo "No previous commit to compare")\033[0m"
+    echo -e "\033[37m$(_git diff "$commit_id~1" "$commit_id" --stat 2>/dev/null || echo "No previous commit to compare")\033[0m"
     echo ""
 }
 
@@ -67,7 +67,7 @@ fac_git_cmd_daily_insight() {
 
     # Check if cache exists for today
     if [ -f "$cache_file" ]; then
-        read -p "Found insight for $today_date. rewrite? [y/n]: " cache_choice
+        read -p "Found insight for today $today_date. rewrite? [y/n]: " cache_choice
         if [[ "$cache_choice" =~ ^[Yy]$ ]]; then
             echo "Rewriting daily insight report..."
             # Continue to generate a new report

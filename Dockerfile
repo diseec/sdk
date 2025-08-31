@@ -3,6 +3,8 @@ FROM node:20-alpine
 # Install base dependencies
 RUN apk add --no-cache bash curl yq jq git openssl git-lfs
 
+WORKDIR /kit
+
 COPY . .
 
 ENV IS_IN_CONTAINER=true
@@ -34,8 +36,6 @@ RUN npm install -g prettier
 
 # Install network diagnostic tools for internet facade
 RUN apk add --no-cache wget iputils bind-tools traceroute bc
-
-WORKDIR /kit
 
 ENV IS_IN_KIT_CONTAINER=true
 

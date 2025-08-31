@@ -8,7 +8,7 @@ c=$1; shift; case $c in
         SILENT_MODE=true
         # Quick check for internet connectivity - returns 0 if online, 1 if offline
         quick_check
-        exit $?
+        return $?
         ;;
     tes|test)
         MODE="test"
@@ -33,8 +33,8 @@ c=$1; shift; case $c in
             fi
         fi
         
-        # Exit with appropriate code
-        [ "$overall_status" = "true" ] && exit 0 || exit 1
+        # return with appropriate code
+        [ "$overall_status" = "true" ] && return 0 || return 1
         ;;
     dia|diagnose)
         MODE="diagnose"
@@ -90,14 +90,14 @@ c=$1; shift; case $c in
             printf "${RED}[FAILED]${NC} Internet connection has issues\n"
         fi
         
-        # Exit with appropriate code
-        [ "$overall_status" = "true" ] && exit 0 || exit 1
+        # return with appropriate code
+        [ "$overall_status" = "true" ] && return 0 || return 1
         ;;
     -s|--silent)
         SILENT_MODE=true
         # Re-run the script with the silent flag
         cli_main internet_optimized "$@"
-        exit $?
+        return $?
         ;;
     hel|--help|help|-h) display_help "" "" \
             "$(color 30 'Internet Connection Checker (Optimized for Alpine)')" "" \
