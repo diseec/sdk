@@ -40,7 +40,7 @@ fac_ai_generate_daily_insight() {
 $analysis_data
 
 Please format the response as:
-1. A single descriptive title about the overall changes focus
+1. A single descriptive title that captures the overall view of changes
 2. A bulleted list of key deliverables and values added (focus on CRITICAL to MEDIUM level changes)
 3. Each bullet should start with '-' and mention specific files/repositories when relevant
 4. Focus on: new features, bug fixes, refactoring, performance improvements, security enhancements

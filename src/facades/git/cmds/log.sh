@@ -67,11 +67,16 @@ fac_git_cmd_daily_insight() {
 
     # Check if cache exists for today
     if [ -f "$cache_file" ]; then
-        # message 32 "ℹ︎" "Found cached daily insight report for $today_date"
-        echo ""
-        echo -e "\033[36m$(cat "$cache_file")\033[0m"
-        echo ""
-        return 0
+        read -p "Found insight for $today_date. rewrite? [y/n]: " cache_choice
+        if [[ "$cache_choice" =~ ^[Yy]$ ]]; then
+            echo "Rewriting daily insight report..."
+            # Continue to generate a new report
+        else
+            echo ""
+            echo -e "\033[36m$(cat "$cache_file")\033[0m"
+            echo ""
+            return 0
+        fi
     fi
     
     echo "Preparing daily insight report for $today_start to $today_end.."
@@ -307,7 +312,7 @@ $all_changes
                 echo ""
                 echo "$ai_insight"
                 echo ""
-                echo "Total: $total_files_changed files changes (+$total_insertions -$total_deletions lines)"
+                echo "$total_files_changed files changes (+$total_insertions -$total_deletions lines)"
             } > "$cache_file"
             
             echo "Daily insight report generated and cached"
