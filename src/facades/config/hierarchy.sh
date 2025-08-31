@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# ========================================
+# ======    # If specific scope is provided, only check that scope
+    if [ -n "$specific_scope" ]; then
+        fac_con_validate_scope "$specific_scope" || return 1
+        local config_file="$(fac_con_get_config_file "$specific_scope")"
+        fac_con_yaml_get "$config_file" "$key_path"
+        return $?
+    }===========================
 # CONFIGURATION HIERARCHY AND RESOLUTION
 # ========================================
 # Handles configuration value resolution with scope precedence
@@ -67,7 +73,7 @@ fac_con_set() {
     fi
     
     # Ensure config file exists and set value
-    local config_file="$(fac_con_ensure_config_file "$scope")"
+    local config_file="$(fac_con_get_config_file "$scope")"
     fac_con_yaml_set "$config_file" "$key_path" "$value"
     
     echo "Set '$key_path' = '$value' in '$scope' scope"
@@ -115,7 +121,7 @@ fac_con_array_add() {
     fi
     
     # Ensure config file exists and add to array
-    local config_file="$(fac_con_ensure_config_file "$scope")"
+    local config_file="$(fac_con_get_config_file "$scope")"
     fac_con_yaml_array_add "$config_file" "$key_path" "$value"
 
     echo "Added '$value' to '$key_path' array in '$scope' scope"
@@ -244,7 +250,7 @@ fac_con_print() {
         done
     else
         fac_con_validate_scope "$scope" || return 1
-        local config_file="$(fac_con_ensure_config_file "$scope")"
+        local config_file="$(fac_con_get_config_file "$scope")"
         
         echo "Configuration for $scope scope:"
         echo "File: $config_file"
