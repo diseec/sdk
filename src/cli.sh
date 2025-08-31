@@ -24,7 +24,7 @@ c=$1; shift; case "$c" in
     she|shell)   cli_main run /bin/bash "$@" ;;
     pus|push)    cli_main git commit-push-pr "$@" ;;
     pul|pull)    cli_main git pull "$@" ;;
-    ins|insight) cli_main git insight "$@" ;;
+    dai|daily)   cli_main git insight-day "$@" ;;
     tes|test)    $KIT_SRC_DIR/cmds/test.sh "$@" ;;
     pru|prune)   cli_main docker system prune "$@" ;;
     for|format)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/format/cli.sh" prettier "$@" ;;
@@ -87,6 +87,7 @@ c=$1; shift; case "$c" in
         "    sta|status               " "Show comprehensive project status" \
         "" "" "$(color 30 'Development Environment')" "" \
         "    dev|develop              " "Start development environment" \
+        "    dai|daily                " "Generate daily insights" \
         "    bpa|build                " "Build project images" \
         "    run <command>            " "Execute command in container" \
         "    exe|execute <svc> <cmd>  " "Execute command in specific service" \

@@ -31,7 +31,7 @@ fac_ai_generate_daily_insight() {
     # Check token count and truncate if necessary
     local token_count=$(fac_ai_count_tokens "$analysis_data")
     if [ "$token_count" -gt "$FAC_AI_MAX_INPUT_TOKENS" ]; then
-        message 43 "!" "Analysis data exceeds token limit ($token_count tokens), truncating..." >&2
+        echo "Analysis data exceeds token limit ($token_count tokens), truncating..." >&2
         analysis_data=$(fac_ai_truncate_to_token_limit "$analysis_data" "$FAC_AI_MAX_INPUT_TOKENS")
     fi
     
@@ -40,13 +40,13 @@ fac_ai_generate_daily_insight() {
 $analysis_data
 
 Please format the response as:
-1. A single descriptive title
+1. A single descriptive title about the overall changes focus
 2. A bulleted list of key deliverables and values added (focus on CRITICAL to MEDIUM level changes)
 3. Each bullet should start with '-' and mention specific files/repositories when relevant
 4. Focus on: new features, bug fixes, refactoring, performance improvements, security enhancements
 5. Keep descriptions brief but informative
 6. No empty lines between bullets
-7. End with a summary line showing total changes
+7. Do NOT use any Markdown formatting (no **bold**, no headings, no code blocks, no lists with *, no backticks, etc.)
 
 Example format:
 Enhanced Authentication and Performance Optimizations
@@ -55,8 +55,7 @@ Enhanced Authentication and Performance Optimizations
 - Refactored database connection pooling in api/database.js for 40% performance improvement
 - Updated security headers configuration in nginx.conf
 - Optimized API response caching in services/cache-service
-
-Total: 15 files changed (+234 -67 lines)"
+"
     
     fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_DEFAULT_TEMPERATURE" "No insights available" "$FAC_AI_MAX_INPUT_TOKENS"
 }

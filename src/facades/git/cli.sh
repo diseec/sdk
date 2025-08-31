@@ -21,7 +21,7 @@ c=$1; shift; case $c in
         sta|status) fac_git_cmd_pr_check_status "$@" ;;
     esac ;;
     log|log) fac_git_cmd_git_log "$@" ;;
-    ida|insight_day) fac_git_cmd_daily_insight "$@" ;;
+    ida|insight-day) fac_git_cmd_daily_insight "$@" ;;
     rel|release) fac_git_cmd_release "$@" ;;
     cid|checkout-if-detached) fac_git_cmd_checkout_if_detached "$@" ;;
     hub) c=$1; shift; case $c in
@@ -39,6 +39,7 @@ c=$1; shift; case $c in
         "    sta|status           " "Check current branch PR status and unresolved comments" \
         "    pul|pull             " "Pull latest changes and merge with main branch" \
         "    com|commit           " "Commit changes with AI-generated message" \
+        "    ida|insight-day      " "Generate daily insights" \
         "" "" "$(color 30 'Individual Operations')" "" \
         "    pre|pull-request     " "Create PR only (no commit/push)" \
         "    che|checkout         " "Checkout/create branch interactively" \
