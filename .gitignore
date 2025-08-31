@@ -1,0 +1,13 @@
+# Workspace configuration
+myworkspace.yaml
+
+.env
+node_modules
+**/.DS_Store
+.venv
+*cache*
+*test.sqlite*
+# *.sqlite3*
+# media
+# secrets
+*.pem

@@ -13,10 +13,12 @@ fac_set_project() {
 
     handle_hook before_install
 
-    _git config --global credential.helper store
-
     # Early return in CI environment - silent skip
     [ -n "$CI" ] && { message 33 "CI" "Skipping interactive installation in CI environment"; return 0; }
+
+    cli_main kit stop;
+    cli_main kit start --detach;
+    _git config --global credential.helper store
 
     if [ ! -f "$(cli_main workspace config path)" ] && [ "$HAS_SUBMODULES" = "true" ]; then
         echo "$REPO_NAME: Initializing workspace configuration..."
@@ -34,6 +36,8 @@ fac_set_project() {
     fi
 
     cli_main git checkout-if-detached
+
+    cli_main kit stop;
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Installing dependencies in selected submodules..."
