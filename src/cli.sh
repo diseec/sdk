@@ -1,5 +1,12 @@
 #!/bin/bash
 
+ARGS=(); for arg in "$@"; do
+    if [[ "$arg" == "--debug" && -z "$SEEN_DEBUG" ]]; then SEEN_DEBUG=1
+        export D_LOG_LEVEL="DEBUG" # See "message" function 
+    # elif [[ "$arg" == "--example" && -z "$SEEN_EXAMPLE" ]]; then SEEN_EXAMPLE=1
+    #     EXAMPLE="value"
+else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
+
 c=$1; shift; case $c in
 
     ######################## PROJECT MANAGEMENT ########################
@@ -82,9 +89,10 @@ c=$1; shift; case $c in
     hel|help|--help|-h) display_help "" "" \
         "$(color 37 'Usage:    bash cli <command> [subcommand] [options] [arguments]')" "" \
         "" "" "$(color 37 'Global Manager The D')" "" \
-        "    D [--patch]              " "Project-scoped kit manager" \
+        "    D [--patch|--debug]      " "Project-scoped kit manager" \
         "    D                        " "Locate project root and invoke the project's ./cli" \
         "    D --patch                " "Force pull and reinstall kit into project" \
+        "    D --log-level            " "Set the log level for the CLI. Options: VERBOSE, DEBUG, INFO, WARNING, ERROR" \
         "                             " "Note: 'D --patch' ensures a fresh kit binary is used when the local kit is missing, corrupted, or unable to bootstrap the CLI itself." \
         "" "" "$(color 37 'Project Management')" "" \
         "    ins|install              " "Install project dependencies and tools" \

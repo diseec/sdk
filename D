@@ -1,15 +1,16 @@
 #!/bin/bash
 
-ARGS=""; for arg in "$@"; do case "$arg" in
-    --force-patch) IS_FORCE_PATCH="true";;
-*) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+ARGS=(); for arg in "$@"; do
+    if [[ "$arg" == "--patch" && -z "$SEEN_PATCH" ]]; then SEEN_PATCH=1
+        D_IS_FORCE_PATCH="true"
+else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
 
 dir="$PWD"; while :; do
     if [ -f "$dir/cli" ]; then
         ROOT_DIR="$dir";
         KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
 
-    if { [ ! -f "$ROOT_DIR/D" ] && { [ ! -d "$KIT_DIR" ] || [ -z "$(ls -A "$KIT_DIR" 2>/dev/null)" ]; } && [ "$IS_IN_CONTAINER" != "true" ]; } || [ "$IS_FORCE_PATCH" = "true" ]; then
+        if { [ ! -f "$ROOT_DIR/D" ] && { [ ! -d "$KIT_DIR" ] || [ -z "$(ls -A "$KIT_DIR" 2>/dev/null)" ]; } && [ "$IS_IN_CONTAINER" != "true" ]; } || [ "$D_IS_FORCE_PATCH" = "true" ]; then
             docker pull image.registry.diseec.com/kit
             docker run --rm -v $dir:/vise -w /vise image.registry.diseec.com/kit \
                 bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
