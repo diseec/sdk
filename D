@@ -1,15 +1,20 @@
 #!/bin/bash
 
+ARGS=""; for arg in "$@"; do case "$arg" in
+    --force-patch=*) IS_FORCE_PATCH="true";;
+*) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
 dir="$PWD"; while :; do
     if [ -f "$dir/cli" ]; then
         ROOT_DIR="$dir";
         KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
 
-    if [ ! -f "$ROOT_DIR/D" ] && { [ ! -d "$KIT_DIR" ] || [ -z "$(ls -A "$KIT_DIR" 2>/dev/null)" ]; } && [ "$IS_IN_CONTAINER" != "true" ]; then
-            docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
+    if { [ ! -f "$ROOT_DIR/D" ] && { [ ! -d "$KIT_DIR" ] || [ -z "$(ls -A "$KIT_DIR" 2>/dev/null)" ]; } && [ "$IS_IN_CONTAINER" != "true" ]; } || [ "$IS_FORCE_PATCH" = "true" ]; then
+            docker pull image.registry.diseec.com/kit
+            docker run --rm -v $dir:/vise -w /vise image.registry.diseec.com/kit \
                 bash -c "mkdir -p /vise/node_modules/@diseec/kit && \
                     cp -r /kit/* /vise/node_modules/@diseec/kit"
-            docker run --rm -v $dir:/vise -w /vise --pull always image.registry.diseec.com/kit \
+            docker run --rm -v $dir:/vise -w /vise image.registry.diseec.com/kit \
                 D kit do patch
             # docker run --rm -v $dir:$TARGET_MOUNTED_DIR -w $TARGET_MOUNTED_DIR $KIT_IMAGE \
             #     bash -c "mkdir -p $TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH && \
