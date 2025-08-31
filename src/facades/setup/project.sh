@@ -53,6 +53,6 @@ fac_set_project() {
     handle_hook after_install
 
     echo "$REPO_NAME: Workspace configuration initialized successfully."
-    message 42 "✔" "Installation completed successfully."
+    message 32 "✔" "Installation completed successfully."
 
 }

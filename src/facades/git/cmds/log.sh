@@ -67,7 +67,7 @@ fac_git_cmd_daily_insight() {
 
     # Check if cache exists for today
     if [ -f "$cache_file" ]; then
-        read -p "Found insight for today $today_date. rewrite? [y/n]: " cache_choice
+        read -p "Found insight for today $today_date. rewrite? [Y/N]: " cache_choice
         if [[ "$cache_choice" =~ ^[Yy]$ ]]; then
             echo "Rewriting daily insight report..."
             # Continue to generate a new report
@@ -240,7 +240,7 @@ $unstaged_diff"
     
     # If no data collected, show simple message
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then
-        message 43 "ℹ︎" "No commits or changes found for today"
+        message 33 "i" "No commits or changes found for today"
         return 0
     fi
     
@@ -284,7 +284,7 @@ $unstaged_diff"
     
     read -p "Generate daily insight report? (y/n): " confirm
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-        message 43 "!" "Daily insight report generation cancelled"
+        message 33 "!" "Daily insight report generation cancelled"
         return 0
     fi
     
@@ -300,7 +300,7 @@ $all_changes
     # Use AI to generate insight report
     if fac_ai_is_available; then
         echo ""
-        message 30 "✦" "Writing daily insights..."
+        message 35 "✦" "Writing daily insights..."
         echo ""
 
         local ai_insight=$(fac_ai_generate_daily_insight "$analysis_data")
@@ -326,12 +326,12 @@ $all_changes
             #     echo "Total changes: $total_files_changed files (+$total_insertions -$total_deletions lines)"
             # fi
         else
-            message 41 "!" "Failed to generate AI insight. Showing raw data."
+            message 31 "E" "Failed to generate AI insight. Showing raw data."
             echo ""
             echo "$analysis_data"
         fi
     else
-        message 41 "!" "AI not available. Showing raw data instead."
+        message 31 "E" "AI not available. Showing raw data instead."
         echo ""
         echo "$analysis_data"
     fi

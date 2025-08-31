@@ -1,5 +1,5 @@
 #!/bin/bash
 
 if [ "$CURRENT_BRANCH" = "main" ]; then
-    message 41 "!" "On the 'main' branch, consider switching to a subbranch"
+    message 31 "E" "On the 'main' branch, consider switching to a subbranch"
 fi

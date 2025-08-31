@@ -91,9 +91,8 @@ c=$1; shift; case "$c" in
         "    ins|install              " "Install project dependencies and tools" \
         "    ude|update               " "Update cli_main and sync project" \
         "    sta|status               " "Show comprehensive project status" \
-        "" "" "$(color 37 'Development Environment')" "" \
+        "" "" "$(color 37 'Workflow & Environment')" "" \
         "    dev|develop              " "Start development environment" \
-        "    dai|daily                " "✦ Generate daily insights" \
         "    bpa|build                " "Build project images" \
         "    run <command>            " "Execute command in container" \
         "    exe|execute <svc> <cmd>  " "Execute command in specific service" \
@@ -103,7 +102,7 @@ c=$1; shift; case "$c" in
         "" "" "$(color 37 'Source Control')" "" \
         "    git                      " "Git workflow management" \
         "    pul|pull                 " "Pull and merge latest changes" \
-        "    pus|push                 " "✦ Auto-commit and create PR" \
+        "    pus|push                 " "$(color 35 '✦') Auto-commit and create PR" \
         "" "" "$(color 37 'Infrastructure')" "" \
         "    doc|docker               " "Docker operations" \
         "    sub|submodule            " "Unified submodule management (packages & services)" \
@@ -111,22 +110,23 @@ c=$1; shift; case "$c" in
         "" "" "$(color 37 'Configuration')" "" \
         "    con|config               " "Configuration management" \
         "    sec|secret               " "Encrypted secrets management" \
+        "" "" "$(color 37 'Utilities')" "" \
+        "    ai$(printf "\033[35m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
         "    env|envs                 " "Manage environment variables. Example:" \
         "                             " "set -a; eval \"\$(D envs)\"; set +a" \
         "                             " "eval \$(cli_main envs) > /dev/null" \
-        "" "" "$(color 37 'Utilities')" "" \
-        "    ins|insight              " "Generate development insights" \
-        "    inf|inform               " "Information and validation" \
         "    saf|safely <command>     " "Safe command execution" \
         "    api                      " "API operations" \
         "    kit <command>            " "SDK container operations" \
         "" "" "$(color 37 'Information')" "" \
+        "    inf|inform               " "Information and validation" \
+        "    dai|daily                " "$(color 35 '✦') Generate daily insights" \
         "    ver|version              " "Show version information" \
         "    hel|help                 " "Show this help message" \
         "$@"
     ;;
     *)
-        if [ ! -z "$c" ]; then message 41 "!" "Unknown command: '$c'"; fi
+        if [ ! -z "$c" ]; then message 31 "E" "Unknown command: '$c'"; fi
         cli_main help; exit 1;
     ;;
 esac

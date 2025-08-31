@@ -40,7 +40,7 @@ fac_git_cmd_pr_create() {
     local branch="$CURRENT_BRANCH"
 
     if [ "$CURRENT_BRANCH" = "main" ]; then
-        message 41 "!" "Creating a PR from the main branch is not allowed."
+        message 31 "E" "Creating a PR from the main branch is not allowed."
         return 1
     fi
 
@@ -61,12 +61,12 @@ fac_git_cmd_pr_create() {
       # Create PR using GitHub cli_main
       local pr_url=$(_gh pr create --title "$pr_title" --body "$pr_body" --base main)
       if [ $? -ne 0 ]; then
-        message 41 "!" "Failed to create PR."
+        message 31 "E" "Failed to create PR."
         return 1
       fi
       echo -e "Created pull request: \033[4m$pr_url\033[24m"
     else
-      message 41 "!" "Install GitHub cli_main (gh) for automatic PR creation"
+      message 31 "E" "Install GitHub cli_main (gh) for automatic PR creation"
       echo -e "Create PR manually at: \033[4mhttps://github.com/$ORG_NAME/$REPO_NAME/pull/new/$branch\033[24m"
       return 1
     fi
@@ -84,7 +84,7 @@ fac_git_cmd_pr_create() {
 # Check PR status and show comments/issues
 fac_git_cmd_pr_check_status() {
   if ! cli_main internet is-online; then
-      message 41 ⊘ "Disconnected, skipping PR status check..."
+      message 31 ⊘ "Disconnected, skipping PR status check..."
       return 0
   fi
   echo "Checking PR status..."
@@ -93,7 +93,7 @@ fac_git_cmd_pr_check_status() {
   local branch="$CURRENT_BRANCH"
 
   if [ -z "$pr_number" ]; then
-      # message 43 "!" "No open PR found for branch: $branch"
+      # message 33 "!" "No open PR found for branch: $branch"
       return 0
   fi
 
@@ -105,7 +105,7 @@ fac_git_cmd_pr_check_status() {
 
       # Ensure jq is available for reliable JSON parsing
       if ! command -v jq >/dev/null 2>&1; then
-          message 43 "!" "jq is required for JSON parsing. Please install jq and try again."
+          message 33 "!" "jq is required for JSON parsing. Please install jq and try again."
           return 0
       fi
 
@@ -120,14 +120,14 @@ fac_git_cmd_pr_check_status() {
       local unresolved_count=$(echo "$pr_data" | _jq -r '[.comments[]? | select(.isResolved != true)] | length')
       
       # Display info
-      message 34 "PR#$pr_number" "title: $pr_title"
-      message 34 "PR#$pr_number" "url: $pr_url"
+      message "PR#$pr_number" "title: $pr_title"
+      message "PR#$pr_number" "url: $pr_url"
       
       # Review status
       case "$review_decision" in
-          "APPROVED") message 42 "✔" "Approved! Ready to merge." ;;
-          "CHANGES_REQUESTED") message 41 "⊝" "Changes requested. See comments below." ;;
-          "REVIEW_REQUIRED") message 43 "⊙" "Waiting for review" ;;
+          "APPROVED") message 32 "✔" "Approved! Ready to merge." ;;
+          "CHANGES_REQUESTED") message 31 "⊝" "Changes requested. See comments below." ;;
+          "REVIEW_REQUIRED") message 33 "⊙" "Waiting for review" ;;
           *) message "No reviews yet" ;;
       esac
     
@@ -139,13 +139,13 @@ fac_git_cmd_pr_check_status() {
           echo "$pr_data" | grep -A 3 '"isResolved": false' | grep '"body": "' | sed 's/"body": "/- /' | sed 's/\\r\\n/\n/g' | head -5
           
           if [ "$unresolved_count" -gt 5 ]; then
-              message 43 "⚭" "...and $((unresolved_count - 5)) more comments"
+              message 33 "⚭" "...and $((unresolved_count - 5)) more comments"
           fi
       # else
       #   message 32 "comments" "No unresolved comments"
       fi
   else
-      message 41 "!" "PR #$pr_number exists, but detailed status check requires GitHub CLI"
-      message 41 "!" "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
+      message 31 "E" "PR #$pr_number exists, but detailed status check requires GitHub CLI"
+      message 31 "E" "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
   fi
 }

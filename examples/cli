@@ -33,7 +33,7 @@ c=$1; shift; case $c in
     #         *) [ -z "$B" ] && B=$1;;
     #         -*|--*|-h|--help) echo "Unknown option: $1"; exit 1;;
     #     esac; shift; done;
-    #     message 44 "example" "B:'$B', X:'$X', Y:'$Y'"
+    #     message 34 "example" "B:'$B', X:'$X', Y:'$Y'"
     # ;;
     
     ins|install)
@@ -57,12 +57,12 @@ c=$1; shift; case $c in
     tes|test) cli_core test "$@" ;;
 
     # Hooks
-    # hook:after_install) message 44 "ℹ︎" "Commands before installing completed..." ;;
-    # hook:after_install) message 44 "ℹ︎" "Commands after installing completed..." ;;
-    # hook:before_update) message 44 "ℹ︎" "Commands after updating completed..." ;;
-    # hook:after_update) message 44 "ℹ︎" "Commands after updating completed..." ;;
-    # hook:before_push) message 44 "ℹ︎" "Commands before pushing changes..." ;;
-    # hook:after_push) message 44 "ℹ︎" "Commands after pushing changes..." ;;
+    # hook:after_install) message 34 "i" "Commands before installing completed..." ;;
+    # hook:after_install) message 34 "i" "Commands after installing completed..." ;;
+    # hook:before_update) message 34 "i" "Commands after updating completed..." ;;
+    # hook:after_update) message 34 "i" "Commands after updating completed..." ;;
+    # hook:before_push) message 34 "i" "Commands before pushing changes..." ;;
+    # hook:after_push) message 34 "i" "Commands after pushing changes..." ;;
 
     # hel|help|--help|-h) $CLIBASE help "myc|mycommand" "    Display the help message" ;;
 

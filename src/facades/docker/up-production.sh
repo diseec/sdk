@@ -10,7 +10,6 @@ fac_doc_up_production() {
 
     # Set up a trap to ensure we stop all containers on exit or interrupt
     cleanup() {
-        message 43 "CLEANUP" "Stopping all containers..."
         _docker compose -f "$ROOT_DIR/docker-compose.yaml" down
         exit 0
     }
@@ -18,7 +17,7 @@ fac_doc_up_production() {
     trap cleanup INT EXIT
 
     if [ -n "$services_filter" ]; then
-        message 30 "WORKSPACE" "Starting selected services in production mode: $services_filter"
+        message 34 "WORKSPACE" "Starting selected services in production mode: $services_filter"
         _docker compose -f "$ROOT_DIR/docker-compose.yaml" up $services_filter "$@"
     else
         _docker compose -f "$ROOT_DIR/docker-compose.yaml" up "$@"

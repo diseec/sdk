@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if ! cli_main internet is-online; then
-    message 41 "⊘" "Disconnected, skipping update check..."
+    message 31 "⊘" "Disconnected, skipping update check..."
     return 0
 fi
 

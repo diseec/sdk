@@ -4,7 +4,7 @@
 
 # Initialize AI module on load
 if ! fac_ai_init; then
-    message 43 "!" "AI module loaded but API key not available"
+    message 33 "!" "AI module loaded but API key not available"
 fi
 
 c=$1; shift; case "$c" in

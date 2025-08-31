@@ -5,13 +5,13 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
 
 c=$1; shift; case $c in
     do)
-    if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then message 41 "!" "The 'do' command works only on bench! (the kit container)"; exit 1; fi
+    if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then message 31 "E" "The 'do' command works only on bench! (the kit container)"; exit 1; fi
     c=$1; shift; case $c in
         pat|patch)
             set -e
             VERSION_SPECIFIER=$(_node -p "require('$TARGET_MOUNTED_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$TARGET_MOUNTED_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
             if [ -z "$VERSION_SPECIFIER" ]; then
-                message 41 "!" "@$ORG_NAME/$KIT_NAME not found in '$TARGET_MOUNTED_DIR/package.json'."
+                message 31 "E" "@$ORG_NAME/$KIT_NAME not found in '$TARGET_MOUNTED_DIR/package.json'."
                 exit 1
             fi
             echo "Running npm install @$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER .."

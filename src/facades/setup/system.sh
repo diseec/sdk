@@ -71,7 +71,7 @@ fac_set_check_system_dependencies() {
     local missing_deps=()
     local missing_count=0
 
-    # message 44 "Kit system dependencies"
+    # message "Kit system dependencies"
 
     for dep in "${deps[@]}"; do
         if ! fac_set_command_exists "$dep"; then
@@ -84,10 +84,10 @@ fac_set_check_system_dependencies() {
     done
     
     if [ $missing_count -eq 0 ]; then
-        message 42 "✔" "All system dependencies are installed!"
+        message 32 "✔" "All system dependencies are installed!"
         return 0
     else
-        message 41 "✗" "$missing_count missing dependencies found: ${missing_deps[*]}"
+        message 31 "✗" "$missing_count missing dependencies found: ${missing_deps[*]}"
         return 1
     fi
 }
@@ -297,10 +297,10 @@ fac_set_install_system_dependencies() {
     done
     
     if $all_success; then
-        message 42 "success" "All system dependencies installed successfully!"
+        message 32 "✔" "All system dependencies installed successfully!"
         return 0
     else
-        message 41 "failed" "Some dependencies failed to install"
+        message 31 "E" "Some dependencies failed to install"
         return 1
     fi
 }

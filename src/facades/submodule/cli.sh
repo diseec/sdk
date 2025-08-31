@@ -69,7 +69,7 @@ elif [[ -n "$type" && -z "$target_dir" ]]; then
         submodule) target_dir="submodules" ;;
         package) target_dir="packages" ;;
         service) target_dir="services" ;;
-        *) message 41 "!" "Unknown type: $type. Use 'package' or 'service'" exit 1 ;;
+        *) message 31 "E" "Unknown type: $type. Use 'package' or 'service'" exit 1 ;;
     esac
 elif [[ -z "$type" && -n "$target_dir" ]]; then
     # Auto-detect type from directory
@@ -87,7 +87,7 @@ mkdir -p "$target_dir"
 case $command in
     add)
         if [[ -z "$repo_name" ]]; then
-            message 41 "!" "Repository name is required for add command"
+            message 31 "E" "Repository name is required for add command"
             exit 1
         fi
         
@@ -99,19 +99,19 @@ case $command in
 
     run)
         if [[ "$type" != "service" ]]; then
-            message 41 "!" "Run command is only available for services"
+            message 31 "E" "Run command is only available for services"
             exit 1
         fi
         
         services=$(docker compose config --services)
         message "45" "SERVICES:" "\n$services"
-        read -p "$(message 45 "?" "Specify a service to run:")" service
+        read -p "$(message 35 "?" "Specify a service to run:")" service
         $CLI_MAIN execute "$service" "$@"
         ;;
 
     rem|remove|rm)
         if [[ -z "$repo_name" ]]; then
-            message 41 "!" "Repository name is required for remove command"
+            message 31 "E" "Repository name is required for remove command"
             exit 1
         fi
         
@@ -129,12 +129,12 @@ case $command in
 
     lin|link)
         if [[ "$type" != "package" ]]; then
-            message 41 "!" "Link command is only available for packages"
+            message 31 "E" "Link command is only available for packages"
             exit 1
         fi
         
-        message 45 "PACKAGES:" "\n$(ls $target_dir 2>/dev/null || echo 'No packages found')"
-        read -p "$(message 45 "?" "Select a package to link:")" PACKAGE
+        message 35 "PACKAGES:" "\n$(ls $target_dir 2>/dev/null || echo 'No packages found')"
+        read -p "$(message 35 "?" "Select a package to link:")" PACKAGE
         _npm link ./$target_dir/$PACKAGE
         ;;
 
@@ -142,7 +142,7 @@ case $command in
         if [[ -d "$target_dir" ]]; then
             message "45" "${type^^}S in $target_dir:" "\n$(ls $target_dir 2>/dev/null || echo 'No items found')"
         else
-            message 43 "ℹ︎" "Directory $target_dir does not exist"
+            message 33 "i" "Directory $target_dir does not exist"
         fi
         ;;
 
@@ -150,7 +150,7 @@ case $command in
         if [[ -z "$command" ]]; then
             show_help
         else
-            message 41 "!" "Unknown command: $command"
+            message 31 "E" "Unknown command: $command"
             show_help
         fi
         exit 1

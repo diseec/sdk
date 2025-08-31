@@ -19,14 +19,14 @@ fac_wor_create_config() {
     if [ -f "$config_file" ] && [ -s "$config_file" ]; then
         local submodules="$(fac_con_get submodules workspace 2>/dev/null)"
         if [ "$submodules" != "null" ] && [ -n "$submodules" ]; then
-            printf "$(message 45 "?" "Workspace config already exists. Overwrite? \033[35m[y/n]\033[0m")"
+            printf "$(message 35 "?" "Workspace config already exists. Overwrite? \033[35m[Y/N]\033[0m")"
             stty -echo -icanon time 0 min 1
             response=$(dd bs=1 count=1 2>/dev/null)
             stty echo icanon
             printf "\n"
             
             if [ "$response" != "y" ] && [ "$response" != "Y" ]; then
-                message 43 "ℹ︎" "Keeping existing workspace configuration"
+                message 33 "i" "Keeping existing workspace configuration"
                 return 0
             fi
         fi
@@ -37,12 +37,12 @@ fac_wor_create_config() {
     available_modules=$(fac_wor_get_available_modules)
     
     if [ -z "$available_modules" ]; then
-        # message 43 "ℹ︎" "No submodules found in .gitmodules"
+        # message 33 "i" "No submodules found in .gitmodules"
         return 1
     fi
     
     # Display available submodules and let user select them
-    message 44 "MODULES" "Available submodules:"
+    message 34 "MODULES" "Available submodules:"
     i=1
     for module in $available_modules; do
         echo "  $i) $module"
@@ -50,7 +50,7 @@ fac_wor_create_config() {
     done
     
     echo ""
-    message 44 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all submodules, press enter to skip:"
+    message 34 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all submodules, press enter to skip:"
     read selection
     
     selected_modules=""

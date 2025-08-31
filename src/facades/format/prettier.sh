@@ -5,7 +5,7 @@ fac_for_prettier() {
     set -e;
 
     # if ! grep -q '"prettier"' "$ROOT_DIR/package.json"; then
-    #     message 43 "!" "Prettier not found. Installing..."
+    #     message 33 "!" "Prettier not found. Installing..."
     #     $KIT_SRC_DIR/cmds/install/prettier.sh
     # fi
 
@@ -14,7 +14,7 @@ fac_for_prettier() {
         set -- "**/*.{js,jsx,ts,tsx,json,css,scss,md}"
     fi
 
-    message 44 "❄︎" "Running formatter using Prettier..."
+    message 34 "❄︎" "Running formatter using Prettier..."
 
     if [ "$CI" = "true" ]; then 
         _prettier --check --log-level=warn "$@";

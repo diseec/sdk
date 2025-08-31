@@ -9,8 +9,8 @@ fac_sec_set_key() {
     fac_sec_check_openssl || return 1
     
     if fac_sec_is_key_configured && ! fac_sec_secrets_exist; then
-        message 43 "!" "Encryption key is already configured"
-        message 34 "INFO" "Use 'reset-key' to change existing key"
+        message 33 "!" "Encryption key is already configured"
+        message 34 "i" "Use 'reset-key' to change existing key"
         return 1
     fi
     
@@ -18,15 +18,14 @@ fac_sec_set_key() {
     fac_sec_get_user_input "Enter encryption key" encryption_key
     
     if [ -z "$encryption_key" ]; then
-        message 41 "!" "Encryption key cannot be empty"
+        message 31 "E" "Encryption key cannot be empty"
         return 1
     fi
     
     # Validate key format
     if ! fac_sec_validate_encryption_key "$encryption_key"; then
-        message 43 "!" "Key should be 64 hexadecimal characters"
+        message 33 "!" "Key should be 64 hexadecimal characters"
         if ! fac_sec_get_user_confirmation "Continue anyway?"; then
-            message 34 "INFO" "Operation cancelled"
             return 0
         fi
     fi
@@ -39,7 +38,7 @@ fac_sec_set_key() {
     fi
     
     fac_sec_store_encryption_key "$encryption_key"
-    message 42 "✔" "Encryption key configured successfully"
+    message 32 "✔" "Encryption key configured successfully"
 }
 
 # Reset encryption key
@@ -47,16 +46,15 @@ fac_sec_reset_key() {
     fac_sec_check_openssl || return 1
     
     if ! fac_sec_is_key_configured; then
-        message 41 "!" "No encryption key configured. Use 'set-key' first"
+        message 31 "E" "No encryption key configured. Use 'set-key' first"
         return 1
     fi
     
     if fac_sec_secrets_exist; then
-        message 43 "!" "This will re-encrypt all existing secrets with a new key"
-        message 43 "!" "Make sure you have the current key before proceeding"
+        message 33 "!" "This will re-encrypt all existing secrets with a new key"
+        message 33 "!" "Make sure you have the current key before proceeding"
         
         if ! fac_sec_get_user_confirmation "Continue?"; then
-            echo "Operation cancelled"
             return 0
         fi
         
@@ -67,7 +65,7 @@ fac_sec_reset_key() {
             fac_sec_store_encryption_key "$new_key"
             echo "All secrets re-encrypted with new key"
             echo "New key: $new_key"
-            message 43 "!" "Store this key safely!"
+            message 33 "!" "Store this key safely!"
         else
             return 1
         fi
@@ -76,14 +74,14 @@ fac_sec_reset_key() {
         fac_sec_store_encryption_key "$new_key"
         echo "New encryption key generated"
         echo "Key: $new_key"
-        message 43 "!" "Store this key safely!"
+        message 33 "!" "Store this key safely!"
     fi
 }
 
 # Show current encryption key
 fac_sec_show_key() {
     if ! fac_sec_is_key_configured; then
-        message 41 "!" "No encryption key configured. Run 'secrets init' first"
+        message 31 "E" "No encryption key configured. Run 'secrets init' first"
         return 1
     fi
     
@@ -95,7 +93,7 @@ fac_sec_show_key() {
 # Clear all secrets
 fac_sec_clear_secrets() {
     if ! fac_sec_secrets_exist; then
-        message 43 "!" "No secrets found"
+        message 33 "!" "No secrets found"
         return 0
     fi
     

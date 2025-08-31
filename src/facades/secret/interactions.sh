@@ -8,7 +8,7 @@
 fac_sec_get_user_confirmation() {
     local prompt="$1"
     local default="${2:-N}"
-    printf "$(message 45 "?" "$prompt \033[35m[y/n]\033[0m")"
+    printf "$(message 35 "?" "$prompt \033[35m[Y/N]\033[0m")"
     # Turn off echo and set input to raw mode
     stty -echo -icanon time 0 min 1
     confirm=$(dd bs=1 count=1 2>/dev/null)
@@ -26,7 +26,7 @@ fac_sec_get_user_input() {
     local prompt="$1"
     local var_name="$2"
     
-    message 45 "?" "$prompt: "
+    message 35 "?" "$prompt: "
     read "$var_name"
 }
 
@@ -35,7 +35,7 @@ fac_sec_get_secret_input() {
     local prompt="$1"
     local var_name="$2"
     
-    message 45 "?" "$prompt: "
+    message 35 "?" "$prompt: "
     stty -echo
     read "$var_name"
     stty echo
@@ -64,8 +64,8 @@ fac_sec_test_key_with_secrets() {
         fi
     done
     
-    message 41 "!" "Key validation failed - unable to decrypt existing secrets"
-    message 43 "WARNING" "This key cannot decrypt your existing secrets"
+    message 31 "E" "Key validation failed - unable to decrypt existing secrets"
+    message 33 "!" "This key cannot decrypt your existing secrets"
     return 1
 }
 
@@ -86,7 +86,7 @@ fac_sec_reencrypt_all_secrets() {
                 echo "$new_encrypted" > "$secret_file"
                 echo "$secret_name re-encrypted successfully"
             else
-                message 41 "!" "Failed to re-encrypt $secret_name"
+                message 31 "E" "Failed to re-encrypt $secret_name"
                 return 1
             fi
         fi

@@ -15,18 +15,20 @@ message() {
   #             message <type> <text>
   #             message --color <color> --title <title> <text>
   local repo_name=${REPO_NAME:-d}
-  printf "\e[1;30;47m $(capitalize "$repo_name") \e[0m"
+  printf "\e[0;30;37m[$(date "+%Y-%m-%d %H:%M:%S")][$(capitalize "$repo_name")]\e[0m"
   if [ $# -eq 1 ]; then printf " $1 ";
-  elif [ $# -eq 2 ]; then color "$1" " $(capitalize "$2") ";
-  else color "$1" " $(capitalize "$2") "; printf " $3 "; fi
+  elif [ $# -eq 2 ]; then color " $1 " "$2";
+  else color "$1" " $2 "; printf "$3"; fi
+  # elif [ $# -eq 2 ]; then color "$1" " $(capitalize "$2") ";
+  # else color "$1" " $(capitalize "$2") "; printf " $3 "; fi
   printf "\n"
 }
 
 confirm() {
   local question=$1; shift;
-  # read -n 1 -p "$(message 45 "?" "$question \033[35m[y/n]\033[0m")" response
+  # read -n 1 -p "$(message 35 "?" "$question \033[35m[Y/N]\033[0m")" response
 
-  printf "$(message 45 "?" "$question \033[35m[y/n]\033[0m")"
+  printf "$(message 35 "?" "$question \033[35m[Y/N]\033[0m")"
   # Turn off echo and set input to raw mode
   stty -echo -icanon time 0 min 1
   response=$(dd bs=1 count=1 2>/dev/null)

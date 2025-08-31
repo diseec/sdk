@@ -14,7 +14,7 @@ c=$1; shift; case $c in
         MODE="test"
         # Start with a header unless silent mode is enabled
         if [ "$SILENT_MODE" != "true" ]; then
-            message 30 ↔ "Quick internet connectivity check"
+            message 34 "↔" "Quick internet connectivity check"
         fi
         
         # Run basic connectivity test
@@ -38,7 +38,7 @@ c=$1; shift; case $c in
         ;;
     dia|diagnose)
         MODE="diagnose"
-        message 44 "Full internet connection diagnostic"
+        message "Full internet connection diagnostic"
         
         overall_status=true
         quick_check_success=false
@@ -117,7 +117,7 @@ c=$1; shift; case $c in
         exit 0
         ;;
     *)
-        if [ ! -z $c ]; then message 41 "!" "Unknown command: '$c'"; fi
+        if [ ! -z $c ]; then message 31 "E" "Unknown command: '$c'"; fi
         cli_main internet_optimized help; exit 1;
         ;;
 esac

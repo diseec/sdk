@@ -62,7 +62,7 @@ fac_con_set() {
     fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
-        message 41 "!" "Configuration value cannot be empty"
+        message 31 "E" "Configuration value cannot be empty"
         return 1
     fi
     
@@ -86,7 +86,7 @@ fac_con_delete() {
     local config_file="$(fac_con_get_config_file "$scope")"
     
     if [ ! -f "$config_file" ]; then
-        message 43 "!" "Configuration file does not exist for scope: $scope"
+        message 33 "!" "Configuration file does not exist for scope: $scope"
         return 1
     fi
     
@@ -110,7 +110,7 @@ fac_con_array_add() {
     fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
-        message 41 "!" "Array value cannot be empty"
+        message 31 "E" "Array value cannot be empty"
         return 1
     fi
     
@@ -133,14 +133,14 @@ fac_con_array_remove() {
     fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
-        message 41 "!" "Array value cannot be empty"
+        message 31 "E" "Array value cannot be empty"
         return 1
     fi
     
     local config_file="$(fac_con_get_config_file "$scope")"
     
     if [ ! -f "$config_file" ]; then
-        message 43 "!" "Configuration file does not exist for scope: $scope"
+        message 33 "!" "Configuration file does not exist for scope: $scope"
         return 1
     fi
     

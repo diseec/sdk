@@ -6,7 +6,7 @@ fac_git_cmd_push() {
   echo "Pushing to remote..."
   _git push -u origin "$CURRENT_BRANCH"
   if [ $? -ne 0 ]; then
-    message 41 "!" "Failed to push changes to remote."
+    message 31 "E" "Failed to push changes to remote."
     return 1
   fi
 

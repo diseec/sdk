@@ -5,19 +5,19 @@ fac_git_cmd_checkout_branch() {
 
     # Check for uncommitted changes
     if [ -n "$(_git status --porcelain)" ]; then
-        message 41 "!" "You have uncommitted changes. Please commit or stash them before switching branches."
+        message 31 "E" "You have uncommitted changes. Please commit or stash them before switching branches."
         return 1
     fi
 
     # Check for unpushed commits
     local unpushed_commits=$(_git log --oneline @{u}.. 2>/dev/null | wc -l | tr -d ' ')
     if [ "$unpushed_commits" -gt 0 ]; then
-        message 41 "!" "You have $unpushed_commits unpushed commits. Please push them before switching branches."
+        message 31 "E" "You have $unpushed_commits unpushed commits. Please push them before switching branches."
         return 1
     fi
 
     GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-    read -p "$(message 45 "?" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
+    read -p "$(message 35 "?" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
     if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
 
     echo "$REPO_NAME: Checking out to branch '$BRANCH'..."
@@ -29,13 +29,13 @@ fac_git_cmd_checkout_if_detached() {
         # echo "$REPO_NAME: Already on a branch, no checkout needed."
         return 0
     else
-        message 43 "!" "$REPO_NAME: Repository is in detached HEAD state."
+        message 33 "!" "$REPO_NAME: Repository is in detached HEAD state."
         # Check for local changes in detached HEAD
         if [ -n "$(_git status --porcelain)" ]; then
-            message 41 "!" "You have local changes in detached HEAD."
+            message 31 "E" "You have local changes in detached HEAD."
             # Prompt for branch to merge changes into
             GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-            read -p "$(message 45 "?" "Branch to merge changes into: (press enter for '$GH_USERNAME')")" TARGET_BRANCH
+            read -p "$(message 35 "?" "Branch to merge changes into: (press enter for '$GH_USERNAME')")" TARGET_BRANCH
             if [ -z "$TARGET_BRANCH" ]; then TARGET_BRANCH="$GH_USERNAME"; fi
             TEMP_BRANCH="temp-detached-$(date +%s)"
             echo "$REPO_NAME: Creating temporary branch '$TEMP_BRANCH' from detached HEAD..."
@@ -52,7 +52,7 @@ fac_git_cmd_checkout_if_detached() {
             fac_git_cmd_checkout_branch
             # After branch checkout, check for uncommitted changes left behind
             if [ -n "$(_git status --porcelain)" ]; then
-                message 41 "!" "You have uncommitted changes that may have been left behind after switching from detached HEAD."
+                message 31 "E" "You have uncommitted changes that may have been left behind after switching from detached HEAD."
                 echo "$REPO_NAME: Choose how to handle these changes:"
                 echo "1) Stash them"
                 echo "2) Commit to a temporary branch"
