@@ -74,7 +74,7 @@ fac_git_cmd_commit() {
   # Check if there are any changes to commit
   if [ -z "$(_git diff --staged)" ]; then
     message 43 "!" "No changes to commit"
-    return 1
+    return 0
   fi
 
   # Generate commit message

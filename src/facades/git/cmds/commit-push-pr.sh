@@ -15,10 +15,7 @@ fac_git_cmd_commit_push_pr() {
 
     handle_hook before_push
     
-    # Only run commit if there are uncommitted changes
-    if [ -n "$(_git diff --staged)" ]; then
-        cli_main git commit
-    fi
+    cli_main git commit
 
     cli_main git push
 
