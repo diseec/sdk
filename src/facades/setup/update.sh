@@ -73,7 +73,7 @@ fac_set_cmd_update() {
         update_dependencies() {
             local module="$1"
             local module_path="$2"
-            cd "$ROOT_DIR/$module_path" && D update --recursive
+            cd "$ROOT_DIR/$module_path" && D update --recursive --force-patch
             echo "Updated dependencies for '$module'."
         }
         fac_wor_foreach_selected_module update_dependencies

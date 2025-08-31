@@ -40,7 +40,7 @@ fac_set_project() {
         install_dependencies() {
             local module="$1"
             local module_path="$2"
-            cd "$ROOT_DIR/$module_path" && D install --recursive
+            cd "$ROOT_DIR/$module_path" && D install --recursive --force-patch
             echo "$REPO_NAME: Installed dependencies for '$module'."
         }
         fac_wor_foreach_selected_module install_dependencies
