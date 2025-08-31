@@ -2,7 +2,14 @@ FROM node:20-alpine
 
 # Install base dependencies
 RUN apk add --no-cache bash curl yq jq git openssl git-lfs
-RUN npm install -g prettier
+
+COPY . .
+
+ENV IS_IN_CONTAINER=true
+
+RUN eval $(/kit/cli envs) && \
+    mkdir -p "$TARGET_MOUNTED_DIR" && \
+    npm install -g /kit
 
 # Install GitHub cli_main using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \
@@ -23,15 +30,12 @@ RUN ARCH=$(uname -m) && \
     cd / && \
     rm -rf /tmp/gh
 
+RUN npm install -g prettier
+
+# Install network diagnostic tools for internet facade
+RUN apk add --no-cache wget iputils bind-tools traceroute bc
+
 WORKDIR /kit
-
-COPY . .
-
-ENV IS_IN_CONTAINER=true
-
-RUN eval $(/kit/cli envs) && \
-    mkdir -p "$TARGET_MOUNTED_DIR" && \
-    npm install -g /kit
 
 ENV IS_IN_KIT_CONTAINER=true
 

@@ -31,9 +31,9 @@ c=$1; shift; case "$c" in
 
     ######################## FACADES ########################
 
-    int|internet)  source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
     set|setup)     source "$KIT_SRC_DIR/facades/setup/cli.sh" "$@" ;;
     doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
+    int|internet)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
     ain|ai)        force_safe $c "$@" || source "$KIT_SRC_DIR/facades/ai/cli.sh" "$@" ;;
     git)           force_safe $c "$@" || source "$KIT_SRC_DIR/facades/git/cli.sh" "$@" ;;
     sub|submodule) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;

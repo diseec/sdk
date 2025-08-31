@@ -1,102 +1,123 @@
 #!/bin/bash
 
+# Internet connectivity checker CLI for Alpine container
 
-# Parse arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        iso|is-online)
-            MODE="is-online"
-            SILENT_MODE=true
-            shift
-            ;;
-        tes|test)
-            MODE="test"
-            shift
-            ;;
-        dia|diagnose)
-            MODE="diagnose"
-            shift
-            ;;
-        -s|--silent)
-            SILENT_MODE=true
-            shift
-            ;;
-        hel|--help|help|-h) display_help "" "" \
-                "$(color 30 'Internet Connection Checker with Advanced Diagnostics')" "" \
-                "$(color 30 'Usage:    cli internet <mode> [options]\n')" "" \
-                "$(color 30 'Modes:')" "" \
-                "  iso|is-online         " "Silent boolean check - returns 0 for success, 1 for failure (no output)" \
-                "  tes|test              " "Fast check with output - tests gateway, DNS, and one site (~3 seconds)" \
-                "  dia|diagnose          " "Comprehensive analysis - tests all layers, sites, velocity, and disconnections (~45 seconds)" \
-                "" "" "$(color 30 'Advanced Features (diagnose mode):')" "" \
-                "  • Velocity analysis                  " "Measures request/response speed with variance detection" \
-                "  • Random disconnection testing       " "Detects intermittent connection drops" \
-                "  • Speed consistency analysis         " "Identifies throttling and congestion patterns" \
-                "  • Multi-round throughput testing     " "Comprehensive bandwidth measurement" \
-                "  • Connection quality scoring         " "Combines speed, stability, and consistency metrics" \
-                "" "" "$(color 30 'Options:')" "" \
-                "  --silent              " "Suppress all output except errors" \
-                "  -h|--help             " "Show this help message"
-            exit 0
-            ;;
-        *)
-            shift
-            ;;
-    esac
-done
-
-local overall_status=""
-
-case "$MODE" in
-    test)
+c=$1; shift; case $c in
+    iso|is-online)
+        MODE="is-online"
+        SILENT_MODE=true
+        # Quick check for internet connectivity - returns 0 if online, 1 if offline
+        quick_check
+        exit $?
+        ;;
+    tes|test)
+        MODE="test"
+        # Start with a header unless silent mode is enabled
         if [ "$SILENT_MODE" != "true" ]; then
-            message 46 ↔ "Quick internet connectivity check"
+            message 40 ↔ "Quick internet connectivity check"
         fi
-        if fac_int_quick_check; then
+        
+        # Run basic connectivity test
+        if quick_check; then
             overall_status=true
         else
             overall_status=false
         fi
-        ;;
         
-    is-online)
-        # Silent boolean check - no start message
-        if fac_int_quick_check; then
-            overall_status=true
-        else
-            overall_status=false
+        # Display a summary
+        if [ "$SILENT_MODE" != "true" ]; then
+            if [ "$overall_status" = "true" ]; then
+                printf "${GREEN}[SUCCESS]${NC} Internet connection working properly\n"
+            else
+                printf "${RED}[FAILED]${NC} Internet connection has issues\n"
+            fi
         fi
-        ;;
         
-    diagnose)
+        # Exit with appropriate code
+        [ "$overall_status" = "true" ] && exit 0 || exit 1
+        ;;
+    dia|diagnose)
+        MODE="diagnose"
         message 44 "Full internet connection diagnostic"
         
         overall_status=true
-        # Always include connection quality in diagnose mode, no need for separate debug flag
-        fac_int_test_network_interface || overall_status=false
-        fac_int_quick_check || overall_status=false
-        fac_int_test_dns_servers || overall_status=false
-        fac_int_test_international_sites || overall_status=false
-        fac_int_test_regional_sites || overall_status=false
-        fac_int_test_cdn_connectivity || overall_status=false
-        confirm "Run stability tests? ~30 seconds" fac_int_test_connection_quality
+        quick_check_success=false
+        
+        # Run comprehensive tests
+        test_network_interface || overall_status=false
+        
+        # Run quick check first to see if we have basic internet connectivity
+        if quick_check; then
+            quick_check_success=true
+        else
+            quick_check_success=false
+            overall_status=false
+        fi
+        
+        # Special handling for DNS tests
+        dns_result=0
+        test_dns_servers
+        dns_result=$?
+        
+        # Consider DNS failure as overall failure
+        if [ $dns_result -ne 0 ]; then
+            overall_status=false
+        fi
+        
+        test_international_sites || overall_status=false
+        test_regional_sites || overall_status=false
+        test_cdn_connectivity || overall_status=false
+        
+        # Optional advanced tests
+        # confirm "Run connection quality tests? (takes ~10 seconds)" test_connection_quality
+        test_connection_quality
+        
+        # If something failed, run the diagnostic
+        if [ "$overall_status" = "false" ]; then
+            diagnose_connection_issues
+        fi
+        
+        # Offer advanced diagnostics if still failing
+        # if [ "$overall_status" = "false" ]; then
+        #     confirm "Run advanced diagnostics? (takes ~15 seconds)" advanced_diagnostics
+        # fi
+        advanced_diagnostics
+        
+        # Display summary
+        if [ "$overall_status" = "true" ]; then
+            printf "${GREEN}[SUCCESS]${NC} Internet connection working properly\n"
+        else
+            printf "${RED}[FAILED]${NC} Internet connection has issues\n"
+        fi
+        
+        # Exit with appropriate code
+        [ "$overall_status" = "true" ] && exit 0 || exit 1
+        ;;
+    -s|--silent)
+        SILENT_MODE=true
+        # Re-run the script with the silent flag
+        cli_main internet_optimized "$@"
+        exit $?
+        ;;
+    hel|--help|help|-h) display_help "" "" \
+            "$(color 30 'Internet Connection Checker (Optimized for Alpine)')" "" \
+            "$(color 30 'Usage:    cli internet_optimized <mode> [options]\n')" "" \
+            "$(color 30 'Modes:')" "" \
+            "  iso|is-online         " "Silent boolean check - returns 0 for success, 1 for failure (no output)" \
+            "  tes|test              " "Fast check with output - tests gateway, DNS, and one site (~2 seconds)" \
+            "  dia|diagnose          " "Comprehensive analysis - tests all layers with detailed diagnostics (~30 seconds)" \
+            "" "" "$(color 30 'Features:')" "" \
+            "  • Docker-optimized implementation    " "Specifically designed for Alpine container environment" \
+            "  • Iranian internet censorship detection " "Identifies filtering patterns and suggests solutions" \
+            "  • Lightweight with minimal dependencies " "Uses only tools available in the base Docker image" \
+            "  • Multi-layer connectivity testing   " "Gateway, DNS, HTTP(S), and CDN access verification" \
+            "" "" "$(color 30 'Options:')" "" \
+            "  -s|--silent           " "Suppress all output except errors" \
+            "  -h|--help             " "Show this help message"
+        exit 0
+        ;;
+    *)
+        if [ ! -z $c ]; then message 41 "!" "Unknown command: '$c'"; fi
+        cli_main internet_optimized help; exit 1;
         ;;
 esac
-
-# Summary (except in check mode)
-if [ "$MODE" != "is-online" ] && [ "$SILENT_MODE" != "true" ]; then
-    if [ "$overall_status" = "true" ]; then
-        printf "${GREEN}[SUCCESS]${NC} Internet connection working properly\n"
-    elif [ "$overall_status" = "false" ]; then
-        printf "${RED}[FAILED]${NC} Internet connection has issues\n"
-        # Run intelligent diagnosis if we have test results
-        if [ "$MODE" = "diagnose" ]; then
-            fac_int_diagnose_connection_issues
-        fi
-    else
-        printf "${RED}[ERROR]${NC} Incomplete operation, Script execution failed.\n"
-    fi
-fi
-
-# Exit with appropriate code
-[ "$overall_status" = "true" ] && return 0 || return 1

@@ -1,128 +1,166 @@
 #!/bin/bash
 
-# Connection issue diagnosis and failure analysis
+# Diagnostic utilities for internet connectivity issues
 
-# Intelligent failure analysis
-fac_int_diagnose_connection_issues() {
-    printf "${RED}Connection Issue Diagnosis${NC}\n"
-    
-    local total_international=${#INTERNATIONAL_SITES[@]}
-    local total_regional=${#REGIONAL_SITES[@]}
-    local total_cdn=${#CDN_SITES[@]}
-    
-    # Primary connection issues
-    if [ "$PRIMARY_CONNECTION_STATUS" = "NO_CONNECTION" ]; then
-        printf "${RED}[DIAGNOSIS]${NC} System has no internet connection\n"
-        printf "  → No active network interfaces found\n"
-        printf "  → Check WiFi/Ethernet cable connection\n"
-        printf "  → Restart network services\n"
-        return
+# Diagnose connection issues based on test results
+diagnose_connection_issues() {
+    if [ "$SILENT_MODE" != "true" ]; then
+        printf "${BLUE}Connection Diagnosis${NC}\n"
     fi
     
-    if [ "$PRIMARY_CONNECTION_STATUS" = "VPN_ONLY" ]; then
-        printf "${YELLOW}[DIAGNOSIS]${NC} Only VPN connection active\n"
-        printf "  → Primary WiFi/Ethernet connection is down\n"
-        printf "  → Running through VPN/tunnel only\n"
-        printf "  → May cause performance issues\n"
-    fi
-    
-    # Gateway issues
+    # Determine the failure pattern
     if [ "$GATEWAY_STATUS" = "FAIL" ]; then
-        printf "${RED}[DIAGNOSIS]${NC} Local network gateway unreachable\n"
-        printf "  → Router/modem may be down\n"
-        printf "  → Network configuration issue\n"
-        printf "  → Check router power and cables\n"
+        log_status "INFO" "Diagnosis" "Network layer issue: Cannot reach gateway"
+        log_status "INFO" "Recommendation" "Check container network configuration and Docker network settings"
         return
     fi
     
-    # DNS issues
-    if [ "$DNS_PING_STATUS" = "FAIL" ]; then
-        printf "${RED}[DIAGNOSIS]${NC} DNS server connectivity issues\n"
-        if [ "$DNS_RESOLUTION_STATUS" = "FAIL" ]; then
-            printf "  → DNS servers unreachable AND resolution failing\n"
-            printf "  → ISP DNS may be down\n"
-            printf "  → Try switching to alternative DNS (1.1.1.1, 8.8.8.8)\n"
+    if [ "$DNS_STATUS" = "FAIL" ]; then
+        # Check if DNS servers are unreachable but internet still works
+        if curl -s --max-time $QUICK_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$QUICK_SITE" >/dev/null 2>&1 || \
+           curl -s --max-time $QUICK_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$ALTERNATIVE_QUICK_SITE" >/dev/null 2>&1; then
+            log_status "INFO" "Diagnosis" "DNS servers unreachable but internet is working"
+            log_status "INFO" "Recommendation" "Check your network configuration"
+            return
+        fi
+        
+        log_status "INFO" "Diagnosis" "DNS layer issue: Cannot reach DNS servers"
+        
+        # Check if we can ping an IP but not DNS servers
+        if ping -c $PING_COUNT -W $DNS_PING_TIMEOUT $PRIMARY_DNS_SERVER >/dev/null 2>&1 || ping -c $PING_COUNT -W $DNS_PING_TIMEOUT $SECONDARY_DNS_SERVER >/dev/null 2>&1; then
+            log_status "INFO" "Recommendation" "DNS servers may be blocked/filtered in your region"
+            log_status "INFO" "Recommendation" "Try using alternative DNS servers or DNS over HTTPS/TLS"
         else
-            printf "  → DNS servers unreachable but resolution working\n"
-            printf "  → Using cached DNS or alternative resolvers\n"
+            log_status "INFO" "Recommendation" "Check network configuration and firewall settings"
         fi
         return
     fi
     
-    # Analyze traffic patterns
-    local https_blocked=false
-    local complete_blocking=false
-    local selective_blocking=false
-    
-    # Check international sites
-    if [ "$INTERNATIONAL_HTTPS_COUNT" -eq 0 ] && [ "$INTERNATIONAL_PING_COUNT" -gt 0 ]; then
-        https_blocked=true
-    elif [ "$INTERNATIONAL_HTTPS_COUNT" -eq 0 ] && [ "$INTERNATIONAL_PING_COUNT" -eq 0 ]; then
-        complete_blocking=true
-    elif [ "$INTERNATIONAL_HTTPS_COUNT" -gt 0 ] && [ "$INTERNATIONAL_PING_COUNT" -gt 0 ]; then
-        selective_blocking=true
+    if [ "$HTTP_STATUS" = "BLOCKED" ]; then
+        log_status "INFO" "Diagnosis" "HTTP(S) traffic is being filtered or blocked"
+        log_status "INFO" "Recommendation" "Iran internet censorship detected - consider using a VPN or proxy"
+        
+        # Check specific services that might be accessible
+        log_status "INFO" "Testing" "Checking for partial connectivity..."
+        
+        if curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$LOCAL_TEST_SITE" >/dev/null 2>&1; then
+            log_status "SUCCESS" "Local Services" "Local Iranian services are accessible"
+        fi
+        
+        return
     fi
     
-    # Specific diagnoses
-    if [ "$complete_blocking" = true ]; then
-        printf "${RED}[DIAGNOSIS]${NC} Complete internet blocking detected\n"
-        printf "  → Both ping and HTTPS failing for all sites\n"
-        printf "  → ISP may be experiencing outage\n"
-        printf "  → Check ISP status or try mobile hotspot\n"
+    if [ "$HTTP_STATUS" = "FAIL" ]; then
+        log_status "INFO" "Diagnosis" "Internet connectivity issue: Cannot access websites"
         
-    elif [ "$https_blocked" = true ]; then
-        if [ "$CDN_HTTPS_COUNT" -eq 0 ] && [ "$REGIONAL_HTTPS_COUNT" -eq 0 ]; then
-            printf "${RED}[DIAGNOSIS]${NC} Deep Packet Inspection (DPI) blocking detected\n"
-            printf "  → HTTPS traffic is being filtered/blocked\n"
-            printf "  → Affects both international and regional sites\n"
-            printf "  → Government/ISP level filtering active\n"
-            printf "  → Consider using VPN or DNS-over-HTTPS\n"
+        # Check if DNS resolution works
+        if command -v nslookup >/dev/null 2>&1; then
+            if nslookup $DNS_TEST_DOMAIN >/dev/null 2>&1; then
+                log_status "INFO" "DNS Resolution" "DNS resolution works but HTTP access fails"
+                log_status "INFO" "Recommendation" "HTTP traffic may be blocked by firewall or proxy"
+            else
+                log_status "INFO" "DNS Resolution" "DNS resolution fails"
+                log_status "INFO" "Recommendation" "Check DNS configuration or try alternative DNS"
+            fi
+        fi
+        
+        return
+    fi
+    
+    # If we got here, something else is wrong
+    log_status "INFO" "Diagnosis" "Unable to determine the exact issue"
+    log_status "INFO" "Recommendation" "Run the 'diagnose' command for more detailed analysis"
+}
+
+# Advanced diagnostics for MTU and connection issues
+advanced_diagnostics() {
+    if [ "$SILENT_MODE" != "true" ]; then
+        printf "${BLUE}Advanced Network Diagnostics${NC}\n"
+    fi
+    
+    # Check MTU settings
+    if command -v ip >/dev/null 2>&1; then
+        local mtu_info=$(ip link | grep -A 1 -E '^[0-9]+:' | grep -v lo | grep mtu | head -1)
+        if [ -n "$mtu_info" ]; then
+            # Extract MTU value using awk instead of grep -P
+            local mtu_value=$(echo "$mtu_info" | grep "mtu" | awk '{for(i=1;i<=NF;i++) if($i ~ /^mtu/) print $(i+1)}')
+            if [ -n "$mtu_value" ]; then
+                log_status "INFO" "MTU Setting" "Current MTU: $mtu_value"
+                if [ "$mtu_value" -lt 1500 ]; then
+                    log_status "WARNING" "MTU Setting" "MTU is less than standard 1500 bytes, which may cause issues with some sites"
+                fi
+            fi
+        fi
+    fi
+    
+    # Check for SSL/TLS interception
+    if command -v curl >/dev/null 2>&1; then
+        log_status "INFO" "Testing" "Checking for SSL/TLS interception..."
+        
+        local cert_info=$(curl -sI https://$SSL_CHECK_SITE 2>/dev/null | grep -i "server:" | head -1)
+        if [ -n "$cert_info" ]; then
+            log_status "INFO" "SSL/TLS" "Server response: $cert_info"
+        fi
+    fi
+    
+    # Check traceroute if available
+    if command -v traceroute >/dev/null 2>&1; then
+        log_status "INFO" "Testing" "Checking network path to $TRACE_TARGET..."
+        
+        local traceroute_output=$(timeout ${TRACEROUTE_TIMEOUT}s traceroute -m $TRACEROUTE_MAX_HOPS -q 1 $TRACE_TARGET 2>/dev/null)
+        if [ -n "$traceroute_output" ]; then
+            # Count hops
+            local hop_count=$(echo "$traceroute_output" | grep -c "^[0-9]")
+            log_status "INFO" "Network Path" "$hop_count hops to destination"
+            
+            # Check for timeouts
+            local timeout_count=$(echo "$traceroute_output" | grep -c "\* \* \*")
+            if [ "$timeout_count" -gt 0 ]; then
+                log_status "WARNING" "Network Path" "$timeout_count hops timed out, possible filtering or routing issues"
+            fi
         else
-            printf "${YELLOW}[DIAGNOSIS]${NC} Selective HTTPS filtering detected\n"
-            printf "  → International HTTPS blocked but some regional sites work\n"
-            printf "  → Geographic or content-based filtering\n"
-            printf "  → VPN may help access blocked content\n"
-        fi
-        
-    elif [ "$CDN_HTTPS_COUNT" -eq 0 ] && [ "$INTERNATIONAL_HTTPS_COUNT" -gt 0 ]; then
-        printf "${YELLOW}[DIAGNOSIS]${NC} CDN/Content delivery network blocking\n"
-        printf "  → CDN services specifically blocked\n"
-        printf "  → May affect website loading and performance\n"
-        printf "  → Some applications may not work properly\n"
-        
-    elif [ "$selective_blocking" = true ]; then
-        printf "${YELLOW}[DIAGNOSIS]${NC} Intermittent connection issues detected\n"
-        if [ "$VPN_ONLY_CONNECTION" = true ]; then
-            printf "  → VPN connection may be unstable\n"
-            printf "  → Try reconnecting VPN or switching servers\n"
-        else
-            printf "  → Network may be congested or unstable\n"
-            printf "  → Some sites timing out randomly\n"
-            printf "  → Could be ISP throttling or server issues\n"
-        fi
-        
-    else
-        # Connection working but failed overall test
-        if [ "$REGIONAL_HTTPS_COUNT" -gt 0 ] || [ "$INTERNATIONAL_HTTPS_COUNT" -gt 0 ]; then
-            printf "${GREEN}[DIAGNOSIS]${NC} Partial connectivity detected\n"
-            printf "  → Some sites working, others may be temporarily down\n"
-            printf "  → Individual server issues rather than systematic blocking\n"
-            printf "  → Connection is generally functional\n"
+            log_status "FAIL" "Network Path" "Unable to trace route to destination"
         fi
     fi
     
-    # Additional context
-    if [ "$INTERNATIONAL_PING_COUNT" -gt 0 ] && [ "$INTERNATIONAL_HTTPS_COUNT" -eq 0 ]; then
-        printf "${BLUE}[INFO]${NC} Ping works but HTTPS doesn't - indicates:\n"
-        printf "  → Port 443 (HTTPS) filtering\n"
-        printf "  → SNI (Server Name Indication) blocking\n"
-        printf "  → TLS/SSL traffic inspection\n"
+    # Check for transparent proxies
+    log_status "INFO" "Testing" "Checking for transparent proxies..."
+    
+    local proxy_detected=false
+    if curl -s -m $PROXY_CHECK_TIMEOUT "https://$IP_CHECK_SERVICE1" >/dev/null 2>&1; then
+        local public_ip=$(curl -s -m $PROXY_CHECK_TIMEOUT "https://$IP_CHECK_SERVICE1" 2>/dev/null)
+        local alternative_ip=$(curl -s -m $PROXY_CHECK_TIMEOUT "https://$IP_CHECK_SERVICE2" 2>/dev/null)
+        
+        if [ -n "$public_ip" ] && [ -n "$alternative_ip" ] && [ "$public_ip" != "$alternative_ip" ]; then
+            log_status "WARNING" "Proxy Detection" "Different IPs detected from multiple services, possible transparent proxy"
+            proxy_detected=true
+        elif [ -n "$public_ip" ]; then
+            log_status "INFO" "Public IP" "$public_ip"
+        fi
     fi
     
-    if [ "$VPN_ONLY_CONNECTION" = true ]; then
-        printf "${BLUE}[INFO]${NC} Running on VPN-only connection:\n"
-        printf "  → May have different filtering rules\n"
-        printf "  → Performance may be slower\n"
-        printf "  → Some local services may not work\n"
+    # Check for common Iranian censorship patterns
+    log_status "INFO" "Testing" "Checking for censorship patterns..."
+    
+    local censorship_detected=false
+    
+    # Try accessing commonly blocked sites
+    if ! curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$CENSORSHIP_TEST_SITE1" >/dev/null 2>&1 && \
+       ! curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$CENSORSHIP_TEST_SITE2" >/dev/null 2>&1 && \
+       ! curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$CENSORSHIP_TEST_SITE3" >/dev/null 2>&1; then
+        # All three major sites are blocked
+        if curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$LOCAL_TEST_SITE" >/dev/null 2>&1 || \
+           curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$LOCAL_TEST_SITE2" >/dev/null 2>&1; then
+            # But Iranian sites work
+            log_status "WARNING" "Censorship" "Iranian internet filtering detected (international sites blocked, local sites accessible)"
+            censorship_detected=true
+        fi
     fi
+    
+    # Summary
+    if [ "$proxy_detected" = true ] || [ "$censorship_detected" = true ]; then
+        log_status "INFO" "Recommendation" "Connection restricted by regional policies. Consider using VPN or proxy services to access blocked content."
+    fi
+    
+    return 0
 }
