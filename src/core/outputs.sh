@@ -46,18 +46,18 @@ message() {
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
     local repo_name=${REPO_NAME:-d}
-    local prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
     local ansi="90"
     local type="--log"
     local icon=""
     local content=""
     local level="VERBOSE" # VERBOSE > DEBUG > INFO > WARNING > ERROR
 
-
+    # Define Api logic and UX
     if [ $# -eq 1 ]; then type="--log"; content="$1";
     elif [ $# -eq 2 ]; then type="$1"; content="$2";
     else ansi="$1"; type="$1"; icon="$2"; shift 2; content="$@"; fi
 
+    # Parse type config
     case $type in
         -l|--log)       ansi="90"; icon="";  level="VERBOSE" ;;
         -d|--debug)     ansi="90"; icon="¤"; level="DEBUG"   ;;
@@ -72,8 +72,14 @@ message() {
         *)                                   level="VERBOSE" ;;
     esac
 
+    # Prepare prompt & content
+    local prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
+    prompt="$(color 90 "$prompt")"
     if [ -n "$icon" ]; then prompt="$prompt$(color $ansi "[$icon]")"; fi
 
+    content="$(color 90 "$content")"
+
+    # Handle logging levels
     case $D_LOG_LEVEL in
         VERBOSE|verbose) ;;
         DEBUG|debug) case $level in VERBOSE) return 0; esac ;;
@@ -82,6 +88,7 @@ message() {
         ERROR|error) case $level in VERBOSE|DEBUG|INFO|WARNING) return 0; esac ;;
     esac
 
+    # Output log message
     printf "$prompt $content\n"
 }
 

@@ -117,6 +117,7 @@ SPEED_TEST_URL="https://speed.cloudflare.com/__down?bytes=1048576"
 # Colors for status messages
 WHITE_FILLED_BOLD='\033[1;47m'
 WHITE_FILLED='\033[0;47m'
+GRAY='\033[0;90m'
 WHITE='\033[0;37m'
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
@@ -154,16 +155,16 @@ log_status() {
     if [ "$SILENT_MODE" != "true" ]; then
         case "$status" in
             SUCCESS)
-                printf "${NC}[✔]${NC} %-25s %s ${CYAN}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf "${GRAY}[✓]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
             FAIL)
-                printf "${RED}[✗]${NC} %-25s %s ${CYAN}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf "${RED}[✖]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
             WARNING)
-                printf "${YELLOW}[!]${NC} %-25s %s ${CYAN}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf "${YELLOW}[!]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
             INFO)
-                printf "${NC}[i]${NC} %-25s %s ${CYAN}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf "${GRAY}[i]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
         esac
     fi
