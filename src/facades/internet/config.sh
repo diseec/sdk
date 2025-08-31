@@ -97,11 +97,11 @@ SITE_PING_TIMEOUT=2              # Timeout for site ping tests
 DEFAULT_CONTAINER_GATEWAY="172.17.0.1"  # Fallback gateway for containers
 
 # Performance thresholds
-GOOD_MTU=1400                    # Standard MTU size in bytes is 1500
-GOOD_LATENCY_THRESHOLD=150       # Good latency threshold in ms best is <100ms
-MODERATE_LATENCY_THRESHOLD=250   # Moderate latency threshold in ms best is <200ms
+MTU_STANDARD=1500                 # Standard MTU size in bytes
+GOOD_LATENCY_THRESHOLD=100       # Good latency threshold in ms
+MODERATE_LATENCY_THRESHOLD=200   # Moderate latency threshold in ms
 ACCEPTABLE_PACKET_LOSS=5         # Minor packet loss threshold in %
-GOOD_SPEED_THRESHOLD=6           # Good download speed threshold in Mbps
+GOOD_SPEED_THRESHOLD=10          # Good download speed threshold in Mbps
 MODERATE_SPEED_THRESHOLD=3       # Moderate download speed threshold in Mbps
 LATENCY_TEST_SITE="diseec.com"   # Site for latency testing
 LATENCY_TEST_COUNT=4             # Number of pings for latency testing
@@ -115,11 +115,7 @@ SPEED_TEST_URL="https://speed.cloudflare.com/__down?bytes=1048576"
 # Appearance settings
 # ====================================
 # Colors for status messages
-WHITE_FILLED_BOLD='\033[1;47m'
-WHITE_FILLED='\033[0;47m'
-WHITE='\033[0;37m'
 GREEN='\033[0;32m'
-CYAN='\033[0;36m'
 PURPLE='\033[0;35m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
@@ -154,16 +150,16 @@ log_status() {
     if [ "$SILENT_MODE" != "true" ]; then
         case "$status" in
             SUCCESS)
-                printf "${NC}[✔]${NC} %-25s %s ${CYAN}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf "${NC}[✔]${NC} %-25s %s ${PURPLE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
             FAIL)
-                printf "${RED}[✗]${NC} %-25s %s ${CYAN}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf "${RED}[✗]${NC} %-25s %s ${PURPLE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
             WARNING)
-                printf "${YELLOW}[!]${NC} %-25s %s ${CYAN}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf "${YELLOW}[!]${NC} %-25s %s ${PURPLE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
             INFO)
-                printf "${NC}[i]${NC} %-25s %s ${CYAN}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf "${NC}[i]${NC} %-25s %s ${PURPLE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
         esac
     fi

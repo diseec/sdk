@@ -83,8 +83,7 @@ quick_check() {
 # Test DNS servers for resolution
 test_dns_servers() {
     if [ "$SILENT_MODE" != "true" ]; then
-        echo ""
-        printf "${WHITE}DNS Server Tests ${NC}\n"
+        printf "${BLUE}DNS Server Tests${NC}\n"
     fi
     
     local dns_servers_working=false
@@ -150,8 +149,7 @@ test_dns_servers() {
 # Test access to international sites
 test_international_sites() {
     if [ "$SILENT_MODE" != "true" ]; then
-        echo ""
-        printf "${WHITE}International Site Access ${NC}\n"
+        printf "${BLUE}International Site Access${NC}\n"
     fi
     
     local sites_accessible=false
@@ -197,8 +195,7 @@ test_international_sites() {
 # Test access to regional sites (Iran)
 test_regional_sites() {
     if [ "$SILENT_MODE" != "true" ]; then
-        echo ""
-        printf "${WHITE}Regional Site Access ${NC}\n"
+        printf "${BLUE}Regional Site Access${NC}\n"
     fi
     
     local sites_accessible=false
@@ -244,8 +241,7 @@ test_regional_sites() {
 # Test access to CDN sites
 test_cdn_connectivity() {
     if [ "$SILENT_MODE" != "true" ]; then
-        echo ""
-        printf "${WHITE}CDN Access ${NC}\n"
+        printf "${BLUE}CDN Access${NC}\n"
     fi
     
     local sites_accessible=false
@@ -291,8 +287,7 @@ test_cdn_connectivity() {
 # Test connection quality using lightweight methods
 test_connection_quality() {
     if [ "$SILENT_MODE" != "true" ]; then
-        echo ""
-        printf "${WHITE}Connection Quality Analysis ${NC}\n"
+        printf "${BLUE}Connection Quality Analysis${NC}\n"
     fi
     
     # Simplified latency test using ping

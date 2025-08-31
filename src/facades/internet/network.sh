@@ -38,8 +38,7 @@ get_gateway() {
 # Test network interface using Alpine-specific methods
 test_network_interface() {
     if [ "$MODE" != "is-online" ] && [ "$SILENT_MODE" != "true" ]; then
-        echo ""
-        printf "${WHITE}Network Interface Status ${NC}\n"
+        printf "${BLUE}Network Interface Status${NC}\n"
     fi
     
     local primary_connection_found=false
