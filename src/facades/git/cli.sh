@@ -27,7 +27,7 @@ c=$1; shift; case $c in
     hub) c=$1; shift; case $c in
         _) _gh "$@" ;;
         *)
-            if [ ! -z $c ]; then message 31 "E" "Unknown command: '$c'"; fi
+            if [ ! -z $c ]; then message -e "Unknown command: '$c'"; fi
             # cli_main git hub help; exit 1;
         ;;
     esac ;;
@@ -56,7 +56,7 @@ c=$1; shift; case $c in
         "    gh auth login         " "Authenticate GitHub cli_main for PR management"
     ;;
     *)
-        if [ ! -z $c ]; then message 31 "E" "Unknown command: '$c'"; fi
+        if [ ! -z $c ]; then message -e "Unknown command: '$c'"; fi
         cli_main git help; exit 1;
     ;;
 esac

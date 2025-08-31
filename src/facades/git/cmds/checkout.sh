@@ -5,14 +5,14 @@ fac_git_cmd_checkout_branch() {
 
     # Check for uncommitted changes
     if [ -n "$(_git status --porcelain)" ]; then
-        message 31 "E" "You have uncommitted changes. Please commit or stash them before switching branches."
+        message -e "You have uncommitted changes. Please commit or stash them before switching branches."
         return 1
     fi
 
     # Check for unpushed commits
     local unpushed_commits=$(_git log --oneline @{u}.. 2>/dev/null | wc -l | tr -d ' ')
     if [ "$unpushed_commits" -gt 0 ]; then
-        message 31 "E" "You have $unpushed_commits unpushed commits. Please push them before switching branches."
+        message -e "You have $unpushed_commits unpushed commits. Please push them before switching branches."
         return 1
     fi
 
@@ -29,10 +29,10 @@ fac_git_cmd_checkout_if_detached() {
         # echo "$REPO_NAME: Already on a branch, no checkout needed."
         return 0
     else
-        message 33 "!" "$REPO_NAME: Repository is in detached HEAD state."
+        message -w "$REPO_NAME: Repository is in detached HEAD state."
         # Check for local changes in detached HEAD
         if [ -n "$(_git status --porcelain)" ]; then
-            message 31 "E" "You have local changes in detached HEAD."
+            message -e "You have local changes in detached HEAD."
             # Prompt for branch to merge changes into
             GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
             read -p "$(message 35 "?" "Branch to merge changes into: (press enter for '$GH_USERNAME')")" TARGET_BRANCH
@@ -52,7 +52,7 @@ fac_git_cmd_checkout_if_detached() {
             fac_git_cmd_checkout_branch
             # After branch checkout, check for uncommitted changes left behind
             if [ -n "$(_git status --porcelain)" ]; then
-                message 31 "E" "You have uncommitted changes that may have been left behind after switching from detached HEAD."
+                message -e "You have uncommitted changes that may have been left behind after switching from detached HEAD."
                 echo "$REPO_NAME: Choose how to handle these changes:"
                 echo "1) Stash them"
                 echo "2) Commit to a temporary branch"

@@ -12,7 +12,7 @@ handle_hook() {
 
     # Exit early if no hook specified
     if [ -z "$HOOK" ]; then
-        message 33 "error" "No hook specified. Usage: $0 <hook_name>"
+        message -w "No hook specified. Usage: $0 <hook_name>"
         exit 1
     fi
 
@@ -77,5 +77,5 @@ handle_hook() {
         execute_hook "$ROOT_DIR" "$CLI_MAIN" "$HOOK" "root" || true
     fi
 
-    # message 32 "done" "hook '$HOOK' execution completed"
+    # message -o "hook '$HOOK' execution completed"
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-c=$1; shift; case "$c" in
+c=$1; shift; case $c in
 
     ######################## PROJECT MANAGEMENT ########################
 
@@ -51,8 +51,8 @@ c=$1; shift; case "$c" in
 
     saf|safely) cli_main "$KIT_NAME" run --no-message "$TARGET_MOUNTED_DIR/cli" "$@" ;;
 
-    api) c=$1; shift; case "$c" in
-        v1) c=$1; shift; case "$c" in
+    api) c=$1; shift; case $c in
+        v1) c=$1; shift; case $c in
             install) cli_main install "$@" ;;
             *) display_help "" "" \
                 "$(color 37 'API v1 Commands')" "" \
@@ -85,8 +85,7 @@ c=$1; shift; case "$c" in
         "    D [--patch]              " "Project-scoped kit manager" \
         "    D                        " "Locate project root and invoke the project's ./cli" \
         "    D --patch                " "Force pull and reinstall kit into project" \
-        "                             " "Note: 'D --patch' ensures a fresh kit binary is used when the local kit is missing," \
-        "                             " "corrupted, or unable to bootstrap the CLI itself." \
+        "                             " "Note: 'D --patch' ensures a fresh kit binary is used when the local kit is missing, corrupted, or unable to bootstrap the CLI itself." \
         "" "" "$(color 37 'Project Management')" "" \
         "    ins|install              " "Install project dependencies and tools" \
         "    ude|update               " "Update cli_main and sync project" \
@@ -102,7 +101,7 @@ c=$1; shift; case "$c" in
         "" "" "$(color 37 'Source Control')" "" \
         "    git                      " "Git workflow management" \
         "    pul|pull                 " "Pull and merge latest changes" \
-        "    pus|push                 " "$(color 35 '✦') Auto-commit and create PR" \
+        "    pus|push                 " "$(color 36 '✦') Auto-commit and create PR" \
         "" "" "$(color 37 'Infrastructure')" "" \
         "    doc|docker               " "Docker operations" \
         "    sub|submodule            " "Unified submodule management (packages & services)" \
@@ -111,7 +110,7 @@ c=$1; shift; case "$c" in
         "    con|config               " "Configuration management" \
         "    sec|secret               " "Encrypted secrets management" \
         "" "" "$(color 37 'Utilities')" "" \
-        "    ai$(printf "\033[35m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
+        "    ai$(printf "\033[36m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
         "    env|envs                 " "Manage environment variables. Example:" \
         "                             " "set -a; eval \"\$(D envs)\"; set +a" \
         "                             " "eval \$(cli_main envs) > /dev/null" \
@@ -120,13 +119,13 @@ c=$1; shift; case "$c" in
         "    kit <command>            " "SDK container operations" \
         "" "" "$(color 37 'Information')" "" \
         "    inf|inform               " "Information and validation" \
-        "    dai|daily                " "$(color 35 '✦') Generate daily insights" \
+        "    dai|daily                " "$(color 36 '✦') Generate daily insights" \
         "    ver|version              " "Show version information" \
         "    hel|help                 " "Show this help message" \
         "$@"
     ;;
     *)
-        if [ ! -z "$c" ]; then message 31 "E" "Unknown command: '$c'"; fi
+        if [ ! -z $c ]; then message 31 "E" "Unknown command: '$c'"; fi
         cli_main help; exit 1;
     ;;
 esac

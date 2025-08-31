@@ -15,7 +15,7 @@ fac_doc_up_development() {
     else
         # Set up a trap to ensure we stop all containers on interrupt
         cleanup() {
-            message 33 "!" "CLEANUP" "Stopping all containers..."
+            message -w "CLEANUP" "Stopping all containers..."
             _docker compose down
             exit 0
         }

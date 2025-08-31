@@ -14,7 +14,7 @@ fac_set_project() {
     handle_hook before_install
 
     # Early return in CI environment - silent skip
-    [ -n "$CI" ] && { message 33 "CI" "Skipping interactive installation in CI environment"; return 0; }
+    [ -n "$CI" ] && { message -w "Skipping interactive installation in CI environment"; return 0; }
 
     cli_main kit stop;
     cli_main kit start --detach;
@@ -53,6 +53,6 @@ fac_set_project() {
     handle_hook after_install
 
     echo "$REPO_NAME: Workspace configuration initialized successfully."
-    message 32 "✔" "Installation completed successfully."
+    message -o "Installation completed successfully."
 
 }

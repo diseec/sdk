@@ -40,7 +40,7 @@ fac_git_cmd_pr_create() {
     local branch="$CURRENT_BRANCH"
 
     if [ "$CURRENT_BRANCH" = "main" ]; then
-        message 31 "E" "Creating a PR from the main branch is not allowed."
+        message -e "Creating a PR from the main branch is not allowed."
         return 1
     fi
 
@@ -61,12 +61,12 @@ fac_git_cmd_pr_create() {
       # Create PR using GitHub cli_main
       local pr_url=$(_gh pr create --title "$pr_title" --body "$pr_body" --base main)
       if [ $? -ne 0 ]; then
-        message 31 "E" "Failed to create PR."
+        message -e "Failed to create PR."
         return 1
       fi
       echo -e "Created pull request: \033[4m$pr_url\033[24m"
     else
-      message 31 "E" "Install GitHub cli_main (gh) for automatic PR creation"
+      message -e "Install GitHub cli_main (gh) for automatic PR creation"
       echo -e "Create PR manually at: \033[4mhttps://github.com/$ORG_NAME/$REPO_NAME/pull/new/$branch\033[24m"
       return 1
     fi
@@ -93,7 +93,7 @@ fac_git_cmd_pr_check_status() {
   local branch="$CURRENT_BRANCH"
 
   if [ -z "$pr_number" ]; then
-      # message 33 "!" "No open PR found for branch: $branch"
+      # message -w "No open PR found for branch: $branch"
       return 0
   fi
 
@@ -105,7 +105,7 @@ fac_git_cmd_pr_check_status() {
 
       # Ensure jq is available for reliable JSON parsing
       if ! command -v jq >/dev/null 2>&1; then
-          message 33 "!" "jq is required for JSON parsing. Please install jq and try again."
+          message -w "jq is required for JSON parsing. Please install jq and try again."
           return 0
       fi
 
@@ -125,7 +125,7 @@ fac_git_cmd_pr_check_status() {
       
       # Review status
       case "$review_decision" in
-          "APPROVED") message 32 "✔" "Approved! Ready to merge." ;;
+          "APPROVED") message -o "Approved! Ready to merge." ;;
           "CHANGES_REQUESTED") message 31 "⊝" "Changes requested. See comments below." ;;
           "REVIEW_REQUIRED") message 33 "⊙" "Waiting for review" ;;
           *) message "No reviews yet" ;;
@@ -142,10 +142,10 @@ fac_git_cmd_pr_check_status() {
               message 33 "⚭" "...and $((unresolved_count - 5)) more comments"
           fi
       # else
-      #   message 32 "comments" "No unresolved comments"
+      #   message -o "No unresolved comments"
       fi
   else
-      message 31 "E" "PR #$pr_number exists, but detailed status check requires GitHub CLI"
-      message 31 "E" "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
+      message -e "PR #$pr_number exists, but detailed status check requires GitHub CLI"
+      message -e "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
   fi
 }

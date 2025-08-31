@@ -240,7 +240,7 @@ $unstaged_diff"
     
     # If no data collected, show simple message
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then
-        message 33 "i" "No commits or changes found for today"
+        message -i "No commits or changes found for today"
         return 0
     fi
     
@@ -284,7 +284,7 @@ $unstaged_diff"
     
     read -p "Generate daily insight report? (y/n): " confirm
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-        message 33 "!" "Daily insight report generation cancelled"
+        message -w "Daily insight report generation cancelled"
         return 0
     fi
     
@@ -326,12 +326,12 @@ $all_changes
             #     echo "Total changes: $total_files_changed files (+$total_insertions -$total_deletions lines)"
             # fi
         else
-            message 31 "E" "Failed to generate AI insight. Showing raw data."
+            message -e "Failed to generate AI insight. Showing raw data."
             echo ""
             echo "$analysis_data"
         fi
     else
-        message 31 "E" "AI not available. Showing raw data instead."
+        message -e "AI not available. Showing raw data instead."
         echo ""
         echo "$analysis_data"
     fi

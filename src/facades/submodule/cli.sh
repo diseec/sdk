@@ -69,7 +69,7 @@ elif [[ -n "$type" && -z "$target_dir" ]]; then
         submodule) target_dir="submodules" ;;
         package) target_dir="packages" ;;
         service) target_dir="services" ;;
-        *) message 31 "E" "Unknown type: $type. Use 'package' or 'service'" exit 1 ;;
+        *) message -e "Unknown type: $type. Use 'package' or 'service'" exit 1 ;;
     esac
 elif [[ -z "$type" && -n "$target_dir" ]]; then
     # Auto-detect type from directory
@@ -87,7 +87,7 @@ mkdir -p "$target_dir"
 case $command in
     add)
         if [[ -z "$repo_name" ]]; then
-            message 31 "E" "Repository name is required for add command"
+            message -e "Repository name is required for add command"
             exit 1
         fi
         
@@ -99,7 +99,7 @@ case $command in
 
     run)
         if [[ "$type" != "service" ]]; then
-            message 31 "E" "Run command is only available for services"
+            message -e "Run command is only available for services"
             exit 1
         fi
         
@@ -111,7 +111,7 @@ case $command in
 
     rem|remove|rm)
         if [[ -z "$repo_name" ]]; then
-            message 31 "E" "Repository name is required for remove command"
+            message -e "Repository name is required for remove command"
             exit 1
         fi
         
@@ -129,7 +129,7 @@ case $command in
 
     lin|link)
         if [[ "$type" != "package" ]]; then
-            message 31 "E" "Link command is only available for packages"
+            message -e "Link command is only available for packages"
             exit 1
         fi
         
@@ -142,7 +142,7 @@ case $command in
         if [[ -d "$target_dir" ]]; then
             message "45" "${type^^}S in $target_dir:" "\n$(ls $target_dir 2>/dev/null || echo 'No items found')"
         else
-            message 33 "i" "Directory $target_dir does not exist"
+            message -w "Directory $target_dir does not exist"
         fi
         ;;
 
@@ -150,7 +150,7 @@ case $command in
         if [[ -z "$command" ]]; then
             show_help
         else
-            message 31 "E" "Unknown command: $command"
+            message -e "Unknown command: $command"
             show_help
         fi
         exit 1

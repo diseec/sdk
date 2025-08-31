@@ -16,7 +16,7 @@ fac_con_yaml_init() {
         return 0
     else
         YAML_USE_YQ="false"
-        message 33 "!" "yq not found. Using fallback YAML parsing (limited functionality)"
+        message -w "yq not found. Using fallback YAML parsing (limited functionality)"
         return 1
     fi
 }
@@ -108,7 +108,7 @@ fac_con_yaml_set_fallback() {
     
     # Only support simple top-level keys in fallback mode
     if echo "$key_path" | grep -q '\.'; then
-        message 31 "E" "Nested keys require yq. Please install yq for full functionality."
+        message -e "Nested keys require yq. Please install yq for full functionality."
         return 1
     fi
     
@@ -195,7 +195,7 @@ fac_con_yaml_array_add() {
     if [ "$YAML_USE_YQ" = "true" ]; then
         fac_con_yaml_array_add_yq "$config_file" "$key_path" "$value"
     else
-        message 31 "E" "Array operations require yq. Please install yq."
+        message -e "Array operations require yq. Please install yq."
         return 1
     fi
 }
@@ -210,7 +210,7 @@ fac_con_yaml_array_remove() {
     if [ "$YAML_USE_YQ" = "true" ]; then
         fac_con_yaml_array_remove_yq "$config_file" "$key_path" "$value"
     else
-        message 31 "E" "Array operations require yq. Please install yq."
+        message -e "Array operations require yq. Please install yq."
         return 1
     fi
 }

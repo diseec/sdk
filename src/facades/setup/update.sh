@@ -62,10 +62,10 @@ fac_set_cmd_update() {
 
     handle_hook before_update
 
-    message 34 "i" "Installing dependencies..."
+    message -i "Installing dependencies..."
     cli_main install
 
-    message 34 "i" "Pulling latest changes..."
+    message -i "Pulling latest changes..."
     cli_main pull
 
     if [  "$IS_RECURSIVE" = "true"  ]; then
@@ -81,5 +81,5 @@ fac_set_cmd_update() {
 
     handle_hook after_update
 
-    message 32 "✔" "Update completed successfully"
+    message -o "Update completed successfully"
 }

@@ -117,7 +117,7 @@ c=$1; shift; case $c in
         exit 0
         ;;
     *)
-        if [ ! -z $c ]; then message 31 "E" "Unknown command: '$c'"; fi
+        if [ ! -z $c ]; then message -e "Unknown command: '$c'"; fi
         cli_main internet_optimized help; exit 1;
         ;;
 esac

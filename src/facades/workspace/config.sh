@@ -26,7 +26,7 @@ fac_wor_create_config() {
             printf "\n"
             
             if [ "$response" != "y" ] && [ "$response" != "Y" ]; then
-                message 33 "i" "Keeping existing workspace configuration"
+                message -i "Keeping existing workspace configuration"
                 return 0
             fi
         fi
@@ -37,7 +37,7 @@ fac_wor_create_config() {
     available_modules=$(fac_wor_get_available_modules)
     
     if [ -z "$available_modules" ]; then
-        # message 33 "i" "No submodules found in .gitmodules"
+        # message -w "No submodules found in .gitmodules"
         return 1
     fi
     

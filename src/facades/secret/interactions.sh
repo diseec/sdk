@@ -64,8 +64,8 @@ fac_sec_test_key_with_secrets() {
         fi
     done
     
-    message 31 "E" "Key validation failed - unable to decrypt existing secrets"
-    message 33 "!" "This key cannot decrypt your existing secrets"
+    message -e "Key validation failed - unable to decrypt existing secrets"
+    message -w "This key cannot decrypt your existing secrets"
     return 1
 }
 
@@ -86,7 +86,7 @@ fac_sec_reencrypt_all_secrets() {
                 echo "$new_encrypted" > "$secret_file"
                 echo "$secret_name re-encrypted successfully"
             else
-                message 31 "E" "Failed to re-encrypt $secret_name"
+                message -e "Failed to re-encrypt $secret_name"
                 return 1
             fi
         fi

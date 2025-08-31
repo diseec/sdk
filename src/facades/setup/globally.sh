@@ -2,5 +2,5 @@
 
 fac_set_globally() {
     _npm install -g "$(grep '"name"' $KIT_DIR/package.json | head -n1 | sed 's/.*: *"\([^"]*\)".*/\1/')@latest"
-    message 32 "✔" "cli_main installed globally"
+    message -o "cli_main installed globally"
 }
