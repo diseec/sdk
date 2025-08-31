@@ -19,7 +19,7 @@ c=$1; shift; case $c in
             (cd $TMPDIR && _npm install "@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER")
             rm -rf "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH" 2>/dev/null
             mkdir -p "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH" 2>/dev/null
-            cp -r "$TMPDIR/$KIT_RELATIVE_PATH/*" "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH"
+            cp -r "$TMPDIR/$KIT_RELATIVE_PATH"/* "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH"
             if [ ! -f "$TARGET_MOUNTED_DIR/cli" ]; then cp "/$KIT_NAME/templates/cli" "$TARGET_MOUNTED_DIR/cli"; fi
             # if [ ! -f "$TARGET_MOUNTED_DIR/.gitignore" ]; then cp "/$KIT_NAME/templates/.gitignore" "$TARGET_MOUNTED_DIR/.gitignore"; fi
         ;;

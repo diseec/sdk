@@ -14,7 +14,7 @@ c=$1; shift; case $c in
         MODE="test"
         # Start with a header unless silent mode is enabled
         if [ "$SILENT_MODE" != "true" ]; then
-            message 40 ↔ "Quick internet connectivity check"
+            message 30 ↔ "Quick internet connectivity check"
         fi
         
         # Run basic connectivity test

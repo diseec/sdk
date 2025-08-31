@@ -3,16 +3,6 @@ FROM node:20-alpine
 # Install base dependencies
 RUN apk add --no-cache bash curl yq jq git openssl git-lfs
 
-WORKDIR /kit
-
-COPY . .
-
-ENV IS_IN_CONTAINER=true
-
-RUN eval $(/kit/cli envs) && \
-    mkdir -p "$TARGET_MOUNTED_DIR" && \
-    npm install -g /kit
-
 # Install GitHub cli_main using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then \
@@ -38,6 +28,16 @@ RUN npm install -g prettier
 RUN apk add --no-cache wget iputils bind-tools traceroute bc
 
 ENV IS_IN_KIT_CONTAINER=true
+
+WORKDIR /kit
+
+COPY . .
+
+ENV IS_IN_CONTAINER=true
+
+RUN eval $(/kit/cli envs) && \
+    mkdir -p "$TARGET_MOUNTED_DIR" && \
+    npm install -g /kit
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
