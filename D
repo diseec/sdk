@@ -14,20 +14,20 @@ dir="$PWD"; while :; do
         if { [ ! -f "$ROOT_DIR/D" ] && { [ ! -d "$KIT_DIR" ] || [ -z "$(ls -A "$KIT_DIR" 2>/dev/null)" ]; } } || [ "$D_IS_FORCE_PATCH" = "true" ]; then
             # Strategies to patch depending on environment
             if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
-                echo "D:DEBUG: already in kit container, running 'act patch'"
-                D kit act patch
+                # echo "D:DEBUG: already in kit container, running 'act patch'"
+                /kit/cli act patch
             elif [ -f "/.dockerenv" ]; then
                 printf '%s\n' "Error: not in kit container, aborting patch" >&2
                 exit 1
             else
                 # echo "D:DEBUG: pulling image.registry.diseec.com/kit"
-                # docker pull image.registry.diseec.com/kit \
-                #     --disable-content-trust > /dev/null
-                echo "D:DEBUG: running 'act patch' in kit container, mounting: $ROOT_DIR"
+                docker pull image.registry.diseec.com/kit \
+                    --disable-content-trust > /dev/null
+                # echo "D:DEBUG: running 'act patch' in kit container, mounting: $ROOT_DIR"
                 docker run --rm -v $ROOT_DIR:/vise -w /vise \
                     image.registry.diseec.com/kit \
-                    /vise/cli kit act patch
-                echo "D:DEBUG: finished 'act patch' in kit container"
+                    /kit/cli act patch
+                # echo "D:DEBUG: finished 'act patch' in kit container"
             fi
             # abort if patch failed
             if [ $? -ne 0 ]; then

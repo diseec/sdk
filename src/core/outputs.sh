@@ -4,7 +4,7 @@ capitalize() {
     echo "$1" | tr '[:lower:]' '[:upper:]'
 }
 
-color() {
+ansi() {
     ansi="$1"; shift; text="$@";
     printf "\033[%sm%s\033[0m" "$ansi" "$text"
 }
@@ -46,7 +46,7 @@ message() {
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
     local repo_name=${REPO_NAME:-d}
-    local ansi="90"
+    local _ansi="90"
     local type="--log"
     local icon=""
     local content=""
@@ -55,27 +55,27 @@ message() {
     # Define Api logic and UX
     if [ $# -eq 1 ]; then type="--log"; content="$1";
     elif [ $# -eq 2 ]; then type="$1"; content="$2";
-    else ansi="$1"; type="$1"; icon="$2"; shift 2; content="$@"; fi
+    else _ansi="$1"; type="$1"; icon="$2"; shift 2; content="$@"; fi
 
     # Parse type config
     case $type in
-        -l|--log)       ansi="90"; icon="";  level="DEBUG" ;;
-        -d|--debug)     ansi="31"; icon="¤"; level="DEBUG" ;;
-        -f|--fail)      ansi="31"; icon="✖"; level="ERROR"   ;; # ✗
-        -e|--error)     ansi="31"; icon="E"; level="ERROR"   ;;
-        -o|--okey)      ansi="32"; icon="✓"; level="INFO"    ;; # ✔
-        -w|--warning)   ansi="33"; icon="!"; level="WARNING" ;;
-        -i|--info)      ansi="34"; icon="i"; level="INFO"    ;;
-        -q|--question)  ansi="35"; icon="?"; level="INFO"    ;;
-        -a|--ai)        ansi="36"; icon="✦"; level="INFO"    ;;
-        -s|--statement) ansi="37"; icon="";  level="INFO"    ;;
+        -l|--log)       _ansi="90"; icon="";  level="DEBUG" ;;
+        -d|--debug)     _ansi="31"; icon="¤"; level="DEBUG" ;;
+        -f|--fail)      _ansi="31"; icon="✖"; level="ERROR"   ;; # ✗
+        -e|--error)     _ansi="31"; icon="E"; level="ERROR"   ;;
+        -o|--okey)      _ansi="32"; icon="✓"; level="INFO"    ;; # ✔
+        -w|--warning)   _ansi="33"; icon="!"; level="WARNING" ;;
+        -i|--info)      _ansi="34"; icon="i"; level="INFO"    ;;
+        -q|--question)  _ansi="35"; icon="?"; level="INFO"    ;;
+        -a|--ai)        _ansi="36"; icon="✦"; level="INFO"    ;;
+        -s|--statement) _ansi="37"; icon="";  level="INFO"    ;;
         *)                                   level="DEBUG" ;;
     esac
 
     # Prepare prompt & content
     local prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
     prompt="$(color 90 "$prompt")"
-    if [ -n "$icon" ]; then prompt="$prompt$(color $ansi "[$icon]")"; fi
+    if [ -n "$icon" ]; then prompt="$prompt$(color $_ansi "[$icon]")"; fi
 
     content="$(color 90 "$content")"
 
