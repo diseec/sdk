@@ -9,7 +9,10 @@ c=$1; shift; case $c in
     act)       force_safe $c "$@" || source "$ROOT_DIR/facades/act/cli.sh" "$@" ;;
     tes|test)  force_safe $c "$@" || source "$KIT_SRC_DIR/lib/tester/cli.sh" "$@" ;;
     pul|pull)  cli_main git _ pull origin main "$@" ;;
-    run)       cli_main docker compose execute $KIT_NAME "$@" ;;
+    run)
+        cli_main docker compose execute --quiet $KIT_NAME "$@"
+        if [ $? -ne 0 ]; then message -e "Failed to run command in $KIT_NAME container"; fi
+        ;;
     sta|start)
         message -l "Starting $KIT_NAME container..."
         cli_main docker compose _ up \

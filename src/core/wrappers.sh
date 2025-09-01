@@ -18,22 +18,22 @@ force_safe() {
 # external api wrappers
 
 _prettier() {
-    # cli_main $KIT_NAME run --no-message prettier "$@"
+    # cli_main $KIT_NAME run --quiet prettier "$@"
     prettier "$@"
 }
 
 _node() {
-    # cli_main $KIT_NAME run --no-message node "$@"
+    # cli_main $KIT_NAME run --quiet node "$@"
     node "$@"
 }
 
 _npm() {
-    # cli_main $KIT_NAME run --no-message npm "$@"
+    # cli_main $KIT_NAME run --quiet npm "$@"
     npm "$@"
 }
 
 _docker() {
-    # cli_main $KIT_NAME run --no-message docker "$@"
+    # cli_main $KIT_NAME run --quiet docker "$@"
 
     env \
     ROOT_DIR="$ROOT_DIR" \
@@ -50,22 +50,22 @@ _docker() {
 }
 
 _jq() {
-    # cli_main $KIT_NAME run --no-message yq "$@"
+    # cli_main $KIT_NAME run --quiet yq "$@"
     jq "$@"
 }
 
 _yq() {
-    # cli_main $KIT_NAME run --no-message yq "$@"
+    # cli_main $KIT_NAME run --quiet yq "$@"
     yq "$@"
 }
 
 _openssl() {
-    # cli_main $KIT_NAME run --no-message openssl "$@"
+    # cli_main $KIT_NAME run --quiet openssl "$@"
     openssl "$@"
 }
 
 _git() {
-    # cli_main $KIT_NAME run --no-message git "$@"
+    # cli_main $KIT_NAME run --quiet git "$@"
     if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
         GIT_WORK_TREE="$ROOT_DIR" GIT_DIR="$GIT_DIRECTORY" git "$@"
     else
@@ -74,7 +74,7 @@ _git() {
 }
 
 _gh() {
-    # cli_main $KIT_NAME run --no-message gh "$@"
+    # cli_main $KIT_NAME run --quiet gh "$@"
     if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
         GIT_WORK_TREE="$ROOT_DIR" GIT_DIR="$GIT_DIRECTORY" gh "$@"
     else

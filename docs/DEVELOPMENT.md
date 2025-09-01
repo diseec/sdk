@@ -83,7 +83,7 @@ Executes commands in specific services.
 
 ```bash
 D exe myservice npm install
-D exe myservice --no-message ls
+D exe myservice --quiet ls
 ```
 
 ## run vs execute
