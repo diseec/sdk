@@ -21,7 +21,7 @@ fac_sec_validate_and_prepare_secret() {
     
     # Validate key configuration and prompt to set if missing
     if ! fac_sec_is_key_configured; then
-        message -e "No encryption key configured" >&2
+        logger -e "No encryption key configured" >&2
         if fac_sec_get_user_confirmation "Would you like to set the encryption key now?"; then
             fac_sec_set_key
             if [ $? -ne 0 ]; then
@@ -51,13 +51,13 @@ fac_sec_prompt_add_missing_secret() {
     local secret_name="$1"
     local secret_value
 
-    message -w "Secret '$secret_name' not found" >&2
+    logger -w "Secret '$secret_name' not found" >&2
 
     if fac_sec_get_user_confirmation "Would you like to add this secret now?"; then
         fac_sec_get_secret_input "Enter secret value for '$secret_name'" secret_value >&2
         
         if [ -z "$secret_value" ]; then
-            message -e "Secret value cannot be empty" >&2
+            logger -e "Secret value cannot be empty" >&2
             return 1
         fi
         
@@ -67,7 +67,7 @@ fac_sec_prompt_add_missing_secret() {
         local key=$(fac_sec_get_encryption_key)
         fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
         
-        message -o "Secret '$secret_name' added successfully" >&2
+        logger -o "Secret '$secret_name' added successfully" >&2
         echo "$secret_value"
         return 0
     else
@@ -80,9 +80,9 @@ fac_sec_handle_decryption_failure() {
     local secret_name="$1"
     local encrypted_value="$2"
     
-    message -e "Failed to decrypt secret: $secret_name" >&2
-    message -e "The encryption key might be incorrect" >&2
-    message -w "If you've lost the original key, this data cannot be recovered" >&2
+    logger -e "Failed to decrypt secret: $secret_name" >&2
+    logger -e "The encryption key might be incorrect" >&2
+    logger -w "If you've lost the original key, this data cannot be recovered" >&2
     
     echo "Options:" >&2
     echo "1. Try entering the correct key" >&2
@@ -102,7 +102,7 @@ fac_sec_handle_decryption_failure() {
                         echo "$decrypted_value"
                         return 0
                     else
-                        message -e "Still unable to decrypt - key may be permanently lost" >&2
+                        logger -e "Still unable to decrypt - key may be permanently lost" >&2
                         return 1
                     fi
                 fi

@@ -40,11 +40,11 @@ ansi() {
 # ┃ Reference: https://en.wikipedia.org/wiki/ANSI_escape_code               ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-    ansi="$1"; shift; text="$@";
+    ansi="$1"; shift; text="$*";
     printf "\033[0m\033[%sm%s\033[0m" "$ansi" "$text"
 }
 
-message() {
+logger() {
     local repo_name=${REPO_NAME:-d}
     local _ansi="90"
     local type="--log"
@@ -52,10 +52,34 @@ message() {
     local content=""
     local level="DEBUG" # DEBUG > INFO > WARNING > ERROR
 
-    # Define Api logic and UX
-    if [ $# -eq 1 ]; then type="--log"; content="$1";
-    elif [ $# -eq 2 ]; then type="$1"; content="$2";
-    else _ansi="$1"; type="$1"; icon="$2"; shift 2; content="$@"; fi
+    # First, check if the first argument is a valid type
+    if [ $# -gt 0 ]; then
+        case "$1" in
+            -l|-d|-f|-e|-o|-w|-i|-q|-a|-s)
+                type="$1"
+                shift
+                ;;
+        esac
+    fi
+    
+    # Now process the rest of the arguments
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --icon=*)
+                icon="${1#*=}"
+                shift
+                ;;
+            --ansi=*)
+                _ansi="${1#*=}"
+                shift
+                ;;
+            *)
+                # All remaining arguments form the content
+                content="$*"
+                break
+                ;;
+        esac
+    done
 
     # Parse type config
     case $type in
@@ -77,7 +101,10 @@ message() {
     prompt="$(ansi 90 "$prompt")"
     if [ -n "$icon" ]; then prompt="$prompt$(ansi $_ansi "[$icon]")"; fi
 
-    content="$(ansi 90 "$content")"
+    # Only colorize content if it's not empty
+    if [ -n "$content" ]; then
+        content="$(ansi 90 "$content")"
+    fi
 
     # Handle logging levels
     case $D_LOG_LEVEL in
@@ -93,9 +120,8 @@ message() {
 
 confirm() {
     local question=$1; shift;
-    # read -n 1 -p "$(message 35 "?" "$question \033[35m[Y/N]\033[0m")" response
 
-    printf "$(message 35 "?" "$question \033[35m[Y/N]\033[0m")"
+    printf "$(logger --ansi="35" --icon="?" "$question \033[35m[Y/N]\033[0m")"
     # Turn off echo and set input to raw mode
     stty -echo -icanon time 0 min 1
     response=$(dd bs=1 count=1 2>/dev/null)

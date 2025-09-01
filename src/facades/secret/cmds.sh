@@ -17,7 +17,7 @@ fac_sec_add_secret() {
     fac_sec_validate_secret_name "$secret_name" || return 1
     
     if fac_sec_secret_exists "$secret_name"; then
-        message -w "Secret '$secret_name' already exists."
+        logger -w "Secret '$secret_name' already exists."
         if ! fac_sec_get_user_confirmation "Overwrite?"; then
             return 0
         fi
@@ -26,20 +26,20 @@ fac_sec_add_secret() {
     fac_sec_get_secret_input "Enter secret value" secret_value
     
     if [ -z "$secret_value" ]; then
-        message -e "Secret value cannot be empty"
+        logger -e "Secret value cannot be empty"
         return 1
     fi
     
     fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
-    message -o "Secret '$secret_name' added successfully"
+    logger -o "Secret '$secret_name' added successfully"
 }
 
 # Export a single secret by name (returns just the value)
 # This function is non-interactive and expects all validations to be done beforehand
 fac_sec_export() {
     if [ -z "$1" ]; then
-        message -e "Secret name required" >&2
-        message -i "Usage: secrets export <secret_name>" >&2
+        logger -e "Secret name required" >&2
+        logger -i "Usage: secrets export <secret_name>" >&2
         return 1
     fi
 
@@ -51,12 +51,12 @@ fac_sec_export() {
     fi
     
     if ! fac_sec_secret_exists "$secret_name"; then
-        message -e "Secret '$secret_name' not found" >&2
+        logger -e "Secret '$secret_name' not found" >&2
         return 1
     fi
     
     if ! fac_sec_is_key_configured; then
-        message -e "No encryption key configured" >&2
+        logger -e "No encryption key configured" >&2
         return 1
     fi
     
@@ -69,7 +69,7 @@ fac_sec_export() {
         echo "$decrypted_value"
         return 0
     else
-        message -e "Failed to decrypt secret '$secret_name'" >&2
+        logger -e "Failed to decrypt secret '$secret_name'" >&2
         return 1
     fi
 }
@@ -81,7 +81,7 @@ fac_sec_show_secrets() {
     fac_sec_ensure_encryption_key
     
     if ! fac_sec_secrets_exist; then
-        message -w "No secrets found"
+        logger -w "No secrets found"
         return 0
     fi
     
@@ -95,10 +95,10 @@ fac_sec_show_secrets() {
             
             echo ""
             if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
-                message 34 "$secret_name" "$decrypted_value"
+                logger --ansi="34" --icon="$secret_name" "$decrypted_value"
                 secret_count=$((secret_count + 1))
             else
-                message 34 "$secret_name" "⚠️ FAILED TO DECRYPT"
+                logger --ansi="34" --icon="$secret_name" "⚠️ FAILED TO DECRYPT"
             fi
         fi
     done
@@ -110,30 +110,30 @@ fac_sec_show_secrets() {
         echo "To export a secret as environment variables:"
         echo "export SECRET_NAME=\"\$(\$CLI_MAIN secret export 'SECRET_NAME')\""
     else
-        message -w "No secrets were displayed"
+        logger -w "No secrets were displayed"
     fi
 }
 
 # Remove a secret
 fac_sec_remove_secret() {
     if [ -z "$1" ]; then
-        message -e "Secret name required"
-        message -i "Usage: secrets remove <secret_name>"
+        logger -e "Secret name required"
+        logger -i "Usage: secrets remove <secret_name>"
         return 1
     fi
     
     local secret_name="$1"
     
     if ! fac_sec_secret_exists "$secret_name"; then
-        message -e "Secret '$secret_name' not found"
+        logger -e "Secret '$secret_name' not found"
         return 1
     fi
     
     if fac_sec_get_user_confirmation "Are you sure you want to remove secret '$secret_name'?"; then
         local secret_file=$(fac_sec_secret_file_path "$secret_name")
         rm "$secret_file"
-        message -o "Secret '$secret_name' removed"
+        logger -o "Secret '$secret_name' removed"
     else
-        message -i "Operation cancelled"
+        logger -i "Operation cancelled"
     fi
 }

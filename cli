@@ -11,22 +11,22 @@ c=$1; shift; case $c in
     pul|pull)  cli_main git _ pull origin main "$@" ;;
     run) cli_main docker compose execute $KIT_NAME "$@" ;;
     sta|start)
-        message -l "Starting $KIT_NAME container..."
+        logger -l "Starting $KIT_NAME container..."
         cli_main docker compose _ up --no-color --detach --force-recreate "$@"
         # output=$(cli_main docker compose _ up --no-color --detach --force-recreate "$@" 2>&1)
         # status=$?
         # if [ $status -ne 0 ]; then
-        #     message -e "Failed to start $KIT_NAME container"
+        #     logger -e "Failed to start $KIT_NAME container"
         #     echo "$output"
         # fi
         ;;
     sto|stop)
-        message -l "Stopping $KIT_NAME container..."
+        logger -l "Stopping $KIT_NAME container..."
         cli_main docker compose _ down --timeout 0 "$@"
         # output=$(cli_main docker compose _ down --timeout 0 "$@" 2>&1)
         # status=$?
         # if [ $status -ne 0 ]; then
-        #     message -e "Failed to stop $KIT_NAME container"
+        #     logger -e "Failed to stop $KIT_NAME container"
         #     echo "$output"
         # fi
         ;;

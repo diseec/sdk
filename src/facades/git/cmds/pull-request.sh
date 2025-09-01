@@ -36,11 +36,12 @@ fac_git_cmd_has_open_pr() {
 
 # Create a new PR or update existing one
 fac_git_cmd_pr_create() {
+  echo here
     local pr_number=$(fac_git_cmd_has_open_pr)
     local branch="$CURRENT_BRANCH"
 
     if [ "$CURRENT_BRANCH" = "main" ]; then
-        message -e "Creating a PR from the main branch is not allowed."
+        logger -e "Creating a PR from the main branch is not allowed."
         return 1
     fi
 
@@ -48,7 +49,7 @@ fac_git_cmd_pr_create() {
         echo -e "Pull request already open: \033[4m$(_gh pr view "$pr_number" --json url -q .url)\033[24m"
     else
     # Create a new PR
-    message -l "Creating new PR for branch: $branch"
+    logger -l "Creating new PR for branch: $branch"
     if fac_git_cmd_check_gh_cli; then
       # Use last commit message as PR title/body
       local pr_title=$(_git log -1 --pretty=%s)
@@ -61,12 +62,12 @@ fac_git_cmd_pr_create() {
       # Create PR using GitHub cli_main
       local pr_url=$(_gh pr create --title "$pr_title" --body "$pr_body" --base main)
       if [ $? -ne 0 ]; then
-        message -e "Failed to create PR."
+        logger -e "Failed to create PR."
         return 1
       fi
       echo -e "Created pull request: \033[4m$pr_url\033[24m"
     else
-      message -e "Install GitHub cli_main (gh) for automatic PR creation"
+      logger -e "Install GitHub cli_main (gh) for automatic PR creation"
       echo -e "Create PR manually at: \033[4mhttps://github.com/$ORG_NAME/$REPO_NAME/pull/new/$branch\033[24m"
       return 1
     fi
@@ -84,16 +85,16 @@ fac_git_cmd_pr_create() {
 # Check PR status and show comments/issues
 fac_git_cmd_pr_check_status() {
   if ! cli_main internet is-online; then
-      message 31 ⊘ "Disconnected, skipping PR status check..."
+      logger --ansi="31" --icon="⊘" "Disconnected, skipping PR status check..."
       return 0
   fi
-  message -l "Checking PR status..."
+  logger -l "Checking PR status..."
 
   local pr_number=$(fac_git_cmd_has_open_pr)
   local branch="$CURRENT_BRANCH"
 
   if [ -z "$pr_number" ]; then
-      # message -w "No open PR found for branch: $branch"
+      # logger -w "No open PR found for branch: $branch"
       return 0
   fi
 
@@ -105,7 +106,7 @@ fac_git_cmd_pr_check_status() {
 
       # Ensure jq is available for reliable JSON parsing
       if ! command -v jq >/dev/null 2>&1; then
-          message -w "jq is required for JSON parsing. Please install jq and try again."
+          logger -w "jq is required for JSON parsing. Please install jq and try again."
           return 0
       fi
 
@@ -120,32 +121,32 @@ fac_git_cmd_pr_check_status() {
       local unresolved_count=$(echo "$pr_data" | _jq -r '[.comments[]? | select(.isResolved != true)] | length')
       
       # Display info
-      message "PR#$pr_number" "title: $pr_title"
-      message "PR#$pr_number" "url: $pr_url"
+      logger "PR#$pr_number" "title: $pr_title"
+      logger "PR#$pr_number" "url: $pr_url"
       
       # Review status
       case "$review_decision" in
-          "APPROVED") message -o "Approved! Ready to merge." ;;
-          "CHANGES_REQUESTED") message 31 "⊝" "Changes requested. See comments below." ;;
-          "REVIEW_REQUIRED") message 33 "⊙" "Waiting for review" ;;
-          *) message "No reviews yet" ;;
+          "APPROVED") logger -o "Approved! Ready to merge." ;;
+          "CHANGES_REQUESTED") logger --ansi="31" --icon="⊝" "Changes requested. See comments below." ;;
+          "REVIEW_REQUIRED") logger --ansi="33" --icon="⊙" "Waiting for review" ;;
+          *) logger "No reviews yet" ;;
       esac
     
     # Comment status
       if [ "$unresolved_count" -gt 0 ]; then
-          message 31 "comments" "$unresolved_count unresolved comments"
+          logger -i "$unresolved_count unresolved comments"
           
           # Show unresolved comments
           echo "$pr_data" | grep -A 3 '"isResolved": false' | grep '"body": "' | sed 's/"body": "/- /' | sed 's/\\r\\n/\n/g' | head -5
           
           if [ "$unresolved_count" -gt 5 ]; then
-              message 33 "⚭" "...and $((unresolved_count - 5)) more comments"
+              logger --ansi="33" --icon="⚭" "...and $((unresolved_count - 5)) more comments"
           fi
       # else
-      #   message -o "No unresolved comments"
+      #   logger -o "No unresolved comments"
       fi
   else
-      message -e "PR #$pr_number exists, but detailed status check requires GitHub CLI"
-      message -e "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
+      logger -e "PR #$pr_number exists, but detailed status check requires GitHub CLI"
+      logger -e "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
   fi
 }

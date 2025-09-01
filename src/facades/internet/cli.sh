@@ -12,35 +12,37 @@ c=$1; shift; case $c in
         ;;
     tes|test)
         MODE="test"
-        # Start with a header unless silent mode is enabled
-        if [ "$SILENT_MODE" != "true" ]; then
-            message 97 "⌁" "Quick internet connectivity check...\n"
-        fi
+        X
+        # X "$@"
+        # # Start with a header unless silent mode is enabled
+        # if [ "$SILENT_MODE" != "true" ]; then
+        #     logger --ansi="97" --icon="⌁" "Quick internet connectivity check...\n"
+        # fi
         
-        # Run basic connectivity test
-        if quick_check; then
-            overall_status=true
-        else
-            overall_status=false
-        fi
+        # # Run basic connectivity test
+        # if quick_check; then
+        #     overall_status=true
+        # else
+        #     overall_status=false
+        # fi
 
-        echo ""
-        # Display a summary
-        if [ "$SILENT_MODE" != "true" ]; then
-            if [ "$overall_status" = "true" ]; then
-                message 32 "⊕" "Internet connection working properly"
-            else
-                message 31 "⊘" "Internet connection has issues"
-            fi
-        fi
+        # echo ""
+        # # Display a summary
+        # if [ "$SILENT_MODE" != "true" ]; then
+        #     if [ "$overall_status" = "true" ]; then
+        #         logger --ansi="32" --icon="⊕" "Internet connection working properly"
+        #     else
+        #         logger --ansi="31" --icon="⊘" "Internet connection has issues"
+        #     fi
+        # fi
         
-        # return with appropriate code
-        [ "$overall_status" = "true" ] && return 0 || return 1
+        # # return with appropriate code
+        # [ "$overall_status" = "true" ] && return 0 || return 1
         ;;
     dia|diagnose)
         MODE="diagnose"
         SILENT_MODE=false
-        message 97 "⚙" "Diagnosing internet connection ..."
+        logger --ansi="97" --icon="⚙" "Diagnosing internet connection ..."
 
         overall_status=true
         quick_check_success=false
@@ -88,9 +90,9 @@ c=$1; shift; case $c in
         echo ""
         # Display a summary
         if [ "$overall_status" = "true" ]; then
-            message 32 "⊕" "Internet connection working properly"
+            logger --ansi="32" --icon="⊕" "Internet connection working properly"
         else
-            message 31 "⊘" "Internet connection has issues"
+            logger --ansi="31" --icon="⊘" "Internet connection has issues"
         fi
         
         # return with appropriate code
@@ -102,6 +104,7 @@ c=$1; shift; case $c in
         cli_main internet "$@"
         return $?
         ;;
+        x) echo dsaf;;
     hel|--help|help|-h) display_help "" "" \
             "$(ansi 97 'Internet Connection Checker (Optimized for Alpine)')" "" \
             "$(ansi 97 'Usage:    cli internet <mode> [options]')" "" "" "" \
@@ -120,7 +123,7 @@ c=$1; shift; case $c in
         exit 0
         ;;
     *)
-        if [ ! -z $c ]; then message -e "Unknown command: '$c'"; fi
+        logger -e "Unknown command: '$c'"
         cli_main internet help; exit 1;
         ;;
 esac

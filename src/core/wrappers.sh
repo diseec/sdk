@@ -1,5 +1,9 @@
 #!/bin/bash
 
+X() {
+    logger -d "$@"
+}
+
 cli_main() {
     source "$CLI_MAIN" "$@"
 }

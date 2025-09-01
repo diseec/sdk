@@ -84,10 +84,10 @@ fac_set_check_system_dependencies() {
     done
     
     if [ $missing_count -eq 0 ]; then
-        message -o "All system dependencies are installed!"
+        logger -o "All system dependencies are installed!"
         return 0
     else
-        message 31 "✗" "$missing_count missing dependencies found: ${missing_deps[*]}"
+        logger -e "$missing_count missing dependencies found: ${missing_deps[*]}"
         return 1
     fi
 }
@@ -297,10 +297,10 @@ fac_set_install_system_dependencies() {
     done
     
     if $all_success; then
-        message -o "All system dependencies installed successfully!"
+        logger -o "All system dependencies installed successfully!"
         return 0
     else
-        message -e "Some dependencies failed to install"
+        logger -e "Some dependencies failed to install"
         return 1
     fi
 }

@@ -7,7 +7,7 @@
 # Helper function to check if OpenSSL is available
 fac_sec_check_openssl() {
     if ! command -v _openssl >/dev/null 2>&1; then
-        message -e "OpenSSL is required but not installed"
+        logger -e "OpenSSL is required but not installed"
         return 1
     fi
     return 0
@@ -23,12 +23,12 @@ fac_sec_validate_secret_name() {
     local secret_name="$1"
     
     if [ -z "$secret_name" ]; then
-        message -e "Secret name cannot be empty"
+        logger -e "Secret name cannot be empty"
         return 1
     fi
     
     if ! echo "$secret_name" | grep -q '^[A-Za-z_][A-Za-z0-9_]*$'; then
-        message -e "Invalid secret name. Use only letters, numbers, and underscores"
+        logger -e "Invalid secret name. Use only letters, numbers, and underscores"
         return 1
     fi
     
@@ -40,7 +40,7 @@ fac_sec_validate_encryption_key() {
     local key="$1"
     
     if [ -z "$key" ]; then
-        message -e "Encryption key cannot be empty"
+        logger -e "Encryption key cannot be empty"
         return 1
     fi
     

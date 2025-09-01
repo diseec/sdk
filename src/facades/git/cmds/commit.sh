@@ -5,17 +5,17 @@ fac_git_cmd_generate_commit_message() {
     local diff_output="$(_git diff --staged)"
   
     if [ -z "$diff_output" ]; then
-      # message -w "No staged changes found. Staging all changes..."
+      # logger -w "No staged changes found. Staging all changes..."
       _git add -A
       diff_output="$(_git diff --staged)"
       
       if [ -z "$diff_output" ]; then
-        message -e "No changes to commit"
+        logger -e "No changes to commit"
         return 1
       fi
     fi
   
-    # message -i "Generating commit message..."
+    # logger -i "Generating commit message..."
   
     # Limit diff size to avoid API limits
     local diff_summary="$(_git diff --staged --stat)"
@@ -35,11 +35,11 @@ fac_git_cmd_generate_commit_message() {
 fac_git_cmd_warn_detached_head() {
   # Check if we're in detached HEAD state
   if ! _git symbolic-ref HEAD >/dev/null 2>&1; then
-    message -e "Currently in detached HEAD state"
+    logger -e "Currently in detached HEAD state"
     
     # Check if there are any changes
     if [ -n "$(_git status --porcelain)" ]; then
-      message -e "You have uncommitted changes in detached HEAD state"
+      logger -e "You have uncommitted changes in detached HEAD state"
       return 1
     fi
   fi
@@ -55,7 +55,7 @@ fac_git_cmd_commit() {
   
   # Don't allow commits directly to main
   if [ "$CURRENT_BRANCH" = "main" ]; then
-    message -e "Committing to main branch is forbidden.\nPlease create a feature branch first and move your changes."
+    logger -e "Committing to main branch is forbidden.\nPlease create a feature branch first and move your changes."
     echo -n "Type 'MAIN' to confirm (or anything else to cancel): "
     read confirmation
     if [ "$confirmation" != "MAIN" ]; then
@@ -66,27 +66,27 @@ fac_git_cmd_commit() {
   # Stage all changes
   _git add -A
   if [ $? -ne 0 ]; then
-    message -e "Failed to stage changes."
+    logger -e "Failed to stage changes."
     return 1
   fi
 
   # Check if there are any changes to commit
   if [ -z "$(_git diff --staged)" ]; then
-    message -w "No changes to commit"
+    logger -w "No changes to commit"
     return 0
   fi
 
   # Generate commit message
   local commit_msg=$(fac_git_cmd_generate_commit_message)
   if [ -z "$commit_msg" ]; then
-    message -e "Failed to generate commit message."
+    logger -e "Failed to generate commit message."
     return 1
   fi
   
   echo "$commit_msg" > /tmp/commit-msg.txt
   _git commit -F /tmp/commit-msg.txt
   if [ $? -ne 0 ]; then
-    message -e "Failed to commit changes."
+    logger -e "Failed to commit changes."
     return 1
   fi
   rm /tmp/commit-msg.txt

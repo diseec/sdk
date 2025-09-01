@@ -62,7 +62,7 @@ fac_con_set() {
     fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
-        message -e "Configuration value cannot be empty"
+        logger -e "Configuration value cannot be empty"
         return 1
     fi
     
@@ -70,7 +70,7 @@ fac_con_set() {
     local config_file="$(fac_con_get_config_file "$scope")"
     fac_con_yaml_set "$config_file" "$key_path" "$value"
     
-    message -l "Set '$key_path' = '$value' in '$scope' scope"
+    logger -l "Set '$key_path' = '$value' in '$scope' scope"
 }
 
 # Delete configuration key from specified scope (defaults to workspace)
@@ -86,12 +86,12 @@ fac_con_delete() {
     local config_file="$(fac_con_get_config_file "$scope")"
     
     if [ ! -f "$config_file" ]; then
-        message -w "Configuration file does not exist for scope: $scope"
+        logger -w "Configuration file does not exist for scope: $scope"
         return 1
     fi
     
     fac_con_yaml_delete "$config_file" "$key_path"
-    message -l "Deleted $key_path from $scope scope"
+    logger -l "Deleted $key_path from $scope scope"
 }
 
 # =============================================================================
@@ -110,7 +110,7 @@ fac_con_array_add() {
     fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
-        message -e "Array value cannot be empty"
+        logger -e "Array value cannot be empty"
         return 1
     fi
     
@@ -118,7 +118,7 @@ fac_con_array_add() {
     local config_file="$(fac_con_get_config_file "$scope")"
     fac_con_yaml_array_add "$config_file" "$key_path" "$value"
 
-    message -l "Added '$value' to '$key_path' array in '$scope' scope"
+    logger -l "Added '$value' to '$key_path' array in '$scope' scope"
 }
 
 # Remove value from configuration array
@@ -133,19 +133,19 @@ fac_con_array_remove() {
     fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
-        message -e "Array value cannot be empty"
+        logger -e "Array value cannot be empty"
         return 1
     fi
     
     local config_file="$(fac_con_get_config_file "$scope")"
     
     if [ ! -f "$config_file" ]; then
-        message -w "Configuration file does not exist for scope: $scope"
+        logger -w "Configuration file does not exist for scope: $scope"
         return 1
     fi
     
     fac_con_yaml_array_remove "$config_file" "$key_path" "$value"
-    message -l "Removed '$value' from '$key_path' array in '$scope' scope"
+    logger -l "Removed '$value' from '$key_path' array in '$scope' scope"
 }
 
 # =============================================================================
