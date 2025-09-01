@@ -88,7 +88,7 @@ services:
 ```bash
 # Check cli_main is working
 D help
-D version
+D --version
 D status
 ```
 
@@ -178,7 +178,7 @@ wsl --install -d Ubuntu
 ```bash
 # Test core functionality
 D help
-D version
+D --version
 D status
 D docker version
 D git status

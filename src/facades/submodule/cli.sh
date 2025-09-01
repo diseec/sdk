@@ -12,19 +12,19 @@ command=""
 # Function to show help
 show_help() {
     display_help "" "" \
-        "$(color 33 'SUBMODULE')" "" \
-        "$(color 37 'Unified submodule management for packages and services\n')" "" \
-        "$(color 37 'Usage:    cli submodule [options] <command> [arguments]\n')" "" \
-        "$(color 37 'Options:')" "" \
+        "$(ansi 33 'SUBMODULE')" "" \
+        "$(ansi 37 'Unified submodule management for packages and services')" "" \
+        "" "" "$(ansi 37 'Usage:    cli submodule [options] <command> [arguments]')" "" \
+        "$(ansi 37 'Options:')" "" \
         "  --type <package|service>   " "Specify submodule type (default: auto-detect from target dir)" \
         "  --dir <directory>          " "Target directory (default: packages/ or services/ based on type)" \
-        "" "" "$(color 37 'Commands:')" "" \
+        "" "" "$(ansi 37 'Commands:')" "" \
         "  add <name>                 " "Add submodule from repository" \
         "  rem|remove|rm <name>       " "Remove submodule" \
         "  upd|update                 " "Update all submodules" \
         "  run                        " "Run command in service container (services only)" \
         "  lin|link                   " "Link local package for development (packages only)" \
-        "" "" "$(color 37 'Examples:')" "" \
+        "" "" "$(ansi 37 'Examples:')" "" \
         "  cli submodule add my-package                    " "Adds to packages/" \
         "  cli submodule --type service add my-service     " "Adds to services/" \
         "  cli submodule --dir custom/path add my-repo     " "Custom directory" \
@@ -104,7 +104,7 @@ case $command in
         fi
         
         services=$(docker compose config --services)
-        message "45" "SERVICES:" "\n$services"
+        message "45" "SERVICES:" "$services"
         read -p "$(message 35 "?" "Specify a service to run:")" service
         $CLI_MAIN execute "$service" "$@"
         ;;
@@ -133,14 +133,14 @@ case $command in
             exit 1
         fi
         
-        message 35 "PACKAGES:" "\n$(ls $target_dir 2>/dev/null || echo 'No packages found')"
+        message 35 "PACKAGES:" "$(ls $target_dir 2>/dev/null || echo 'No packages found')"
         read -p "$(message 35 "?" "Select a package to link:")" PACKAGE
         _npm link ./$target_dir/$PACKAGE
         ;;
 
     lis|list|ls)
         if [[ -d "$target_dir" ]]; then
-            message "45" "${type^^}S in $target_dir:" "\n$(ls $target_dir 2>/dev/null || echo 'No items found')"
+            message "45" "${type^^}S in $target_dir:" "$(ls $target_dir 2>/dev/null || echo 'No items found')"
         else
             message -w "Directory $target_dir does not exist"
         fi

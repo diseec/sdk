@@ -15,7 +15,7 @@ c=$1; shift; case $c in
         bpa|build) _docker compose build --parallel "$@" ;;
         _) _docker compose "$@" ;;
         hel|help|--help|-h) display_help "" "" \
-            "$(color 37 'Docker Compose Commands')" "" \
+            "$(ansi 37 'Docker Compose Commands')" "" \
             "    ude|up|up-dev   " "Start development environment" \
             "    upr|up-pro      " "Start production environment" \
             "    exe|exec        " "Execute command in compose service" \
@@ -29,7 +29,7 @@ c=$1; shift; case $c in
     esac ;;
     _) _docker "$@" ;;
     hel|help|--help|-h) display_help "" "" \
-        "$(color 37 'Docker Commands')" "" \
+        "$(ansi 37 'Docker Commands')" "" \
         "    com|compose         " "Docker compose operations" \
         "    _                   " "Direct docker command passthrough"
     ;;

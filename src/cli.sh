@@ -65,43 +65,32 @@ c=$1; shift; case $c in
         v1) c=$1; shift; case $c in
             install) cli_main install "$@" ;;
             *) display_help "" "" \
-                "$(color 37 'API v1 Commands')" "" \
+                "$(ansi 37 'API v1 Commands')" "" \
                 "    install     " "Install API v1 dependencies"
             ;;
         esac ;;
         *) display_help "" "" \
-            "$(color 37 'API Commands')" "" \
+            "$(ansi 37 'API Commands')" "" \
             "    v1          " "API version 1 operations"
         ;;
     esac ;;
 
-    ver|version)
-        printf "\n"
-        color 0 "\e[47m    DISEEC DevOps CLI \e[0m\e[1m\e[34m Automation Toolkit \e[0m\e[37mv$VERSION\n"
-        printf "\n"
-        color 30 "This software and associated documentation files\n(the \"Software\") are the  exclusive property  of\nDISEEC L.T.E. and are protected by copyright and\nother intellectual property laws.\nPermission is hereby granted, free of charge, to\nany person obtaining a copy of this Software, to\nse the Software within the organization only.\n"
-        printf "\n"
-        color 30 "\e[1mWebsite  \e[0m    https://diseec.com\n"
-        color 30 "\e[1mGitHub   \e[0m    https://github.com/diseec\n"
-        color 30 "\e[1mLinkedIn \e[0m    https://linkedin.com/company/diseec\n"
-        printf "\n"
-        color 30 "Copyright (c) 2018 DISEEC,  all rights  reserved\n"
-        printf "\n"
-    ;;
+    abo|about) about ;;
 
     hel|help|--help|-h) display_help "" "" \
-        "$(color 37 'Usage:    bash cli <command> [subcommand] [options] [arguments]')" "" \
-        "" "" "$(color 37 'Global Manager The D')" "" \
-        "    D [--patch|--debug]      " "Project-scoped kit manager" \
-        "    D                        " "Locate project root and invoke the project's ./cli" \
-        "    D --patch                " "Force pull and reinstall kit into project" \
-        "    D --log-level            " "Set the log level for the CLI. Options: VERBOSE, DEBUG, INFO, WARNING, ERROR" \
+        "$(ansi 37 'Usage:    [D]/[bash cli] [command] [subcommand] [options] [arguments]')" "" \
+        "" "" "$(ansi 37 'Global Manager The D')" "" \
+        "    D [option] [arguments]   " "Locate project root and invoke the project's ./cli" \
+        "    $(ansi 90 'Options:')" "" \
+        "        --patch              " "Force pull and reinstall kit into project" \
         "                             " "Note: 'D --patch' ensures a fresh kit binary is used when the local kit is missing, corrupted, or unable to bootstrap the CLI itself." \
-        "" "" "$(color 37 'Project Management')" "" \
+        "        --log-level          " "Set the log level for the CLI, valid values: DEBUG, INFO, WARNING, ERROR" \
+        "        -v|--version         " "Show version information" \
+        "" "" "$(ansi 37 'Project Management')" "" \
         "    ins|install              " "Install project dependencies and tools" \
         "    ude|update               " "Update cli_main and sync project" \
         "    sta|status               " "Show comprehensive project status" \
-        "" "" "$(color 37 'Workflow & Environment')" "" \
+        "" "" "$(ansi 37 'Workflow & Environment')" "" \
         "    dev|develop              " "Start development environment" \
         "    bpa|build                " "Build project images" \
         "    run <command>            " "Execute command in container" \
@@ -109,18 +98,18 @@ c=$1; shift; case $c in
         "    she|shell                " "Open interactive shell" \
         "    tes|test [type]          " "Run test suites" \
         "    for|format               " "Format codebase" \
-        "" "" "$(color 37 'Source Control')" "" \
+        "" "" "$(ansi 37 'Source Control')" "" \
         "    git                      " "Git workflow management" \
         "    pul|pull                 " "Pull and merge latest changes" \
-        "    pus|push                 " "$(color 36 '✦') Auto-commit and create PR" \
-        "" "" "$(color 37 'Infrastructure')" "" \
+        "    pus|push                 " "$(ansi 36 '✦') Auto-commit and create PR" \
+        "" "" "$(ansi 37 'Infrastructure')" "" \
         "    doc|docker               " "Docker operations" \
         "    sub|submodule            " "Unified submodule management (packages & services)" \
         "    wor|workspace            " "Workspace configuration" \
-        "" "" "$(color 37 'Configuration')" "" \
+        "" "" "$(ansi 37 'Configuration')" "" \
         "    con|config               " "Configuration management" \
         "    sec|secret               " "Encrypted secrets management" \
-        "" "" "$(color 37 'Utilities')" "" \
+        "" "" "$(ansi 37 'Utilities')" "" \
         "    ai$(printf "\033[36m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
         "    env|envs                 " "Manage environment variables. Example:" \
         "                             " "set -a; eval \"\$(D envs)\"; set +a" \
@@ -128,13 +117,13 @@ c=$1; shift; case $c in
         "    saf|safely <command>     " "Safe command execution" \
         "    api                      " "API operations" \
         "    kit <command>            " "SDK container operations" \
-        "" "" "$(color 37 'Information')" "" \
+        "" "" "$(ansi 37 'Information')" "" \
         "    inf|inform               " "Information and validation" \
-        "    dai|daily                " "$(color 36 '✦') Generate daily insights" \
-        "    ver|version              " "Show version information" \
+        "    dai|daily                " "$(ansi 36 '✦') Generate daily insights" \
         "    hel|help                 " "Show this help message" \
         "$@"
     ;;
+    -v|--version) echo "$VERSION" ;;
     *)
         if [ ! -z $c ]; then message 31 "E" "Unknown command: '$c'"; fi
         cli_main help; exit 1;

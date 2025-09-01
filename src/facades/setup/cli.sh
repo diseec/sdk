@@ -14,8 +14,8 @@ c=$1; shift; case $c in
         ;;
         hel|help|--help|-h)
             display_help "" "" \
-                "$(color 37 'System Setup')" "" \
-                "$(color 37 'Usage:    cli setup system <command>\n')" "" \
+                "$(ansi 37 'System Setup')" "" \
+                "$(ansi 37 'Usage:    cli setup system <command>')" "" "" "" \
                 "    dep|dependency-check    " "Check system dependencies required by the project" \
                 "    ins|install             " "Install missing system dependencies defined in project metadata" \
                 "    -h|--help               " "Show this help message" \
@@ -24,8 +24,8 @@ c=$1; shift; case $c in
     esac ;;
     hel|help|--help|-h)
         display_help "" "" \
-            "$(color 37 'Setup Commands')" "" \
-            "$(color 37 'Usage:    cli setup <command> [options]\n')" "" \
+            "$(ansi 37 'Setup Commands')" "" \
+            "$(ansi 37 'Usage:    cli setup <command> [options]')" "" \
             "    pro|project   " "Setup project (install toolchain and scaffold)" \
             "    pre|prettier  " "Install or configure Prettier" \
             "    sys|system    " "System dependency helpers (see 'cli setup system -h')" \

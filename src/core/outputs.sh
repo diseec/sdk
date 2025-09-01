@@ -5,15 +5,10 @@ capitalize() {
 }
 
 ansi() {
-    ansi="$1"; shift; text="$@";
-    printf "\033[%sm%s\033[0m" "$ansi" "$text"
-}
-
-message() {
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃ ANSI COLOR & STYLE CHEAT SHEET FOR BASH TERMINAL OUTPUT                 ┃
 # ┃ Use: printf "\033[<codes>mYour Text\033[0m"                             ┃
-# ┃ Or: color "<codes>" "Your Text"                                         ┃
+# ┃ Or: ansi "<codes>" "Your Text"                                         ┃
 # ┃ Multiple codes can be combined with semicolons (e.g. "1;31")            ┃
 # ┃                                                                         ┃
 # ┃ TEXT COLORS (FOREGROUND)                                                ┃
@@ -37,14 +32,19 @@ message() {
 # ┃   7   Inverse        8   Hidden                                         ┃
 # ┃                                                                         ┃
 # ┃ EXAMPLES                                                                ┃
-# ┃   color 31 "Red text"                                                   ┃
-# ┃   color "1;32" "Bold green text"                                        ┃
-# ┃   color "4;34" "Underlined blue text"                                   ┃
+# ┃   ansi 31 "Red text"                                                   ┃
+# ┃   ansi "1;32" "Bold green text"                                        ┃
+# ┃   ansi "4;34" "Underlined blue text"                                   ┃
 # ┃   printf "\033[41;97mWhite on red background\033[0m"                    ┃
 # ┃                                                                         ┃
 # ┃ Reference: https://en.wikipedia.org/wiki/ANSI_escape_code               ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
+    ansi="$1"; shift; text="$@";
+    printf "\033[%sm%s\033[0m" "$ansi" "$text"
+}
+
+message() {
     local repo_name=${REPO_NAME:-d}
     local _ansi="90"
     local type="--log"
@@ -74,10 +74,10 @@ message() {
 
     # Prepare prompt & content
     local prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
-    prompt="$(color 90 "$prompt")"
-    if [ -n "$icon" ]; then prompt="$prompt$(color $_ansi "[$icon]")"; fi
+    prompt="$(ansi 90 "$prompt")"
+    if [ -n "$icon" ]; then prompt="$prompt$(ansi $_ansi "[$icon]")"; fi
 
-    content="$(color 90 "$content")"
+    content="$(ansi 90 "$content")"
 
     # Handle logging levels
     case $D_LOG_LEVEL in
@@ -115,9 +115,24 @@ display_help() {
     while [ "$#" -gt 0 ]; do
         command=$1
         description=$2
-        color 34 "$command"
-        color 0 "$description\n"
+        ansi 34 "$command"
+        ansi 90 "$description"
+        printf "\n"
         shift 2
     done
+    printf "\n"
+}
+
+about() {
+    printf "\n"
+    printf "\e[47m    $(capitalize $ORG_NAME) DevOps CLI \e[0m\e[1m\e[34m Automation Toolkit \e[0m\e[37mv$VERSION\n\e[0m"
+    printf "\n"
+    printf "\e[90mThis software and associated documentation files\n(the \"Software\") are the  exclusive property  of\n$(capitalize $ORG_NAME) L.T.E. and are protected by copyright and\nother intellectual property laws.\nPermission is hereby granted, free of charge, to\nany person obtaining a copy of this Software, to\nse the Software within the organization only.\n\e[0m"
+    printf "\n"
+    printf "\e[90m\e[1mWebsite  \e[0m\e[90m    https://$ORG_NAME.com\n\e[0m"
+    printf "\e[90m\e[1mGitHub   \e[0m\e[90m    https://github.com/$ORG_NAME\n\e[0m"
+    printf "\e[90m\e[1mLinkedIn \e[0m\e[90m    https://linkedin.com/company/$ORG_NAME\n\e[0m"
+    printf "\n"
+    printf "\e[90mCopyright (c) 2018 $(capitalize $ORG_NAME),  all rights  reserved\n\e[0m"
     printf "\n"
 }

@@ -8,7 +8,7 @@ c=$1; shift; case $c in
     hel|help|--help|-h)
         display_help \
             "" "" \
-            "$(color 37 'Package Visibility Commands')" "" \
+            "$(ansi 37 'Package Visibility Commands')" "" \
             "    pat|patch             " "Install package dependencies in Node.js project"
     ;;
     *) if [ ! -z $c ]; then message -e "Unknown command: '$c'"; fi ;;

@@ -21,7 +21,7 @@ case $command in
     help|-h)        
         "./node_modules/@diseec/kit/cli.sh" "$command" \
          "" "" \
-         "$(color 33 "Service Commands:")" "" \
+         "$(ansi 33 "Service Commands:")" "" \
          "    help         " "Display this help message"
     ;;
 

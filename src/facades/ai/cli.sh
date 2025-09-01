@@ -11,11 +11,11 @@ c=$1; shift; case "$c" in
     fac_ai_is_available) fac_ai_is_available "$@" ;;
     hel|help|--help|-h)
         display_help "" "" \
-            "$(color 37 'AI Commands')" "" \
-            "$(color 37 'Usage:    cli ai <command> [options]\n')" "" \
+            "$(ansi 37 'AI Commands')" "" \
+            "$(ansi 37 'Usage:    cli ai <command> [options]')" "" "" "" \
             "    fac_ai_is_available   " "Check if AI backend is reachable and key is configured" \
             "    <other commands>      " "AI helper commands implemented in this module" \
-            "" "" "$(color 33 'Setup Required')" "" \
+            "" "" "$(ansi 33 'Setup Required')" "" \
             "    D secret add           " "Add OPENAI_API_KEY to secrets for AI features" \
             "    Check: secrets ksh     " "Show current secrets and verify key presence" \
             "$@"
