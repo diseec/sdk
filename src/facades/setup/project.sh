@@ -16,7 +16,7 @@ fac_set_project() {
     # Early return in CI environment - silent skip
     [ -n "$CI" ] && { message -w "Skipping interactive installation in CI environment"; return 0; }
 
-    cli_main kit start --detach --force-recreate > /dev/null ;
+    cli_main kit start > /dev/null ;
 
     _git config --global credential.helper store
 
@@ -37,7 +37,7 @@ fac_set_project() {
 
     cli_main git checkout-if-detached
 
-    cli_main kit stop --timeout 0 > /dev/null;
+    cli_main kit stop > /dev/null;
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         message -l "Installing dependencies in selected submodules..."

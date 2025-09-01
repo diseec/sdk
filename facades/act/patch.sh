@@ -13,7 +13,7 @@ kit_fac_act_patch() {
     VERSION_SPECIFIER=$(_node -p "require('$TARGET_MOUNTED_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$TARGET_MOUNTED_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
 
     if [ -z "$VERSION_SPECIFIER" ]; then
-        message -e "@$ORG_NAME/$KIT_NAME not found in '$TARGET_MOUNTED_DIR/package.json'."
+        message -e "@$ORG_NAME/$KIT_NAME not found in '$TARGET_MOUNTED_DIR/package.json'. $PWD"
         exit 1
     fi
 

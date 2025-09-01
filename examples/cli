@@ -42,7 +42,7 @@ c=$1; shift; case $c in
     ;;
 
     dev)
-        cli_main kit start --detach > /dev/null 2>&1
+        cli_main kit start > /dev/null 2>&1
         confirm "Run post dev ops?" \
             cli_main status \
             confirm "Pull and merge latest changes?" cli_main pull --recursive

@@ -10,8 +10,8 @@ c=$1; shift; case $c in
     tes|test)  force_safe $c "$@" || source "$KIT_SRC_DIR/lib/tester/cli.sh" "$@" ;;
     pul|pull)  cli_main git _ pull origin main "$@" ;;
     run)       cli_main docker compose execute $KIT_NAME "$@" ;;
-    sta|start) cli_main docker compose _ up "$@" ;;
-    sto|stop)  cli_main docker compose _ down "$@" ;;
+    sta|start) cli_main docker compose _ up --detach --force-recreate "$@" ;;
+    sto|stop)  cli_main docker compose _ down --timeout 0 "$@" ;;
     hel|help|--help|-h)
         display_help \
             "" "" \
