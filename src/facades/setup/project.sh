@@ -16,7 +16,7 @@ fac_set_project() {
     # Early return in CI environment - silent skip
     [ -n "$CI" ] && { message -w "Skipping interactive installation in CI environment"; return 0; }
 
-    cli_main kit start ;
+    cli_main kit start;
 
     _git config --global credential.helper store
 

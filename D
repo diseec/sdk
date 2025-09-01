@@ -22,11 +22,13 @@ dir="$PWD"; while :; do
             else
                 # echo "D:DEBUG: pulling image.registry.diseec.com/kit"
                 docker pull image.registry.diseec.com/kit \
-                    --disable-content-trust > /dev/null
+                    --disable-content-trust > /dev/null 2>&1
+                if [ $? -ne 0 ]; then message -e "Failed to pull $KIT_NAME image"; fi
                 # echo "D:DEBUG: running 'act patch' in kit container, mounting: $ROOT_DIR"
                 docker run --rm -v $ROOT_DIR:/vise -w /vise \
                     image.registry.diseec.com/kit \
-                    /kit/cli act patch
+                    /kit/cli act patch > /dev/null 2>&1
+                if [ $? -ne 0 ]; then message -e "Failed to run patch command in $KIT_NAME image"; fi
                 # echo "D:DEBUG: finished 'act patch' in kit container"
             fi
             # abort if patch failed

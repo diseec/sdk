@@ -14,7 +14,7 @@ c=$1; shift; case $c in
     ins|install) cli_main setup project "$@" ;;
     ude|update) "$KIT_SRC_DIR/cmds/update.sh" "$@" ;;
     sta|status)         
-        cli_main version
+        # cli_main about
         cli_main workspace status
         cli_main inform check-system-dependencies
         cli_main inform check-internet-connection
@@ -82,6 +82,7 @@ c=$1; shift; case $c in
         "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$ORG_NAME/$KIT_NAME")")" \
         "" "" "$(ansi "1;90" "$(capitalize 'Global Manager The "D"')")" "" \
         "    D [option] [arguments]   " "Locate project root and invoke the project's ./cli" \
+        "        about                " "About $KIT_NAME, authors, $ORG_NAME, policies and licensing" \
         "    $(ansi 90 'Options:')" "" \
         "        --patch              " "Force pull and reinstall kit into project" \
         "                             " "Note: 'D --patch' ensures a fresh kit binary is used when the local kit is missing, corrupted, or unable to bootstrap the CLI itself." \
