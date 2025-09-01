@@ -50,7 +50,7 @@ message() {
     local type="--log"
     local icon=""
     local content=""
-    local level="VERBOSE" # VERBOSE > DEBUG > INFO > WARNING > ERROR
+    local level="DEBUG" # DEBUG > INFO > WARNING > ERROR
 
     # Define Api logic and UX
     if [ $# -eq 1 ]; then type="--log"; content="$1";
@@ -59,8 +59,8 @@ message() {
 
     # Parse type config
     case $type in
-        -l|--log)       ansi="90"; icon="";  level="VERBOSE" ;;
-        -d|--debug)     ansi="90"; icon="¤"; level="DEBUG"   ;;
+        -l|--log)       ansi="90"; icon="";  level="DEBUG" ;;
+        -d|--debug)     ansi="31"; icon="¤"; level="DEBUG" ;;
         -f|--fail)      ansi="31"; icon="✖"; level="ERROR"   ;; # ✗
         -e|--error)     ansi="31"; icon="E"; level="ERROR"   ;;
         -o|--okey)      ansi="32"; icon="✓"; level="INFO"    ;; # ✔
@@ -69,7 +69,7 @@ message() {
         -q|--question)  ansi="35"; icon="?"; level="INFO"    ;;
         -a|--ai)        ansi="36"; icon="✦"; level="INFO"    ;;
         -s|--statement) ansi="37"; icon="";  level="INFO"    ;;
-        *)                                   level="VERBOSE" ;;
+        *)                                   level="DEBUG" ;;
     esac
 
     # Prepare prompt & content
@@ -81,11 +81,10 @@ message() {
 
     # Handle logging levels
     case $D_LOG_LEVEL in
-        VERBOSE|verbose) ;;
-        DEBUG|debug) case $level in VERBOSE) return 0; esac ;;
-        INFO|info) case $level in VERBOSE|DEBUG) return 0; esac ;;
-        WARNING|warning) case $level in VERBOSE|DEBUG|INFO) return 0; esac ;;
-        ERROR|error) case $level in VERBOSE|DEBUG|INFO|WARNING) return 0; esac ;;
+        DEBUG|debug) ;;
+        INFO|info) case $level in       DEBUG) return 0; esac ;;
+        WARNING|warning) case $level in DEBUG|INFO) return 0; esac ;;
+        ERROR|error) case $level in     DEBUG|INFO|WARNING) return 0; esac ;;
     esac
 
     # Output log message

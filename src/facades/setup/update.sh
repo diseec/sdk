@@ -57,7 +57,7 @@ fac_set_cmd_update() {
 
     cli_main git _ pull origin
     cli_main kit docker compose _ pull
-    cli_main safely kit do patch
+    cli_main safely kit act patch
     message -l "$KIT_NAME version patched to: $VERSION"
 
     handle_hook before_update

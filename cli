@@ -1,42 +1,17 @@
 #!/bin/bash
 
 IS_KIT_CLI="true"
+
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
+source "$ROOT_DIR/facades/index.sh"
 
 c=$1; shift; case $c in
-    do)
-    if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then message -e "The 'do' command works only on bench! (the kit container)"; exit 1; fi
-    c=$1; shift; case $c in
-        pat|patch)
-            set -e
-            VERSION_SPECIFIER=$(_node -p "require('$TARGET_MOUNTED_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$TARGET_MOUNTED_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
-            if [ -z "$VERSION_SPECIFIER" ]; then
-                message -e "@$ORG_NAME/$KIT_NAME not found in '$TARGET_MOUNTED_DIR/package.json'."
-                exit 1
-            fi
-            echo "Running npm install @$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER .."
-            TMPDIR=$(mktemp -d)
-            (cd $TMPDIR && _npm install "@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER")
-            rm -rf "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH" 2>/dev/null 
-            mkdir -p "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH" 2>/dev/null
-            cp -r "$TMPDIR/$KIT_RELATIVE_PATH"/* "$TARGET_MOUNTED_DIR/$KIT_RELATIVE_PATH"
-            if [ ! -f "$TARGET_MOUNTED_DIR/cli" ]; then cp "/$KIT_NAME/templates/cli" "$TARGET_MOUNTED_DIR/cli"; fi
-            # if [ ! -f "$TARGET_MOUNTED_DIR/.gitignore" ]; then cp "/$KIT_NAME/templates/.gitignore" "$TARGET_MOUNTED_DIR/.gitignore"; fi
-        ;;
-        # templates) bash bin/templates.sh ;;
-        *)
-            display_help \
-                "" "" \
-                "$(color 37 'Package Visibility Commands')" "" \
-                "    ins|install             " "Install package dependencies in Node.js project"
-        ;;
-    esac;;
-
-    tes|test) force_safe $c "$@" || source "$KIT_SRC_DIR/lib/tester/index.sh" "$@" ;;
-    run) cli_main docker compose execute $KIT_NAME "$@" ;;
-    pul|pull) cli_main git _ pull origin main "$@" ;;
+    act)       force_safe $c "$@" || source "$ROOT_DIR/facades/act/cli.sh" "$@" ;;
+    tes|test)  force_safe $c "$@" || source "$KIT_SRC_DIR/lib/tester/cli.sh" "$@" ;;
+    pul|pull)  cli_main git _ pull origin main "$@" ;;
+    run)       cli_main docker compose execute $KIT_NAME "$@" ;;
     sta|start) cli_main docker compose _ up "$@" ;;
-    sto|stop) cli_main docker compose _ down "$@" ;;
+    sto|stop)  cli_main docker compose _ down "$@" ;;
     hel|help|--help|-h)
         display_help \
             "" "" \
@@ -62,5 +37,5 @@ c=$1; shift; case $c in
             "$(color 34 'Docs:')" " See https://github.com/diseec/kit for full command reference."
         ;;
 
-    *) cli_core "$c" "$@" ;;
+    *) cli_core $c "$@" ;;
 esac

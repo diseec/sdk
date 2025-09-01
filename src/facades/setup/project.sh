@@ -8,7 +8,7 @@ fac_set_project() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    cli_main safely kit do patch;
+    cli_main safely kit act patch;
     message -l "$KIT_NAME version patched to: $VERSION"
 
     handle_hook before_install
