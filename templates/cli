@@ -26,7 +26,7 @@ c=$1; shift; case $c in
 
     # hook:after_install) yarn install ;;
 
-    # hel|help|--help|-h) $CLIBASE help "myc|mycommand" "    Display the help message" ;;
+    # hel|help|--help|-h) cli_core help "myc|mycommand" "    Display the help message" ;;
 
     *) cli_core $c "$@" ;;
 
