@@ -13,10 +13,10 @@ c=$1; shift; case $c in
     sta|status)         
         # cli_main about
         cli_main workspace status
-        cli_main inform check-system-dependencies
-        cli_main inform check-internet-connection
+        src_inf_check_system_dependencies
+        src_inf_check_internet_connection
         cli_main git status
-        cli_main inform check-for-updates
+        src_inf_check_for_updates
     ;;
     dev|develop) cli_main docker compose up-dev "$@" ;;
     bpa|build)   cli_main docker compose build "$@" ;;
@@ -39,7 +39,6 @@ c=$1; shift; case $c in
     sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
     wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
     env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;;
-    inf|inform) source "$KIT_SRC_DIR/informs/cli.sh" "$@" ;;
     kit) env KIT_TARGET_DIR="$ROOT_DIR" "$KIT_DIR/cli" "$@" ;;
     saf|safely)
         # logger -d "CLI:$CLI_CORE:SAFELY:ARGS: $@";
@@ -108,7 +107,6 @@ c=$1; shift; case $c in
         "    saf|safely <command>     " "Safe command execution" \
         "    api                      " "API operations" \
         "    kit <command>            " "SDK container operations" \
-        "    inf|inform               " "Information and validation" \
         "$@"
     ;;
     -v|--version) echo "$VERSION" ;;

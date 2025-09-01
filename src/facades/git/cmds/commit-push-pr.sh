@@ -8,7 +8,7 @@ fac_git_cmd_commit_push_pr() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    cli_main inform check-internet-connection
+    src_inf_check_internet_connection
 
     # cli_main git checkout-if-detached
     # cli_main git pull

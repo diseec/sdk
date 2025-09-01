@@ -12,32 +12,30 @@ c=$1; shift; case $c in
         ;;
     tes|test)
         MODE="test"
-        X
-        # X "$@"
-        # # Start with a header unless silent mode is enabled
-        # if [ "$SILENT_MODE" != "true" ]; then
-        #     logger --ansi="97" --icon="⌁" "Quick internet connectivity check...\n"
-        # fi
+        # Start with a header unless silent mode is enabled
+        if [ "$SILENT_MODE" != "true" ]; then
+            logger --ansi="97" --icon="⌁" "Quick internet connectivity check...\n"
+        fi
         
-        # # Run basic connectivity test
-        # if quick_check; then
-        #     overall_status=true
-        # else
-        #     overall_status=false
-        # fi
+        # Run basic connectivity test
+        if quick_check; then
+            overall_status=true
+        else
+            overall_status=false
+        fi
 
-        # echo ""
-        # # Display a summary
-        # if [ "$SILENT_MODE" != "true" ]; then
-        #     if [ "$overall_status" = "true" ]; then
-        #         logger --ansi="32" --icon="⊕" "Internet connection working properly"
-        #     else
-        #         logger --ansi="31" --icon="⊘" "Internet connection has issues"
-        #     fi
-        # fi
+        echo ""
+        # Display a summary
+        if [ "$SILENT_MODE" != "true" ]; then
+            if [ "$overall_status" = "true" ]; then
+                logger --ansi="32" --icon="⊕" "Internet connection working properly"
+            else
+                logger --ansi="31" --icon="⊘" "Internet connection has issues"
+            fi
+        fi
         
-        # # return with appropriate code
-        # [ "$overall_status" = "true" ] && return 0 || return 1
+        # return with appropriate code
+        [ "$overall_status" = "true" ] && return 0 || return 1
         ;;
     dia|diagnose)
         MODE="diagnose"

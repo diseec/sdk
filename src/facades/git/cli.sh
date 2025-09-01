@@ -7,8 +7,8 @@
 
 c=$1; shift; case $c in
     sta|status)
-        cli_main inform forbid-dev-on-main
-        cli_main inform summary-branch-status
+        src_inf_forbid_dev_on_main
+        src_inf_summary_branch_status
         fac_git_cmd_pr_check_status
     ;;
     cpp|commit-push-pr) fac_git_cmd_commit_push_pr "$@" ;;
