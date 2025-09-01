@@ -6,7 +6,7 @@ c=$1; shift; case "$c" in
     sta|status) fac_wor_status "$@" ;;
     con|config) cli_main config --scope=workspace "$@" ;;
     hel|help|--help|-h) display_help  "" "" \
-        "$(ansi 37 'Workspace Commands')" "" \
+        "$(ansi 97 'Workspace Commands')" "" \
         "    ini|init      " "Initialize workspace configuration" \
         "    sel|select    " "Select submodules for workspace" \
         "    sta|status    " "Show current workspace configuration" \

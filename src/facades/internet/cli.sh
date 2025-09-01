@@ -14,7 +14,7 @@ c=$1; shift; case $c in
         MODE="test"
         # Start with a header unless silent mode is enabled
         if [ "$SILENT_MODE" != "true" ]; then
-            message 37 "⌁" "Quick internet connectivity check...\n"
+            message 97 "⌁" "Quick internet connectivity check...\n"
         fi
         
         # Run basic connectivity test
@@ -39,7 +39,7 @@ c=$1; shift; case $c in
         ;;
     dia|diagnose)
         MODE="diagnose"
-        message 37 "⚙" "Diagnosing internet connection ..."
+        message 97 "⚙" "Diagnosing internet connection ..."
 
         overall_status=true
         quick_check_success=false
@@ -102,18 +102,18 @@ c=$1; shift; case $c in
         return $?
         ;;
     hel|--help|help|-h) display_help "" "" \
-            "$(ansi 37 'Internet Connection Checker (Optimized for Alpine)')" "" \
-            "$(ansi 37 'Usage:    cli internet_optimized <mode> [options]')" "" "" "" \
-            "$(ansi 37 'Modes:')" "" \
+            "$(ansi 97 'Internet Connection Checker (Optimized for Alpine)')" "" \
+            "$(ansi 97 'Usage:    cli internet_optimized <mode> [options]')" "" "" "" \
+            "$(ansi 97 'Modes:')" "" \
             "  iso|is-online         " "Silent boolean check - returns 0 for success, 1 for failure (no output)" \
             "  tes|test              " "Fast check with output - tests gateway, DNS, and one site (~2 seconds)" \
             "  dia|diagnose          " "Comprehensive analysis - tests all layers with detailed diagnostics (~30 seconds)" \
-            "" "" "$(ansi 37 'Features:')" "" \
+            "" "" "$(ansi 97 'Features:')" "" \
             "  • Docker-optimized implementation    " "Specifically designed for Alpine container environment" \
             "  • Iranian internet censorship detection " "Identifies filtering patterns and suggests solutions" \
             "  • Lightweight with minimal dependencies " "Uses only tools available in the base Docker image" \
             "  • Multi-layer connectivity testing   " "Gateway, DNS, HTTP(S), and CDN access verification" \
-            "" "" "$(ansi 37 'Options:')" "" \
+            "" "" "$(ansi 97 'Options:')" "" \
             "  -s|--silent           " "Suppress all output except errors" \
             "  -h|--help             " "Show this help message"
         exit 0

@@ -8,8 +8,8 @@ c=$1; shift; case $c in
     hel|help|--help|-h)
         display_help \
             "" "" \
-            "$(ansi 37 'Package Visibility Commands')" "" \
-            "    pat|patch             " "Install package dependencies in Node.js project"
+            "$(ansi 97 'Package Visibility Commands')" "" \
+            "    pat|patch             " "Force fresh install to mounted directory"
     ;;
     *) if [ ! -z $c ]; then message -e "Unknown command: '$c'"; fi ;;
 esac

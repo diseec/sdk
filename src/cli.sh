@@ -65,12 +65,12 @@ c=$1; shift; case $c in
         v1) c=$1; shift; case $c in
             install) cli_main install "$@" ;;
             *) display_help "" "" \
-                "$(ansi 37 'API v1 Commands')" "" \
+                "$(ansi 97 'API v1 Commands')" "" \
                 "    install     " "Install API v1 dependencies"
             ;;
         esac ;;
         *) display_help "" "" \
-            "$(ansi 37 'API Commands')" "" \
+            "$(ansi 97 'API Commands')" "" \
             "    v1          " "API version 1 operations"
         ;;
     esac ;;
@@ -78,19 +78,22 @@ c=$1; shift; case $c in
     abo|about) about ;;
 
     hel|help|--help|-h) display_help "" "" \
-        "$(ansi 37 'Usage:    [D]/[bash cli] [command] [subcommand] [options] [arguments]')" "" \
-        "" "" "$(ansi 37 'Global Manager The D')" "" \
+        "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[D]/[bash cli] [command] [subcommand] [options] [arguments]" \
+        "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$ORG_NAME/$KIT_NAME")")" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Global Manager The "D"')")" "" \
         "    D [option] [arguments]   " "Locate project root and invoke the project's ./cli" \
         "    $(ansi 90 'Options:')" "" \
         "        --patch              " "Force pull and reinstall kit into project" \
         "                             " "Note: 'D --patch' ensures a fresh kit binary is used when the local kit is missing, corrupted, or unable to bootstrap the CLI itself." \
         "        --log-level          " "Set the log level for the CLI, valid values: DEBUG, INFO, WARNING, ERROR" \
         "        -v|--version         " "Show version information" \
-        "" "" "$(ansi 37 'Project Management')" "" \
+        "        -h|--help            " "Brief usage and docs information" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Project Management')")" "" \
         "    ins|install              " "Install project dependencies and tools" \
         "    ude|update               " "Update cli_main and sync project" \
         "    sta|status               " "Show comprehensive project status" \
-        "" "" "$(ansi 37 'Workflow & Environment')" "" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Workflow & Environment')")" "" \
+        "    dai|daily                " "$(ansi 36 '✦') $(ansi 90 'Generate daily insights')" \
         "    dev|develop              " "Start development environment" \
         "    bpa|build                " "Build project images" \
         "    run <command>            " "Execute command in container" \
@@ -98,18 +101,18 @@ c=$1; shift; case $c in
         "    she|shell                " "Open interactive shell" \
         "    tes|test [type]          " "Run test suites" \
         "    for|format               " "Format codebase" \
-        "" "" "$(ansi 37 'Source Control')" "" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Source Control')")" "" \
         "    git                      " "Git workflow management" \
         "    pul|pull                 " "Pull and merge latest changes" \
-        "    pus|push                 " "$(ansi 36 '✦') Auto-commit and create PR" \
-        "" "" "$(ansi 37 'Infrastructure')" "" \
+        "    pus|push                 " "$(ansi 36 '✦') $(ansi 90 'Auto-commit and create PR')" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Infrastructure')")" "" \
         "    doc|docker               " "Docker operations" \
         "    sub|submodule            " "Unified submodule management (packages & services)" \
         "    wor|workspace            " "Workspace configuration" \
-        "" "" "$(ansi 37 'Configuration')" "" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Configuration')")" "" \
         "    con|config               " "Configuration management" \
         "    sec|secret               " "Encrypted secrets management" \
-        "" "" "$(ansi 37 'Utilities')" "" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
         "    ai$(printf "\033[36m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
         "    env|envs                 " "Manage environment variables. Example:" \
         "                             " "set -a; eval \"\$(D envs)\"; set +a" \
@@ -117,10 +120,7 @@ c=$1; shift; case $c in
         "    saf|safely <command>     " "Safe command execution" \
         "    api                      " "API operations" \
         "    kit <command>            " "SDK container operations" \
-        "" "" "$(ansi 37 'Information')" "" \
         "    inf|inform               " "Information and validation" \
-        "    dai|daily                " "$(ansi 36 '✦') Generate daily insights" \
-        "    hel|help                 " "Show this help message" \
         "$@"
     ;;
     -v|--version) echo "$VERSION" ;;

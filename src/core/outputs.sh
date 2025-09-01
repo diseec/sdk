@@ -8,12 +8,12 @@ ansi() {
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃ ANSI COLOR & STYLE CHEAT SHEET FOR BASH TERMINAL OUTPUT                 ┃
 # ┃ Use: printf "\033[<codes>mYour Text\033[0m"                             ┃
-# ┃ Or: ansi "<codes>" "Your Text"                                         ┃
+# ┃ Or: ansi "<codes>" "Your Text"                                          ┃
 # ┃ Multiple codes can be combined with semicolons (e.g. "1;31")            ┃
 # ┃                                                                         ┃
 # ┃ TEXT COLORS (FOREGROUND)                                                ┃
 # ┃   30  Black      31  Red        32  Green      33  Yellow               ┃
-# ┃   34  Blue       35  Magenta    36  Cyan       37  White                ┃
+# ┃   34  Blue       35  Magenta    36  Cyan       97  White                ┃
 # ┃   90  Bright Black (Gray)      91  Bright Red                           ┃
 # ┃   92  Bright Green             93  Bright Yellow                        ┃
 # ┃   94  Bright Blue              95  Bright Magenta                       ┃
@@ -32,16 +32,16 @@ ansi() {
 # ┃   7   Inverse        8   Hidden                                         ┃
 # ┃                                                                         ┃
 # ┃ EXAMPLES                                                                ┃
-# ┃   ansi 31 "Red text"                                                   ┃
-# ┃   ansi "1;32" "Bold green text"                                        ┃
-# ┃   ansi "4;34" "Underlined blue text"                                   ┃
+# ┃   ansi 31 "Red text"                                                    ┃
+# ┃   ansi "1;32" "Bold green text"                                         ┃
+# ┃   ansi "4;34" "Underlined blue text"                                    ┃
 # ┃   printf "\033[41;97mWhite on red background\033[0m"                    ┃
 # ┃                                                                         ┃
 # ┃ Reference: https://en.wikipedia.org/wiki/ANSI_escape_code               ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
     ansi="$1"; shift; text="$@";
-    printf "\033[%sm%s\033[0m" "$ansi" "$text"
+    printf "\033[0m\033[%sm%s\033[0m" "$ansi" "$text"
 }
 
 message() {
@@ -68,7 +68,7 @@ message() {
         -i|--info)      _ansi="34"; icon="i"; level="INFO"    ;;
         -q|--question)  _ansi="35"; icon="?"; level="INFO"    ;;
         -a|--ai)        _ansi="36"; icon="✦"; level="INFO"    ;;
-        -s|--statement) _ansi="37"; icon="";  level="INFO"    ;;
+        -s|--statement) _ansi="97"; icon="";  level="INFO"    ;;
         *)                                   level="DEBUG" ;;
     esac
 
@@ -115,7 +115,7 @@ display_help() {
     while [ "$#" -gt 0 ]; do
         command=$1
         description=$2
-        ansi 34 "$command"
+        ansi 97 "$command"
         ansi 90 "$description"
         printf "\n"
         shift 2
@@ -125,7 +125,7 @@ display_help() {
 
 about() {
     printf "\n"
-    printf "\e[47m    $(capitalize $ORG_NAME) DevOps CLI \e[0m\e[1m\e[34m Automation Toolkit \e[0m\e[37mv$VERSION\n\e[0m"
+    printf "\e[47m    $(capitalize $ORG_NAME) DevOps CLI \e[0m\e[1m\e[34m Automation Toolkit \e[0m\e[97mv$VERSION\n\e[0m"
     printf "\n"
     printf "\e[90mThis software and associated documentation files\n(the \"Software\") are the  exclusive property  of\n$(capitalize $ORG_NAME) L.T.E. and are protected by copyright and\nother intellectual property laws.\nPermission is hereby granted, free of charge, to\nany person obtaining a copy of this Software, to\nse the Software within the organization only.\n\e[0m"
     printf "\n"

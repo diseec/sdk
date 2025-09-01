@@ -13,21 +13,12 @@ c=$1; shift; case $c in
     sta|start) cli_main docker compose _ up --detach --force-recreate "$@" ;;
     sto|stop)  cli_main docker compose _ down --timeout 0 "$@" ;;
     hel|help|--help|-h) cli_core help \
-            "$(ansi 37 '    kit <command> [subcommand] [options] [arguments]')" "" \
-            "" "" "$(ansi 37 'Kit Container Lifecycle')" "" \
+            "" "" "$(ansi "1;90" "$(capitalize 'Kit Container Lifecycle')")" "" \
             "    sta|start               " "Start kit container (for fast subsequent ops)" \
             "    sto|stop                " "Stop kit container" \
-            "    shell                   " "Open shell in kit container (project is mounted)" \
-            "" "" "$(ansi 37 'Project Management & Modification')" "" \
-            "    do <cmd>                " "Run kit-powered commands to manage/modify projects" \
-            "    ini|initialize          " "Install kit into a managed project" \
-            "                            " "Other project modification commands (see docs)" \
-            "" "" "$(ansi 37 'Source Control')" "" \
-            "    pul|pull                " "Pull latest changes from main branch in kit context" \
-            "" "" "$(ansi 37 'Information')" "" \
-            "    hel|help                " "Show this help message" \
-            "" "" "$(ansi 34 'Note:')" " This cli manages the kit container and project operations. For project cli, use the installed cli in your project root." \
-            "" "" "$(ansi 34 'Docs:')" " See https://github.com/diseec/kit for full command reference."
+            "    act <command>           " "Run kit-powered commands to manage/modify projects" "" "" \
+            "$(ansi "90" 'This cli manages the kit container and project operations,')" "" \
+            "$(ansi "90" 'for project cli, use the installed cli in your project root.')" ""
         ;;
 
     *) cli_core $c "$@" ;;

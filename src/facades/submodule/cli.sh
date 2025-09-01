@@ -12,19 +12,19 @@ command=""
 # Function to show help
 show_help() {
     display_help "" "" \
-        "$(ansi 33 'SUBMODULE')" "" \
-        "$(ansi 37 'Unified submodule management for packages and services')" "" \
-        "" "" "$(ansi 37 'Usage:    cli submodule [options] <command> [arguments]')" "" \
-        "$(ansi 37 'Options:')" "" \
+        "$(ansi 34 'SUBMODULE')" "" \
+        "$(ansi 97 'Unified submodule management for packages and services')" "" \
+        "" "" "$(ansi 97 'Usage:    cli submodule [options] <command> [arguments]')" "" \
+        "$(ansi 97 'Options:')" "" \
         "  --type <package|service>   " "Specify submodule type (default: auto-detect from target dir)" \
         "  --dir <directory>          " "Target directory (default: packages/ or services/ based on type)" \
-        "" "" "$(ansi 37 'Commands:')" "" \
+        "" "" "$(ansi 97 'Commands:')" "" \
         "  add <name>                 " "Add submodule from repository" \
         "  rem|remove|rm <name>       " "Remove submodule" \
         "  upd|update                 " "Update all submodules" \
         "  run                        " "Run command in service container (services only)" \
         "  lin|link                   " "Link local package for development (packages only)" \
-        "" "" "$(ansi 37 'Examples:')" "" \
+        "" "" "$(ansi 97 'Examples:')" "" \
         "  cli submodule add my-package                    " "Adds to packages/" \
         "  cli submodule --type service add my-service     " "Adds to services/" \
         "  cli submodule --dir custom/path add my-repo     " "Custom directory" \

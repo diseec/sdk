@@ -12,7 +12,7 @@ c=$1; shift; case "$c" in
     cle|clear) fac_sec_clear_secrets "$@" ;;
     rem|remove|rm|del|delete) fac_sec_remove_secret "$@" ;;
     *) display_help "" "" \
-        "$(ansi 37 'Secrets Commands')" "" \
+        "$(ansi 97 'Secrets Commands')" "" \
         "    kse|key-set            " "Set encryption key manually" \
         "    kre|key-reset          " "Generate new key and re-encrypt all secrets" \
         "    ksh|key-show           " "Display current encryption key" \
@@ -22,7 +22,7 @@ c=$1; shift; case "$c" in
         "    cle|clear              " "Remove all secrets (requires confirmation)" \
         "    rem|remove <name>      " "Remove a specific secret" \
         "" "" "$(ansi 34 'Info: ')" "Secrets are encrypted with AES-256-CBC using auto-generated keys" \
-        "" "" "$(ansi 37 'Important: ')" "If secrets exist but no key is configured, you ust:" \
+        "" "" "$(ansi 97 'Important: ')" "If secrets exist but no key is configured, you ust:" \
         "    1. Set the original key manually: secrets set-key" "" \
         "    2. Clear all secrets: secrets clear" ""
     ;;

@@ -118,7 +118,7 @@ SPEED_TEST_URL="https://speed.cloudflare.com/__down?bytes=1048576"
 WHITE_FILLED_BOLD='\033[1;47m'
 WHITE_FILLED='\033[0;47m'
 GRAY='\033[0;90m'
-WHITE='\033[0;37m'
+WHITE='\033[0;97m'
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
 PURPLE='\033[0;35m'

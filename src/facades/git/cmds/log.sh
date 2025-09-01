@@ -36,24 +36,24 @@ fac_git_cmd_git_log() {
     
     # Display commit information
     echo ""
-    echo -e " \033[37mDate         $commit_date\033[0m"
-    echo -e " \033[37mDeveloper    $commit_author\033[0m"
-    echo -e " \033[37mEmail        $commit_email\033[0m"
-    echo -e " \033[37mRepo         $REPO_NAME\033[0m"
-    echo -e " \033[37mBranch       $branch_info\033[0m"
-    echo -e " \033[37mCommit       \033[4m$commit_link\033[24m\033[0m"
+    echo -e " \033[97mDate         $commit_date\033[0m"
+    echo -e " \033[97mDeveloper    $commit_author\033[0m"
+    echo -e " \033[97mEmail        $commit_email\033[0m"
+    echo -e " \033[97mRepo         $REPO_NAME\033[0m"
+    echo -e " \033[97mBranch       $branch_info\033[0m"
+    echo -e " \033[97mCommit       \033[4m$commit_link\033[24m\033[0m"
     if [ -n "$pr_link" ]; then
-        echo -e " \033[37mPR           \033[4m$pr_link\033[24m\033[0m"
+        echo -e " \033[97mPR           \033[4m$pr_link\033[24m\033[0m"
     fi
     echo ""
-    echo -e "\033[37m--------------------\033[0m"
+    echo -e "\033[97m--------------------\033[0m"
     echo ""
-    echo -e " \033[37m$commit_message\033[0m"
+    echo -e " \033[97m$commit_message\033[0m"
     echo ""
-    echo -e "\033[37m--------------------\033[0m"
+    echo -e "\033[97m--------------------\033[0m"
     echo ""
     # Show diff stats against previous commit
-    echo -e "\033[37m$(_git diff "$commit_id~1" "$commit_id" --stat 2>/dev/null || echo "No previous commit to compare")\033[0m"
+    echo -e "\033[97m$(_git diff "$commit_id~1" "$commit_id" --stat 2>/dev/null || echo "No previous commit to compare")\033[0m"
     echo ""
 }
 

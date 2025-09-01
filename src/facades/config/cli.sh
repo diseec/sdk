@@ -50,13 +50,13 @@ c=$1; shift; case $c in
         else fac_con_print "$@"; fi
     ;;
     hel|help|--help|-h) display_help "" "" \
-        "$(ansi 37 'Configuration Management System')" "" \
-        "" "" "$(ansi 37 'Usage:    config [SCOPE_OPTIONS] <command> [arguments]')" "" \
-        "$(ansi 37 'Scope Options (mandatory for most commands)')" "" \
+        "$(ansi 97 'Configuration Management System')" "" \
+        "" "" "$(ansi 97 'Usage:    config [SCOPE_OPTIONS] <command> [arguments]')" "" \
+        "$(ansi 97 'Scope Options (mandatory for most commands)')" "" \
         "    -s=<scope>               " "Set scope (short form)" \
         "    --scope=<scope>          " "Set scope (long form with equals)" \
         "    --scope <scope>          " "Set scope (long form with space)" \
-        "" "" "$(ansi 37 'Commands')" "" \
+        "" "" "$(ansi 97 'Commands')" "" \
         "    get <key.path>           " "Get configuration value with hierarchy resolution" \
         "    set <key.path> <value>   " "Set configuration value in specified scope" \
         "    add <key.path> <value>   " "Add value to configuration array" \
@@ -66,15 +66,15 @@ c=$1; shift; case $c in
         "    pat|path                 " "Show configuration path (no scope needed)" \
         "    pri|print                " "Print configuration for scope (or all if no scope)" \
         "    hel|help                 " "Show this help message" \
-        "" "" "$(ansi 37 'Scopes')" "" \
+        "" "" "$(ansi 97 'Scopes')" "" \
         "    project                  " "Project-specific configuration (.kit/project.yaml)" \
         "    workspace                " "Workspace-specific configuration (workspaces/\$REPO_NAME/workspace.yaml)" \
         "    user                     " "User-specific configuration (users/\$USER/user.yaml)" \
         "    global                   " "Organization-wide configuration (config.yaml)" \
-        "" "" "$(ansi 37 'Hierarchy')" "" \
+        "" "" "$(ansi 97 'Hierarchy')" "" \
         "    Configuration values are resolved in this order of precedence:" \
         "    project > workspace > user > global" \
-        "" "" "$(ansi 37 'Examples')" "" \
+        "" "" "$(ansi 97 'Examples')" "" \
         "    config --scope=workspace get workspace.submodules" \
         "    config -s=global set defaults.shell zsh" \
         "    config --scope workspace add workspace.submodules my-service" \

@@ -33,22 +33,22 @@ c=$1; shift; case $c in
     esac ;;
     _) _git "$@" ;;
     hel|help|--help|-h) display_help "" "" \
-        "$(ansi 37 'Git Commands - AI-Powered Workflow Automation')" "" \
-        "" "" "$(ansi 37 'Quick Actions')" "" \
+        "$(ansi 97 'Git Commands - AI-Powered Workflow Automation')" "" \
+        "" "" "$(ansi 97 'Quick Actions')" "" \
         "    cpp|commit-push-pr   " "Auto-commit with AI ✨ message, push, and create/update PR" \
         "    sta|status           " "Check current branch PR status and unresolved comments" \
         "    pul|pull             " "Pull latest changes and merge with main branch" \
         "    com|commit           " "Commit changes with AI-generated message" \
         "    ida|insight-day      " "Generate daily insights" \
-        "" "" "$(ansi 37 'Individual Operations')" "" \
+        "" "" "$(ansi 97 'Individual Operations')" "" \
         "    pre|pull-request     " "Create PR only (no commit/push)" \
         "    che|checkout         " "Checkout/create branch interactively" \
         "    hea|head             " "Get detailed commit report status, options: --recursive" \
         "    rel|release          " "Create release tag (development command)" \
-        "" "" "$(ansi 37 'Direct Commands')" "" \
+        "" "" "$(ansi 97 'Direct Commands')" "" \
         "    _                    " "Direct git command passthrough" \
         "    hub _                " "Direct GitHub CLI command passthrough" \
-        "" "" "$(ansi 37 'Aliases & Shortcuts')" "" \
+        "" "" "$(ansi 97 'Aliases & Shortcuts')" "" \
         "    D push [--recursive]  " "Alias for commit-push-pr" \
         "    D pull [--recursive]  " "Alias for pull" \
         "" "" "$(ansi 33 'Setup Required')" "" \
