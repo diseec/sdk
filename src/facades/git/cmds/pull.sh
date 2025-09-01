@@ -8,15 +8,15 @@ fac_git_cmd_pull_merge() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    echo "$REPO_NAME: Pulling latest branch '$CURRENT_BRANCH' changes ..."
+    message -l "Pulling latest branch '$CURRENT_BRANCH' changes ..."
     _git -C "$ROOT_DIR" pull origin
-    echo "$REPO_NAME: Merging latest 'origin/main' changes to branch '$CURRENT_BRANCH'..."
+    message -l "Merging latest 'origin/main' changes to branch '$CURRENT_BRANCH'..."
     _git -C "$ROOT_DIR" merge origin/main
 
-    echo "$REPO_NAME: Pull and merge complete."
+    message -l "Pull and merge complete."
 
     if [ "$IS_RECURSIVE" = "true" ]; then
-        echo "$REPO_NAME: Pull and merging in submodules..."
+        message -l "Pull and merging in submodules..."
         pull_submodule() {
             local module="$1"
             local module_path="$2"
