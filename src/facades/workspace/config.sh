@@ -42,7 +42,7 @@ fac_wor_create_config() {
     fi
     
     # Display available submodules and let user select them
-    message 34 "MODULES" "Available submodules:"
+    message 35 "MODULES" "Available submodules:"
     i=1
     for module in $available_modules; do
         echo "  $i) $module"
@@ -50,7 +50,7 @@ fac_wor_create_config() {
     done
     
     echo ""
-    message 34 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all submodules, press enter to skip:"
+    message 35 "SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all submodules, press enter to skip:"
     read selection
     
     selected_modules=""

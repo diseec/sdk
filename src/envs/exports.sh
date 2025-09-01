@@ -10,6 +10,7 @@ vars=( \
     IMAGE_REGISTRY_URL \
     TARGET_MOUNTED_DIR \
     GIT_MOUNT_DIR \
+    KIT_TARGET_DIR \
 )
 
 # export "${vars[@]}" # reduces control
