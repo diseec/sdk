@@ -3,7 +3,7 @@
 fac_doc_up_production() {
     set -e
 
-    message "Starting services in production mode .."
+    logger "Starting services in production mode .."
 
     # Filter services based on workspace configuration
     services_filter=$(fac_wor_get_services_filter)
@@ -17,7 +17,7 @@ fac_doc_up_production() {
     trap cleanup INT EXIT
 
     if [ -n "$services_filter" ]; then
-        message 34 "WORKSPACE" "Starting selected services in production mode: $services_filter"
+        logger "Starting selected services in production mode: $services_filter"
         _docker compose -f "$ROOT_DIR/docker-compose.yaml" up $services_filter "$@"
     else
         _docker compose -f "$ROOT_DIR/docker-compose.yaml" up "$@"

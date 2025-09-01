@@ -40,44 +40,77 @@ ansi() {
 # ┃ Reference: https://en.wikipedia.org/wiki/ANSI_escape_code               ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-    ansi="$1"; shift; text="$@";
+    local ansi="$1"; shift; local text="$@";
     printf "\033[0m\033[%sm%s\033[0m" "$ansi" "$text"
 }
 
-message() {
-    local repo_name=${REPO_NAME:-d}
-    local _ansi="90"
-    local type="--log"
-    local icon=""
-    local content=""
+logger() {
     local level="DEBUG" # DEBUG > INFO > WARNING > ERROR
+    local repo_name=${REPO_NAME:-d}
+    local type="--log"
+    local default_ansi="90"
+    local default_icon=""
+    local content=""
 
-    # Define Api logic and UX
-    if [ $# -eq 1 ]; then type="--log"; content="$1";
-    elif [ $# -eq 2 ]; then type="$1"; content="$2";
-    else _ansi="$1"; type="$1"; icon="$2"; shift 2; content="$@"; fi
+    # First, check if the first argument is a valid type
+    if [ $# -gt 0 ]; then
+        case "$1" in
+            -l|-d|-f|-e|-o|-w|-i|-q|-a|-s)
+                type="$1"
+                shift
+                ;;
+        esac
+    fi
+    
+    # Now process the rest of the arguments
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --icon=*)
+                local given_icon="${1#*=}"
+                shift
+                ;;
+            --ansi=*)
+                local given_ansi="${1#*=}"
+                shift
+                ;;
+            *)
+                # All remaining arguments form the content
+                content="$*"
+                break
+                ;;
+        esac
+    done
 
     # Parse type config
     case $type in
-        -l|--log)       _ansi="90"; icon="";  level="DEBUG" ;;
-        -d|--debug)     _ansi="31"; icon="¤"; level="DEBUG" ;;
-        -f|--fail)      _ansi="31"; icon="✖"; level="ERROR"   ;; # ✗
-        -e|--error)     _ansi="31"; icon="E"; level="ERROR"   ;;
-        -o|--okey)      _ansi="32"; icon="✓"; level="INFO"    ;; # ✔
-        -w|--warning)   _ansi="33"; icon="!"; level="WARNING" ;;
-        -i|--info)      _ansi="34"; icon="i"; level="INFO"    ;;
-        -q|--question)  _ansi="35"; icon="?"; level="INFO"    ;;
-        -a|--ai)        _ansi="36"; icon="✦"; level="INFO"    ;;
-        -s|--statement) _ansi="97"; icon="";  level="INFO"    ;;
-        *)                                   level="DEBUG" ;;
+        -l|--log)       default_ansi="90"; default_icon="";  level="DEBUG" ;;
+        -d|--debug)     default_ansi="31"; default_icon="¤"; level="DEBUG" ;;
+        -f|--fail)      default_ansi="31"; default_icon="✖"; level="ERROR"   ;; # ✗
+        -e|--error)     default_ansi="31"; default_icon="E"; level="ERROR"   ;;
+        -o|--okey)      default_ansi="32"; default_icon="✓"; level="INFO"    ;; # ✔
+        -w|--warning)   default_ansi="33"; default_icon="!"; level="WARNING" ;;
+        -i|--info)      default_ansi="34"; default_icon="i"; level="INFO"    ;;
+        -q|--question)  default_ansi="35"; default_icon="?"; level="INFO"    ;;
+        -a|--ai)        default_ansi="96"; default_icon="✦"; level="INFO"    ;;
+        -s|--statement) default_ansi="97"; default_icon="";  level="INFO"    ;;
+        *)                                                   level="DEBUG" ;;
     esac
+
+    # Prepare icon and ANSI color
+    local _ansi="${given_ansi:-$default_ansi}"
+    local _icon="${given_icon:-$default_icon}"
 
     # Prepare prompt & content
     local prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
     prompt="$(ansi 90 "$prompt")"
-    if [ -n "$icon" ]; then prompt="$prompt$(ansi $_ansi "[$icon]")"; fi
+    if [ -n "$_icon" ]; then prompt="$prompt$(ansi $_ansi "[$_icon]")"; fi
 
-    content="$(ansi 90 "$content")"
+    # Only colorize content if it's not empty
+    if [ -n "$content" ]; then
+        content="$(ansi 90 "$content")"
+    else
+        content="An empty log!";
+    fi
 
     # Handle logging levels
     case $D_LOG_LEVEL in
@@ -88,25 +121,53 @@ message() {
     esac
 
     # Output log message
-    printf "%s %s\n" "$prompt" "$content"
+    printf "%s %b\n" "$prompt" "$content"
 }
 
+# Function for use in if statements - returns 0 (true) or 1 (false)
 confirm() {
-    local question=$1; shift;
-    # read -n 1 -p "$(message 35 "?" "$question \033[35m[Y/N]\033[0m")" response
+    # usage:
+    # if confirm "Do you want to proceed?"; then
+    #     # Your code here for the "yes" case
+    # else
+    #     # Your code here for the "no" case
+    # fi
+    # OR
+    # confirm "Do you want to proceed?" echo 'does this!'
 
-    printf "$(message 35 "?" "$question \033[35m[Y/N]\033[0m")"
-    # Turn off echo and set input to raw mode
-    stty -echo -icanon time 0 min 1
-    response=$(dd bs=1 count=1 2>/dev/null)
+    local question=$1; shift
+    
+    # Store original terminal settings to restore later
+    local old_settings=$(stty -g)
+    
+    # Enable proper signal handling (especially Ctrl+C)
+    trap 'stty "$old_settings"; echo ""; return 1' INT TERM
+    
+    printf "$(logger --ansi="35" --icon="?" "$question \033[35m[Y/N]\033[0m")"
+    
+    # Read a single character, but allow signal handling
+    stty -echo -icanon
+    response=$(head -c1)
+    
     # Restore terminal settings
-    stty echo icanon
+    stty "$old_settings"
+    trap - INT TERM
 
     printf "\n"
+    
     case "$response" in
-        [yY][eE][sS]|[yY]) "$@"; return 0 ;;
-        [nN][oO]|[nN]) return 1 ;;
-        *) ;;
+        [yY][eE][sS]|[yY])
+            if [ $# -gt 0 ]; then "$@"; fi
+            return 0
+            ;; # Return 0 for success/true in bash
+        [nN][oO]|[nN]) return 1 ;; # Return 1 for failure/false in bash
+        *)
+            # Invalid response, prompt again
+            logger -e "Invalid response. Please enter Y or N."
+            # Recursive call to retry - pass all original arguments
+            confirm "$question" "$@"
+            return $?
+            ;;
     esac
 }
 

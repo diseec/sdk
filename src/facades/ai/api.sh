@@ -19,7 +19,7 @@ fac_ai_call_openai() {
     # Ensure the prompt doesn't exceed token limit
     local token_count=$(fac_ai_count_tokens "$prompt")
     if [ "$token_count" -gt "$max_tokens" ]; then
-        message -w "Prompt exceeds token limit ($token_count > $max_tokens), truncating..." >&2
+        logger -w "Prompt exceeds token limit ($token_count > $max_tokens), truncating..." >&2
         prompt=$(fac_ai_truncate_to_token_limit "$prompt" "$max_tokens")
     fi
     
@@ -53,7 +53,7 @@ fac_ai_generate() {
     local response=$(fac_ai_call_openai "$prompt" "$model" "$temperature" "$max_tokens")
     
     if fac_ai_has_error "$response"; then
-        message -e "OpenAI API error occurred" >&2
+        logger -e "OpenAI API error occurred" >&2
         echo "$fallback"
         return 1
     fi
@@ -64,7 +64,7 @@ fac_ai_generate() {
         echo "$content"
         return 0
     else
-        message -e "Failed to extract content from AI response" >&2
+        logger -e "Failed to extract content from AI response" >&2
         echo "$fallback"
         return 1
     fi

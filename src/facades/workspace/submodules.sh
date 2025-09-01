@@ -22,7 +22,7 @@ fac_wor_get_available_modules() {
     local gitmodules_file="$ROOT_DIR/.gitmodules"
     
     if [ ! -f "$gitmodules_file" ]; then
-        message -e ".gitmodules file not found at $gitmodules_file" >&2
+        logger -e ".gitmodules file not found at $gitmodules_file" >&2
         return 1
     fi
     
@@ -70,7 +70,7 @@ fac_wor_foreach_selected_module() {
 
     if [ -z "$selected_modules" ]; then
         # No submodules selected is a valid state - just return success
-        message -w "No submodules selected in workspace configuration"
+        logger -w "No submodules selected in workspace configuration"
         return 0
     fi
 
@@ -79,7 +79,7 @@ fac_wor_foreach_selected_module() {
         if [ -n "$module_path" ]; then
             "$callback_function" "$module" "$module_path" "$@"
         else
-            message -w "Module path not found for $module, skipping"
+            logger -w "Module path not found for $module, skipping"
         fi
     done
 }

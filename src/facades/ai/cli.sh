@@ -3,8 +3,8 @@
 # All functions in this module are prefixed with "ai_"
 
 # Initialize AI module on load
-if ! fac_ai_init; then
-    message -w "AI module loaded but API key not available"
+if ! fac_ai_init_interactive; then
+    logger -w "AI module loaded but API key not available"
 fi
 
 c=$1; shift; case "$c" in

@@ -14,7 +14,7 @@ c=$1; shift; case $c in
         MODE="test"
         # Start with a header unless silent mode is enabled
         if [ "$SILENT_MODE" != "true" ]; then
-            message 97 "⌁" "Quick internet connectivity check...\n"
+            logger --ansi="97" --icon="⌁" "Quick internet connectivity check...\n"
         fi
         
         # Run basic connectivity test
@@ -28,9 +28,9 @@ c=$1; shift; case $c in
         # Display a summary
         if [ "$SILENT_MODE" != "true" ]; then
             if [ "$overall_status" = "true" ]; then
-                message 32 "⊕" "Internet connection working properly"
+                logger --ansi="32" --icon="⊕" "Internet connection working properly"
             else
-                message 31 "⊘" "Internet connection has issues"
+                logger --ansi="31" --icon="⊘" "Internet connection has issues"
             fi
         fi
         
@@ -39,7 +39,8 @@ c=$1; shift; case $c in
         ;;
     dia|diagnose)
         MODE="diagnose"
-        message 97 "⚙" "Diagnosing internet connection ..."
+        SILENT_MODE=false
+        logger --ansi="97" --icon="⚙" "Diagnosing internet connection ..."
 
         overall_status=true
         quick_check_success=false
@@ -87,9 +88,9 @@ c=$1; shift; case $c in
         echo ""
         # Display a summary
         if [ "$overall_status" = "true" ]; then
-            message 32 "⊕" "Internet connection working properly"
+            logger --ansi="32" --icon="⊕" "Internet connection working properly"
         else
-            message 31 "⊘" "Internet connection has issues"
+            logger --ansi="31" --icon="⊘" "Internet connection has issues"
         fi
         
         # return with appropriate code
@@ -98,12 +99,13 @@ c=$1; shift; case $c in
     -s|--silent)
         SILENT_MODE=true
         # Re-run the script with the silent flag
-        cli_main internet_optimized "$@"
+        cli_main internet "$@"
         return $?
         ;;
+        x) echo dsaf;;
     hel|--help|help|-h) display_help "" "" \
             "$(ansi 97 'Internet Connection Checker (Optimized for Alpine)')" "" \
-            "$(ansi 97 'Usage:    cli internet_optimized <mode> [options]')" "" "" "" \
+            "$(ansi 97 'Usage:    cli internet <mode> [options]')" "" "" "" \
             "$(ansi 97 'Modes:')" "" \
             "  iso|is-online         " "Silent boolean check - returns 0 for success, 1 for failure (no output)" \
             "  tes|test              " "Fast check with output - tests gateway, DNS, and one site (~2 seconds)" \
@@ -119,7 +121,7 @@ c=$1; shift; case $c in
         exit 0
         ;;
     *)
-        if [ ! -z $c ]; then message -e "Unknown command: '$c'"; fi
-        cli_main internet_optimized help; exit 1;
+        logger -e "Unknown command: '$c'"
+        cli_main internet help; exit 1;
         ;;
 esac

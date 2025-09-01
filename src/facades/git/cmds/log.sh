@@ -240,7 +240,7 @@ $unstaged_diff"
     
     # If no data collected, show simple message
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then
-        message -i "No commits or changes found for today"
+        logger -i "No commits or changes found for today"
         return 0
     fi
     
@@ -284,7 +284,7 @@ $unstaged_diff"
     
     read -p "Generate daily insight report? (y/n): " confirm
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-        message -w "Daily insight report generation cancelled"
+        logger -w "Daily insight report generation cancelled"
         return 0
     fi
     
@@ -300,7 +300,7 @@ $all_changes
     # Use AI to generate insight report
     if fac_ai_is_available; then
         echo ""
-        message 35 "✦" "Writing daily insights..."
+        logger -a "Writing daily insights..."
         echo ""
 
         local ai_insight=$(fac_ai_generate_daily_insight "$analysis_data")
@@ -326,12 +326,12 @@ $all_changes
             #     echo "Total changes: $total_files_changed files (+$total_insertions -$total_deletions lines)"
             # fi
         else
-            message -e "Failed to generate AI insight. Showing raw data."
+            logger -e "Failed to generate AI insight. Showing raw data."
             echo ""
             echo "$analysis_data"
         fi
     else
-        message -e "AI not available. Showing raw data instead."
+        logger -e "AI not available. Showing raw data instead."
         echo ""
         echo "$analysis_data"
     fi

@@ -8,22 +8,16 @@ ARGS=(); for arg in "$@"; do
 else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
 
 c=$1; shift; case $c in
-
-    ######################## PROJECT MANAGEMENT ########################
-
     ins|install) cli_main setup project "$@" ;;
     ude|update) "$KIT_SRC_DIR/cmds/update.sh" "$@" ;;
     sta|status)         
         # cli_main about
         cli_main workspace status
-        cli_main inform check-system-dependencies
-        cli_main inform check-internet-connection
+        src_inf_check_system_dependencies
+        src_inf_check_internet_connection
         cli_main git status
-        cli_main inform check-for-updates
+        src_inf_check_for_updates
     ;;
-
-    ######################## DEVELOPMENT ENVIRONMENT ########################
-
     dev|develop) cli_main docker compose up-dev "$@" ;;
     bpa|build)   cli_main docker compose build "$@" ;;
     run)         cli_main docker compose execute "$REPO_NAME" "$@" ;;
@@ -35,9 +29,6 @@ c=$1; shift; case $c in
     tes|test)    $KIT_SRC_DIR/cmds/test.sh "$@" ;;
     pru|prune)   cli_main docker _ system prune "$@" ;;
     for|format)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/format/cli.sh" prettier "$@" ;;
-
-    ######################## FACADES ########################
-
     set|setup)     source "$KIT_SRC_DIR/facades/setup/cli.sh" "$@" ;;
     doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
     int|internet)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
@@ -47,20 +38,15 @@ c=$1; shift; case $c in
     con|config)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/config/cli.sh" "$@" ;;
     sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
     wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
-
-    ######################## UTILITIES ########################
-
     env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;;
-
-    inf|inform) source "$KIT_SRC_DIR/informs/index.sh" "$@" ;;
-
     kit) env KIT_TARGET_DIR="$ROOT_DIR" "$KIT_DIR/cli" "$@" ;;
-
     saf|safely)
+        # logger -d "CLI:$CLI_CORE:SAFELY:ARGS: $@";
         cli_main "$KIT_NAME" stop > /dev/null 2>&1 || true ;
-        cli_main "$KIT_NAME" run --quiet "$TARGET_MOUNTED_DIR/cli" "$@"
+        # cli_main "$KIT_NAME" run --quiet "$TARGET_MOUNTED_DIR/cli" "$@"
+        cli_main "$KIT_NAME" run "$TARGET_MOUNTED_DIR/cli" "$@"
+        # if [ $? -ne 0 ]; then logger -e "Failed to run command in $KIT_NAME container"; fi
     ;;
-
     api) c=$1; shift; case $c in
         v1) c=$1; shift; case $c in
             install) cli_main install "$@" ;;
@@ -74,9 +60,7 @@ c=$1; shift; case $c in
             "    v1          " "API version 1 operations"
         ;;
     esac ;;
-
     abo|about) about ;;
-
     hel|help|--help|-h) display_help "" "" \
         "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[D]/[bash cli] [command] [subcommand] [options] [arguments]" \
         "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$ORG_NAME/$KIT_NAME")")" \
@@ -85,7 +69,9 @@ c=$1; shift; case $c in
         "        about                " "About $KIT_NAME, authors, $ORG_NAME, policies and licensing" \
         "    $(ansi 90 'Options:')" "" \
         "        --patch              " "Force pull and reinstall kit into project" \
-        "                             " "Note: 'D --patch' ensures a fresh kit binary is used when the local kit is missing, corrupted, or unable to bootstrap the CLI itself." \
+        "                             " "$(ansi "2;90" "Ensures a fresh kit binary is used,")" \
+        "                             " "$(ansi "2;90" "when the local kit is missing, corrupted,")" \
+        "                             " "$(ansi "2;90" "or unable to bootstrap the CLI itself.")" \
         "        --log-level          " "Set the log level for the CLI, valid values: DEBUG, INFO, WARNING, ERROR" \
         "        -v|--version         " "Show version information" \
         "        -h|--help            " "Brief usage and docs information" \
@@ -105,7 +91,7 @@ c=$1; shift; case $c in
         "" "" "$(ansi "1;90" "$(capitalize 'Source Control')")" "" \
         "    git                      " "Git workflow management" \
         "    pul|pull                 " "Pull and merge latest changes" \
-        "    pus|push                 " "$(ansi 36 '✦') $(ansi 90 'Auto-commit and create PR')" \
+        "    pus|push                 " "$(ansi 96 '✦') $(ansi 90 'Auto-commit and create PR')" \
         "" "" "$(ansi "1;90" "$(capitalize 'Infrastructure')")" "" \
         "    doc|docker               " "Docker operations" \
         "    sub|submodule            " "Unified submodule management (packages & services)" \
@@ -114,19 +100,18 @@ c=$1; shift; case $c in
         "    con|config               " "Configuration management" \
         "    sec|secret               " "Encrypted secrets management" \
         "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
-        "    ai$(printf "\033[36m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
-        "    env|envs                 " "Manage environment variables. Example:" \
-        "                             " "set -a; eval \"\$(D envs)\"; set +a" \
-        "                             " "eval \$(cli_main envs) > /dev/null" \
+        "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
+        "    env|envs                 " "Manage environment variables. Examples:" \
+        "                             " "$(ansi "2;90" 'set -a; eval "$(D envs)"; set +a')" \
+        "                             " "$(ansi "2;90" 'eval "$(cli_main envs)" > /dev/null')" \
         "    saf|safely <command>     " "Safe command execution" \
         "    api                      " "API operations" \
         "    kit <command>            " "SDK container operations" \
-        "    inf|inform               " "Information and validation" \
         "$@"
     ;;
     -v|--version) echo "$VERSION" ;;
     *)
-        if [ ! -z $c ]; then message 31 "E" "Unknown command: '$c'"; fi
+        logger -e "Unknown command: '$c'"
         cli_main help; exit 1;
     ;;
 esac

@@ -8,23 +8,23 @@ fac_git_cmd_commit_push_pr() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    cli_main inform check-internet-connection
+    src_inf_check_internet_connection
 
-    cli_main git checkout-if-detached
-    cli_main git pull
+    fac_git_cmd_checkout_if_detached
+    fac_git_cmd_pull_merge
 
     handle_hook before_push
     
-    cli_main git commit
+    fac_git_cmd_commit
 
-    cli_main git push
+    fac_git_cmd_push
 
     if [ "$CURRENT_BRANCH" != "main" ]; then
-        cli_main git pull-request
+        fac_git_cmd_pr_create
     fi
 
     echo "$REPO_NAME: Cpp done."
-    cli_main git log "HEAD"
+    fac_git_cmd_git_log "HEAD"
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Cpp for selected submodules..."

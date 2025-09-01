@@ -33,7 +33,7 @@ c=$1; shift; case $c in
     #         *) [ -z "$B" ] && B=$1;;
     #         -*|--*|-h|--help) echo "Unknown option: $1"; exit 1;;
     #     esac; shift; done;
-    #     message "1;34" "example" "B:'$B', X:'$X', Y:'$Y'"
+    #     logger --ansi="1;34" --icon="example" "B:'$B', X:'$X', Y:'$Y'"
     # ;;
     
     ins|install)
@@ -57,12 +57,12 @@ c=$1; shift; case $c in
     tes|test) cli_core test "$@" ;;
 
     # Hooks
-    # hook:after_install) message -i "Commands before installing completed..." ;;
-    # hook:after_install) message -i "Commands after installing completed..." ;;
-    # hook:before_update) message -i "Commands after updating completed..." ;;
-    # hook:after_update) message -i "Commands after updating completed..." ;;
-    # hook:before_push) message -i "Commands before pushing changes..." ;;
-    # hook:after_push) message -i "Commands after pushing changes..." ;;
+    # hook:after_install) logger -i "Commands before installing completed..." ;;
+    # hook:after_install) logger -i "Commands after installing completed..." ;;
+    # hook:before_update) logger -i "Commands after updating completed..." ;;
+    # hook:after_update) logger -i "Commands after updating completed..." ;;
+    # hook:before_push) logger -i "Commands before pushing changes..." ;;
+    # hook:after_push) logger -i "Commands after pushing changes..." ;;
 
     # hel|help|--help|-h) cli_core help "myc|mycommand" "    Display the help message" ;;
 

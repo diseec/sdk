@@ -27,7 +27,7 @@ The AI module is now organized into focused, single-responsibility files:
 
 ### Configuration Functions (`config.sh`)
 
-#### `fac_ai_init()`
+#### `fac_ai_init_interactive()`
 
 Initialize AI module and validate API key.
 

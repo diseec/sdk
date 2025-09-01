@@ -13,12 +13,12 @@ export FAC_AI_MAX_INPUT_TOKENS="10000"
 
 # Initialize AI module and validate API key
 # Returns: 0 if successful, 1 if failed
-fac_ai_init() {
-    if fac_sec_validate_and_prepare_secret "OPENAI_API_KEY"; then
+fac_ai_init_interactive() {
+    if fac_sec_validate_and_prepare_secret_interactive "OPENAI_API_KEY"; then
         export OPENAI_API_KEY="$(fac_sec_export OPENAI_API_KEY)"
         return 0
     else
-        message -e "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2
+        logger -e "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2
         return 1
     fi
 }
@@ -26,10 +26,6 @@ fac_ai_init() {
 # Check if AI is available (API key and curl)
 # Returns: 0 if available, 1 if not
 fac_ai_is_available() {
-    if ! fac_ai_init; then
-        message -w "AI module loaded but API key not available"
-    fi
-
     if command -v curl >/dev/null 2>&1 && [ -n "$OPENAI_API_KEY" ]; then
         return 0
     else

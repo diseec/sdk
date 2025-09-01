@@ -25,7 +25,7 @@ fac_wor_config_fallback_set() {
     # Simple key-value setting for fallback
     if echo "$key_path" | grep -q '\.'; then
         # Nested keys not supported in fallback
-        message -e "Nested keys require yq. Please install yq for full functionality."
+        logger -e "Nested keys require yq. Please install yq for full functionality."
         return 1
     fi
     

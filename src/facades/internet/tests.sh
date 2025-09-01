@@ -74,7 +74,7 @@ quick_check() {
     local end_time=$(date +%s.%N)
     local total_duration=$(calculate_duration "$start_time" "$end_time")
     if [ "$MODE" = "diagnose" ] && [ "$SILENT_MODE" != "true" ]; then
-        message -l "Quick check completed in ${total_duration}s"
+        logger -l "Quick check completed in ${total_duration}s"
     fi
     
     return $([[ "$overall_status" = true ]] && echo 0 || echo 1)
@@ -187,7 +187,7 @@ test_international_sites() {
     if [ "$sites_tested" -gt 0 ]; then
         local success_rate=$((sites_success * 100 / sites_tested))
         if [ "$SILENT_MODE" != "true" ]; then
-            message -l "International sites accessible: $sites_success/$sites_tested ($success_rate%)"
+            logger -l "International sites accessible: $sites_success/$sites_tested ($success_rate%)"
         fi
     fi
     
@@ -234,7 +234,7 @@ test_regional_sites() {
     if [ "$sites_tested" -gt 0 ]; then
         local success_rate=$((sites_success * 100 / sites_tested))
         if [ "$SILENT_MODE" != "true" ]; then
-            message -l "Regional sites accessible: $sites_success/$sites_tested ($success_rate%)"
+            logger -l "Regional sites accessible: $sites_success/$sites_tested ($success_rate%)"
         fi
     fi
     
@@ -281,7 +281,7 @@ test_cdn_connectivity() {
     if [ "$sites_tested" -gt 0 ]; then
         local success_rate=$((sites_success * 100 / sites_tested))
         if [ "$SILENT_MODE" != "true" ]; then
-            message -l "CDN sites accessible: $sites_success/$sites_tested ($success_rate%)"
+            logger -l "CDN sites accessible: $sites_success/$sites_tested ($success_rate%)"
         fi
     fi
     
@@ -298,7 +298,7 @@ test_connection_quality() {
     # Simplified latency test using ping
     local latency_target="$LATENCY_TEST_SITE"
     if [ "$SILENT_MODE" != "true" ]; then
-        message -l "Measuring latency to $latency_target..."
+        logger -l "Measuring latency to $latency_target..."
     fi
     
     # Run pings to measure latency and packet loss
@@ -353,7 +353,7 @@ test_connection_quality() {
     
     # Basic HTTP throughput test
     if [ "$SILENT_MODE" != "true" ]; then
-        message -l "Testing download performance..."
+        logger -l "Testing download performance..."
     fi
     
     # Test small file download speed
@@ -392,7 +392,8 @@ test_connection_quality() {
     if [ "$download_success" = true ] && [ "$download_size" -gt 0 ] && [ $(echo "$download_time > 0" | bc -l) -eq 1 ]; then
         # Calculate speed in KB/s and then convert to Mbps
         local speed_kbps=$(echo "scale=2; $download_size / 1024 / $download_time" | bc)
-        local speed_mbps=$(echo "scale=2; $speed_kbps / 125" | bc)  # 125 KB/s = 1 Mbps
+        # Format speed with printf to ensure consistent decimal places
+        local speed_mbps=$(printf "%.2f" $(echo "$speed_kbps / 125" | bc -l))  # 125 KB/s = 1 Mbps
         
         if (( $(echo "$speed_mbps > $GOOD_SPEED_THRESHOLD" | bc -l) )); then
             log_status "SUCCESS" "Download Speed" "${speed_mbps} Mbps - Good (>$GOOD_SPEED_THRESHOLD Mbps)"
