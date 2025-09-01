@@ -48,7 +48,7 @@ fac_git_cmd_pr_create() {
         echo -e "Pull request already open: \033[4m$(_gh pr view "$pr_number" --json url -q .url)\033[24m"
     else
     # Create a new PR
-    echo "Creating new PR for branch: $branch"
+    message -l "Creating new PR for branch: $branch"
     if fac_git_cmd_check_gh_cli; then
       # Use last commit message as PR title/body
       local pr_title=$(_git log -1 --pretty=%s)
@@ -87,7 +87,7 @@ fac_git_cmd_pr_check_status() {
       message 31 ⊘ "Disconnected, skipping PR status check..."
       return 0
   fi
-  echo "Checking PR status..."
+  message -l "Checking PR status..."
 
   local pr_number=$(fac_git_cmd_has_open_pr)
   local branch="$CURRENT_BRANCH"

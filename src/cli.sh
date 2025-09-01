@@ -8,9 +8,6 @@ ARGS=(); for arg in "$@"; do
 else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
 
 c=$1; shift; case $c in
-
-    ######################## PROJECT MANAGEMENT ########################
-
     ins|install) cli_main setup project "$@" ;;
     ude|update) "$KIT_SRC_DIR/cmds/update.sh" "$@" ;;
     sta|status)         
@@ -21,9 +18,6 @@ c=$1; shift; case $c in
         cli_main git status
         cli_main inform check-for-updates
     ;;
-
-    ######################## DEVELOPMENT ENVIRONMENT ########################
-
     dev|develop) cli_main docker compose up-dev "$@" ;;
     bpa|build)   cli_main docker compose build "$@" ;;
     run)         cli_main docker compose execute "$REPO_NAME" "$@" ;;
@@ -35,9 +29,6 @@ c=$1; shift; case $c in
     tes|test)    $KIT_SRC_DIR/cmds/test.sh "$@" ;;
     pru|prune)   cli_main docker _ system prune "$@" ;;
     for|format)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/format/cli.sh" prettier "$@" ;;
-
-    ######################## FACADES ########################
-
     set|setup)     source "$KIT_SRC_DIR/facades/setup/cli.sh" "$@" ;;
     doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
     int|internet)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
@@ -47,20 +38,16 @@ c=$1; shift; case $c in
     con|config)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/config/cli.sh" "$@" ;;
     sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
     wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
-
-    ######################## UTILITIES ########################
-
     env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;;
-
     inf|inform) source "$KIT_SRC_DIR/informs/index.sh" "$@" ;;
-
     kit) env KIT_TARGET_DIR="$ROOT_DIR" "$KIT_DIR/cli" "$@" ;;
-
     saf|safely)
+        # message -d "CLI:$CLI_CORE:SAFELY:ARGS: $@";
         cli_main "$KIT_NAME" stop > /dev/null 2>&1 || true ;
-        cli_main "$KIT_NAME" run --quiet "$TARGET_MOUNTED_DIR/cli" "$@"
+        # cli_main "$KIT_NAME" run --quiet "$TARGET_MOUNTED_DIR/cli" "$@"
+        cli_main "$KIT_NAME" run "$TARGET_MOUNTED_DIR/cli" "$@"
+        # if [ $? -ne 0 ]; then message -e "Failed to run command in $KIT_NAME container"; fi
     ;;
-
     api) c=$1; shift; case $c in
         v1) c=$1; shift; case $c in
             install) cli_main install "$@" ;;
@@ -74,9 +61,7 @@ c=$1; shift; case $c in
             "    v1          " "API version 1 operations"
         ;;
     esac ;;
-
     abo|about) about ;;
-
     hel|help|--help|-h) display_help "" "" \
         "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[D]/[bash cli] [command] [subcommand] [options] [arguments]" \
         "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$ORG_NAME/$KIT_NAME")")" \

@@ -35,6 +35,7 @@ fac_set_project() {
         fac_wor_foreach_selected_module initialize_submodule
     fi
 
+    cli_main git checkout
     cli_main git checkout-if-detached
 
     cli_main kit stop;

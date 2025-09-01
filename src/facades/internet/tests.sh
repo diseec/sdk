@@ -392,7 +392,8 @@ test_connection_quality() {
     if [ "$download_success" = true ] && [ "$download_size" -gt 0 ] && [ $(echo "$download_time > 0" | bc -l) -eq 1 ]; then
         # Calculate speed in KB/s and then convert to Mbps
         local speed_kbps=$(echo "scale=2; $download_size / 1024 / $download_time" | bc)
-        local speed_mbps=$(echo "scale=2; $speed_kbps / 125" | bc)  # 125 KB/s = 1 Mbps
+        # Format speed with printf to ensure consistent decimal places
+        local speed_mbps=$(printf "%.2f" $(echo "$speed_kbps / 125" | bc -l))  # 125 KB/s = 1 Mbps
         
         if (( $(echo "$speed_mbps > $GOOD_SPEED_THRESHOLD" | bc -l) )); then
             log_status "SUCCESS" "Download Speed" "${speed_mbps} Mbps - Good (>$GOOD_SPEED_THRESHOLD Mbps)"
