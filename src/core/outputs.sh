@@ -6,7 +6,7 @@ capitalize() {
 
 color() {
     ansi="$1"; shift; text="$@";
-    printf "\033[${ansi}m${text}\033[0m"
+    printf "\033[%sm%s\033[0m" "$ansi" "$text"
 }
 
 message() {
@@ -89,7 +89,7 @@ message() {
     esac
 
     # Output log message
-    printf "$prompt $content\n"
+    printf "%s %s\n" "$prompt" "$content"
 }
 
 confirm() {
