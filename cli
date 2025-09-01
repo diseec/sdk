@@ -29,8 +29,8 @@ c=$1; shift; case $c in
             "    sta|start               " "Start kit container (for fast subsequent ops)" \
             "    sto|stop                " "Stop kit container" \
             "    act <command>           " "Run kit-powered commands to manage/modify projects" "" "" \
-            "$(ansi "90" 'This cli manages the kit container and project operations,')" "" \
-            "$(ansi "90" 'for project cli, use the installed cli in your project root.')" ""
+            "$(ansi "2;90" 'This cli manages the kit container and project operations,')" "" \
+            "$(ansi "2;90" 'for project cli, use the installed cli in your project root.')" ""
         ;;
 
     *) cli_core $c "$@" ;;

@@ -85,7 +85,9 @@ c=$1; shift; case $c in
         "        about                " "About $KIT_NAME, authors, $ORG_NAME, policies and licensing" \
         "    $(ansi 90 'Options:')" "" \
         "        --patch              " "Force pull and reinstall kit into project" \
-        "                             " "Note: 'D --patch' ensures a fresh kit binary is used when the local kit is missing, corrupted, or unable to bootstrap the CLI itself." \
+        "                             " "$(ansi "2;90" "Ensures a fresh kit binary is used,")" \
+        "                             " "$(ansi "2;90" "when the local kit is missing, corrupted,")" \
+        "                             " "$(ansi "2;90" "or unable to bootstrap the CLI itself.")" \
         "        --log-level          " "Set the log level for the CLI, valid values: DEBUG, INFO, WARNING, ERROR" \
         "        -v|--version         " "Show version information" \
         "        -h|--help            " "Brief usage and docs information" \
@@ -115,9 +117,9 @@ c=$1; shift; case $c in
         "    sec|secret               " "Encrypted secrets management" \
         "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
         "    ai$(printf "\033[36m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
-        "    env|envs                 " "Manage environment variables. Example:" \
-        "                             " "set -a; eval \"\$(D envs)\"; set +a" \
-        "                             " "eval \$(cli_main envs) > /dev/null" \
+        "    env|envs                 " "Manage environment variables. Examples:" \
+        "                             " "$(ansi "2;90" 'set -a; eval "$(D envs)"; set +a')" \
+        "                             " "$(ansi "2;90" 'eval "$(cli_main envs)" > /dev/null')" \
         "    saf|safely <command>     " "Safe command execution" \
         "    api                      " "API operations" \
         "    kit <command>            " "SDK container operations" \
