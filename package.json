@@ -35,5 +35,8 @@
     "curl",
     "bash",
     "docker"
-  ]
+  ],
+  "devDependencies": {
+    "@diseec/kit": "*"
+  }
 }

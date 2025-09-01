@@ -70,7 +70,7 @@ fac_con_set() {
     local config_file="$(fac_con_get_config_file "$scope")"
     fac_con_yaml_set "$config_file" "$key_path" "$value"
     
-    echo "Set '$key_path' = '$value' in '$scope' scope"
+    message -l "Set '$key_path' = '$value' in '$scope' scope"
 }
 
 # Delete configuration key from specified scope (defaults to workspace)
@@ -91,7 +91,7 @@ fac_con_delete() {
     fi
     
     fac_con_yaml_delete "$config_file" "$key_path"
-    echo "Deleted $key_path from $scope scope"
+    message -l "Deleted $key_path from $scope scope"
 }
 
 # =============================================================================
@@ -118,7 +118,7 @@ fac_con_array_add() {
     local config_file="$(fac_con_get_config_file "$scope")"
     fac_con_yaml_array_add "$config_file" "$key_path" "$value"
 
-    echo "Added '$value' to '$key_path' array in '$scope' scope"
+    message -l "Added '$value' to '$key_path' array in '$scope' scope"
 }
 
 # Remove value from configuration array
@@ -145,7 +145,7 @@ fac_con_array_remove() {
     fi
     
     fac_con_yaml_array_remove "$config_file" "$key_path" "$value"
-    echo "Removed '$value' from '$key_path' array in '$scope' scope"
+    message -l "Removed '$value' from '$key_path' array in '$scope' scope"
 }
 
 # =============================================================================

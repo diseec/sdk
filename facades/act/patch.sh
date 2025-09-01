@@ -23,7 +23,7 @@ kit_fac_act_patch() {
     TMPDIR=$(mktemp -d)
     (cd $TMPDIR && _npm install "$package_name")
 
-    message -l "Patching $package_name to $target_kit .."
+    message -l "Patching $package_name to $TARGET_MOUNTED_DIR .."
     rm -rf "$target_kit" 2>/dev/null 
     mkdir -p "$target_kit" 2>/dev/null
     cp -r "$TMPDIR/$KIT_RELATIVE_PATH"/* "$target_kit"
@@ -34,5 +34,5 @@ kit_fac_act_patch() {
     fi
 
     # if [ ! -f "$TARGET_MOUNTED_DIR/.gitignore" ]; then cp "/$KIT_NAME/templates/.gitignore" "$TARGET_MOUNTED_DIR/.gitignore"; fi
-    message -l "$KIT_NAME patched to: $package_name"
+    message -l "$KIT_NAME patched for: $package_name"
 }

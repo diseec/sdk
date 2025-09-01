@@ -92,6 +92,6 @@ fac_wor_create_config() {
         fac_con_array_add submodules "$module" workspace
     done
     
-    echo "Workspace configuration saved to $config_file"
+    message -l "Workspace configuration saved to $config_file"
     message 34 "activated modules" "$(echo $selected_modules | tr ' ' ', ')"
 }

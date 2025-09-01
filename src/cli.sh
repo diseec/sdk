@@ -57,7 +57,7 @@ c=$1; shift; case $c in
     kit) env KIT_TARGET_DIR="$ROOT_DIR" "$KIT_DIR/cli" "$@" ;;
 
     saf|safely)
-        cli_main "$KIT_NAME" stop > /dev/null || true ;
+        cli_main "$KIT_NAME" stop || true ;
         cli_main "$KIT_NAME" run --no-message "$TARGET_MOUNTED_DIR/cli" "$@"
     ;;
 
