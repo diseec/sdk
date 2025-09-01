@@ -9,7 +9,7 @@ else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
 
 c=$1; shift; case $c in
     ins|install) cli_main setup project "$@" ;;
-    ude|update) "$KIT_SRC_DIR/cmds/update.sh" "$@" ;;
+    ude|update) cli_main setup update "$@" ;;
     sta|status)         
         # cli_main about
         cli_main workspace status
