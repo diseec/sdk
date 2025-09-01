@@ -3,7 +3,7 @@
 # Comprehensive secret validation and setup function
 # Handles all checks and interactive fixes silently
 # Returns 0 if secret is ready to be exported, 1 if failed
-fac_sec_validate_and_prepare_secret() {
+fac_sec_validate_and_prepare_secret_interactive() {
     local secret_name="$1"
     
     # Check OpenSSL availability

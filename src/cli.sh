@@ -91,7 +91,7 @@ c=$1; shift; case $c in
         "" "" "$(ansi "1;90" "$(capitalize 'Source Control')")" "" \
         "    git                      " "Git workflow management" \
         "    pul|pull                 " "Pull and merge latest changes" \
-        "    pus|push                 " "$(ansi 36 '✦') $(ansi 90 'Auto-commit and create PR')" \
+        "    pus|push                 " "$(ansi 96 '✦') $(ansi 90 'Auto-commit and create PR')" \
         "" "" "$(ansi "1;90" "$(capitalize 'Infrastructure')")" "" \
         "    doc|docker               " "Docker operations" \
         "    sub|submodule            " "Unified submodule management (packages & services)" \
@@ -100,7 +100,7 @@ c=$1; shift; case $c in
         "    con|config               " "Configuration management" \
         "    sec|secret               " "Encrypted secrets management" \
         "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
-        "    ai$(printf "\033[36m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
+        "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
         "    env|envs                 " "Manage environment variables. Examples:" \
         "                             " "$(ansi "2;90" 'set -a; eval "$(D envs)"; set +a')" \
         "                             " "$(ansi "2;90" 'eval "$(cli_main envs)" > /dev/null')" \

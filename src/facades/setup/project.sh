@@ -3,6 +3,8 @@
 fac_set_project() {
     set -e;
 
+    logger -l "Installing ..."
+
     local IS_RECURSIVE="false"
     ARGS=""; for arg in "$@"; do case "$arg" in
         -r|--recursive) IS_RECURSIVE="true";;
@@ -22,7 +24,7 @@ fac_set_project() {
 
     if [ ! -f "$(cli_main workspace config path)" ] && [ "$HAS_SUBMODULES" = "true" ]; then
         logger -l "Initializing workspace configuration..."
-        cli_main workspace init
+        fac_wor_init
     fi
 
     if [ "$IS_RECURSIVE" = "true" ]; then
@@ -35,8 +37,8 @@ fac_set_project() {
         fac_wor_foreach_selected_module initialize_submodule
     fi
 
-    cli_main git checkout
-    cli_main git checkout-if-detached
+    fac_git_cmd_checkout_branch
+    fac_git_cmd_checkout_if_detached
 
     cli_main kit stop;
 

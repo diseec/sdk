@@ -10,33 +10,33 @@ fac_git_cmd_commit_push_pr() {
 
     src_inf_check_internet_connection
 
-    # cli_main git checkout-if-detached
-    # cli_main git pull
+    fac_git_cmd_checkout_if_detached
+    fac_git_cmd_pull_merge
 
-    # handle_hook before_push
+    handle_hook before_push
     
-    # cli_main git commit
+    fac_git_cmd_commit
 
-    # cli_main git push
+    fac_git_cmd_push
 
-    # if [ "$CURRENT_BRANCH" != "main" ]; then
-    #     cli_main git pull-request create
-    # fi
+    if [ "$CURRENT_BRANCH" != "main" ]; then
+        fac_git_cmd_pr_create
+    fi
 
-    # echo "$REPO_NAME: Cpp done."
-    # cli_main git log "HEAD"
+    echo "$REPO_NAME: Cpp done."
+    fac_git_cmd_git_log "HEAD"
 
-    # if [ "$IS_RECURSIVE" = "true" ]; then
-    #     echo "$REPO_NAME: Cpp for selected submodules..."
-    #     cpp_submodule() {
-    #         local module="$1"; local module_path="$2"
-    #         cd "$ROOT_DIR/$module_path" && D git commit-push-pr --recursive
-    #         echo "$REPO_NAME: Cpp done for submodule '$module'."
-    #     }
-    #     fac_wor_foreach_selected_module cpp_submodule
-    # fi
+    if [ "$IS_RECURSIVE" = "true" ]; then
+        echo "$REPO_NAME: Cpp for selected submodules..."
+        cpp_submodule() {
+            local module="$1"; local module_path="$2"
+            cd "$ROOT_DIR/$module_path" && D git commit-push-pr --recursive
+            echo "$REPO_NAME: Cpp done for submodule '$module'."
+        }
+        fac_wor_foreach_selected_module cpp_submodule
+    fi
 
-    # handle_hook after_push
+    handle_hook after_push
 
     return 0
 }

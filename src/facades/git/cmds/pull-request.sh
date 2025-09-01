@@ -36,7 +36,6 @@ fac_git_cmd_has_open_pr() {
 
 # Create a new PR or update existing one
 fac_git_cmd_pr_create() {
-  echo here
     local pr_number=$(fac_git_cmd_has_open_pr)
     local branch="$CURRENT_BRANCH"
 

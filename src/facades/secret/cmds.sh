@@ -57,7 +57,14 @@ fac_sec_export() {
     
     if ! fac_sec_is_key_configured; then
         logger -e "No encryption key configured" >&2
-        return 1
+        if fac_sec_get_user_confirmation "Would you like to set the encryption key now?"; then
+            fac_sec_set_key
+            if [ $? -ne 0 ]; then
+                return 1
+            fi
+        else
+            return 1
+        fi
     fi
     
     # Attempt to decrypt and return the value

@@ -91,7 +91,7 @@ logger() {
         -w|--warning)   default_ansi="33"; default_icon="!"; level="WARNING" ;;
         -i|--info)      default_ansi="34"; default_icon="i"; level="INFO"    ;;
         -q|--question)  default_ansi="35"; default_icon="?"; level="INFO"    ;;
-        -a|--ai)        default_ansi="36"; default_icon="✦"; level="INFO"    ;;
+        -a|--ai)        default_ansi="96"; default_icon="✦"; level="INFO"    ;;
         -s|--statement) default_ansi="97"; default_icon="";  level="INFO"    ;;
         *)                                                   level="DEBUG" ;;
     esac
@@ -135,20 +135,28 @@ confirm() {
     # OR
     # confirm "Do you want to proceed?" echo 'does this!'
 
-    local question=$1
-
+    local question=$1; shift
+    
+    # Store original terminal settings to restore later
+    local old_settings=$(stty -g)
+    
+    # Enable proper signal handling (especially Ctrl+C)
+    trap 'stty "$old_settings"; echo ""; return 1' INT TERM
+    
     printf "$(logger --ansi="35" --icon="?" "$question \033[35m[Y/N]\033[0m")"
-    # Turn off echo and set input to raw mode
-    stty -echo -icanon time 0 min 1
-    response=$(dd bs=1 count=1 2>/dev/null)
+    
+    # Read a single character, but allow signal handling
+    stty -echo -icanon
+    response=$(head -c1)
+    
     # Restore terminal settings
-    stty echo icanon
+    stty "$old_settings"
+    trap - INT TERM
 
     printf "\n"
     
     case "$response" in
         [yY][eE][sS]|[yY])
-            shift # Remove the question from args
             if [ $# -gt 0 ]; then "$@"; fi
             return 0
             ;; # Return 0 for success/true in bash

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-X() {
+bug() {
     logger -d "$@"
 }
 

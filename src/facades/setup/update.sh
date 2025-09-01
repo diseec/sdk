@@ -66,7 +66,7 @@ fac_set_cmd_update() {
     cli_main install
 
     logger -i "Pulling latest changes..."
-    cli_main pull
+    fac_git_cmd_pull_merge
 
     if [  "$IS_RECURSIVE" = "true"  ]; then
         logger -l "Updating dependencies in selected submodules..."
