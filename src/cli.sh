@@ -12,15 +12,15 @@ c=$1; shift; case $c in
     ude|update) cli_main setup update "$@" ;;
     sta|status)         
         # # cli_main about
-        # # bug "cli_main workspace status"
-        # cli_main workspace status
-        # # bug "src_inf_check_system_dependencies"
-        # cli_main informs src_inf_check_system_dependencies
-        # # bug "src_inf_check_internet_connection"
-        # cli_main informs src_inf_check_internet_connection
-        # # bug "cli_main git status"
-        # cli_main git status
-        # # bug "src_inf_check_for_updates"
+        # bug "cli_main workspace status"
+        cli_main workspace status
+        # bug "src_inf_check_system_dependencies"
+        cli_main informs src_inf_check_system_dependencies
+        # bug "src_inf_check_internet_connection"
+        cli_main informs src_inf_check_internet_connection
+        # bug "cli_main git status"
+        cli_main git status
+        # bug "src_inf_check_for_updates"
         cli_main informs src_inf_check_for_updates
     ;;
     dev|develop) cli_main docker compose up-dev "$@" ;;
