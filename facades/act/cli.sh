@@ -11,5 +11,5 @@ c=$1; shift; case $c in
             "$(ansi 97 'Package Visibility Commands')" "" \
             "    pat|patch             " "Force fresh install to mounted directory"
     ;;
-    *) logit -e "Unknown command: '$c'" ;;
+    *) if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi ;;
 esac

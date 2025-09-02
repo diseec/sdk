@@ -19,7 +19,7 @@ c=$1; shift; case $c in
     pre|pull-request|pr) c=$1; shift; case $c in
         cre|create) fac_git_cmd_pr_create "$@" ;;
         sta|status) fac_git_cmd_pr_check_status "$@" ;;
-        *) logit -e "Unknown command: '$c'" ;;
+        *) if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi ;;
     esac; ;;
     log|log) fac_git_cmd_git_log "$@" ;;
     ida|insight-day) fac_git_cmd_daily_insight "$@" ;;
@@ -28,7 +28,7 @@ c=$1; shift; case $c in
     hub) c=$1; shift; case $c in
         _) _gh "$@" ;;
         *)
-            logit -e "Unknown command: '$c'"
+            if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
             # cli_main git hub help; exit 1;
         ;;
     esac ;;
@@ -57,7 +57,7 @@ c=$1; shift; case $c in
         "    gh auth login         " "Authenticate GitHub cli_main for PR management"
     ;;
     *)
-        logit -e "Unknown command: '$c'"
+        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main git help; exit 1;
     ;;
 esac

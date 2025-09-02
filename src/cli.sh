@@ -89,10 +89,10 @@ c=$1; shift; case $c in
         "    dai|daily                " "$(ansi 36 '✦') $(ansi 90 'Generate daily insights')" \
         "    dev|develop              " "Start development environment" \
         "    bpa|build                " "Build project images" \
-        "    run <command>            " "Execute command in container" \
-        "    exe|execute <svc> <cmd>  " "Execute command in specific service" \
+        "    run                      " "Execute command in container" \
+        "    exe|execute              " "Execute command in specific service" \
         "    she|shell                " "Open interactive shell" \
-        "    tes|test [type]          " "Run test suites" \
+        "    tes|test                 " "Run test suites" \
         "    for|format               " "Format codebase" \
         "" "" "$(ansi "1;90" "$(capitalize 'Source Control')")" "" \
         "    git                      " "Git workflow management" \
@@ -101,8 +101,8 @@ c=$1; shift; case $c in
         "" "" "$(ansi "1;90" "$(capitalize 'Infrastructure')")" "" \
         "    doc|docker               " "Docker operations" \
         "    sub|submodule            " "Unified submodule management (packages & services)" \
-        "    wor|workspace            " "Workspace configuration" \
         "" "" "$(ansi "1;90" "$(capitalize 'Configuration')")" "" \
+        "    wor|workspace            " "Workspace configuration" \
         "    con|config               " "Configuration management" \
         "    sec|secret               " "Encrypted secrets management" \
         "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
@@ -110,14 +110,14 @@ c=$1; shift; case $c in
         "    env|envs                 " "Manage environment variables. Examples:" \
         "                             " "$(ansi "2;90" 'set -a; eval "$(D envs)"; set +a')" \
         "                             " "$(ansi "2;90" 'eval "$(cli_main envs)" > /dev/null')" \
-        "    saf|safely <command>     " "Safe command execution" \
+        "    saf|safely               " "Safe command execution" \
         "    api                      " "API operations" \
-        "    kit <command>            " "SDK container operations" \
+        "    kit                      " "SDK container operations" \
         "$@"
     ;;
     -v|--version) echo "$VERSION" ;;
     *)
-        logit -e "Unknown command: '$c'"
+        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main help; exit 1;
     ;;
 esac

@@ -17,7 +17,7 @@ fac_git_cmd_checkout_branch() {
     fi
 
     GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-    read -p "$(logit --ansi="35" --icon="?" "Branch to checkout: (press enter for '$GH_USERNAME')")" BRANCH
+    read -p "$(logit --ansi="35" --icon="?" "Branch to checkout: (press enter for '$GH_USERNAME')") " BRANCH
     if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
 
     echo "$REPO_NAME: Checking out to branch '$BRANCH'..."
@@ -35,7 +35,7 @@ fac_git_cmd_checkout_if_detached() {
             logit -e "You have local changes in detached HEAD."
             # Prompt for branch to merge changes into
             GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-            read -p "$(logit --ansi="35" --icon="?" "Branch to merge changes into: (press enter for '$GH_USERNAME')")" TARGET_BRANCH
+            read -p "$(logit --ansi="35" --icon="?" "Branch to merge changes into: (press enter for '$GH_USERNAME')") " TARGET_BRANCH
             if [ -z "$TARGET_BRANCH" ]; then TARGET_BRANCH="$GH_USERNAME"; fi
             TEMP_BRANCH="temp-detached-$(date +%s)"
             echo "$REPO_NAME: Creating temporary branch '$TEMP_BRANCH' from detached HEAD..."

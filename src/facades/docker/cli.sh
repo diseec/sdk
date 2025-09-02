@@ -23,7 +23,7 @@ c=$1; shift; case $c in
             "    _               " "Direct docker compose command passthrough"
         ;;
         *)
-            logit -e "Unknown command: '$c'"
+            if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
             cli_main docker compose help; exit 1;
         ;;
     esac ;;
@@ -34,7 +34,7 @@ c=$1; shift; case $c in
         "    _                   " "Direct docker command passthrough"
     ;;
     *)
-        logit -e "Unknown command: '$c'"
+        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main docker help; exit 1;
     ;;
 esac

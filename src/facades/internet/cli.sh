@@ -121,7 +121,7 @@ c=$1; shift; case $c in
         exit 0
         ;;
     *)
-        logit -e "Unknown command: '$c'"
+        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main internet help; exit 1;
         ;;
 esac
