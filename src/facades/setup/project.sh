@@ -27,6 +27,9 @@ fac_set_project() {
         fac_wor_init
     fi
 
+    fac_git_cmd_checkout_branch
+    fac_git_cmd_checkout_if_detached
+
     if [ "$IS_RECURSIVE" = "true" ]; then
         logit -l "Cloning selected submodules..."
         initialize_submodule() {
@@ -36,9 +39,6 @@ fac_set_project() {
         }
         fac_wor_foreach_selected_module initialize_submodule
     fi
-
-    fac_git_cmd_checkout_branch
-    fac_git_cmd_checkout_if_detached
 
     cli_main kit stop;
 
