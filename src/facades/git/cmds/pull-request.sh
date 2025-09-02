@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# TODO support recursive
 # Check if current branch has a PR
 fac_git_cmd_has_open_pr() {
   set -e

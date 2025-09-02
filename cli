@@ -6,6 +6,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
 source "$ROOT_DIR/facades/index.sh"
 
 c=$1; shift; case $c in
+x) echo x;;
     act)       force_safe $c "$@" || source "$ROOT_DIR/facades/act/cli.sh" "$@" ;;
     tes|test)  force_safe $c "$@" || source "$KIT_SRC_DIR/lib/tester/cli.sh" "$@" ;;
     pul|pull)  cli_main git _ pull origin main "$@" ;;
