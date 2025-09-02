@@ -15,7 +15,7 @@ fac_doc_up_development() {
     else
         # Set up a trap to ensure we stop all containers on interrupt
         cleanup() {
-            logger -w "CLEANUP" "Stopping all containers..."
+            # logit -w "CLEANUP" "Stopping all containers..."
             _docker compose down
             exit 0
         }
@@ -30,7 +30,7 @@ fac_doc_up_development() {
         fi
         
         if [ -n "$services_filter" ]; then
-            logger "Starting selected services: $services_filter"
+            logit "Starting selected services: $services_filter"
             _docker compose up $services_filter "$@"
         else
             _docker compose up "$@"

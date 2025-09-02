@@ -8,15 +8,15 @@ fac_git_cmd_pull_merge() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    logger -l "Pulling latest branch '$CURRENT_BRANCH' changes ..."
+    logit -l "Pulling latest branch '$CURRENT_BRANCH' changes ..."
     _git -C "$ROOT_DIR" pull origin
-    logger -l "Merging latest 'origin/main' changes to branch '$CURRENT_BRANCH'..."
+    logit -l "Merging latest 'origin/main' changes to branch '$CURRENT_BRANCH'..."
     _git -C "$ROOT_DIR" merge origin/main
 
-    logger -l "Pull and merge complete."
+    logit -l "Pull and merge complete."
 
     if [ "$IS_RECURSIVE" = "true" ]; then
-        logger -l "Pull and merging in submodules..."
+        logit -l "Pull and merging in submodules..."
         pull_submodule() {
             local module="$1"
             local module_path="$2"

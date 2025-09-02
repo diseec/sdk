@@ -5,17 +5,17 @@ fac_git_cmd_generate_commit_message() {
     local diff_output="$(_git diff --staged)"
   
     if [ -z "$diff_output" ]; then
-        # logger -w "No staged changes found. Staging all changes..."
+        # logit -w "No staged changes found. Staging all changes..."
         _git add -A
         diff_output="$(_git diff --staged)"
         
         if [ -z "$diff_output" ]; then
-            logger -e "No changes to commit"
+            logit -e "No changes to commit"
             return 1
         fi
     fi
   
-    # logger -i "Generating commit message..."
+    # logit -i "Generating commit message..."
   
     # Limit diff size to avoid API limits
     local diff_summary="$(_git diff --staged --stat)"
@@ -35,11 +35,11 @@ fac_git_cmd_generate_commit_message() {
 fac_git_cmd_warn_detached_head() {
   # Check if we're in detached HEAD state
   if ! _git symbolic-ref HEAD >/dev/null 2>&1; then
-    logger -e "Currently in detached HEAD state"
+    logit -e "Currently in detached HEAD state"
     
     # Check if there are any changes
     if [ -n "$(_git status --porcelain)" ]; then
-      logger -e "You have uncommitted changes in detached HEAD state"
+      logit -e "You have uncommitted changes in detached HEAD state"
       return 1
     fi
   fi
@@ -55,7 +55,7 @@ fac_git_cmd_commit() {
   
     # Don't allow commits directly to main
     if [ "$CURRENT_BRANCH" = "main" ]; then
-        logger -e "Committing to main branch is forbidden.\nPlease create a feature branch first and move your changes."
+        logit -e "Committing to main branch is forbidden.\nPlease create a feature branch first and move your changes."
         echo -n "Type 'MAIN' to confirm (or anything else to cancel): "
         read confirmation
         if [ "$confirmation" != "MAIN" ]; then
@@ -66,48 +66,48 @@ fac_git_cmd_commit() {
     # Stage all changes
     _git add -A
     if [ $? -ne 0 ]; then
-        logger -e "Failed to stage changes."
+        logit -e "Failed to stage changes."
         return 1
     fi
 
     # Check if there are any changes to commit
     if [ -z "$(_git diff --staged)" ]; then
-        logger -w "No changes to commit"
+        logit -w "No changes to commit"
         return 0
     fi
 
     if ! fac_ai_init_interactive; then
-        logger -w "AI module loaded but API key not available"
+        logit -w "AI module loaded but API key not available"
     fi
 
     # Generate commit message with user confirmation
-    logger -a "Writing commit message..."
+    logit -a "Writing commit message..."
     local commit_msg=""
     local has_accepted_commit_message="false"
     while ! $has_accepted_commit_message; do
         commit_msg=$(fac_git_cmd_generate_commit_message)
         if [ -z "$commit_msg" ]; then
-            logger -e "Failed to generate commit message."
+            logit -e "Failed to generate commit message."
             return 1
         fi
         
         # Display the generated message
         printf "\n"
-        logger -i "Generated commit message:"
+        logit -i "Generated commit message:"
         printf "\033[97m%s\033[0m\n\n" "$commit_msg"
         
         # Ask for confirmation
         if confirm "Do you want to use this commit message?"; then
             has_accepted_commit_message="true"
         else
-            logger -a "Rewriting commit message..."
+            logit -a "Rewriting commit message..."
         fi
     done
   
     echo "$commit_msg" > /tmp/commit-msg.txt
     _git commit -F /tmp/commit-msg.txt
     if [ $? -ne 0 ]; then
-        logger -e "Failed to commit changes."
+        logit -e "Failed to commit changes."
         return 1
     fi
     rm /tmp/commit-msg.txt

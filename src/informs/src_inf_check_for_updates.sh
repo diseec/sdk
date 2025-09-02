@@ -2,7 +2,7 @@
 
 src_inf_check_for_updates() {
     if ! cli_main internet is-online; then
-        logger --ansi="31" --icon="⊘" "Disconnected, skipping update check..."
+        logit --ansi="31" --icon="⊘" "Disconnected, skipping update check..."
         return 0
     fi
 

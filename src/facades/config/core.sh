@@ -20,7 +20,7 @@ fac_con_get_config_dir() {
         # user) config_dir="$ORG_DIR/users/$(whoami)" ;;
         workspace) config_dir="$ORG_DIR/workspaces/$REPO_NAME" ;;
         project) config_dir="$ROOT_DIR/.$KIT_NAME" ;;
-        *) logger -e "Invalid configuration scope: $scope" ; return 1 ;;
+        *) logit -e "Invalid configuration scope: $scope" ; return 1 ;;
     esac
     
     # Create directory if it doesn't exist
@@ -42,7 +42,7 @@ fac_con_get_config_file() {
         # user) config_file="$config_dir/$CONFIG_USER_FILE" ;;
         workspace) config_file="$config_dir/$CONFIG_WORKSPACE_FILE" ;;
         project) config_file="$config_dir/$CONFIG_PROJECT_FILE" ;;
-        *) logger -e "Invalid configuration scope: $scope" ; return 1 ;;
+        *) logit -e "Invalid configuration scope: $scope" ; return 1 ;;
     esac
     
     # Create empty file if it doesn't exist
@@ -62,7 +62,7 @@ fac_con_validate_scope() {
     local scope="$1"
     
     if [ -z "$scope" ]; then
-        logger -e "Configuration scope cannot be empty"
+        logit -e "Configuration scope cannot be empty"
         return 1
     fi
     
@@ -71,7 +71,7 @@ fac_con_validate_scope() {
             return 0
             ;;
         *)
-            logger -e "Invalid configuration scope: $scope. Valid scopes: global, user, workspace, project"
+            logit -e "Invalid configuration scope: $scope. Valid scopes: global, user, workspace, project"
             return 1
             ;;
     esac
@@ -82,13 +82,13 @@ fac_con_validate_key_path() {
     local key_path="$1"
     
     if [ -z "$key_path" ]; then
-        logger -e "Configuration key path cannot be empty"
+        logit -e "Configuration key path cannot be empty"
         return 1
     fi
     
     # Check for valid key path format (alphanumeric, dots, underscores, hyphens)
     if ! echo "$key_path" | grep -q '^[a-zA-Z0-9._-]\+$'; then
-        logger -e "Invalid key path format: $key_path"
+        logit -e "Invalid key path format: $key_path"
         return 1
     fi
     

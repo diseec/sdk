@@ -84,7 +84,7 @@ c=$1; shift; case $c in
         "$@"
     ;;
     *)
-        logger -e "Unknown command: '$c'"
+        logit -e "Unknown command: '$c'"
         cli_main config help; exit 1;
         ;;
 esac

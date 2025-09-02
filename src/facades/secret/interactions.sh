@@ -8,7 +8,7 @@
 fac_sec_get_user_confirmation() {
     local prompt="$1"
     local default="${2:-N}"
-    printf "$(logger --ansi="35" --icon="?" "$prompt \033[35m[Y/N]\033[0m")"
+    printf "$(logit --ansi="35" --icon="?" "$prompt \033[35m[Y/N]\033[0m")"
     # Turn off echo and set input to raw mode
     stty -echo -icanon time 0 min 1
     confirm=$(dd bs=1 count=1 2>/dev/null)
@@ -26,7 +26,7 @@ fac_sec_get_user_input() {
     local prompt="$1"
     local var_name="$2"
 
-    logger --ansi="35" --icon="?" "$prompt: "
+    logit --ansi="35" --icon="?" "$prompt: "
     read "$var_name"
 }
 
@@ -35,7 +35,7 @@ fac_sec_get_secret_input() {
     local prompt="$1"
     local var_name="$2"
 
-    logger --ansi="35" --icon="?" "$prompt: "
+    logit --ansi="35" --icon="?" "$prompt: "
     stty -echo
     read "$var_name"
     stty echo
@@ -64,8 +64,8 @@ fac_sec_test_key_with_secrets() {
         fi
     done
     
-    logger -e "Key validation failed - unable to decrypt existing secrets"
-    logger -w "This key cannot decrypt your existing secrets"
+    logit -e "Key validation failed - unable to decrypt existing secrets"
+    logit -w "This key cannot decrypt your existing secrets"
     return 1
 }
 
@@ -86,7 +86,7 @@ fac_sec_reencrypt_all_secrets() {
                 echo "$new_encrypted" > "$secret_file"
                 echo "$secret_name re-encrypted successfully"
             else
-                logger -e "Failed to re-encrypt $secret_name"
+                logit -e "Failed to re-encrypt $secret_name"
                 return 1
             fi
         fi

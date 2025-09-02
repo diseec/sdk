@@ -13,7 +13,7 @@ handle_hook() {
         exit 1
     fi
 
-    # logger 34 "hook" "Executing hook '$HOOK' across workspace"
+    # logit 34 "hook" "Executing hook '$HOOK' across workspace"
 
     # Execute hook in root repository
     execute_hook() {
@@ -33,12 +33,12 @@ handle_hook() {
         
         # Skip if no handler found
         if [ $has_handler -ne 0 ]; then
-            # logger 33 "$name" "No handler for 'hook:$hook' found"
+            # logit 33 "$name" "No handler for 'hook:$hook' found"
             return 0
         fi
         
         # # hook handler found, execute it
-        # logger 34 "$name" "Executing 'hook:$hook'"
+        # logit 34 "$name" "Executing 'hook:$hook'"
         
         # Execute the command directly without capturing output
         # This allows interactive prompts to work properly
@@ -49,21 +49,21 @@ handle_hook() {
         
         # Skip if no handler found
         if [ $has_handler -ne 0 ]; then
-            # logger 33 "$name" "No handler for 'hook:$hook' found"
+            # logit 33 "$name" "No handler for 'hook:$hook' found"
             return 0
         fi
         
         # # hook handler found, execute it
-        # logger 34 "$name" "Executing 'hook:$hook'"
+        # logit 34 "$name" "Executing 'hook:$hook'"
         
         # Execute the command directly without capturing output
         # This allows interactive prompts to work properly
         cd "$dir" && "$cli" "hook:$hook"
         rc=$?
         # if [ $rc -eq 0 ]; then
-        #     logger 32 "$name" "hook '$hook' completed successfully"
+        #     logit 32 "$name" "hook '$hook' completed successfully"
         # else
-        #     logger 31 "$name" "hook '$hook' failed (exit code $rc)"
+        #     logit 31 "$name" "hook '$hook' failed (exit code $rc)"
         # fi
         
         return $rc
@@ -74,5 +74,5 @@ handle_hook() {
         execute_hook "$ROOT_DIR" "$CLI_MAIN" "$HOOK" "root" || true
     fi
 
-    # logger -o "hook '$HOOK' execution completed"
+    # logit -o "hook '$HOOK' execution completed"
 }

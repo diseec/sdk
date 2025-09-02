@@ -3,7 +3,7 @@
 # Optimized connectivity tests for Alpine container environment
 
 # Quick connectivity test - this is the primary function for the is-online command
-quick_check() {
+src_fac_int_quick_check() {
     local timeout=$QUICK_TIMEOUT
     local overall_status=true
     local start_time=$(date +%s.%N)
@@ -74,7 +74,7 @@ quick_check() {
     local end_time=$(date +%s.%N)
     local total_duration=$(calculate_duration "$start_time" "$end_time")
     if [ "$MODE" = "diagnose" ] && [ "$SILENT_MODE" != "true" ]; then
-        logger -l "Quick check completed in ${total_duration}s"
+        logit -l "Quick check completed in ${total_duration}s"
     fi
     
     return $([[ "$overall_status" = true ]] && echo 0 || echo 1)
@@ -187,7 +187,7 @@ test_international_sites() {
     if [ "$sites_tested" -gt 0 ]; then
         local success_rate=$((sites_success * 100 / sites_tested))
         if [ "$SILENT_MODE" != "true" ]; then
-            logger -l "International sites accessible: $sites_success/$sites_tested ($success_rate%)"
+            logit -l "International sites accessible: $sites_success/$sites_tested ($success_rate%)"
         fi
     fi
     
@@ -234,7 +234,7 @@ test_regional_sites() {
     if [ "$sites_tested" -gt 0 ]; then
         local success_rate=$((sites_success * 100 / sites_tested))
         if [ "$SILENT_MODE" != "true" ]; then
-            logger -l "Regional sites accessible: $sites_success/$sites_tested ($success_rate%)"
+            logit -l "Regional sites accessible: $sites_success/$sites_tested ($success_rate%)"
         fi
     fi
     
@@ -281,7 +281,7 @@ test_cdn_connectivity() {
     if [ "$sites_tested" -gt 0 ]; then
         local success_rate=$((sites_success * 100 / sites_tested))
         if [ "$SILENT_MODE" != "true" ]; then
-            logger -l "CDN sites accessible: $sites_success/$sites_tested ($success_rate%)"
+            logit -l "CDN sites accessible: $sites_success/$sites_tested ($success_rate%)"
         fi
     fi
     
@@ -298,7 +298,7 @@ test_connection_quality() {
     # Simplified latency test using ping
     local latency_target="$LATENCY_TEST_SITE"
     if [ "$SILENT_MODE" != "true" ]; then
-        logger -l "Measuring latency to $latency_target..."
+        logit -l "Measuring latency to $latency_target..."
     fi
     
     # Run pings to measure latency and packet loss
@@ -353,7 +353,7 @@ test_connection_quality() {
     
     # Basic HTTP throughput test
     if [ "$SILENT_MODE" != "true" ]; then
-        logger -l "Testing download performance..."
+        logit -l "Testing download performance..."
     fi
     
     # Test small file download speed

@@ -52,34 +52,34 @@ fac_set_cmd_update() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    logger -l "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
-    logger -l "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
+    logit -l "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
+    logit -l "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
 
     cli_main git _ pull origin
     cli_main kit docker compose _ pull
     cli_main safely kit act patch
-    logger -l "$KIT_NAME version patched to: $VERSION"
+    logit -l "$KIT_NAME version patched to: $VERSION"
 
     handle_hook before_update
 
-    logger -i "Installing dependencies..."
+    logit -i "Installing dependencies..."
     cli_main install
 
-    logger -i "Pulling latest changes..."
+    logit -i "Pulling latest changes..."
     fac_git_cmd_pull_merge
 
     if [  "$IS_RECURSIVE" = "true"  ]; then
-        logger -l "Updating dependencies in selected submodules..."
+        logit -l "Updating dependencies in selected submodules..."
         update_dependencies() {
             local module="$1"
             local module_path="$2"
             cd "$ROOT_DIR/$module_path" && D update --recursive --patch
-            logger -l "Updated dependencies for '$module'."
+            logit -l "Updated dependencies for '$module'."
         }
         fac_wor_foreach_selected_module update_dependencies
     fi
 
     handle_hook after_update
 
-    logger -o "Update completed successfully"
+    logit -o "Update completed successfully"
 }

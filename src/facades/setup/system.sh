@@ -84,10 +84,10 @@ fac_set_check_system_dependencies() {
     done
     
     if [ $missing_count -eq 0 ]; then
-        logger -o "All system dependencies are installed!"
+        logit -o "All system dependencies are installed!"
         return 0
     else
-        logger -e "$missing_count missing dependencies found: ${missing_deps[*]}"
+        logit -e "$missing_count missing dependencies found: ${missing_deps[*]}"
         return 1
     fi
 }
@@ -297,10 +297,10 @@ fac_set_install_system_dependencies() {
     done
     
     if $all_success; then
-        logger -o "All system dependencies installed successfully!"
+        logit -o "All system dependencies installed successfully!"
         return 0
     else
-        logger -e "Some dependencies failed to install"
+        logit -e "Some dependencies failed to install"
         return 1
     fi
 }

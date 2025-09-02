@@ -7,18 +7,18 @@ c=$1; shift; case $c in
         MODE="is-online"
         SILENT_MODE=true
         # Quick check for internet connectivity - returns 0 if online, 1 if offline
-        quick_check
+        src_fac_int_quick_check
         return $?
         ;;
     tes|test)
         MODE="test"
         # Start with a header unless silent mode is enabled
         if [ "$SILENT_MODE" != "true" ]; then
-            logger --ansi="97" --icon="⌁" "Quick internet connectivity check...\n"
+            logit --ansi="97" --icon="⌁" "Quick internet connectivity check...\n"
         fi
         
         # Run basic connectivity test
-        if quick_check; then
+        if src_fac_int_quick_check; then
             overall_status=true
         else
             overall_status=false
@@ -28,9 +28,9 @@ c=$1; shift; case $c in
         # Display a summary
         if [ "$SILENT_MODE" != "true" ]; then
             if [ "$overall_status" = "true" ]; then
-                logger --ansi="32" --icon="⊕" "Internet connection working properly"
+                logit --ansi="32" --icon="⊕" "Internet connection working properly"
             else
-                logger --ansi="31" --icon="⊘" "Internet connection has issues"
+                logit --ansi="31" --icon="⊘" "Internet connection has issues"
             fi
         fi
         
@@ -40,7 +40,7 @@ c=$1; shift; case $c in
     dia|diagnose)
         MODE="diagnose"
         SILENT_MODE=false
-        logger --ansi="97" --icon="⚙" "Diagnosing internet connection ..."
+        logit --ansi="97" --icon="⚙" "Diagnosing internet connection ..."
 
         overall_status=true
         quick_check_success=false
@@ -49,7 +49,7 @@ c=$1; shift; case $c in
         test_network_interface || overall_status=false
         
         # Run quick check first to see if we have basic internet connectivity
-        if quick_check; then
+        if src_fac_int_quick_check; then
             quick_check_success=true
         else
             quick_check_success=false
@@ -88,9 +88,9 @@ c=$1; shift; case $c in
         echo ""
         # Display a summary
         if [ "$overall_status" = "true" ]; then
-            logger --ansi="32" --icon="⊕" "Internet connection working properly"
+            logit --ansi="32" --icon="⊕" "Internet connection working properly"
         else
-            logger --ansi="31" --icon="⊘" "Internet connection has issues"
+            logit --ansi="31" --icon="⊘" "Internet connection has issues"
         fi
         
         # return with appropriate code
@@ -121,7 +121,7 @@ c=$1; shift; case $c in
         exit 0
         ;;
     *)
-        logger -e "Unknown command: '$c'"
+        logit -e "Unknown command: '$c'"
         cli_main internet help; exit 1;
         ;;
 esac

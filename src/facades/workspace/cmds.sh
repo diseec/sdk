@@ -4,7 +4,7 @@
 
 # Initialize a workspace
 fac_wor_init() {
-    # logger 34 "WORKSPACE" "Initializing workspace configuration"
+    # logit 34 "WORKSPACE" "Initializing workspace configuration"
     fac_wor_create_config
 }
 
@@ -12,7 +12,7 @@ fac_wor_init() {
 fac_wor_status() {
     local config_file="$(fac_con_get_config_file workspace)"
     if [ -f "$config_file" ]; then
-        logger "config: $config_file"
+        logit "config: $config_file"
         local selected_modules=$(fac_wor_get_selected_modules)
         if [ -n "$selected_modules" ]; then
             active_modules=""
@@ -23,18 +23,18 @@ fac_wor_status() {
                     active_modules="$module"
                 fi
             done
-            logger "Modules: $active_modules"
+            logit "Modules: $active_modules"
         else
-            logger -w "No submodules selected in workspace configuration"
+            logit -w "No submodules selected in workspace configuration"
         fi
     else
-        logger -w "No workspace configuration found for $REPO_NAME"
+        logit -w "No workspace configuration found for $REPO_NAME"
         echo "Run 'cli workspace init' to create one"
     fi
 }
 
 # Select submodules for workspace
 fac_wor_select() {
-    logger --ansi="34" --icon="WORKSPACE" "Select submodules for your workspace"
+    logit --ansi="34" --icon="WORKSPACE" "Select submodules for your workspace"
     fac_wor_create_config
 }

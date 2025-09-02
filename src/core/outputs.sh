@@ -44,7 +44,7 @@ ansi() {
     printf "\033[0m\033[%sm%s\033[0m" "$ansi" "$text"
 }
 
-logger() {
+logit() {
     local level="DEBUG" # DEBUG > INFO > WARNING > ERROR
     local repo_name=${REPO_NAME:-d}
     local type="--log"
@@ -137,21 +137,21 @@ confirm() {
 
     local question=$1; shift
     
-    # Store original terminal settings to restore later
-    local old_settings=$(stty -g)
+    # # Store original terminal settings to restore later
+    # local old_settings=$(stty -g)
     
-    # Enable proper signal handling (especially Ctrl+C)
-    trap 'stty "$old_settings"; echo ""; return 1' INT TERM
+    # # Enable proper signal handling (especially Ctrl+C)
+    # trap 'stty "$old_settings"; echo ""; return 1' INT TERM
     
-    printf "$(logger --ansi="35" --icon="?" "$question \033[35m[Y/N]\033[0m")"
+    printf "$(logit --ansi="35" --icon="?" "$question \033[35m[Y/N]\033[0m")"
     
     # Read a single character, but allow signal handling
     stty -echo -icanon
     response=$(head -c1)
     
-    # Restore terminal settings
-    stty "$old_settings"
-    trap - INT TERM
+    # # Restore terminal settings
+    # stty "$old_settings"
+    # trap - INT TERM
 
     printf "\n"
     
@@ -163,7 +163,7 @@ confirm() {
         [nN][oO]|[nN]) return 1 ;; # Return 1 for failure/false in bash
         *)
             # Invalid response, prompt again
-            logger -e "Invalid response. Please enter Y or N."
+            logit -e "Invalid response. Please enter Y or N."
             # Recursive call to retry - pass all original arguments
             confirm "$question" "$@"
             return $?
