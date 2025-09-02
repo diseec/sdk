@@ -11,17 +11,17 @@ c=$1; shift; case $c in
     ins|install) cli_main setup project "$@" ;;
     ude|update) cli_main setup update "$@" ;;
     sta|status)         
-        # cli_main about
-        # bug "cli_main workspace status"
-        cli_main workspace status
-        # bug "src_inf_check_system_dependencies"
-        # # cli_main informs src_inf_check_system_dependencies
-        # bug "src_inf_check_internet_connection"
-        cli_main informs src_inf_check_internet_connection
-        # bug "cli_main git status"
-        cli_main git status
-        # bug "src_inf_check_for_updates"
-        # cli_main informs src_inf_check_for_updates
+        # # cli_main about
+        # # bug "cli_main workspace status"
+        # cli_main workspace status
+        # # bug "src_inf_check_system_dependencies"
+        # cli_main informs src_inf_check_system_dependencies
+        # # bug "src_inf_check_internet_connection"
+        # cli_main informs src_inf_check_internet_connection
+        # # bug "cli_main git status"
+        # cli_main git status
+        # # bug "src_inf_check_for_updates"
+        cli_main informs src_inf_check_for_updates
     ;;
     dev|develop) cli_main docker compose up-dev "$@" ;;
     bpa|build)   cli_main docker compose build "$@" ;;
@@ -43,7 +43,7 @@ c=$1; shift; case $c in
     con|config)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/config/cli.sh" "$@" ;;
     sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
     wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
-    inf|informs)   force_safe $c "$@" || source "$KIT_SRC_DIR/informs/cli.sh" "$@" ;;
+    inf|informs) source "$KIT_SRC_DIR/informs/cli.sh" "$@" ;;
     env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;;
     kit) env KIT_TARGET_DIR="$ROOT_DIR" "$KIT_DIR/cli" "$@" ;;
     saf|safely)

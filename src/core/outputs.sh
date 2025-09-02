@@ -137,11 +137,11 @@ confirm() {
 
     local question=$1; shift
     
-    # # Store original terminal settings to restore later
-    # local old_settings=$(stty -g)
+        # Store original terminal settings to restore later
+        local old_settings=$(stty -g)
     
-    # # Enable proper signal handling (especially Ctrl+C)
-    # trap 'stty "$old_settings"; echo ""; return 1' INT TERM
+        # Enable proper signal handling (especially Ctrl+C)
+        trap 'stty "$old_settings"; echo ""; return 1' INT TERM
     
     printf "$(logit --ansi="35" --icon="?" "$question \033[35m[Y/N]\033[0m")"
     
@@ -149,9 +149,9 @@ confirm() {
     stty -echo -icanon
     response=$(head -c1)
     
-    # # Restore terminal settings
-    # stty "$old_settings"
-    # trap - INT TERM
+        # Restore terminal settings
+        stty "$old_settings"
+        trap - INT TERM
 
     printf "\n"
     

@@ -25,8 +25,7 @@ dir="$PWD"; while :; do
                     --disable-content-trust > /dev/null 2>&1
                 if [ $? -ne 0 ]; then logit -e "Failed to pull $KIT_NAME image"; fi
                 # echo "D:DEBUG: running 'act patch' in kit container, mounting: $ROOT_DIR"
-                # docker run --quiet --rm -v $ROOT_DIR:/vise -w /vise \
-                docker run --rm -v $ROOT_DIR:/vise -w /vise \
+                docker run --quiet --rm -v $ROOT_DIR:/vise -w /vise \
                     image.registry.diseec.com/kit \
                     /kit/cli act patch
                 # if [ $? -ne 0 ]; then logit -e "Failed to run patch command in $KIT_NAME image"; fi

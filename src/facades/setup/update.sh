@@ -6,20 +6,27 @@ fac_set_get_version_info() {
     
     # Get outdated info as JSON
     local outdated_json=$(_npm outdated "$package_name" --json 2>/dev/null)
-    
+
     if [ -n "$outdated_json" ] && [ "$outdated_json" != "{}" ]; then
-        # Extract current and wanted versions using echo instead of stdin
-        local current_version=$(echo "$outdated_json" | _node -pe "
-            try { 
-                const data = JSON.parse(require('fs').readFileSync(0, 'utf8')); 
-                data['$package_name']?.current || '' 
-            } catch(e) { '' }")
-        local wanted_version=$(echo "$outdated_json" | _node -pe "
-            try { 
-                const data = JSON.parse(require('fs').readFileSync(0, 'utf8')); 
-                data['$package_name']?.wanted || '' 
-            } catch(e) { '' }")
+        # Debug the JSON structure
+        local debug_output=$(echo "$outdated_json" | _jq -r 'keys')
+        # logit -d "JSON keys: $debug_output"
         
+        # Try to extract versions using different approaches since npm outdated format varies
+        if echo "$outdated_json" | _jq -e '."@'$ORG_NAME'/'$KIT_NAME'" | has("current")' &>/dev/null; then
+            # Object format with package name as key
+            local current_version=$(echo "$outdated_json" | _jq -r '."@'$ORG_NAME'/'$KIT_NAME'".current // ""')
+            local wanted_version=$(echo "$outdated_json" | _jq -r '."@'$ORG_NAME'/'$KIT_NAME'".wanted // ""')
+        elif echo "$outdated_json" | _jq -e 'has(0)' &>/dev/null; then
+            # Array format
+            local current_version=$(echo "$outdated_json" | _jq -r '.[0].current // ""')
+            local wanted_version=$(echo "$outdated_json" | _jq -r '.[0].wanted // ""')
+        else
+            # Try the most generic approach - find any current/wanted values
+            local current_version=$(echo "$outdated_json" | _jq -r '.. | objects | .current? // empty' | head -1)
+            local wanted_version=$(echo "$outdated_json" | _jq -r '.. | objects | .wanted? // empty' | head -1)
+        fi
+            
         if [ -n "$current_version" ] && [ -n "$wanted_version" ]; then
             echo "$current_version -> $wanted_version"
         else
