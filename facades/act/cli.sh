@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then logger -e "The 'act' command works only on bench! (the kit container)"; exit 1; fi
+if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then logit -e "The 'act' command works only on bench! (the kit container)"; exit 1; fi
 
 c=$1; shift; case $c in
     pat|patch) kit_fac_act_patch "$@" ;;
@@ -11,5 +11,5 @@ c=$1; shift; case $c in
             "$(ansi 97 'Package Visibility Commands')" "" \
             "    pat|patch             " "Force fresh install to mounted directory"
     ;;
-    *) logger -e "Unknown command: '$c'" ;;
+    *) logit -e "Unknown command: '$c'" ;;
 esac

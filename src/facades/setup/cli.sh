@@ -3,7 +3,7 @@
 c=$1; shift; case $c in
     pro|project) fac_set_project "$@" ;;
     pre|prettier) fac_set_prettier "$@" ;;
-    upd|update) fac_set_update "$@" ;;
+    upd|update) fac_set_cmd_update "$@" ;;
     glo|globally) fac_set_globally "$@" ;;
     sys|system) c=$1; shift; case $c in
         dep|dependency-check)

@@ -9,14 +9,19 @@ else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
 
 c=$1; shift; case $c in
     ins|install) cli_main setup project "$@" ;;
-    ude|update) "$KIT_SRC_DIR/cmds/update.sh" "$@" ;;
+    ude|update) cli_main setup update "$@" ;;
     sta|status)         
-        # cli_main about
-        cli_main workspace status
-        src_inf_check_system_dependencies
-        src_inf_check_internet_connection
-        cli_main git status
-        src_inf_check_for_updates
+        # # cli_main about
+        # # bug "cli_main workspace status"
+        # cli_main workspace status
+        # # bug "src_inf_check_system_dependencies"
+        # cli_main informs src_inf_check_system_dependencies
+        # # bug "src_inf_check_internet_connection"
+        # cli_main informs src_inf_check_internet_connection
+        # # bug "cli_main git status"
+        # cli_main git status
+        # # bug "src_inf_check_for_updates"
+        cli_main informs src_inf_check_for_updates
     ;;
     dev|develop) cli_main docker compose up-dev "$@" ;;
     bpa|build)   cli_main docker compose build "$@" ;;
@@ -38,14 +43,15 @@ c=$1; shift; case $c in
     con|config)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/config/cli.sh" "$@" ;;
     sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
     wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
+    inf|informs) source "$KIT_SRC_DIR/informs/cli.sh" "$@" ;;
     env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;;
     kit) env KIT_TARGET_DIR="$ROOT_DIR" "$KIT_DIR/cli" "$@" ;;
     saf|safely)
-        # logger -d "CLI:$CLI_CORE:SAFELY:ARGS: $@";
+        # logit -d "CLI:$CLI_CORE:SAFELY:ARGS: $@";
         cli_main "$KIT_NAME" stop > /dev/null 2>&1 || true ;
-        # cli_main "$KIT_NAME" run --quiet "$TARGET_MOUNTED_DIR/cli" "$@"
-        cli_main "$KIT_NAME" run "$TARGET_MOUNTED_DIR/cli" "$@"
-        # if [ $? -ne 0 ]; then logger -e "Failed to run command in $KIT_NAME container"; fi
+        cli_main "$KIT_NAME" run --quiet "$TARGET_MOUNTED_DIR/cli" "$@"
+        # cli_main "$KIT_NAME" run "$TARGET_MOUNTED_DIR/cli" "$@"
+        # if [ $? -ne 0 ]; then logit -e "Failed to run command in $KIT_NAME container"; fi
     ;;
     api) c=$1; shift; case $c in
         v1) c=$1; shift; case $c in
@@ -111,7 +117,7 @@ c=$1; shift; case $c in
     ;;
     -v|--version) echo "$VERSION" ;;
     *)
-        logger -e "Unknown command: '$c'"
+        logit -e "Unknown command: '$c'"
         cli_main help; exit 1;
     ;;
 esac

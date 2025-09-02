@@ -18,7 +18,7 @@ fac_ai_init_interactive() {
         export OPENAI_API_KEY="$(fac_sec_export OPENAI_API_KEY)"
         return 0
     else
-        logger -e "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2
+        logit -e "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2
         return 1
     fi
 }

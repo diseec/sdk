@@ -1,7 +1,7 @@
 #!/bin/bash
 
 bug() {
-    logger -d "$@"
+    logit -d "$@"
 }
 
 cli_main() {

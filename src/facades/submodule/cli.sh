@@ -69,7 +69,7 @@ elif [[ -n "$type" && -z "$target_dir" ]]; then
         submodule) target_dir="submodules" ;;
         package) target_dir="packages" ;;
         service) target_dir="services" ;;
-        *) logger -e "Unknown type: $type. Use 'package' or 'service'" exit 1 ;;
+        *) logit -e "Unknown type: $type. Use 'package' or 'service'" exit 1 ;;
     esac
 elif [[ -z "$type" && -n "$target_dir" ]]; then
     # Auto-detect type from directory
@@ -87,11 +87,11 @@ mkdir -p "$target_dir"
 case $command in
     add)
         if [[ -z "$repo_name" ]]; then
-            logger -e "Repository name is required for add command"
+            logit -e "Repository name is required for add command"
             exit 1
         fi
         
-        logger "Adding $type '$repo_name' to $target_dir/ .."
+        logit "Adding $type '$repo_name' to $target_dir/ .."
         set -e
         _git submodule add https://$REPO_HUB_URL/$repo_name.git $target_dir/$repo_name
         _git submodule update --init --recursive
@@ -99,19 +99,19 @@ case $command in
 
     run)
         if [[ "$type" != "service" ]]; then
-            logger -e "Run command is only available for services"
+            logit -e "Run command is only available for services"
             exit 1
         fi
         
         services=$(docker compose config --services)
-        logger --ansi="45" --icon="SERVICES:" "$services"
-        read -p "$(logger --ansi="35" --icon="?" "Specify a service to run:")" service
+        logit --ansi="45" --icon="SERVICES:" "$services"
+        read -p "$(logit --ansi="35" --icon="?" "Specify a service to run:")" service
         $CLI_MAIN execute "$service" "$@"
         ;;
 
     rem|remove|rm)
         if [[ -z "$repo_name" ]]; then
-            logger -e "Repository name is required for remove command"
+            logit -e "Repository name is required for remove command"
             exit 1
         fi
         
@@ -123,26 +123,26 @@ case $command in
         ;;
 
     upd|update)
-        logger "Updating all submodules in $target_dir/ .."
+        logit "Updating all submodules in $target_dir/ .."
         _git submodule update --remote --merge
         ;;
 
     lin|link)
         if [[ "$type" != "package" ]]; then
-            logger -e "Link command is only available for packages"
+            logit -e "Link command is only available for packages"
             exit 1
         fi
         
-        logger --ansi="35" --icon="PACKAGES:" "$(ls $target_dir 2>/dev/null || echo 'No packages found')"
-        read -p "$(logger --ansi="35" --icon="?" "Select a package to link:")" PACKAGE
+        logit --ansi="35" --icon="PACKAGES:" "$(ls $target_dir 2>/dev/null || echo 'No packages found')"
+        read -p "$(logit --ansi="35" --icon="?" "Select a package to link:")" PACKAGE
         _npm link ./$target_dir/$PACKAGE
         ;;
 
     lis|list|ls)
         if [[ -d "$target_dir" ]]; then
-            logger --ansi="45" --icon="${type^^}S in $target_dir:" "$(ls $target_dir 2>/dev/null || echo 'No items found')"
+            logit --ansi="45" --icon="${type^^}S in $target_dir:" "$(ls $target_dir 2>/dev/null || echo 'No items found')"
         else
-            logger -w "Directory $target_dir does not exist"
+            logit -w "Directory $target_dir does not exist"
         fi
         ;;
 
@@ -150,7 +150,7 @@ case $command in
         if [[ -z "$command" ]]; then
             show_help
         else
-            logger -e "Unknown command: $command"
+            logit -e "Unknown command: $command"
             show_help
         fi
         exit 1

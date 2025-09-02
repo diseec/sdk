@@ -47,8 +47,8 @@ fac_sec_ensure_encryption_key() {
         echo "Generating new encryption key..."
         local new_key=$(fac_sec_generate_encryption_key)
         fac_sec_store_encryption_key "$new_key"
-        logger --ansi="34" --icon="KEY" "$new_key"
-        logger -w "Store this key safely - it's needed to decrypt your secrets!"
+        logit --ansi="34" --icon="KEY" "$new_key"
+        logit -w "Store this key safely - it's needed to decrypt your secrets!"
         return 0
     fi
     return 0
@@ -57,7 +57,7 @@ fac_sec_ensure_encryption_key() {
 # Validate key configuration before operations
 fac_sec_validate_key_for_operation() {
     if fac_sec_secrets_exist && ! fac_sec_is_key_configured; then
-        logger -e "Secrets exist but no encryption key configured!"
+        logit -e "Secrets exist but no encryption key configured!"
         echo "You must either:"
         echo "  1. Provide the original key using: secrets key-set"
         echo "  2. Remove all existing secrets using: secrets remove <name>"

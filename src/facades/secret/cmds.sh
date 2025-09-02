@@ -17,7 +17,7 @@ fac_sec_add_secret() {
     fac_sec_validate_secret_name "$secret_name" || return 1
     
     if fac_sec_secret_exists "$secret_name"; then
-        logger -w "Secret '$secret_name' already exists."
+        logit -w "Secret '$secret_name' already exists."
         if ! fac_sec_get_user_confirmation "Overwrite?"; then
             return 0
         fi
@@ -26,20 +26,20 @@ fac_sec_add_secret() {
     fac_sec_get_secret_input "Enter secret value" secret_value
     
     if [ -z "$secret_value" ]; then
-        logger -e "Secret value cannot be empty"
+        logit -e "Secret value cannot be empty"
         return 1
     fi
     
     fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
-    logger -o "Secret '$secret_name' added successfully"
+    logit -o "Secret '$secret_name' added successfully"
 }
 
 # Export a single secret by name (returns just the value)
 # This function is non-interactive and expects all validations to be done beforehand
 fac_sec_export() {
     if [ -z "$1" ]; then
-        logger -e "Secret name required" >&2
-        logger -i "Usage: secrets export <secret_name>" >&2
+        logit -e "Secret name required" >&2
+        logit -i "Usage: secrets export <secret_name>" >&2
         return 1
     fi
 
@@ -51,12 +51,12 @@ fac_sec_export() {
     fi
     
     if ! fac_sec_secret_exists "$secret_name"; then
-        logger -e "Secret '$secret_name' not found" >&2
+        logit -e "Secret '$secret_name' not found" >&2
         return 1
     fi
     
     if ! fac_sec_is_key_configured; then
-        logger -e "No encryption key configured" >&2
+        logit -e "No encryption key configured" >&2
         if fac_sec_get_user_confirmation "Would you like to set the encryption key now?"; then
             fac_sec_set_key
             if [ $? -ne 0 ]; then
@@ -76,7 +76,7 @@ fac_sec_export() {
         echo "$decrypted_value"
         return 0
     else
-        logger -e "Failed to decrypt secret '$secret_name'" >&2
+        logit -e "Failed to decrypt secret '$secret_name'" >&2
         return 1
     fi
 }
@@ -88,7 +88,7 @@ fac_sec_show_secrets() {
     fac_sec_ensure_encryption_key
     
     if ! fac_sec_secrets_exist; then
-        logger -w "No secrets found"
+        logit -w "No secrets found"
         return 0
     fi
     
@@ -102,10 +102,10 @@ fac_sec_show_secrets() {
             
             echo ""
             if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
-                logger --ansi="34" --icon="$secret_name" "$decrypted_value"
+                logit --ansi="34" --icon="$secret_name" "$decrypted_value"
                 secret_count=$((secret_count + 1))
             else
-                logger --ansi="34" --icon="$secret_name" "⚠️ FAILED TO DECRYPT"
+                logit --ansi="34" --icon="$secret_name" "⚠️ FAILED TO DECRYPT"
             fi
         fi
     done
@@ -117,30 +117,30 @@ fac_sec_show_secrets() {
         echo "To export a secret as environment variables:"
         echo "export SECRET_NAME=\"\$(\$CLI_MAIN secret export 'SECRET_NAME')\""
     else
-        logger -w "No secrets were displayed"
+        logit -w "No secrets were displayed"
     fi
 }
 
 # Remove a secret
 fac_sec_remove_secret() {
     if [ -z "$1" ]; then
-        logger -e "Secret name required"
-        logger -i "Usage: secrets remove <secret_name>"
+        logit -e "Secret name required"
+        logit -i "Usage: secrets remove <secret_name>"
         return 1
     fi
     
     local secret_name="$1"
     
     if ! fac_sec_secret_exists "$secret_name"; then
-        logger -e "Secret '$secret_name' not found"
+        logit -e "Secret '$secret_name' not found"
         return 1
     fi
     
     if fac_sec_get_user_confirmation "Are you sure you want to remove secret '$secret_name'?"; then
         local secret_file=$(fac_sec_secret_file_path "$secret_name")
         rm "$secret_file"
-        logger -o "Secret '$secret_name' removed"
+        logit -o "Secret '$secret_name' removed"
     else
-        logger -i "Operation cancelled"
+        logit -i "Operation cancelled"
     fi
 }

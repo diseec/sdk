@@ -20,14 +20,14 @@ fac_doc_cmd_docker_execute() {
     COMMAND_STR="$*"
 
     if [ "$IS_IN_CONTAINER" = "true" ]; then
-        if [ "$IS_QUIET" != "true" ]; then logger --ansi="36" --icon="$(capitalize $SERVICE_NAME) ▶" "Inside container, Executing '$COMMAND_STR' .."; fi
+        if [ "$IS_QUIET" != "true" ]; then logit --ansi="36" --icon="$(capitalize $SERVICE_NAME) ▶" "Inside container, Executing '$COMMAND_STR' .."; fi
         "$@"
     else
         if _docker compose ps -q "$SERVICE_NAME" | grep -q .; then
-            if [ "$IS_QUIET" != "true" ]; then logger --ansi="96" --icon="$(capitalize $SERVICE_NAME) ●" "Already running, Executing '$COMMAND_STR' .."; fi
+            if [ "$IS_QUIET" != "true" ]; then logit --ansi="96" --icon="$(capitalize $SERVICE_NAME) ●" "Already running, Executing '$COMMAND_STR' .."; fi
             _docker compose exec $OPTIONS "$SERVICE_NAME" "$@"
         else
-            if [ "$IS_QUIET" != "true" ]; then logger --ansi="90" --icon="$(capitalize $SERVICE_NAME) ○" "Not running, Launching an instance, Executing '$COMMAND_STR' .."; fi
+            if [ "$IS_QUIET" != "true" ]; then logit --ansi="90" --icon="$(capitalize $SERVICE_NAME) ○" "Not running, Launching an instance, Executing '$COMMAND_STR' .."; fi
             _docker compose run --rm --no-deps $OPTIONS $RUN_OPTIONS "$SERVICE_NAME" "$@"
         fi
     fi
