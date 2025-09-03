@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source_once "$KIT_SRC_DIR/facades/config/index.sh"
+
 # ========================================
 # CONFIGURATION CLI INTEGRATION
 # ========================================
@@ -37,17 +39,17 @@ done
 eval set -- $(eval echo $ARGS)
 
 c=$1; shift; case $c in
-    get) fac_con_get "$@" "$SCOPE" ;;
-    set) fac_con_set "$@" "$SCOPE" ;;
-    add) fac_con_array_add "$@" "$SCOPE" ;;
-    rem|remove) fac_con_array_remove "$@" "$SCOPE" ;;
-    del|delete) fac_con_delete "$@" "$SCOPE" ;;
-    pat|path) fac_con_get_config_file "$SCOPE" ;;
-    whi|which) fac_con_which "$@" ;;
+    get) src_fac_con_get "$@" "$SCOPE" ;;
+    set) src_fac_con_set "$@" "$SCOPE" ;;
+    add) src_fac_con_array_add "$@" "$SCOPE" ;;
+    rem|remove) src_fac_con_array_remove "$@" "$SCOPE" ;;
+    del|delete) src_fac_con_delete "$@" "$SCOPE" ;;
+    pat|path) src_fac_con_get_config_file "$SCOPE" ;;
+    whi|which) src_fac_con_which "$@" ;;
     pri|print) 
         # Print can work without scope (prints all scopes) or with scope
-        if [ -n "$SCOPE" ]; then fac_con_print "$@" "$SCOPE"
-        else fac_con_print "$@"; fi
+        if [ -n "$SCOPE" ]; then src_fac_con_print "$@" "$SCOPE"
+        else src_fac_con_print "$@"; fi
     ;;
     hel|help|--help|-h) display_help "" "" \
         "$(ansi 97 'Configuration Management System')" "" \

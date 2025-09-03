@@ -1,26 +1,5 @@
 #!/bin/bash
 
-bug() {
-    logit -d "$@"
-}
-
-cli_main() {
-    source "$CLI_MAIN" "$@"
-}
-
-cli_core() {
-    source "$CLI_CORE" "$@"
-}
-
-force_safe() {
-    if [ "$IS_IN_KIT_CONTAINER" = "true" ];
-        then return 1
-        else cli_main safely "$@"; return 0
-    fi
-}
-
-# external api wrappers
-
 _prettier() {
     # cli_main $KIT_NAME run --quiet prettier "$@"
     prettier "$@"

@@ -10,14 +10,14 @@ kit_fac_act_patch() {
         return 1
     fi
 
-    VERSION_SPECIFIER=$(_node -p "require('$TARGET_MOUNTED_DIR/package.json').dependencies?.['@$ORG_NAME/$KIT_NAME'] || require('$TARGET_MOUNTED_DIR/package.json').devDependencies['@$ORG_NAME/$KIT_NAME']")
+    VERSION_SPECIFIER=$(_node -p "require('$TARGET_MOUNTED_DIR/package.json').dependencies?.['$KIT_PACKAGE_NAME'] || require('$TARGET_MOUNTED_DIR/package.json').devDependencies['$KIT_PACKAGE_NAME']")
 
     if [ -z "$VERSION_SPECIFIER" ]; then
-        logit -e "@$ORG_NAME/$KIT_NAME not found in '$TARGET_MOUNTED_DIR/package.json'. $PWD"
+        logit -e "$KIT_PACKAGE_NAME not found in '$TARGET_MOUNTED_DIR/package.json'. $PWD"
         exit 1
     fi
 
-    package_name="@$ORG_NAME/$KIT_NAME@$VERSION_SPECIFIER"
+    package_name="$KIT_PACKAGE_NAME@$VERSION_SPECIFIER"
 
     logit -l "Fetching $package_name from registry .."
     TMPDIR=$(mktemp -d)

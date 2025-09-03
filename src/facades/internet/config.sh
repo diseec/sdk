@@ -145,7 +145,7 @@ SILENT_MODE=false
 # Utility functions
 # ====================================
 # Log a status message with color-coding
-log_status() {
+src_fac_int_log_status() {
     local status="$1"
     local test_name="$2"
     local details="$3"
@@ -171,7 +171,7 @@ log_status() {
 }
 
 # Calculate duration between two timestamps
-calculate_duration() {
+src_fac_int_calculate_duration() {
     local start="$1"
     local end="$2"
     

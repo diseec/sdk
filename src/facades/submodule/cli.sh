@@ -1,88 +1,89 @@
 #!/bin/bash
 
-# Unified submodule management for packages and services
-# Default behavior follows git submodule conventions
+source_once "$KIT_SRC_DIR/facades/submodule/index.sh"
 
-# Parse options
+# Unified submodule management for packages and services
+# Uses structure: command submodule_type/path/to/reponame [options] [arguments]
+
+# Initialize variables
 type=""
 target_dir=""
 repo_name=""
 command=""
+command_args=()
+relative_path=""
+submodule_path=""
 
-# Function to show help
-show_help() {
-    display_help "" "" \
-        "$(ansi 34 'SUBMODULE')" "" \
-        "$(ansi 97 'Unified submodule management for packages and services')" "" \
-        "" "" "$(ansi 97 'Usage:    cli submodule [options] <command> [arguments]')" "" \
-        "$(ansi 97 'Options:')" "" \
-        "  --type <package|service>   " "Specify submodule type (default: auto-detect from target dir)" \
-        "  --dir <directory>          " "Target directory (default: packages/ or services/ based on type)" \
-        "" "" "$(ansi 97 'Commands:')" "" \
-        "  add <name>                 " "Add submodule from repository" \
-        "  rem|remove|rm <name>       " "Remove submodule" \
-        "  upd|update                 " "Update all submodules" \
-        "  run                        " "Run command in service container (services only)" \
-        "  lin|link                   " "Link local package for development (packages only)" \
-        "" "" "$(ansi 97 'Examples:')" "" \
-        "  cli submodule add my-package                    " "Adds to packages/" \
-        "  cli submodule --type service add my-service     " "Adds to services/" \
-        "  cli submodule --dir custom/path add my-repo     " "Custom directory" \
-        "  cli submodule remove my-package                 " "" \
-        "  cli submodule update                             " "" \
-        ""
+# Function to extract information from the path format
+src_fac_sub_parse_path_format() {
+    local full_path="$1"
+    
+    # Split the path into components
+    IFS='/' read -ra path_components <<< "$full_path"
+    
+    # Must have at least 2 segments (type/reponame)
+    if [[ ${#path_components[@]} -lt 2 ]]; then
+        logit -e "Invalid path format. Must be at least 'type/reponame'"
+        return 1
+    fi
+    
+    # Extract type (first component)
+    type="${path_components[0]}"
+    
+    # Extract repo name (last component)
+    repo_name="${path_components[${#path_components[@]}-1]}"
+    
+    # Build the relative path (everything except the repo name)
+    local path_prefix=()
+    for ((i=0; i<${#path_components[@]}-1; i++)); do
+        path_prefix+=("${path_components[$i]}")
+    done
+    
+    # Join the path components for the target directory
+    target_dir=$(IFS='/'; echo "${path_prefix[*]}")
+    
+    # The full submodule path includes the repo name
+    submodule_path="$target_dir/$repo_name"
+    
+    return 0
 }
 
-# Parse command line options
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --type)
-            type="$2"
-            shift 2
-            ;;
-        --dir)
-            target_dir="$2"
-            shift 2
-            ;;
-        --help|-h)
-            show_help
-            exit 0
-            ;;
-        *)
-            if [[ -z "$command" ]]; then
-                command="$1"
-            else
-                repo_name="$1"
-            fi
-            shift
-            ;;
-    esac
-done
+# Parse command line arguments
+if [[ $# -gt 0 ]]; then
+    # First argument is the command
+    command="$1"
+    shift
 
-# Auto-detect type and directory if not specified
-if [[ -z "$type" && -z "$target_dir" ]]; then
-    # Default to submodules
-    type="submodule"
-    target_dir="submodules"
-elif [[ -n "$type" && -z "$target_dir" ]]; then
-    case $type in
-        submodule) target_dir="submodules" ;;
-        package) target_dir="packages" ;;
-        service) target_dir="services" ;;
-        *) logit -e "Unknown type: $type. Use 'package' or 'service'" exit 1 ;;
-    esac
-elif [[ -z "$type" && -n "$target_dir" ]]; then
-    # Auto-detect type from directory
-    case $target_dir in
-        submodules|submodules/*) type="submodule" ;;
-        packages|packages/*) type="package" ;;
-        services|services/*) type="service" ;;
-        *) type="custom" ;;
-    esac
+    # Second argument should be the path if available
+    if [[ $# -gt 0 && "$1" == */* ]]; then
+        src_fac_sub_parse_path_format "$1" || exit 1
+        shift
+    fi
+    
+    # Remaining arguments are command args
+    command_args=("$@")
 fi
 
-# Ensure target directory exists
-mkdir -p "$target_dir"
+# Validate inputs
+if [[ -z "$command" ]]; then
+    logit -e "No command specified"
+    display_help "" "" \
+        "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[D] submodule <command> submodule_type/path/to/reponame [options] [arguments]" \
+        "" "" "$(ansi "1;90" "$(capitalize 'For more information')")" "" \
+        "    Run 'D submodule help' for detailed usage information"
+    exit 1
+elif [[ "$command" != "help" && "$command" != "--help" && "$command" != "-h" && "$command" != "list" && "$command" != "ls" && "$command" != "lis" ]]; then
+    # Most commands require a path specification
+    if [[ -z "$type" || -z "$repo_name" ]]; then
+        logit -e "Missing path specification. Format should be: D submodule $command type/path/to/reponame [args]"
+        exit 1
+    fi
+fi
+
+# Ensure target directory exists if specified
+if [[ -n "$target_dir" ]]; then
+    mkdir -p "$target_dir"
+fi
 
 case $command in
     add)
@@ -91,22 +92,10 @@ case $command in
             exit 1
         fi
         
-        logit "Adding $type '$repo_name' to $target_dir/ .."
+        logit "Adding repository '$repo_name' to $target_dir/ as type '$type'"
         set -e
-        _git submodule add https://$REPO_HUB_URL/$repo_name.git $target_dir/$repo_name
+        _git submodule add https://$REPO_HUB_URL/$repo_name.git $submodule_path
         _git submodule update --init --recursive
-        ;;
-
-    run)
-        if [[ "$type" != "service" ]]; then
-            logit -e "Run command is only available for services"
-            exit 1
-        fi
-        
-        services=$(docker compose config --services)
-        logit --ansi="45" --icon="SERVICES:" "$services"
-        read -p "$(logit --ansi="35" --icon="?" "Specify a service to run:")" service
-        $CLI_MAIN execute "$service" "$@"
         ;;
 
     rem|remove|rm)
@@ -115,44 +104,109 @@ case $command in
             exit 1
         fi
         
-        confirm "Are you sure, remove the $type '$repo_name'?" \
+        confirm "Are you sure you want to remove '$repo_name' from $target_dir/?" \
             set -e; \
-            _git submodule deinit -f -- $target_dir/$repo_name; \
-            rm -rf .git/modules/$target_dir/$repo_name; \
-            _git rm -f $target_dir/$REPO_NAME;
+            _git submodule deinit -f -- $submodule_path; \
+            rm -rf .git/modules/$submodule_path; \
+            _git rm -f $submodule_path;
         ;;
 
     upd|update)
-        logit "Updating all submodules in $target_dir/ .."
-        _git submodule update --remote --merge
+        if [[ -n "$repo_name" ]]; then
+            logit "Updating submodule at $submodule_path"
+            _git submodule update --remote -- $submodule_path
+        else
+            target_to_update=${target_dir:-"."}
+            logit "Updating all submodules in $target_to_update"
+            _git submodule update --remote --merge -- $target_to_update
+        fi
         ;;
 
     lin|link)
-        if [[ "$type" != "package" ]]; then
-            logit -e "Link command is only available for packages"
-            exit 1
+        if [[ -z "$repo_name" ]]; then
+            # Interactive mode if no specific repo is given
+            available_packages=$(ls packages 2>/dev/null || echo '')
+            if [[ -z "$available_packages" ]]; then
+                logit -e "No packages found in packages/"
+                exit 1
+            fi
+            logit --ansi="35" --icon="PACKAGES:" "$available_packages"
+            read -p "$(logit --ansi="35" --icon="?" "Select a package to link: ")" selected_package
+            if [[ -n "$selected_package" ]]; then
+                repo_name="$selected_package"
+                submodule_path="packages/$repo_name"
+            else
+                exit 1
+            fi
+        elif [[ "$type" != "package" && "$type" != "packages" ]]; then
+            logit -w "Linking is typically used with packages. Proceeding anyway with $submodule_path"
         fi
         
-        logit --ansi="35" --icon="PACKAGES:" "$(ls $target_dir 2>/dev/null || echo 'No packages found')"
-        read -p "$(logit --ansi="35" --icon="?" "Select a package to link:")" PACKAGE
-        _npm link ./$target_dir/$PACKAGE
+        if [[ -d "$submodule_path" ]]; then
+            logit "Linking package at $submodule_path"
+            _npm link ./$submodule_path
+        else
+            logit -e "Directory $submodule_path does not exist"
+            exit 1
+        fi
         ;;
 
     lis|list|ls)
-        if [[ -d "$target_dir" ]]; then
-            logit --ansi="45" --icon="${type^^}S in $target_dir:" "$(ls $target_dir 2>/dev/null || echo 'No items found')"
+        search_dir=${target_dir:-"."}
+        if [[ -d "$search_dir" ]]; then
+            if [[ -n "$repo_name" ]]; then
+                # List contents of the specific repo
+                if [[ -d "$submodule_path" ]]; then
+                    logit --ansi="34" --icon="CONTENTS of $submodule_path:" "\n$(ls -la $submodule_path 2>/dev/null || echo 'Empty directory')"
+                else
+                    logit -e "Directory $submodule_path does not exist"
+                    exit 1
+                fi
+            else
+                # List all items in the target directory
+                type_display=${type:-"item"}
+                logit --ansi="34" --icon="${type_display^^}S in $search_dir:" "\n$(ls $search_dir 2>/dev/null || echo 'No items found')"
+            fi
         else
-            logit -w "Directory $target_dir does not exist"
+            logit -w "Directory $search_dir does not exist"
         fi
         ;;
 
+    hel|help|--help|-h) display_help "" "" \
+        "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[D] submodule <command> submodule_type/path/to/reponame [options] [arguments]" \
+        "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$ORG_NAME/$KIT_NAME")")" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Commands')")" "" \
+        "    add <path>               " "Add a new submodule from repository" \
+        "    rem|remove|rm <path>     " "Remove an existing submodule" \
+        "    upd|update [path]        " "Update specific or all submodules" \
+        "    lin|link <path>          " "Link local package for development" \
+        "    lis|list|ls [path]       " "List submodules or contents" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Path Format')")" "" \
+        "    submodule_type/path/repo " "Format: type/path/to/repository" \
+        "                             " "$(ansi "2;90" "Where type is typically 'package', 'service', etc.")" \
+        "                             " "$(ansi "2;90" "The path components between type and repo are optional")" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Examples')")" "" \
+        "    D submodule add package/my-package          " "Add a package submodule" \
+        "    D submodule add service/my-service/api      " "Add with nested path" \
+        "    D submodule remove package/my-package       " "Remove a submodule" \
+        "    D submodule update service/my-service       " "Update specific submodule" \
+        "    D submodule update package                  " "Update all packages" \
+        "    D submodule ls package/my-package           " "List contents of submodule"
+    ;;
     *)
-        if [[ -z "$command" ]]; then
-            show_help
+        if [[ -n "$submodule_path" && -d "$submodule_path" && -f "$submodule_path/cli" ]]; then
+            # If the submodule has a cli script, run it with the command as first argument
+            "$submodule_path/cli" "${command_args[@]}"
+        elif [[ -n "$target_dir" && -d "$target_dir" && -f "$target_dir/cli" ]]; then
+            # If the target directory has a cli script, run it
+            "$target_dir/cli" "${command_args[@]}"
         else
-            logit -e "Unknown command: $command"
-            show_help
+            logit -e "Unknown command: '$command'"
+            display_help "" "" \
+                "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[D] submodule <command> submodule_type/path/to/reponame [options] [arguments]" \
+                "" "" "$(ansi "1;90" "$(capitalize 'For more information')")" "" \
+                "    Run 'D submodule help' for detailed usage information"
+            exit 1
         fi
-        exit 1
-        ;;
+    ;;
 esac

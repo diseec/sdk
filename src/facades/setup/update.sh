@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Get version information for a package
-fac_set_get_version_info() {
-    local package_name="@$ORG_NAME/$KIT_NAME"
+src_fac_set_get_version_info() {
+    local package_name="$KIT_PACKAGE_NAME"
     
     # Get outdated info as JSON
     local outdated_json=$(_npm outdated "$package_name" --json 2>/dev/null)
@@ -38,8 +38,8 @@ fac_set_get_version_info() {
 }
 
 # Check if kit version has changed
-fac_set_has_version_changed() {
-    local package_name="@$ORG_NAME/$KIT_NAME"
+src_fac_set_has_version_changed() {
+    local package_name="$KIT_PACKAGE_NAME"
     
     # Get outdated info as JSON
     local outdated_json=$(_npm outdated "$package_name" --json 2>/dev/null)
@@ -51,7 +51,7 @@ fac_set_has_version_changed() {
     fi
 }
 
-fac_set_cmd_update() {
+src_fac_set_cmd_update() {
     set -e
     
     local IS_RECURSIVE="false"
@@ -73,17 +73,17 @@ fac_set_cmd_update() {
     cli_main install
 
     logit -i "Pulling latest changes..."
-    fac_git_cmd_pull_merge
+    src_fac_git_cmd_pull_merge
 
     if [  "$IS_RECURSIVE" = "true"  ]; then
         logit -l "Updating dependencies in selected submodules..."
         update_dependencies() {
             local module="$1"
             local module_path="$2"
-            cd "$ROOT_DIR/$module_path" && D update --recursive --patch
+            cd "$ROOT_DIR/$module_path" && D --patch api v1 update.--recursive
             logit -l "Updated dependencies for '$module'."
         }
-        fac_wor_foreach_selected_module update_dependencies
+        src_fac_wor_foreach_selected_module update_dependencies
     fi
 
     handle_hook after_update

@@ -1,10 +1,17 @@
 #!/bin/bash
 
-fac_doc_up_development() {
+src_fac_doc_up_development() {
     set -e
 
+    local IS_RECURSIVE="false"
+    ARGS=""; for arg in "$@"; do case "$arg" in
+        -r|--recursive) IS_RECURSIVE="true";;
+    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
+    handle_hook before_dev
+
     # Filter services based on workspace configuration
-    services_filter=$(fac_wor_get_services_filter)
+    services_filter=$(src_fac_wor_get_services_filter)
 
     if [ "$IS_IN_CONTAINER" = "true" ]; then
         if [ -f "$ROOT_DIR/docker-compose.override.yaml" ]; then
@@ -37,4 +44,5 @@ fac_doc_up_development() {
         fi
     fi
 
+    handle_hook after_dev
 }

@@ -105,17 +105,17 @@ fi
 echo -e "\n${YELLOW}Testing functions...${NC}"
 
 # Test that all functions are available
-test_function_exists "env_uti_cli_auto_discovery"
-test_function_exists "get_org_dir"
-test_function_exists "get_cache_dir"
-test_function_exists "env_uti_get_git_config_file"
-test_function_exists "env_uti_get_repo_url"
-test_function_exists "env_uti_get_repo_name"
-test_function_exists "env_uti_get_current_branch"
-test_function_exists "env_uti_is_in_container"
-test_function_exists "env_uti_has_submodules"
-test_function_exists "env_uti_get_kit_version"
-test_function_exists "env_uti_validate_environment"
+test_function_exists "src_cor_env_uti_cli_auto_discovery"
+test_function_exists "src_cor_env_uti_get_org_dir"
+test_function_exists "src_cor_env_uti_get_cache_dir"
+test_function_exists "src_cor_env_uti_get_git_config_file"
+test_function_exists "src_cor_env_uti_get_repo_url"
+test_function_exists "src_cor_env_uti_get_repo_name"
+test_function_exists "src_cor_env_uti_get_current_branch"
+test_function_exists "src_cor_env_uti_is_in_container"
+test_function_exists "src_cor_env_uti_has_submodules"
+test_function_exists "src_cor_env_uti_get_kit_version"
+test_function_exists "src_cor_env_uti_validate_environment"
 
 echo -e "\n${YELLOW}Testing constants...${NC}"
 
@@ -145,7 +145,7 @@ test_variable_set "CURRENT_BRANCH"
 echo -e "\n${YELLOW}Testing environment validation...${NC}"
 
 # Test environment validation
-if env_uti_validate_environment >/dev/null 2>&1; then
+if src_cor_env_uti_validate_environment >/dev/null 2>&1; then
     test_result "Environment validation passes" "PASS"
 else
     test_result "Environment validation passes" "FAIL"

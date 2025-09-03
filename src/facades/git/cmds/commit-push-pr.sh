@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fac_git_cmd_commit_push_pr() {
+src_fac_git_cmd_commit_push_pr() {
     set -e
 
     local IS_RECURSIVE="false"
@@ -10,30 +10,30 @@ fac_git_cmd_commit_push_pr() {
 
     src_inf_check_internet_connection
 
-    fac_git_cmd_checkout_if_detached
-    fac_git_cmd_pull_merge
+    src_fac_git_cmd_checkout_if_detached
+    src_fac_git_cmd_pull_merge
 
     handle_hook before_push
     
-    fac_git_cmd_commit
+    src_fac_git_cmd_commit
 
-    fac_git_cmd_push
+    src_fac_git_cmd_push
 
     if [ "$CURRENT_BRANCH" != "main" ]; then
-        fac_git_cmd_pr_create
+        src_fac_git_cmd_pr_create
     fi
 
     echo "$REPO_NAME: Cpp done."
-    fac_git_cmd_git_log "HEAD"
+    src_fac_git_cmd_git_log "HEAD"
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         echo "$REPO_NAME: Cpp for selected submodules..."
         cpp_submodule() {
             local module="$1"; local module_path="$2"
-            cd "$ROOT_DIR/$module_path" && D git commit-push-pr --recursive
+            cd "$ROOT_DIR/$module_path" && D api v1 git.commit.push.pr.--recursive
             echo "$REPO_NAME: Cpp done for submodule '$module'."
         }
-        fac_wor_foreach_selected_module cpp_submodule
+        src_fac_wor_foreach_selected_module cpp_submodule
     fi
 
     handle_hook after_push

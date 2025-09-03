@@ -1,6 +1,6 @@
 #!/bin/bash
 
-env_uti_validate_environment() {
+src_cor_env_uti_validate_environment() {
     local errors=0
     
     # Check required directories

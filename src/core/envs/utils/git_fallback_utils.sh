@@ -5,7 +5,7 @@
 # =============================================================================
 # Git-related functions and operations
 
-env_uti_get_git_dir() {
+src_cor_env_uti_get_git_dir() {
     find_git_dir_for() {
         local target="$1"
         local git_dir_or_file="$target/.git"
@@ -23,7 +23,7 @@ env_uti_get_git_dir() {
 
         # Submodule or worktree: .git is a file pointing to actual gitdir
         
-        gitdir_ref=$(awk -F': ' '/^gitdir:/ {print $2}' "$git_dir_or_file")
+        local gitdir_ref=$(awk -F': ' '/^gitdir:/ {print $2}' "$git_dir_or_file")
 
         if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then
             echo "$target/$gitdir_ref"
@@ -54,26 +54,26 @@ env_uti_get_git_dir() {
     fi
 }
 
-env_uti_get_git_config_file() {
+src_cor_env_uti_get_git_config_file() {
     local git_dir
-    git_dir=$(env_uti_get_git_dir)
+    git_dir=$(src_cor_env_uti_get_git_dir)
     if [ -d "$git_dir" ]; then
         echo "$git_dir/config"
     fi
 }
 
-env_uti_get_repo_url() {
+src_cor_env_uti_get_repo_url() {
     local git_config_file
-    git_config_file=$(env_uti_get_git_config_file)
+    git_config_file=$(src_cor_env_uti_get_git_config_file)
     
     if [ -f "$git_config_file" ]; then
         awk -F' = ' '/\[remote "origin"\]/ {found=1} found && /url =/ {print $2; exit}' "$git_config_file"
     fi
 }
 
-env_uti_get_repo_name() {
+src_cor_env_uti_get_repo_name() {
     local repo_url
-    repo_url=$(env_uti_get_repo_url)
+    repo_url=$(src_cor_env_uti_get_repo_url)
     
     if [ -n "$repo_url" ]; then
         # Remove trailing .git if present
@@ -81,7 +81,7 @@ env_uti_get_repo_name() {
     fi
 }
 
-env_uti_get_current_branch() {
+src_cor_env_uti_get_current_branch() {
     # Replacement for: git rev-parse --abbrev-ref HEAD
     local git_dir="$ROOT_DIR/.git"
     local head_file=""

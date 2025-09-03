@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fac_git_cmd_pull_merge() {
+src_fac_git_cmd_pull_merge() {
     set -e
 
     local IS_RECURSIVE="false"
@@ -20,8 +20,8 @@ fac_git_cmd_pull_merge() {
         pull_submodule() {
             local module="$1"
             local module_path="$2"
-            cd "$ROOT_DIR/$module_path" && D pull --recursive
+            cd "$ROOT_DIR/$module_path" && D api v1 pull.--recursive
         }
-        fac_wor_foreach_selected_module pull_submodule
+        src_fac_wor_foreach_selected_module pull_submodule
     fi
 }

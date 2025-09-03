@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fac_set_globally() {
+src_fac_set_globally() {
     _npm install -g "$(grep '"name"' $KIT_DIR/package.json | head -n1 | sed 's/.*: *"\([^"]*\)".*/\1/')@latest"
     logit -o "cli_main installed globally"
 }

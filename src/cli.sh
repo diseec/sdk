@@ -8,19 +8,19 @@ ARGS=(); for arg in "$@"; do
 else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
 
 c=$1; shift; case $c in
-    ins|install) cli_main setup project "$@" ;;
+    ins|install) cli_main setup repository "$@" ;;
     ude|update) cli_main setup update "$@" ;;
     sta|status)         
         # # cli_main about
-        # bug "cli_main workspace status"
+        # X "cli_main workspace status"
         cli_main workspace status
-        # bug "src_inf_check_system_dependencies"
+        # X "src_inf_check_system_dependencies"
         cli_main informs src_inf_check_system_dependencies
-        # bug "src_inf_check_internet_connection"
+        # X "src_inf_check_internet_connection"
         cli_main informs src_inf_check_internet_connection
-        # bug "cli_main git status"
+        # X "cli_main git status"
         cli_main git status
-        # bug "src_inf_check_for_updates"
+        # X "src_inf_check_for_updates"
         cli_main informs src_inf_check_for_updates
     ;;
     dev|develop) cli_main docker compose up-dev "$@" ;;
@@ -39,33 +39,21 @@ c=$1; shift; case $c in
     int|internet)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
     ain|ai)        force_safe $c "$@" || source "$KIT_SRC_DIR/facades/ai/cli.sh" "$@" ;;
     git)           force_safe $c "$@" || source "$KIT_SRC_DIR/facades/git/cli.sh" "$@" ;;
-    sub|submodule) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
+    sub|submodule) source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
     con|config)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/config/cli.sh" "$@" ;;
     sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
     wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
     inf|informs) source "$KIT_SRC_DIR/informs/cli.sh" "$@" ;;
-    env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;;
+    env|envs) source "$KIT_SRC_DIR/core/envs/exports.sh" "$@" ;;
     kit) env KIT_TARGET_DIR="$ROOT_DIR" "$KIT_DIR/cli" "$@" ;;
     saf|safely)
         # logit -d "CLI:$CLI_CORE:SAFELY:ARGS: $@";
         cli_main "$KIT_NAME" stop > /dev/null 2>&1 || true ;
-        cli_main "$KIT_NAME" run --quiet "$TARGET_MOUNTED_DIR/cli" "$@"
-        # cli_main "$KIT_NAME" run "$TARGET_MOUNTED_DIR/cli" "$@"
+        # cli_main "$KIT_NAME" run --quiet "$TARGET_MOUNTED_DIR/cli" "$@"
+        cli_main "$KIT_NAME" run "$TARGET_MOUNTED_DIR/cli" "$@"
         # if [ $? -ne 0 ]; then logit -e "Failed to run command in $KIT_NAME container"; fi
     ;;
-    api) c=$1; shift; case $c in
-        v1) c=$1; shift; case $c in
-            install) cli_main install "$@" ;;
-            *) display_help "" "" \
-                "$(ansi 97 'API v1 Commands')" "" \
-                "    install     " "Install API v1 dependencies"
-            ;;
-        esac ;;
-        *) display_help "" "" \
-            "$(ansi 97 'API Commands')" "" \
-            "    v1          " "API version 1 operations"
-        ;;
-    esac ;;
+    api) source "$KIT_SRC_DIR/api/cli.sh" "$@" ;;
     abo|about) about ;;
     hel|help|--help|-h) display_help "" "" \
         "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[D]/[bash cli] [command] [subcommand] [options] [arguments]" \
@@ -100,10 +88,10 @@ c=$1; shift; case $c in
         "    pus|push                 " "$(ansi 96 '✦') $(ansi 90 'Auto-commit and create PR')" \
         "" "" "$(ansi "1;90" "$(capitalize 'Infrastructure')")" "" \
         "    doc|docker               " "Docker operations" \
-        "    sub|submodule            " "Unified submodule management (packages & services)" \
         "" "" "$(ansi "1;90" "$(capitalize 'Configuration')")" "" \
-        "    wor|workspace            " "Workspace configuration" \
         "    con|config               " "Configuration management" \
+        "    sub|submodule            " "Unified submodule management (packages & services)" \
+        "    wor|workspace            " "Workspace configuration" \
         "    sec|secret               " "Encrypted secrets management" \
         "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
         "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
@@ -115,7 +103,11 @@ c=$1; shift; case $c in
         "    kit                      " "SDK container operations" \
         "$@"
     ;;
-    -v|--version) echo "$VERSION" ;;
+    -v|--version)
+        echo "kit: v$VERSION source: $KIT_DIR"
+        d_version="$(_npm list -g @diseec/kit --depth=0 --json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')"
+        echo "D: v$d_version"
+    ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main help; exit 1;

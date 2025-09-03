@@ -11,7 +11,7 @@
 # =============================================================================
 
 # Get configuration directory for a specific scope and ensure it exists
-fac_con_get_config_dir() {
+src_fac_con_get_config_dir() {
     local scope="$1"
     local config_dir=""
     
@@ -32,9 +32,9 @@ fac_con_get_config_dir() {
 }
 
 # Get configuration file path for a specific scope and ensure it exists
-fac_con_get_config_file() {
+src_fac_con_get_config_file() {
     local scope="$1"
-    local config_dir="$(fac_con_get_config_dir "$scope")"
+    local config_dir="$(src_fac_con_get_config_dir "$scope")"
     local config_file=""
     
     case "$scope" in
@@ -58,7 +58,7 @@ fac_con_get_config_file() {
 # =============================================================================
 
 # Validate configuration scope
-fac_con_validate_scope() {
+src_fac_con_validate_scope() {
     local scope="$1"
     
     if [ -z "$scope" ]; then
@@ -78,7 +78,7 @@ fac_con_validate_scope() {
 }
 
 # Validate configuration key path
-fac_con_validate_key_path() {
+src_fac_con_validate_key_path() {
     local key_path="$1"
     
     if [ -z "$key_path" ]; then

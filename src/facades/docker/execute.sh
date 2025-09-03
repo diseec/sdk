@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fac_doc_cmd_docker_execute() {
+src_fac_doc_cmd_docker_execute() {
 
     local IS_QUIET="false"
     ARGS=""; for arg in "$@"; do case "$arg" in

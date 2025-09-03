@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if GitHub cli is installed
-fac_git_cmd_check_gh_cli() {
+src_fac_git_cmd_check_gh_cli() {
   if ! command -v _gh >/dev/null 2>&1; then
     logit -e "GitHub cli (gh) is not installed. Please install it first:"
     return 1

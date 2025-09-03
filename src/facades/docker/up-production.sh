@@ -1,12 +1,12 @@
 #!/bin/bash
 
-fac_doc_up_production() {
+src_fac_doc_up_production() {
     set -e
 
     logit "Starting services in production mode .."
 
     # Filter services based on workspace configuration
-    services_filter=$(fac_wor_get_services_filter)
+    services_filter=$(src_fac_wor_get_services_filter)
 
     # Set up a trap to ensure we stop all containers on exit or interrupt
     cleanup() {

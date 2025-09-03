@@ -100,58 +100,58 @@ project:
 
 ### Core Functions
 
-#### `fac_con_get <key.path> [scope]`
+#### `src_fac_con_get <key.path> [scope]`
 
 Get configuration value with hierarchy resolution
 
 ```bash
-fac_con_get "organization.name"           # Returns from highest precedence scope
-fac_con_get "workspace.submodules" workspace  # Get only from workspace scope
+src_fac_con_get "organization.name"           # Returns from highest precedence scope
+src_fac_con_get "workspace.submodules" workspace  # Get only from workspace scope
 ```
 
-#### `fac_con_set <key.path> <value> [scope]`
+#### `src_fac_con_set <key.path> <value> [scope]`
 
 Set configuration value in specified scope (defaults to workspace)
 
 ```bash
-fac_con_set "defaults.shell" "zsh" global
-fac_con_set "workspace.version" "2.0"         # Sets in workspace scope
+src_fac_con_set "defaults.shell" "zsh" global
+src_fac_con_set "workspace.version" "2.0"         # Sets in workspace scope
 ```
 
-#### `fac_con_delete <key.path> [scope]`
+#### `src_fac_con_delete <key.path> [scope]`
 
 Delete configuration key from specified scope
 
 ```bash
-fac_con_delete "old.setting" workspace
+src_fac_con_delete "old.setting" workspace
 ```
 
 ### Array Operations
 
-#### `fac_con_array_add <key.path> <value> [scope]`
+#### `src_fac_con_array_add <key.path> <value> [scope]`
 
 Add value to configuration array
 
 ```bash
-fac_con_array_add "workspace.submodules" "new-service"
+src_fac_con_array_add "workspace.submodules" "new-service"
 ```
 
-#### `fac_con_array_remove <key.path> <value> [scope]`
+#### `src_fac_con_array_remove <key.path> <value> [scope]`
 
 Remove value from configuration array
 
 ```bash
-fac_con_array_remove "workspace.submodules" "old-service"
+src_fac_con_array_remove "workspace.submodules" "old-service"
 ```
 
 ### Introspection
 
-#### `fac_con_which <key.path>`
+#### `src_fac_con_which <key.path>`
 
 Show configuration value resolution path
 
 ```bash
-fac_con_which "defaults.shell"
+src_fac_con_which "defaults.shell"
 # Output:
 # Configuration resolution for 'defaults.shell':
 #   ✔ [project] zsh (ACTIVE)
@@ -160,22 +160,22 @@ fac_con_which "defaults.shell"
 #   - [global] bash (overridden)
 ```
 
-#### `fac_con_list_keys [scope]`
+#### `src_fac_con_list_keys [scope]`
 
 List all configuration keys
 
 ```bash
-fac_con_list_keys workspace    # List keys from workspace scope
-fac_con_list_keys              # List keys from all scopes
+src_fac_con_list_keys workspace    # List keys from workspace scope
+src_fac_con_list_keys              # List keys from all scopes
 ```
 
-#### `fac_con_print [scope]`
+#### `src_fac_con_print [scope]`
 
 Print configuration for scope or all scopes
 
 ```bash
-fac_con_print workspace        # Print workspace configuration
-fac_con_print                  # Print all configurations
+src_fac_con_print workspace        # Print workspace configuration
+src_fac_con_print                  # Print all configurations
 ```
 
 ## CLI Usage
@@ -286,9 +286,9 @@ The system maintains backward compatibility through wrapper functions:
 
 ### Legacy Workspace Functions
 
-- `fac_wor_config_get()` → `fac_con_get(..., workspace)`
-- `fac_wor_config_set()` → `fac_con_set(..., workspace)`
-- `fac_wor_config_array_add()` → `fac_con_array_add(..., workspace)`
+- `src_fac_wor_config_get()` → `src_fac_con_get(..., workspace)`
+- `src_fac_wor_config_set()` → `src_fac_con_set(..., workspace)`
+- `src_fac_wor_config_array_add()` → `src_fac_con_array_add(..., workspace)`
 
 ## Configuration Storage
 

@@ -3,8 +3,8 @@
 # submodules.sh - Functions for managing git submodules and module discovery
 
 # Get the list of selected submodules from workspace config
-fac_wor_get_selected_modules() {
-    local config_file="$(fac_con_get_config_file workspace)"
+src_fac_wor_get_selected_modules() {
+    local config_file="$(src_fac_con_get_config_file workspace)"
 
     if [ ! -f "$config_file" ]; then
         # If workspace config doesn't exist, just return empty (no submodules selected)
@@ -18,7 +18,7 @@ fac_wor_get_selected_modules() {
 }
 
 # Parse the .gitmodules file to extract available submodules
-fac_wor_get_available_modules() {
+src_fac_wor_get_available_modules() {
     local gitmodules_file="$ROOT_DIR/.gitmodules"
     
     if [ ! -f "$gitmodules_file" ]; then
@@ -33,7 +33,7 @@ fac_wor_get_available_modules() {
 }
 
 # Get the module path from a module name
-fac_wor_get_module_path() {
+src_fac_wor_get_module_path() {
     local module_name="$1"
     
     if [ -z "$module_name" ]; then
@@ -47,9 +47,9 @@ fac_wor_get_module_path() {
 }
 
 # Check if a module is selected in the workspace configuration
-fac_wor_is_module_selected() {
+src_fac_wor_is_module_selected() {
     local module_name="$1"
-    local selected_modules=$(fac_wor_get_selected_modules)
+    local selected_modules=$(src_fac_wor_get_selected_modules)
     
     for selected_module in $selected_modules; do
         if [ "$selected_module" = "$module_name" ]; then
@@ -61,12 +61,12 @@ fac_wor_is_module_selected() {
 }
 
 # Run a callback function for each selected module
-# Usage: fac_wor_foreach_selected_module callback_function [additional_args...]
-fac_wor_foreach_selected_module() {
+# Usage: src_fac_wor_foreach_selected_module callback_function [additional_args...]
+src_fac_wor_foreach_selected_module() {
     if [ "$HAS_SUBMODULES" != "true" ]; then return; fi
     local callback_function="$1"
     shift
-    local selected_modules=$(fac_wor_get_selected_modules)
+    local selected_modules=$(src_fac_wor_get_selected_modules)
 
     if [ -z "$selected_modules" ]; then
         # No submodules selected is a valid state - just return success
@@ -75,7 +75,7 @@ fac_wor_foreach_selected_module() {
     fi
 
     for module in $selected_modules; do
-        local module_path=$(fac_wor_get_module_path "$module")
+        local module_path=$(src_fac_wor_get_module_path "$module")
         if [ -n "$module_path" ]; then
             "$callback_function" "$module" "$module_path" "$@"
         else
@@ -85,8 +85,8 @@ fac_wor_foreach_selected_module() {
 }
 
 # Get a space-separated list of services based on selected modules
-fac_wor_get_services_filter() {
-    local selected_modules=$(fac_wor_get_selected_modules)
+src_fac_wor_get_services_filter() {
+    local selected_modules=$(src_fac_wor_get_selected_modules)
     local services_filter=""
     local docker_compose_file="$ROOT_DIR/docker-compose.yaml"
     

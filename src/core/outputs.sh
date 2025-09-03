@@ -147,7 +147,7 @@ confirm() {
     
     # Read a single character, but allow signal handling
     stty -echo -icanon
-    response=$(head -c1)
+    local response=$(head -c1)
     
         # Restore terminal settings
         stty "$old_settings"
@@ -174,12 +174,13 @@ confirm() {
 display_help() {
     # Loop through the arguments and print them
     while [ "$#" -gt 0 ]; do
-        command=$1
-        description=$2
+        local command=$1
+        local description=$2
         ansi 97 "$command"
         ansi 90 "$description"
         printf "\n"
-        shift 2
+        if [ "$#" -ge 2 ]; then shift 2
+        else shift; fi
     done
     printf "\n"
 }

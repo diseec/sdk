@@ -1,9 +1,11 @@
 #!/bin/bash
 
+source_once "$KIT_SRC_DIR/facades/workspace/index.sh"
+
 c=$1; shift; case "$c" in
-    ini|init) fac_wor_init "$@" ;;
-    sel|select) fac_wor_select "$@" ;;
-    sta|status) fac_wor_status "$@" ;;
+    ini|init) src_fac_wor_init "$@" ;;
+    sel|select) src_fac_wor_select "$@" ;;
+    sta|status) src_fac_wor_status "$@" ;;
     con|config) cli_main config --scope=workspace "$@" ;;
     hel|help|--help|-h) display_help  "" "" \
         "$(ansi 97 'Workspace Commands')" "" \

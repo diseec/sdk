@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fac_for_prettier() {
+src_fac_for_prettier() {
 
     set -e;
 

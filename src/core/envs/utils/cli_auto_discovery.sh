@@ -5,9 +5,11 @@
 # =============================================================================
 # Functions for discovering project structure and paths
 
-env_uti_cli_auto_discovery() {
+src_cor_env_uti_cli_auto_discovery() {
+    if [ "$HAS_DISCOVERED_CLI" = "true" ]; then return 0; fi
+
     # Canonicalize KIT_DIR
-    kitdir=$(cd "$KIT_DIR" 2>/dev/null && pwd) || {
+    local kitdir=$(cd "$KIT_DIR" 2>/dev/null && pwd) || {
         echo "Error: can't access '$KIT_DIR'" >&2
         exit 1
     }
@@ -24,16 +26,17 @@ env_uti_cli_auto_discovery() {
     # fi
     
     # Start from the parent of KIT_DIR, as an absolute, canonical path
-    start=$(cd "$kitdir/.." 2>/dev/null && pwd) || {
+    local start=$(cd "$kitdir/.." 2>/dev/null && pwd) || {
         echo "Error: can't access '$kitdir/..'" >&2
         exit 1
     }
     
-    dir=$start
+    local dir=$start
     while :; do
         if [ -f "$dir/cli" ]; then
             # Skip if it's the same file as $kitdir/cli
             if [ ! -e "$kitdir/cli" ] || [ ! "$dir/cli" -ef "$kitdir/cli" ]; then
+                HAS_DISCOVERED_CLI="true"
                 printf '%s\n' "$dir"
                 return 0
             fi
@@ -46,7 +49,7 @@ env_uti_cli_auto_discovery() {
     exit 1
 }
 
-get_org_dir() {
+src_cor_env_uti_get_org_dir() {
     local org_dir="$HOME/$ORG_NAME"
     if [ ! -d "$org_dir" ]; then 
         mkdir -p "$org_dir"
@@ -54,8 +57,8 @@ get_org_dir() {
     echo "$org_dir"
 }
 
-get_cache_dir() {
-    local org_cache_dir="$(get_org_dir)/.cache"
+src_cor_env_uti_get_cache_dir() {
+    local org_cache_dir="$(src_cor_env_uti_get_org_dir)/.cache"
     if [ ! -d "$org_cache_dir" ]; then 
         mkdir -p "$org_cache_dir"
     fi

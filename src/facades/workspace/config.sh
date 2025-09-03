@@ -12,12 +12,12 @@
 # =============================================================================
 
 # Create workspace configuration with new structure
-fac_wor_create_config() {
-    local config_file="$(fac_con_get_config_file workspace)"
+src_fac_wor_create_config() {
+    local config_file="$(src_fac_con_get_config_file workspace)"
 
     # Check if workspace config already exists and has content
     if [ -f "$config_file" ] && [ -s "$config_file" ]; then
-        local submodules="$(fac_con_get submodules workspace 2>/dev/null)"
+        local submodules="$(src_fac_con_get submodules workspace 2>/dev/null)"
         if [ "$submodules" != "null" ] && [ -n "$submodules" ]; then
             printf "$(logit -q "Workspace config already exists. Overwrite? \033[35m[Y/N]\033[0m")"
             stty -echo -icanon time 0 min 1
@@ -34,7 +34,7 @@ fac_wor_create_config() {
 
     # TODO: this bit must be extracted from here, this file is workspace internal funcitonality but the followings are a specific settings, have a settings dir keep these in
     # Get available submodules
-    available_modules=$(fac_wor_get_available_modules)
+    available_modules=$(src_fac_wor_get_available_modules)
     
     if [ -z "$available_modules" ]; then
         # logit -w "No submodules found in .gitmodules"
@@ -76,10 +76,10 @@ fac_wor_create_config() {
     fi
     
     # Clear existing submodules and set empty array
-    fac_con_delete submodules workspace 2>/dev/null || true
+    src_fac_con_delete submodules workspace 2>/dev/null || true
     
     # Always create empty array first, then add modules
-    local config_file="$(fac_con_get_config_file workspace)"
+    local config_file="$(src_fac_con_get_config_file workspace)"
     if command -v _yq >/dev/null 2>&1; then
         _yq -i ".submodules = []" "$config_file"
     else
@@ -89,7 +89,7 @@ fac_wor_create_config() {
     
     # Add selected modules to the array
     for module in $selected_modules; do
-        fac_con_array_add submodules "$module" workspace
+        src_fac_con_array_add submodules "$module" workspace
     done
 
     logit -l "Workspace configuration saved to $config_file"

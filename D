@@ -1,57 +1,59 @@
 #!/bin/bash
 
-ARGS=(); for arg in "$@"; do
-    if [[ "$arg" == "--patch" && -z "$SEEN_PATCH" ]]; then SEEN_PATCH=1
-        D_IS_FORCE_PATCH="true"
-else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
+source "$(cd "$(npm root -g)" && pwd)/@diseec/kit/index.sh"
 
-dir="$PWD"; while :; do
-    if [ -f "$dir/cli" ]; then
-        ROOT_DIR="$dir";
-        KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
+# ARGS=(); for arg in "$@"; do
+#     if [[ "$arg" == "--patch" && -z "$SEEN_PATCH" ]]; then SEEN_PATCH=1
+#         D_IS_FORCE_PATCH="true"
+# else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
 
-        # Patch operation applied only either asked to or target project is missing the kit
-        if { [ ! -f "$ROOT_DIR/D" ] && { [ ! -d "$KIT_DIR" ] || [ -z "$(ls -A "$KIT_DIR" 2>/dev/null)" ]; } } || [ "$D_IS_FORCE_PATCH" = "true" ]; then
-            # Strategies to patch depending on environment
-            if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
-                # echo "D:DEBUG: already in kit container, running 'act patch'"
-                /kit/cli act patch
-            elif [ -f "/.dockerenv" ]; then
-                printf '%s\n' "Error: not in kit container, aborting patch" >&2
-                exit 1
-            else
-                # echo "D:DEBUG: pulling image.registry.diseec.com/kit"
-                docker pull image.registry.diseec.com/kit \
-                    --disable-content-trust > /dev/null 2>&1
-                if [ $? -ne 0 ]; then logit -e "Failed to pull $KIT_NAME image"; fi
-                # echo "D:DEBUG: running 'act patch' in kit container, mounting: $ROOT_DIR"
-                docker run --quiet --rm -v $ROOT_DIR:/vise -w /vise \
-                    image.registry.diseec.com/kit \
-                    /kit/cli act patch
-                # if [ $? -ne 0 ]; then logit -e "Failed to run patch command in $KIT_NAME image"; fi
-                # echo "D:DEBUG: finished 'act patch' in kit container"
-            fi
-            # abort if patch failed
-            if [ $? -ne 0 ]; then
-                printf '%s\n' "Error: 'act patch' failed" >&2
-                exit 1
-            fi
-        fi
+# dir="$PWD"; while :; do
+#     if [ -f "$dir/cli" ]; then
+#         ROOT_DIR="$dir";
+#         KIT_DIR="$ROOT_DIR/node_modules/@diseec/kit";
 
-        if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ]; then
-            printf '%s\n' "Error: kit not found: $KIT_DIR" >&2
-            printf '%s\n' "Tip: try installing with '--patch' option" >&2
-            exit 1
-        fi
-        break
-    fi
+#         # Patch operation applied only either asked to or target project is missing the kit
+#         if { [ ! -f "$ROOT_DIR/D" ] && { [ ! -d "$KIT_DIR" ] || [ -z "$(ls -A "$KIT_DIR" 2>/dev/null)" ]; } } || [ "$D_IS_FORCE_PATCH" = "true" ]; then
+#             # Strategies to patch depending on environment
+#             if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
+#                 # echo "D:DEBUG: already in kit container, running 'act patch'"
+#                 /kit/cli act patch
+#             elif [ -f "/.dockerenv" ]; then
+#                 printf '%s\n' "Error: not in kit container, aborting patch" >&2
+#                 exit 1
+#             else
+#                 # echo "D:DEBUG: pulling image.registry.diseec.com/kit"
+#                 docker pull image.registry.diseec.com/kit \
+#                     --disable-content-trust > /dev/null 2>&1
+#                 if [ $? -ne 0 ]; then logit -e "Failed to pull $KIT_NAME image"; fi
+#                 # echo "D:DEBUG: running 'act patch' in kit container, mounting: $ROOT_DIR"
+#                 docker run --quiet --rm -v $ROOT_DIR:/vise -w /vise \
+#                     image.registry.diseec.com/kit \
+#                     /kit/cli act patch
+#                 # if [ $? -ne 0 ]; then logit -e "Failed to run patch command in $KIT_NAME image"; fi
+#                 # echo "D:DEBUG: finished 'act patch' in kit container"
+#             fi
+#             # abort if patch failed
+#             if [ $? -ne 0 ]; then
+#                 printf '%s\n' "Error: 'act patch' failed" >&2
+#                 exit 1
+#             fi
+#         fi
 
-    if [ "$dir" = "/" ]; then
-        printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
-        break
-    fi
+#         if [ ! -f "$ROOT_DIR/D" ] && [ ! -d "$KIT_DIR" ]; then
+#             printf '%s\n' "Error: kit not found: $KIT_DIR" >&2
+#             printf '%s\n' "Tip: try installing with '--patch' option" >&2
+#             exit 1
+#         fi
+#         break
+#     fi
 
-    dir=$(dirname -- "$dir")
-done
+#     if [ "$dir" = "/" ]; then
+#         printf '%s\n' "Error: 'cli' not found, try cd to project root" >&2
+#         break
+#     fi
 
-"$ROOT_DIR/cli" "$@";
+#     dir=$(dirname -- "$dir")
+# done
+
+# ("$ROOT_DIR/cli" "$@");

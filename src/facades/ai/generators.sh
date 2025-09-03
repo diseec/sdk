@@ -3,9 +3,9 @@
 # High-level AI content generation functions
 
 # Generate a commit message from git diff data
-# Usage: fac_ai_generate_commit_message "diff_summary" "diff_preview"
+# Usage: src_fac_ai_generate_commit_message "diff_summary" "diff_preview"
 # Output: AI-generated commit message
-fac_ai_generate_commit_message() {
+src_fac_ai_generate_commit_message() {
     local diff_summary="$1"
     local diff_preview="$2"
     
@@ -19,20 +19,20 @@ ${diff_preview}
 
 Please format the response as a commit message with a short title (max 50 chars) on the first line, then a blank line, then bullet points with details if needed."
     
-    fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_CREATIVE_TEMPERATURE" "Update files"
+    src_fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_CREATIVE_TEMPERATURE" "Update files"
 }
 
 # Generate a daily development insight report
-# Usage: fac_ai_generate_daily_insight "analysis_data"
+# Usage: src_fac_ai_generate_daily_insight "analysis_data"
 # Output: AI-generated insight report
-fac_ai_generate_daily_insight() {
+src_fac_ai_generate_daily_insight() {
     local analysis_data="$1"
     
     # Check token count and truncate if necessary
-    local token_count=$(fac_ai_count_tokens "$analysis_data")
+    local token_count=$(src_fac_ai_count_tokens "$analysis_data")
     if [ "$token_count" -gt "$FAC_AI_MAX_INPUT_TOKENS" ]; then
         echo "Analysis data exceeds token limit ($token_count tokens), truncating..." >&2
-        analysis_data=$(fac_ai_truncate_to_token_limit "$analysis_data" "$FAC_AI_MAX_INPUT_TOKENS")
+        analysis_data=$(src_fac_ai_truncate_to_token_limit "$analysis_data" "$FAC_AI_MAX_INPUT_TOKENS")
     fi
     
     local prompt="Analyze the following development activity and create a concise daily insight report.
@@ -57,5 +57,5 @@ Enhanced Authentication and Performance Optimizations
 - Optimized API response caching in services/cache-service
 "
     
-    fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_DEFAULT_TEMPERATURE" "No insights available" "$FAC_AI_MAX_INPUT_TOKENS"
+    src_fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_DEFAULT_TEMPERATURE" "No insights available" "$FAC_AI_MAX_INPUT_TOKENS"
 }

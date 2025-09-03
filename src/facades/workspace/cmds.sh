@@ -3,17 +3,19 @@
 # commands.sh - Command handlers for workspace operations
 
 # Initialize a workspace
-fac_wor_init() {
-    # logit 34 "WORKSPACE" "Initializing workspace configuration"
-    fac_wor_create_config
+src_fac_wor_init() {
+    if [ ! -f "$(src_fac_con_get_config_file workspace)" ] && [ "$HAS_SUBMODULES" = "true" ]; then
+        logit -l "Initializing workspace configuration..."
+        src_fac_wor_create_config
+    fi
 }
 
 # Show workspace status
-fac_wor_status() {
-    local config_file="$(fac_con_get_config_file workspace)"
+src_fac_wor_status() {
+    local config_file="$(src_fac_con_get_config_file workspace)"
     if [ -f "$config_file" ]; then
         logit "config: $config_file"
-        local selected_modules=$(fac_wor_get_selected_modules)
+        local selected_modules=$(src_fac_wor_get_selected_modules)
         if [ -n "$selected_modules" ]; then
             active_modules=""
             for module in $selected_modules; do
@@ -34,7 +36,7 @@ fac_wor_status() {
 }
 
 # Select submodules for workspace
-fac_wor_select() {
+src_fac_wor_select() {
     logit --ansi="34" --icon="WORKSPACE" "Select submodules for your workspace"
-    fac_wor_create_config
+    src_fac_wor_create_config
 }

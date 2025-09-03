@@ -2,7 +2,7 @@
 
 handle_hook() {
     set -e
-    HOOK="${1-}"
+    local HOOK="${1-}"
 
     # Simple, reliable hook handling system
     # --------------------------------------

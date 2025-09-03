@@ -32,28 +32,28 @@ packages/kit/src/core/
 
 - **Purpose**: Functions for discovering project structure and paths
 - **Contents**:
-  - `env_uti_cli_auto_discovery()`: Finds the project root
-  - `get_org_dir()`: Gets/creates organization directory
-  - `get_cache_dir()`: Gets/creates cache directory
+  - `src_cor_env_uti_cli_auto_discovery()`: Finds the project root
+  - `src_cor_env_uti_get_org_dir()`: Gets/creates organization directory
+  - `src_cor_env_uti_get_cache_dir()`: Gets/creates cache directory
 - **Benefits**: Isolated path logic, easier to test and debug
 
 ### 3. Git Utilities (`utils/git-utils.sh`)
 
 - **Purpose**: Git-related operations without using git commands
 - **Contents**:
-  - `env_uti_get_git_config_file()`: Locates git config file
-  - `env_uti_get_repo_url()`: Extracts repository URL
-  - `env_uti_get_repo_name()`: Extracts repository name
-  - `env_uti_get_current_branch()`: Gets current branch name
+  - `src_cor_env_uti_get_git_config_file()`: Locates git config file
+  - `src_cor_env_uti_get_repo_url()`: Extracts repository URL
+  - `src_cor_env_uti_get_repo_name()`: Extracts repository name
+  - `src_cor_env_uti_get_current_branch()`: Gets current branch name
 - **Benefits**: Git operations work even when git is not available
 
 ### 4. Environment Detection (`utils/env_detection.sh`)
 
 - **Purpose**: Detect various environment states
 - **Contents**:
-  - `env_uti_is_in_container()`: Container environment detection
-  - `env_uti_has_submodules()`: Git submodules detection
-  - `env_uti_get_kit_version()`: Extract kit version from package.json
+  - `src_cor_env_uti_is_in_container()`: Container environment detection
+  - `src_cor_env_uti_has_submodules()`: Git submodules detection
+  - `src_cor_env_uti_get_kit_version()`: Extract kit version from package.json
 - **Benefits**: Clear separation of concerns, reusable functions
 
 ### 5. Main Environment (`envs.sh`)
@@ -142,10 +142,10 @@ All variables are exported and available:
 
 ## Validation
 
-Use the `env_uti_validate_environment` function to check if the environment is properly set up:
+Use the `src_cor_env_uti_validate_environment` function to check if the environment is properly set up:
 
 ```bash
-if ! env_uti_validate_environment; then
+if ! src_cor_env_uti_validate_environment; then
     echo "Environment validation failed"
     exit 1
 fi

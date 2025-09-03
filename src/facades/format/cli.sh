@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source_once "$KIT_SRC_DIR/facades/format/index.sh"
+
 c=$1; shift; case $c in
     pre|prettier) fac_for_prettier "$@" ;;
     hel|help|--help|-h)

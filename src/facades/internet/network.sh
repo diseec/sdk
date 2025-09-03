@@ -4,7 +4,7 @@
 # Optimized for Alpine Linux container environment
 
 # Get default gateway using native methods
-get_gateway() {
+src_fac_int_get_gateway() {
     LOCAL_GATEWAY=""
     
     # Try /proc/net/route first (Linux standard)
@@ -36,7 +36,7 @@ get_gateway() {
 }
 
 # Test network interface using Alpine-specific methods
-test_network_interface() {
+src_fac_int_test_network_interface() {
     if [ "$MODE" != "is-online" ] && [ "$SILENT_MODE" != "true" ]; then
         echo ""
         printf "${WHITE}Network Interface Status ${NC}\n"
@@ -79,7 +79,7 @@ test_network_interface() {
                         *) interface_type="Network" ;;
                     esac
                     
-                    log_status "SUCCESS" "$interface_type interface $iface" "IP: $ip, Status: up"
+                    src_fac_int_log_status "SUCCESS" "$interface_type interface $iface" "IP: $ip, Status: up"
                     primary_connection_found=true
                 fi
             fi
@@ -90,16 +90,16 @@ test_network_interface() {
     if [ "$interfaces_checked" -eq 0 ] || [ "$primary_connection_found" = "false" ]; then
         # Quick connectivity check
         if curl -s --max-time $QUICK_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$QUICK_SITE" >/dev/null 2>&1; then
-            log_status "SUCCESS" "Internet connectivity" "External access working (interface details unavailable)"
+            src_fac_int_log_status "SUCCESS" "Internet connectivity" "External access working (interface details unavailable)"
             primary_connection_found=true
         elif ping -c $PING_COUNT -W $QUICK_TIMEOUT $QUICK_DNS >/dev/null 2>&1; then
-            log_status "SUCCESS" "Network connectivity" "Can reach external IP (interface details unavailable)"
+            src_fac_int_log_status "SUCCESS" "Network connectivity" "Can reach external IP (interface details unavailable)"
             primary_connection_found=true
         fi
     fi
     
     if [ "$primary_connection_found" = "false" ]; then
-        log_status "FAIL" "Network interfaces" "No active network interfaces with external connectivity found"
+        src_fac_int_log_status "FAIL" "Network interfaces" "No active network interfaces with external connectivity found"
         return 1
     fi
     

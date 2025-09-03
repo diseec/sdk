@@ -1,17 +1,14 @@
 #!/bin/bash
 
-# Git automation utilities for PR workflows
-# This script provides functions for:
-# 1. Automatically creating PRs with AI-generated commit messages
-# 2. Checking existing PRs for unresolved issues/comments
+source_once "$KIT_SRC_DIR/facades/docker/index.sh"
 
 # cli_main envs > /dev/null # export envs so docker compose can pick them
 
 c=$1; shift; case $c in
     com|compose) c=$1; shift; case $c in
-        ude|up-dev|up) fac_doc_up_development "$@" ;;
-        upr|up-pro) fac_doc_up_production "$@" ;;
-        exe|execute|exec) fac_doc_cmd_docker_execute "$@" ;;
+        ude|up-dev|up) src_fac_doc_up_development "$@" ;;
+        upr|up-pro) src_fac_doc_up_production "$@" ;;
+        exe|execute|exec) src_fac_doc_cmd_docker_execute "$@" ;;
         bpa|build) _docker compose build --parallel "$@" ;;
         _) _docker compose "$@" ;;
         hel|help|--help|-h) display_help "" "" \

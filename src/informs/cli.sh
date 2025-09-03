@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source_once "$KIT_DIR/src/informs/index.sh"
+
 c=$1; shift; case $c in
     src_inf_check_for_updates) src_inf_check_for_updates "$@" ;;
     src_inf_check_for_updates_kit) force_safe informs $c "$@" || src_inf_check_for_updates_kit "$@" ;;
