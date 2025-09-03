@@ -9,8 +9,8 @@ source_once "$KIT_SRC_DIR/facades/git/index.sh"
 
 c=$1; shift; case $c in
     sta|status)
-        src_inf_forbid_dev_on_main
-        src_inf_summary_branch_status
+        cli_main informs src_inf_forbid_dev_on_main
+        cli_main informs src_inf_summary_branch_status
         src_fac_git_cmd_pr_check_status
     ;;
     cpp|commit-push-pr) src_fac_git_cmd_commit_push_pr "$@" ;;
@@ -67,6 +67,7 @@ c=$1; shift; case $c in
         "    D secret add          " "Add OPENAI_API_KEY for AI commit messages" \
         "    gh auth login         " "Authenticate GitHub cli_main for PR management"
     ;;
+    fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main git help; exit 1;

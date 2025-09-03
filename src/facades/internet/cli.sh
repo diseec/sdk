@@ -122,6 +122,7 @@ c=$1; shift; case $c in
             "  -h|--help             " "Show this help message"
         exit 0
         ;;
+    fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main internet help; exit 1;

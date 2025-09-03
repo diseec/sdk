@@ -30,7 +30,7 @@ src_inf_check_for_updates_repo() {
                     return 1  # Exit the loop early
                 fi
             }
-            src_fac_wor_foreach_selected_module check_module_status
+            cli_main workspace function src_fac_wor_foreach_selected_module check_module_status
             
             if $modules_behind; then
                 logit --ansi="34" --icon="↓" "New commits available in one or more selected modules"

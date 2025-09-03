@@ -193,6 +193,7 @@ case $command in
         "    D submodule update package                  " "Update all packages" \
         "    D submodule ls package/my-package           " "List contents of submodule"
     ;;
+    fun|function) "$@" ;;
     *)
         if [[ -n "$submodule_path" && -d "$submodule_path" && -f "$submodule_path/cli" ]]; then
             # If the submodule has a cli script, run it with the command as first argument

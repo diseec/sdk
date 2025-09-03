@@ -8,7 +8,7 @@ src_fac_git_cmd_commit_push_pr() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    src_inf_check_internet_connection
+    cli_main informs src_inf_check_internet_connection
 
     src_fac_git_cmd_checkout_if_detached
     src_fac_git_cmd_pull_merge
@@ -33,7 +33,7 @@ src_fac_git_cmd_commit_push_pr() {
             cd "$ROOT_DIR/$module_path" && D api v1 git.commit.push.pr.--recursive
             echo "$REPO_NAME: Cpp done for submodule '$module'."
         }
-        src_fac_wor_foreach_selected_module cpp_submodule
+        cli_main workspace function src_fac_wor_foreach_selected_module cpp_submodule
     fi
 
     handle_hook after_push

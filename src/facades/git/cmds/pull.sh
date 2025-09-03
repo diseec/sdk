@@ -22,6 +22,6 @@ src_fac_git_cmd_pull_merge() {
             local module_path="$2"
             cd "$ROOT_DIR/$module_path" && D api v1 pull.--recursive
         }
-        src_fac_wor_foreach_selected_module pull_submodule
+        cli_main workspace function src_fac_wor_foreach_selected_module pull_submodule
     fi
 }

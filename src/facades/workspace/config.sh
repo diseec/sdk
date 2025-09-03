@@ -13,11 +13,11 @@
 
 # Create workspace configuration with new structure
 src_fac_wor_create_config() {
-    local config_file="$(src_fac_con_get_config_file workspace)"
+    local config_file="$(cli_main config function src_fac_con_get_config_file workspace)"
 
     # Check if workspace config already exists and has content
     if [ -f "$config_file" ] && [ -s "$config_file" ]; then
-        local submodules="$(src_fac_con_get submodules workspace 2>/dev/null)"
+        local submodules="$(cli_main config function src_fac_con_get submodules workspace 2>/dev/null)"
         if [ "$submodules" != "null" ] && [ -n "$submodules" ]; then
             printf "$(logit -q "Workspace config already exists. Overwrite? \033[35m[Y/N]\033[0m")"
             stty -echo -icanon time 0 min 1
@@ -76,10 +76,10 @@ src_fac_wor_create_config() {
     fi
     
     # Clear existing submodules and set empty array
-    src_fac_con_delete submodules workspace 2>/dev/null || true
+    cli_main config function src_fac_con_delete submodules workspace 2>/dev/null || true
     
     # Always create empty array first, then add modules
-    local config_file="$(src_fac_con_get_config_file workspace)"
+    local config_file="$(cli_main config function src_fac_con_get_config_file workspace)"
     if command -v _yq >/dev/null 2>&1; then
         _yq -i ".submodules = []" "$config_file"
     else
@@ -89,7 +89,7 @@ src_fac_wor_create_config() {
     
     # Add selected modules to the array
     for module in $selected_modules; do
-        src_fac_con_array_add submodules "$module" workspace
+        cli_main config function src_fac_con_array_add submodules "$module" workspace
     done
 
     logit -l "Workspace configuration saved to $config_file"

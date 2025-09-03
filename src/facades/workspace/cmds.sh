@@ -4,7 +4,7 @@
 
 # Initialize a workspace
 src_fac_wor_init() {
-    if [ ! -f "$(src_fac_con_get_config_file workspace)" ] && [ "$HAS_SUBMODULES" = "true" ]; then
+    if [ ! -f "$(cli_main config function src_fac_con_get_config_file workspace)" ] && [ "$HAS_SUBMODULES" = "true" ]; then
         logit -l "Initializing workspace configuration..."
         src_fac_wor_create_config
     fi
@@ -12,7 +12,7 @@ src_fac_wor_init() {
 
 # Show workspace status
 src_fac_wor_status() {
-    local config_file="$(src_fac_con_get_config_file workspace)"
+    local config_file="$(cli_main config function src_fac_con_get_config_file workspace)"
     if [ -f "$config_file" ]; then
         logit "config: $config_file"
         local selected_modules=$(src_fac_wor_get_selected_modules)

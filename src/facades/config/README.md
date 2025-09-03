@@ -284,12 +284,6 @@ For complex configurations, you may need to manually review and adjust:
 
 The system maintains backward compatibility through wrapper functions:
 
-### Legacy Workspace Functions
-
-- `src_fac_wor_config_get()` → `src_fac_con_get(..., workspace)`
-- `src_fac_wor_config_set()` → `src_fac_con_set(..., workspace)`
-- `src_fac_wor_config_array_add()` → `src_fac_con_array_add(..., workspace)`
-
 ## Configuration Storage
 
 - **Global config:** `~/.diseec/config.yaml` (organization defaults, encryption keys)

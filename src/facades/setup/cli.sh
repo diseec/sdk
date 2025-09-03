@@ -35,5 +35,6 @@ c=$1; shift; case $c in
             "    glo|globally  " "Install tools globally for developer machine" \
             "$@"
         ;;
-    *) if [ ! -z "$c" ]; then echo "Unknown command: '$c'"; fi ;;
+    fun|function) "$@" ;;
+    *) if [ ! -z "$c" ]; then logit -e "Unknown command: '$c'"; fi ;;
 esac

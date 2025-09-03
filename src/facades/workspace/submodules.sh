@@ -4,7 +4,7 @@
 
 # Get the list of selected submodules from workspace config
 src_fac_wor_get_selected_modules() {
-    local config_file="$(src_fac_con_get_config_file workspace)"
+    local config_file="$(cli_main config function src_fac_con_get_config_file workspace)"
 
     if [ ! -f "$config_file" ]; then
         # If workspace config doesn't exist, just return empty (no submodules selected)

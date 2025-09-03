@@ -13,6 +13,7 @@ c=$1; shift; case "$c" in
     pri|print) src_fac_sec_show_secrets "$@" ;;
     cle|clear) src_fac_sec_clear_secrets "$@" ;;
     rem|remove|rm|del|delete) src_fac_sec_remove_secret "$@" ;;
+    fun|function) "$@" ;;
     *) display_help "" "" \
         "$(ansi 97 'Secrets Commands')" "" \
         "    kse|key-set            " "Set encryption key manually" \

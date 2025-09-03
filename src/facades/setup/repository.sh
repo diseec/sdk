@@ -25,11 +25,11 @@ src_fac_set_repository() {
     cli_main safely workspace init;
     if [ ! -f "$(cli_main workspace config path)" ] && [ "$HAS_SUBMODULES" = "true" ]; then
         logit -l "Initializing workspace configuration..."
-        src_fac_wor_init
+        cli_main workspace function src_fac_wor_init
     fi
 
-    src_fac_git_cmd_checkout_branch
-    src_fac_git_cmd_checkout_if_detached
+    cli_main git function src_fac_git_cmd_checkout_branch
+    cli_main git function src_fac_git_cmd_checkout_if_detached
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         logit -l "Cloning selected submodules..."
@@ -38,7 +38,7 @@ src_fac_set_repository() {
             _git submodule update --init --recursive --remote "$module_path"
             logit -l "Initialized submodule '$module_path'."
         }
-        src_fac_wor_foreach_selected_module initialize_submodule
+        cli_main workspace function src_fac_wor_foreach_selected_module initialize_submodule
     fi
 
     cli_main kit stop;
@@ -51,7 +51,7 @@ src_fac_set_repository() {
             cd "$ROOT_DIR/$module_path" && D --patch api v1 install.--recursive
             logit -l "Installed dependencies for '$module'."
         }
-        src_fac_wor_foreach_selected_module install_dependencies
+        cli_main workspace function src_fac_wor_foreach_selected_module install_dependencies
     fi
 
     handle_hook after_install

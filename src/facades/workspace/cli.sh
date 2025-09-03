@@ -14,5 +14,6 @@ c=$1; shift; case "$c" in
         "    sta|status    " "Show current workspace configuration" \
         "    con|config    " "Manage workspace configuration (get/set/delete/list)"
     ;;
-    *) if [ ! -z "$c" ]; then echo "workspace: Unknown command: '$c'"; fi ;;
+    fun|function) "$@" ;;
+    *) if [ ! -z "$c" ]; then logit -e "Unknown command: '$c'"; fi ;;
 esac

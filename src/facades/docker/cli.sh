@@ -30,6 +30,7 @@ c=$1; shift; case $c in
         "    com|compose         " "Docker compose operations" \
         "    _                   " "Direct docker command passthrough"
     ;;
+    fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main docker help; exit 1;

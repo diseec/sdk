@@ -11,7 +11,7 @@ src_fac_doc_up_development() {
     handle_hook before_dev
 
     # Filter services based on workspace configuration
-    services_filter=$(src_fac_wor_get_services_filter)
+    services_filter=$(cli_main workspace function src_fac_wor_get_services_filter)
 
     if [ "$IS_IN_CONTAINER" = "true" ]; then
         if [ -f "$ROOT_DIR/docker-compose.override.yaml" ]; then
