@@ -171,6 +171,154 @@ confirm() {
     esac
 }
 
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ INPUT FUNCTION - Interactive User Input with Validation & Styling       ┃
+# ┃ Provides a consistent, user-friendly way to collect input from users     ┃
+# ┃ with optional validation, default values, and secure hidden input        ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+input() {
+    # BASIC USAGE:
+    #   result=$(input "Prompt text:")
+    #   Returns user input as a string
+    #
+    # PARAMETERS:
+    #   $1              Required prompt text to display to user
+    #   --default=VAL   Default value (shown in gray, used if user presses enter)
+    #   --validate=REG  Regex pattern for input validation
+    #   --error=MSG     Custom error message for validation failures
+    #   --hidden        Hide input (for passwords, no echo to terminal)
+    #   --optional      Allow empty input (default: input is required)
+    #
+    # EXAMPLES:
+    #   # Basic required input
+    #   name=$(input "Enter your name:")
+    #
+    #   # Input with default value
+    #   port=$(input "Enter port:" --default="3000")
+    #   email=$(input "Enter email:" --default="user@example.com")
+    #
+    #   # Input with validation
+    #   age=$(input "Enter age:" --validate="^[0-9]+$" --error="Age must be a number")
+    #   ip=$(input "IP address:" --validate="^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
+    #
+    #   # Secure password input (hidden)
+    #   password=$(input "Enter password:" --hidden)
+    #   token=$(input "API token:" --hidden --validate="^[a-zA-Z0-9]{20,}$")
+    #
+    #   # Optional input (can be empty)
+    #   comment=$(input "Any comments:" --optional)
+    #   description=$(input "Description:" --optional --default="No description")
+    #
+    #   # Complex validation examples
+    #   username=$(input "Username:" --validate="^[a-zA-Z0-9_]{3,20}$" \
+    #              --error="Username: 3-20 chars, letters/numbers/underscore only")
+    #   url=$(input "Website URL:" --validate="^https?://.*" \
+    #         --error="URL must start with http:// or https://")
+    #
+    # FEATURES:
+    #   - Consistent styling using logit() and ansi() functions
+    #   - Proper signal handling (Ctrl+C safe)
+    #   - Input validation with regex patterns
+    #   - Default values displayed in gray brackets
+    #   - Hidden input mode for sensitive data
+    #   - Retry loop for invalid input with clear error messages
+    #   - Optional vs required input modes
+    #   - Terminal state preservation and restoration
+    
+    local prompt="$1"; shift
+    local default_value=""
+    local validate_pattern=""
+    local error_message="Invalid input. Please try again."
+    local hidden=false
+    local required=true
+    
+    # Parse options
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --default=*)
+                default_value="${1#*=}"
+                required=false
+                shift
+                ;;
+            --validate=*)
+                validate_pattern="${1#*=}"
+                shift
+                ;;
+            --error=*)
+                error_message="${1#*=}"
+                shift
+                ;;
+            --hidden)
+                hidden=true
+                shift
+                ;;
+            --optional)
+                required=false
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+    
+    # Store original terminal settings
+    local old_settings=$(stty -g)
+    trap 'stty "$old_settings"; echo ""; return 1' INT TERM
+    
+    while true; do
+        # Display prompt
+        local display_prompt="$prompt"
+        if [ -n "$default_value" ]; then
+            display_prompt="$prompt [$(ansi 90 "$default_value")]"
+        fi
+        
+        printf "$(logit --ansi="34" --icon=">" "$display_prompt") "
+        
+        # Read input
+        local user_input=""
+        if [ "$hidden" = true ]; then
+            # Hidden input (like password)
+            stty -echo
+            read user_input
+            stty echo
+            printf "\n"
+        else
+            # Normal input
+            read user_input
+        fi
+        
+        # Use default if input is empty and default exists
+        if [ -z "$user_input" ] && [ -n "$default_value" ]; then
+            user_input="$default_value"
+        fi
+        
+        # Check if input is required
+        if [ "$required" = true ] && [ -z "$user_input" ]; then
+            logit -e "Input is required."
+            continue
+        fi
+        
+        # Validate input if pattern provided
+        if [ -n "$validate_pattern" ] && [ -n "$user_input" ]; then
+            if ! echo "$user_input" | grep -qE "$validate_pattern"; then
+                logit -e "$error_message"
+                continue
+            fi
+        fi
+        
+        # Input is valid, break the loop
+        break
+    done
+    
+    # Restore terminal settings
+    stty "$old_settings"
+    trap - INT TERM
+    
+    # Return the input
+    echo "$user_input"
+}
+
 display_help() {
     # Loop through the arguments and print them
     while [ "$#" -gt 0 ]; do
