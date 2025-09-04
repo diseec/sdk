@@ -7,12 +7,13 @@ ARGS=""; for arg in "$@"; do case "$arg" in
 *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
 PWD_WORK_DIR="$(src_cor_env_uti_cli_auto_discovery "$PWD")";
-
+X $PWD_WORK_DIR
 if [ -n "$PWD_WORK_DIR" ]; then
     "$PWD_WORK_DIR/cli" install function src_fac_set_ensure_patched \
         "${D_IS_FORCE_PATCH:-false}" "$PWD_WORK_DIR"
     "$PWD_WORK_DIR/cli" "$@"
 elif [ -n "$WORK_DIR" ]; then
+    X
     "$WORK_DIR/cli" "$@"
 else
     "$SDK_DIR/cli" "$@"

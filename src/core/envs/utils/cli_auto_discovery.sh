@@ -6,6 +6,10 @@
 # Functions for discovering project structure and paths
 
 src_cor_env_uti_cli_auto_discovery() {
+    # Initialize HAS_DISCOVERED_CLI if not set
+    : ${HAS_DISCOVERED_CLI:=false}
+    : ${IS_SDK_CLI:=false}
+    
     if [ "$HAS_DISCOVERED_CLI" = "true" ]; then return 0; fi
 
     # Canonicalize SDK_DIR

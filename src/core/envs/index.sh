@@ -69,7 +69,7 @@ readonly CURRENT_BRANCH
 
 src_cor_env_uti_validate_environment
 
-
+D_LOG_LEVEL="DEBUG" # change this to info when app stable
 ARGS=""; for arg in "$@"; do case "$arg" in
     --log-level=*) export D_LOG_LEVEL="${arg#*=}";;
     # --log-level*) export D_LOG_LEVEL="${arg#--log-level }";;
