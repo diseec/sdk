@@ -3,7 +3,7 @@
 # Diagnostic utilities for internet connectivity issues
 
 # Diagnose connection issues based on test results
-diagnose_connection_issues() {
+src_fac_int_diagnose_connection_issues() {
     if [ "$SILENT_MODE" != "true" ]; then
         echo ""
         printf "${WHITE}Connection Diagnosis ${NC}\n"
@@ -11,8 +11,8 @@ diagnose_connection_issues() {
     
     # Determine the failure pattern
     if [ "$GATEWAY_STATUS" = "FAIL" ]; then
-        log_status "INFO" "Diagnosis" "Network layer issue: Cannot reach gateway"
-        log_status "INFO" "Recommendation" "Check container network configuration and Docker network settings"
+        src_fac_int_log_status "INFO" "Diagnosis" "Network layer issue: Cannot reach gateway"
+        src_fac_int_log_status "INFO" "Recommendation" "Check container network configuration and Docker network settings"
         return
     fi
     
@@ -20,48 +20,48 @@ diagnose_connection_issues() {
         # Check if DNS servers are unreachable but internet still works
         if curl -s --max-time $QUICK_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$QUICK_SITE" >/dev/null 2>&1 || \
            curl -s --max-time $QUICK_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$ALTERNATIVE_QUICK_SITE" >/dev/null 2>&1; then
-            log_status "INFO" "Diagnosis" "DNS servers unreachable but internet is working"
-            log_status "INFO" "Recommendation" "Check your network configuration"
+            src_fac_int_log_status "INFO" "Diagnosis" "DNS servers unreachable but internet is working"
+            src_fac_int_log_status "INFO" "Recommendation" "Check your network configuration"
             return
         fi
         
-        log_status "INFO" "Diagnosis" "DNS layer issue: Cannot reach DNS servers"
+        src_fac_int_log_status "INFO" "Diagnosis" "DNS layer issue: Cannot reach DNS servers"
         
         # Check if we can ping an IP but not DNS servers
         if ping -c $PING_COUNT -W $DNS_PING_TIMEOUT $PRIMARY_DNS_SERVER >/dev/null 2>&1 || ping -c $PING_COUNT -W $DNS_PING_TIMEOUT $SECONDARY_DNS_SERVER >/dev/null 2>&1; then
-            log_status "INFO" "Recommendation" "DNS servers may be blocked/filtered in your region"
-            log_status "INFO" "Recommendation" "Try using alternative DNS servers or DNS over HTTPS/TLS"
+            src_fac_int_log_status "INFO" "Recommendation" "DNS servers may be blocked/filtered in your region"
+            src_fac_int_log_status "INFO" "Recommendation" "Try using alternative DNS servers or DNS over HTTPS/TLS"
         else
-            log_status "INFO" "Recommendation" "Check network configuration and firewall settings"
+            src_fac_int_log_status "INFO" "Recommendation" "Check network configuration and firewall settings"
         fi
         return
     fi
     
     if [ "$HTTP_STATUS" = "BLOCKED" ]; then
-        log_status "INFO" "Diagnosis" "HTTP(S) traffic is being filtered or blocked"
-        log_status "INFO" "Recommendation" "Iran internet censorship detected - consider using a VPN or proxy"
+        src_fac_int_log_status "INFO" "Diagnosis" "HTTP(S) traffic is being filtered or blocked"
+        src_fac_int_log_status "INFO" "Recommendation" "Iran internet censorship detected - consider using a VPN or proxy"
         
         # Check specific services that might be accessible
-        log_status "INFO" "Testing" "Checking for partial connectivity..."
+        src_fac_int_log_status "INFO" "Testing" "Checking for partial connectivity..."
         
         if curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$LOCAL_TEST_SITE" >/dev/null 2>&1; then
-            log_status "SUCCESS" "Local Services" "Local Iranian services are accessible"
+            src_fac_int_log_status "SUCCESS" "Local Services" "Local Iranian services are accessible"
         fi
         
         return
     fi
     
     if [ "$HTTP_STATUS" = "FAIL" ]; then
-        log_status "INFO" "Diagnosis" "Internet connectivity issue: Cannot access websites"
+        src_fac_int_log_status "INFO" "Diagnosis" "Internet connectivity issue: Cannot access websites"
         
         # Check if DNS resolution works
         if command -v nslookup >/dev/null 2>&1; then
             if nslookup $DNS_TEST_DOMAIN >/dev/null 2>&1; then
-                log_status "INFO" "DNS Resolution" "DNS resolution works but HTTP access fails"
-                log_status "INFO" "Recommendation" "HTTP traffic may be blocked by firewall or proxy"
+                src_fac_int_log_status "INFO" "DNS Resolution" "DNS resolution works but HTTP access fails"
+                src_fac_int_log_status "INFO" "Recommendation" "HTTP traffic may be blocked by firewall or proxy"
             else
-                log_status "INFO" "DNS Resolution" "DNS resolution fails"
-                log_status "INFO" "Recommendation" "Check DNS configuration or try alternative DNS"
+                src_fac_int_log_status "INFO" "DNS Resolution" "DNS resolution fails"
+                src_fac_int_log_status "INFO" "Recommendation" "Check DNS configuration or try alternative DNS"
             fi
         fi
         
@@ -69,12 +69,12 @@ diagnose_connection_issues() {
     fi
     
     # If we got here, something else is wrong
-    log_status "INFO" "Diagnosis" "Unable to determine the exact issue"
-    log_status "INFO" "Recommendation" "Run the 'diagnose' command for more detailed analysis"
+    src_fac_int_log_status "INFO" "Diagnosis" "Unable to determine the exact issue"
+    src_fac_int_log_status "INFO" "Recommendation" "Run the 'diagnose' command for more detailed analysis"
 }
 
 # Advanced diagnostics for MTU and connection issues
-advanced_diagnostics() {
+src_fac_int_advanced_diagnostics() {
     if [ "$SILENT_MODE" != "true" ]; then
         echo ""
         printf "${WHITE}Advanced Network Diagnostics ${NC}\n"
@@ -87,9 +87,9 @@ advanced_diagnostics() {
             # Extract MTU value using awk instead of grep -P
             local mtu_value=$(echo "$mtu_info" | grep "mtu" | awk '{for(i=1;i<=NF;i++) if($i ~ /^mtu/) print $(i+1)}')
             if [ -n "$mtu_value" ]; then
-                log_status "INFO" "MTU Setting" "Current MTU: $mtu_value"
+                src_fac_int_log_status "INFO" "MTU Setting" "Current MTU: $mtu_value"
                 if [ "$mtu_value" -lt $GOOD_MTU ]; then
-                    log_status "WARNING" "MTU Setting" "MTU is less than acceptable $GOOD_MTU bytes, which may cause issues with some sites"
+                    src_fac_int_log_status "WARNING" "MTU Setting" "MTU is less than acceptable $GOOD_MTU bytes, which may cause issues with some sites"
                 fi
             fi
         fi
@@ -97,36 +97,36 @@ advanced_diagnostics() {
     
     # Check for SSL/TLS interception
     if command -v curl >/dev/null 2>&1; then
-        # log_status "INFO" "Testing" "Checking for SSL/TLS interception..."
+        # src_fac_int_log_status "INFO" "Testing" "Checking for SSL/TLS interception..."
         
         local cert_info=$(curl -sI https://$SSL_CHECK_SITE 2>/dev/null | grep -i "server:" | head -1)
         if [ -n "$cert_info" ]; then
-            log_status "INFO" "SSL/TLS Interception" "Server response: $cert_info"
+            src_fac_int_log_status "INFO" "SSL/TLS Interception" "Server response: $cert_info"
         fi
     fi
     
     # Check traceroute if available
     if command -v traceroute >/dev/null 2>&1; then
-        # log_status "INFO" "Testing" "Checking network path to $TRACE_TARGET..."
+        # src_fac_int_log_status "INFO" "Testing" "Checking network path to $TRACE_TARGET..."
         
         local traceroute_output=$(timeout ${TRACEROUTE_TIMEOUT}s traceroute -m $TRACEROUTE_MAX_HOPS -q 1 $TRACE_TARGET 2>/dev/null)
         if [ -n "$traceroute_output" ]; then
             # Count hops
             local hop_count=$(echo "$traceroute_output" | grep -c "^[0-9]")
-            log_status "INFO" "Network Path" "$hop_count hops to destination"
+            src_fac_int_log_status "INFO" "Network Path" "$hop_count hops to destination"
             
             # Check for timeouts
             local timeout_count=$(echo "$traceroute_output" | grep -c "\* \* \*")
             if [ "$timeout_count" -gt 0 ]; then
-                log_status "WARNING" "Network Path" "$timeout_count hops timed out, possible filtering or routing issues"
+                src_fac_int_log_status "WARNING" "Network Path" "$timeout_count hops timed out, possible filtering or routing issues"
             fi
         else
-            log_status "FAIL" "Network Path" "Unable to trace route to destination"
+            src_fac_int_log_status "FAIL" "Network Path" "Unable to trace route to destination"
         fi
     fi
     
     # Check for transparent proxies
-    # log_status "INFO" "Testing" "Checking for transparent proxies..."
+    # src_fac_int_log_status "INFO" "Testing" "Checking for transparent proxies..."
     
     local proxy_detected=false
     if curl -s -m $PROXY_CHECK_TIMEOUT "https://$IP_CHECK_SERVICE1" >/dev/null 2>&1; then
@@ -134,15 +134,15 @@ advanced_diagnostics() {
         local alternative_ip=$(curl -s -m $PROXY_CHECK_TIMEOUT "https://$IP_CHECK_SERVICE2" 2>/dev/null)
         
         if [ -n "$public_ip" ] && [ -n "$alternative_ip" ] && [ "$public_ip" != "$alternative_ip" ]; then
-            log_status "WARNING" "Proxy Detection" "Different IPs detected from multiple services, possible transparent proxy"
+            src_fac_int_log_status "WARNING" "Proxy Detection" "Different IPs detected from multiple services, possible transparent proxy"
             proxy_detected=true
         elif [ -n "$public_ip" ]; then
-            log_status "INFO" "Transparent Proxies" "Public IP: $public_ip"
+            src_fac_int_log_status "INFO" "Transparent Proxies" "Public IP: $public_ip"
         fi
     fi
     
     # Check for common Iranian censorship patterns
-    # log_status "INFO" "Testing" "Checking for censorship patterns..."
+    # src_fac_int_log_status "INFO" "Testing" "Checking for censorship patterns..."
     
     # local censorship_detected=false
     
@@ -154,14 +154,14 @@ advanced_diagnostics() {
     #     if curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$LOCAL_TEST_SITE" >/dev/null 2>&1 || \
     #        curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$LOCAL_TEST_SITE2" >/dev/null 2>&1; then
     #         # But Iranian sites work
-    #         log_status "WARNING" "Censorship" "Iranian internet filtering detected (international sites blocked, local sites accessible)"
+    #         src_fac_int_log_status "WARNING" "Censorship" "Iranian internet filtering detected (international sites blocked, local sites accessible)"
     #         censorship_detected=true
     #     fi
     # fi
     
     # # Summary
     # if [ "$proxy_detected" = true ] || [ "$censorship_detected" = true ]; then
-    #     log_status "INFO" "Recommendation" "Connection restricted by regional policies. Consider using VPN or proxy services to access blocked content."
+    #     src_fac_int_log_status "INFO" "Recommendation" "Connection restricted by regional policies. Consider using VPN or proxy services to access blocked content."
     # fi
     
     return 0

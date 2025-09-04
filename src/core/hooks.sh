@@ -2,7 +2,7 @@
 
 handle_hook() {
     set -e
-    HOOK="${1-}"
+    local HOOK="${1-}"
 
     # Simple, reliable hook handling system
     # --------------------------------------
@@ -71,7 +71,7 @@ handle_hook() {
 
     # Execute hook in root repo
     if [ -n "${CLI_MAIN-}" ] && [ -x "${CLI_MAIN}" ]; then
-        execute_hook "$ROOT_DIR" "$CLI_MAIN" "$HOOK" "root" || true
+        execute_hook "$WORK_DIR" "$CLI_MAIN" "$HOOK" "root" || true
     fi
 
     # logit -o "hook '$HOOK' execution completed"

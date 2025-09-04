@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fac_git_cmd_push() {
+src_fac_git_cmd_push() {
   set -e
   # Push to remote
   echo "Pushing to remote..."

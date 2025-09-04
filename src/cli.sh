@@ -1,82 +1,55 @@
 #!/bin/bash
 
-ARGS=(); for arg in "$@"; do
-    if [[ "$arg" == "--debug" && -z "$SEEN_DEBUG" ]]; then SEEN_DEBUG=1
-        export D_LOG_LEVEL="DEBUG" # See "message" function 
-    # elif [[ "$arg" == "--example" && -z "$SEEN_EXAMPLE" ]]; then SEEN_EXAMPLE=1
-    #     EXAMPLE="value"
-else ARGS+=("$arg"); fi; done; set -- "${ARGS[@]}"
-
 c=$1; shift; case $c in
-    ins|install) cli_main setup project "$@" ;;
-    ude|update) cli_main setup update "$@" ;;
     sta|status)         
         # # cli_main about
-        # bug "cli_main workspace status"
-        cli_main workspace status
-        # bug "src_inf_check_system_dependencies"
+        # X "cli_main config summary"
+        cli_main config summary
+        # X "src_inf_check_system_dependencies"
         cli_main informs src_inf_check_system_dependencies
-        # bug "src_inf_check_internet_connection"
+        # X "src_inf_check_internet_connection"
         cli_main informs src_inf_check_internet_connection
-        # bug "cli_main git status"
+        # X "cli_main git status"
         cli_main git status
-        # bug "src_inf_check_for_updates"
+        # X "src_inf_check_for_updates"
         cli_main informs src_inf_check_for_updates
     ;;
-    dev|develop) cli_main docker compose up-dev "$@" ;;
-    bpa|build)   cli_main docker compose build "$@" ;;
-    run)         cli_main docker compose execute "$REPO_NAME" "$@" ;;
-    exe|execute) cli_main docker compose execute "$@" ;;
-    she|shell)   cli_main run /bin/bash "$@" ;;
-    pus|push)    cli_main git commit-push-pr "$@" ;;
-    pul|pull)    cli_main git pull "$@" ;;
-    dai|daily)   cli_main git insight-day "$@" ;;
-    tes|test)    $KIT_SRC_DIR/cmds/test.sh "$@" ;;
-    pru|prune)   cli_main docker _ system prune "$@" ;;
-    for|format)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/format/cli.sh" prettier "$@" ;;
-    set|setup)     source "$KIT_SRC_DIR/facades/setup/cli.sh" "$@" ;;
-    doc|docker)    source "$KIT_SRC_DIR/facades/docker/cli.sh" "$@" ;;
-    int|internet)  force_safe $c "$@" || source "$KIT_SRC_DIR/facades/internet/cli.sh" "$@" ;;
-    ain|ai)        force_safe $c "$@" || source "$KIT_SRC_DIR/facades/ai/cli.sh" "$@" ;;
-    git)           force_safe $c "$@" || source "$KIT_SRC_DIR/facades/git/cli.sh" "$@" ;;
-    sub|submodule) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
-    con|config)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/config/cli.sh" "$@" ;;
-    sec|secret)    force_safe $c "$@" || source "$KIT_SRC_DIR/facades/secret/cli.sh" "$@" ;;
-    wor|workspace) force_safe $c "$@" || source "$KIT_SRC_DIR/facades/workspace/cli.sh" "$@" ;;
-    inf|informs) source "$KIT_SRC_DIR/informs/cli.sh" "$@" ;;
-    env|envs) source "$KIT_SRC_DIR/envs/exports.sh" "$@" ;;
-    kit) env KIT_TARGET_DIR="$ROOT_DIR" "$KIT_DIR/cli" "$@" ;;
-    saf|safely)
-        # logit -d "CLI:$CLI_CORE:SAFELY:ARGS: $@";
-        cli_main "$KIT_NAME" stop > /dev/null 2>&1 || true ;
-        cli_main "$KIT_NAME" run --quiet "$TARGET_MOUNTED_DIR/cli" "$@"
-        # cli_main "$KIT_NAME" run "$TARGET_MOUNTED_DIR/cli" "$@"
-        # if [ $? -ne 0 ]; then logit -e "Failed to run command in $KIT_NAME container"; fi
-    ;;
-    api) c=$1; shift; case $c in
-        v1) c=$1; shift; case $c in
-            install) cli_main install "$@" ;;
-            *) display_help "" "" \
-                "$(ansi 97 'API v1 Commands')" "" \
-                "    install     " "Install API v1 dependencies"
-            ;;
-        esac ;;
-        *) display_help "" "" \
-            "$(ansi 97 'API Commands')" "" \
-            "    v1          " "API version 1 operations"
-        ;;
-    esac ;;
-    abo|about) about ;;
+    ins|install)    source "$SDK_SRC_DIR/facades/install/cli.sh" "$@" ;;
+    ude|update)     cli_main install update "$@" ;;
+    dev|develop)    cli_main docker compose up-dev "$@" ;;
+    bpa|build)      cli_main docker compose build "$@" ;;
+    run)            cli_main docker compose execute "$REPO_NAME" "$@" ;;
+    exe|execute)    cli_main docker compose execute "$@" ;;
+    she|shell)      cli_main run /bin/bash "$@" ;;
+    pus|push)       cli_main git commit-push-pr "$@" ;;
+    pul|pull)       cli_main git pull "$@" ;;
+    dai|daily)      cli_main git insight-day "$@" ;;
+    tes|test)       $SDK_SRC_DIR/cmds/test.sh "$@" ;;
+    pru|prune)      cli_main docker _ system prune "$@" ;;
+    for|format)     source_safely "$SDK_SRC_DIR/facades/format/cli.sh" prettier "$@" ;;
+    doc|docker)     source "$SDK_SRC_DIR/facades/docker/cli.sh" "$@" ;;
+    int|internet)   source_safely "$SDK_SRC_DIR/facades/internet/cli.sh" "$@" ;;
+    ain|ai)         source_safely "$SDK_SRC_DIR/facades/ai/cli.sh" "$@" ;;
+    git)            source_safely "$SDK_SRC_DIR/facades/git/cli.sh" "$@" ;;
+    sub|submodule)  source "$SDK_SRC_DIR/facades/submodule/cli.sh" "$@" ;;
+    con|config)     source_safely "$SDK_SRC_DIR/facades/config/cli.sh" "$@" ;;
+    sec|secret)     source_safely "$SDK_SRC_DIR/facades/secret/cli.sh" "$@" ;;
+    set|settings)   source_safely "$SDK_SRC_DIR/facades/settings/cli.sh" "$@" ;;
+    inf|informs)    source "$SDK_SRC_DIR/informs/cli.sh" "$@" ;;
+    env|envs)       source "$SDK_SRC_DIR/core/envs/exports.sh" "$@" ;;
+    sdk)            env WORK_DIR_HOST="$WORK_DIR" "$SDK_DIR/cli" "$@" ;;
+    api)            source "$SDK_SRC_DIR/api/cli.sh" "$@" ;;
+    abo|about)      about ;;
     hel|help|--help|-h) display_help "" "" \
         "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[D]/[bash cli] [command] [subcommand] [options] [arguments]" \
-        "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$ORG_NAME/$KIT_NAME")")" \
+        "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$ORG_NAME/$SDK_NAME")")" \
         "" "" "$(ansi "1;90" "$(capitalize 'Global Manager The "D"')")" "" \
         "    D [option] [arguments]   " "Locate project root and invoke the project's ./cli" \
-        "        about                " "About $KIT_NAME, authors, $ORG_NAME, policies and licensing" \
+        "        about                " "About $SDK_NAME, authors, $ORG_NAME, policies and licensing" \
         "    $(ansi 90 'Options:')" "" \
-        "        --patch              " "Force pull and reinstall kit into project" \
-        "                             " "$(ansi "2;90" "Ensures a fresh kit binary is used,")" \
-        "                             " "$(ansi "2;90" "when the local kit is missing, corrupted,")" \
+        "        --patch              " "Force pull and reinstall sdk into project" \
+        "                             " "$(ansi "2;90" "Ensures a fresh sdk binary is used,")" \
+        "                             " "$(ansi "2;90" "when the local sdk is missing, corrupted,")" \
         "                             " "$(ansi "2;90" "or unable to bootstrap the CLI itself.")" \
         "        --log-level          " "Set the log level for the CLI, valid values: DEBUG, INFO, WARNING, ERROR" \
         "        -v|--version         " "Show version information" \
@@ -100,10 +73,11 @@ c=$1; shift; case $c in
         "    pus|push                 " "$(ansi 96 '✦') $(ansi 90 'Auto-commit and create PR')" \
         "" "" "$(ansi "1;90" "$(capitalize 'Infrastructure')")" "" \
         "    doc|docker               " "Docker operations" \
-        "    sub|submodule            " "Unified submodule management (packages & services)" \
         "" "" "$(ansi "1;90" "$(capitalize 'Configuration')")" "" \
         "    wor|workspace            " "Workspace configuration" \
         "    con|config               " "Configuration management" \
+        "    set|settings             " "Settings operations" \
+        "    sub|submodule            " "Unified submodule management (packages & services)" \
         "    sec|secret               " "Encrypted secrets management" \
         "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
         "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
@@ -112,10 +86,21 @@ c=$1; shift; case $c in
         "                             " "$(ansi "2;90" 'eval "$(cli_main envs)" > /dev/null')" \
         "    saf|safely               " "Safe command execution" \
         "    api                      " "API operations" \
-        "    kit                      " "SDK container operations" \
+        "    sdk                      " "SDK container operations" \
         "$@"
     ;;
-    -v|--version) echo "$VERSION" ;;
+    saf|safely)
+        # logit -d "CLI:$CLI_CORE:SAFELY:ARGS: $@";
+        cli_main "$SDK_NAME" stop > /dev/null 2>&1 || true ;
+        # cli_main "$SDK_NAME" run --quiet "$WORK_DIR_CONTAINER/cli" "$@"
+        cli_main "$SDK_NAME" run "$WORK_DIR_CONTAINER/cli" "$@"
+        # if [ $? -ne 0 ]; then logit -e "Failed to run command in $SDK_NAME container"; fi
+    ;;
+    -v|--version)
+        echo "sdk: v$VERSION source: $SDK_DIR"
+        d_version="$(_npm list -g @diseec/sdk --depth=0 --json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')"
+        echo "D: v$d_version"
+    ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main help; exit 1;

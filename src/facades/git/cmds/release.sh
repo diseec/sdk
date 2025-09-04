@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fac_git_cmd_release() {
+src_fac_git_cmd_release() {
     local TAG="v$(date +%Y%m%d%H%M%S)"
     # git checkout main
     # git pull origin main

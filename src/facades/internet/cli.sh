@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source_once "$SDK_SRC_DIR/facades/internet/index.sh"
+
 # Internet connectivity checker CLI for Alpine container
 
 c=$1; shift; case $c in
@@ -46,7 +48,7 @@ c=$1; shift; case $c in
         quick_check_success=false
         
         # Run comprehensive tests
-        test_network_interface || overall_status=false
+        src_fac_int_test_network_interface || overall_status=false
         
         # Run quick check first to see if we have basic internet connectivity
         if src_fac_int_quick_check; then
@@ -58,7 +60,7 @@ c=$1; shift; case $c in
         
         # Special handling for DNS tests
         dns_result=0
-        test_dns_servers
+        src_fac_int_test_dns_servers
         dns_result=$?
         
         # Consider DNS failure as overall failure
@@ -66,24 +68,24 @@ c=$1; shift; case $c in
             overall_status=false
         fi
         
-        test_international_sites || overall_status=false
-        test_regional_sites || overall_status=false
-        test_cdn_connectivity || overall_status=false
+        src_fac_int_test_international_sites || overall_status=false
+        src_fac_int_test_regional_sites || overall_status=false
+        src_fac_int_test_cdn_connectivity || overall_status=false
         
         # Optional advanced tests
-        # confirm "Run connection quality tests? (takes ~10 seconds)" test_connection_quality
-        test_connection_quality
+        # confirm "Run connection quality tests? (takes ~10 seconds)" src_fac_int_test_connection_quality
+        src_fac_int_test_connection_quality
         
         # If something failed, run the diagnostic
         if [ "$overall_status" = "false" ]; then
-            diagnose_connection_issues
+            src_fac_int_diagnose_connection_issues
         fi
         
         # Offer advanced diagnostics if still failing
         # if [ "$overall_status" = "false" ]; then
-        #     confirm "Run advanced diagnostics? (takes ~15 seconds)" advanced_diagnostics
+        #     confirm "Run advanced diagnostics? (takes ~15 seconds)" src_fac_int_advanced_diagnostics
         # fi
-        advanced_diagnostics
+        src_fac_int_advanced_diagnostics
         
         echo ""
         # Display a summary
@@ -120,6 +122,7 @@ c=$1; shift; case $c in
             "  -h|--help             " "Show this help message"
         exit 0
         ;;
+    fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main internet help; exit 1;

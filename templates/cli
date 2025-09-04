@@ -4,12 +4,12 @@
 # DISEEC DevOps Toolkit
 # This script  provides a unified  command-line interface
 # for  project-level  DevOps  and  automation  tasks.  It
-# leverages  the  @diseec/kit  Node.js  package for  core
+# leverages  the  @diseec/sdk  Node.js  package for  core
 # functionality and can be extended here to add or modify
 # commands specific to this project.
 # -------------------------------------------------------
 
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit/index.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/sdk/index.sh"
 
 c=$1; shift; case $c in
 
@@ -26,8 +26,8 @@ c=$1; shift; case $c in
 
     # hook:after_install) yarn install ;;
 
-    # hel|help|--help|-h) cli_core help "" "" "$(ansi "1;90" "$(capitalize "$REPO_NAME Commands")")" \
-    #     "" "myc|mycommand" "    Display the help message" ;;
+    # hel|help|--help|-h) cli_core help "" "" "$(ansi "1;90" "$(capitalize "$REPO_NAME Commands")")" "" \
+    #     "    myc|mycommand" "            Display the help message" ;;
 
     *) cli_core $c "$@" ;;
 

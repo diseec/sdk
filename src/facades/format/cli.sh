@@ -1,7 +1,9 @@
 #!/bin/bash
 
+source_once "$SDK_SRC_DIR/facades/format/index.sh"
+
 c=$1; shift; case $c in
-    pre|prettier) fac_for_prettier "$@" ;;
+    pre|prettier) src_fac_for_prettier "$@" ;;
     hel|help|--help|-h)
         display_help "" "" \
             "$(ansi 97 'Formatting')" "" \
@@ -12,6 +14,7 @@ c=$1; shift; case $c in
             "    -h|--help             " "Show this help message" \
             "$@"
     ;;
+    fun|function) "$@" ;;
     *)
         display_help "" "" \
             "$(ansi 97 'Formatting')" "" \

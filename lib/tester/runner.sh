@@ -2,7 +2,7 @@
 # Test runner core functionality
 
 # Source required facades
-export TESTER_LIB_DIR="$KIT_SRC_DIR/lib/tester"
+export TESTER_LIB_DIR="$SDK_SRC_DIR/lib/tester"
 source "$TESTER_LIB_DIR/colors.sh"
 source "$TESTER_LIB_DIR/assertions.sh"
 source "$TESTER_LIB_DIR/utils.sh"
@@ -20,7 +20,7 @@ TOTAL_SKIPPED=0
 # Function to find all test files
 find_test_files() {
     local search_pattern="${1:-$DEFAULT_TEST_PATTERN}"
-    local search_dir="${2:-$KIT_DIR}"
+    local search_dir="${2:-$SDK_DIR}"
     
     if [ ! -d "$search_dir" ]; then
         echo "Error: Directory '$search_dir' does not exist" >&2
@@ -36,7 +36,7 @@ list_test_files() {
     test_files=$(find_test_files)
     
     if [ -z "$test_files" ]; then
-        echo -e "${COLOR_WARNING}No test files found in $KIT_DIR${NC}"
+        echo -e "${COLOR_WARNING}No test files found in $SDK_DIR${NC}"
         echo -e "${COLOR_INFO}Searched for: $DEFAULT_TEST_PATTERN${NC}"
         return 0
     fi
@@ -46,8 +46,8 @@ list_test_files() {
     while read -r file; do
         if [ -n "$file" ]; then
             count=$((count + 1))
-            # Show relative path from KIT_DIR
-            local rel_path="${file#$KIT_DIR/}"
+            # Show relative path from SDK_DIR
+            local rel_path="${file#$SDK_DIR/}"
             echo -e "  ${COLOR_HIGHLIGHT}$count.${NC} $rel_path"
         fi
     done <<< "$test_files"
@@ -109,7 +109,7 @@ run_test_file() {
         }
     fi
     
-    local rel_path="${test_file#$KIT_DIR/}"
+    local rel_path="${test_file#$SDK_DIR/}"
     
     if [ "$quiet" != "true" ]; then
         echo -e "${COLOR_INFO}Running test: $rel_path${NC}"
@@ -221,7 +221,7 @@ run_all_tests() {
     test_files=$(find_test_files)
     
     if [ -z "$test_files" ]; then
-        echo -e "${COLOR_WARNING}No test files found in $KIT_DIR${NC}"
+        echo -e "${COLOR_WARNING}No test files found in $SDK_DIR${NC}"
         echo -e "${COLOR_INFO}Searched for: $DEFAULT_TEST_PATTERN${NC}"
         return 0
     fi

@@ -1,16 +1,19 @@
 #!/bin/bash
 
+source_once "$SDK_SRC_DIR/facades/secret/index.sh"
+
 mkdir -p "$SECRETS_DIR"
 
 c=$1; shift; case "$c" in
-    kse|key-set) fac_sec_set_key "$@" ;;
-    kre|key-reset) fac_sec_reset_key "$@" ;;
-    ksh|key-show) fac_sec_show_key "$@" ;;
-    add) fac_sec_add_secret "$@" ;;
-    exp|export) fac_sec_export "$@" ;;
-    pri|print) fac_sec_show_secrets "$@" ;;
-    cle|clear) fac_sec_clear_secrets "$@" ;;
-    rem|remove|rm|del|delete) fac_sec_remove_secret "$@" ;;
+    kse|key-set) src_fac_sec_set_key "$@" ;;
+    kre|key-reset) src_fac_sec_reset_key "$@" ;;
+    ksh|key-show) src_fac_sec_show_key "$@" ;;
+    add) src_fac_sec_add_secret "$@" ;;
+    exp|export) src_fac_sec_export "$@" ;;
+    pri|print) src_fac_sec_show_secrets "$@" ;;
+    cle|clear) src_fac_sec_clear_secrets "$@" ;;
+    rem|remove|rm|del|delete) src_fac_sec_remove_secret "$@" ;;
+    fun|function) "$@" ;;
     *) display_help "" "" \
         "$(ansi 97 'Secrets Commands')" "" \
         "    kse|key-set            " "Set encryption key manually" \

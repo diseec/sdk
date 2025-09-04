@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source_once "$SDK_SRC_DIR/facades/config/index.sh"
+
 # ========================================
 # CONFIGURATION CLI INTEGRATION
 # ========================================
@@ -37,18 +39,25 @@ done
 eval set -- $(eval echo $ARGS)
 
 c=$1; shift; case $c in
-    get) fac_con_get "$@" "$SCOPE" ;;
-    set) fac_con_set "$@" "$SCOPE" ;;
-    add) fac_con_array_add "$@" "$SCOPE" ;;
-    rem|remove) fac_con_array_remove "$@" "$SCOPE" ;;
-    del|delete) fac_con_delete "$@" "$SCOPE" ;;
-    pat|path) fac_con_get_config_file "$SCOPE" ;;
-    whi|which) fac_con_which "$@" ;;
+    # Basic operations
+    ini|init) src_fac_con_opt_act_init "$@" ;;
+    sum|summary) src_fac_con_opt_act_status "$@" ;;
+    get) src_fac_con_get "$@" "$SCOPE" ;;
+    set) src_fac_con_set "$@" "$SCOPE" ;;
+    add) src_fac_con_array_add "$@" "$SCOPE" ;;
+    rem|remove) src_fac_con_array_remove "$@" "$SCOPE" ;;
+    del|delete) src_fac_con_delete "$@" "$SCOPE" ;;
+    pat|path) src_fac_con_get_config_file "$SCOPE" ;;
+    whi|which) src_fac_con_which "$@" ;;
     pri|print) 
         # Print can work without scope (prints all scopes) or with scope
-        if [ -n "$SCOPE" ]; then fac_con_print "$@" "$SCOPE"
-        else fac_con_print "$@"; fi
+        if [ -n "$SCOPE" ]; then src_fac_con_print "$@" "$SCOPE"
+        else src_fac_con_print "$@"; fi
     ;;
+
+    # Available settings
+    ssu|select_submodule) src_fac_con_opt_act_select "$@" ;;
+
     hel|help|--help|-h) display_help "" "" \
         "$(ansi 97 'Configuration Management System')" "" \
         "" "" "$(ansi 97 'Usage:    config [SCOPE_OPTIONS] <command> [arguments]')" "" \
@@ -56,7 +65,9 @@ c=$1; shift; case $c in
         "    -s=<scope>               " "Set scope (short form)" \
         "    --scope=<scope>          " "Set scope (long form with equals)" \
         "    --scope <scope>          " "Set scope (long form with space)" \
-        "" "" "$(ansi 97 'Commands')" "" \
+        "" "" "$(ansi 97 'Available Settings')" "" \
+        "    ssu|select_submodule     " "Activate submodules for workspace" \
+        "" "" "$(ansi 97 'Basic Commands')" "" \
         "    get <key.path>           " "Get configuration value with hierarchy resolution" \
         "    set <key.path> <value>   " "Set configuration value in specified scope" \
         "    add <key.path> <value>   " "Add value to configuration array" \
@@ -65,24 +76,25 @@ c=$1; shift; case $c in
         "    whi|which <key.path>     " "Show configuration value resolution path (no scope needed)" \
         "    pat|path                 " "Show configuration path (no scope needed)" \
         "    pri|print                " "Print configuration for scope (or all if no scope)" \
+        "    sta|status               " "Show configuration summary" \
         "    hel|help                 " "Show this help message" \
         "" "" "$(ansi 97 'Scopes')" "" \
-        "    project                  " "Project-specific configuration (.kit/project.yaml)" \
-        "    workspace                " "Workspace-specific configuration (workspaces/\$REPO_NAME/workspace.yaml)" \
-        "    user                     " "User-specific configuration (users/\$USER/user.yaml)" \
-        "    global                   " "Organization-wide configuration (config.yaml)" \
+        "    work                     " "Project-specific shared configuration ($SCOPE_WORK_FILE)" \
+        "    repo                     " "Project-specific local configuration ($SCOPE_REPO_FILE)" \
+        "    user                     " "User-specific configuration ($SCOPE_USER_FILE)" \
         "" "" "$(ansi 97 'Hierarchy')" "" \
         "    Configuration values are resolved in this order of precedence:" \
-        "    project > workspace > user > global" \
+        "    work > repo > user" \
         "" "" "$(ansi 97 'Examples')" "" \
-        "    config --scope=workspace get workspace.submodules" \
-        "    config -s=global set defaults.shell zsh" \
-        "    config --scope workspace add workspace.submodules my-service" \
+        "    config --scope=work get work.submodules" \
+        "    config -s=user set defaults.shell zsh" \
+        "    config --scope work add work.submodules my-service" \
         "    config which organization.name" \
-        "    config --scope=workspace list" \
-        "    config --scope workspace delete \"some.key\"" \
+        "    config --scope=work list" \
+        "    config --scope work delete \"some.key\"" \
         "$@"
     ;;
+    fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main config help; exit 1;

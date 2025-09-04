@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test runner script for the kit project
+# Test runner script for the sdk project
 # Usage: 
 #   ./index.sh                    - Run all tests
 #   ./index.sh --list             - List all test files
@@ -13,9 +13,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/runner.sh"
 
-# Ensure KIT_DIR is set
-if [ -z "${KIT_DIR:-}" ]; then
-    echo -e "${COLOR_ERROR}Error: KIT_DIR environment variable is not set${NC}" >&2
+# Ensure SDK_DIR is set
+if [ -z "${SDK_DIR:-}" ]; then
+    echo -e "${COLOR_ERROR}Error: SDK_DIR environment variable is not set${NC}" >&2
     exit 1
 fi
 
@@ -143,7 +143,7 @@ main() {
     if [ -n "$specific_test" ]; then
         # Convert relative path to absolute if needed
         if [[ "$specific_test" != /* ]]; then
-            specific_test="$KIT_DIR/$specific_test"
+            specific_test="$SDK_DIR/$specific_test"
         fi
         
         if run_test_file "$specific_test" "$verbose" "$quiet"; then

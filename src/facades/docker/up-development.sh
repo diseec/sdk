@@ -1,16 +1,23 @@
 #!/bin/bash
 
-fac_doc_up_development() {
+src_fac_doc_up_development() {
     set -e
 
+    local IS_RECURSIVE="false"
+    ARGS=""; for arg in "$@"; do case "$arg" in
+        -r|--recursive) IS_RECURSIVE="true";;
+    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
+    handle_hook before_dev
+
     # Filter services based on workspace configuration
-    services_filter=$(fac_wor_get_services_filter)
+    services_filter=$(cli_main config function src_fac_con_opt_act_get_services_filter)
 
     if [ "$IS_IN_CONTAINER" = "true" ]; then
-        if [ -f "$ROOT_DIR/docker-compose.override.yaml" ]; then
-            eval $(grep -m 1 'command:' "$ROOT_DIR/docker-compose.override.yaml" | sed 's/.*command: //')
+        if [ -f "$WORK_DIR/docker-compose.override.yaml" ]; then
+            eval $(grep -m 1 'command:' "$WORK_DIR/docker-compose.override.yaml" | sed 's/.*command: //')
         else
-            eval $(grep -m 1 'command:' "$ROOT_DIR/docker-compose.yaml" | sed 's/.*command: //')
+            eval $(grep -m 1 'command:' "$WORK_DIR/docker-compose.yaml" | sed 's/.*command: //')
         fi
     else
         # Set up a trap to ensure we stop all containers on interrupt
@@ -37,4 +44,5 @@ fac_doc_up_development() {
         fi
     fi
 
+    handle_hook after_dev
 }

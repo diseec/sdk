@@ -1,3 +1,3 @@
 #!/bin/bash
 
-source "$KIT_SRC_DIR/facades/format/prettier.sh"
+source "$SDK_SRC_DIR/facades/format/prettier.sh"

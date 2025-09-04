@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source_once "$SDK_SRC_DIR/facades/git/index.sh"
+
 # Git automation utilities for PR workflows
 # This script provides functions for:
 # 1. Automatically creating PRs with AI-generated commit messages
@@ -7,24 +9,33 @@
 
 c=$1; shift; case $c in
     sta|status)
-        src_inf_forbid_dev_on_main
-        src_inf_summary_branch_status
-        fac_git_cmd_pr_check_status
+        cli_main informs src_inf_forbid_dev_on_main
+        cli_main informs src_inf_summary_branch_status
+        src_fac_git_cmd_pr_check_status
     ;;
-    cpp|commit-push-pr) fac_git_cmd_commit_push_pr "$@" ;;
-    che|checkout) fac_git_cmd_checkout_branch "$@" ;;
-    com|commit) fac_git_cmd_commit "$@" ;;
-    pul|pull) fac_git_cmd_pull_merge "$@" ;;
-    pus|push) fac_git_cmd_push "$@" ;;
+    cpp|commit-push-pr) src_fac_git_cmd_commit_push_pr "$@" ;;
+    che|checkout) src_fac_git_cmd_checkout_branch "$@" ;;
+    com|commit) src_fac_git_cmd_commit "$@" ;;
+    pul|pull) src_fac_git_cmd_pull_merge "$@" ;;
+    pus|push) src_fac_git_cmd_push "$@" ;;
     pre|pull-request|pr) c=$1; shift; case $c in
-        cre|create) fac_git_cmd_pr_create "$@" ;;
-        sta|status) fac_git_cmd_pr_check_status "$@" ;;
+        cre|create) src_fac_git_cmd_pr_create "$@" ;;
+        sta|status) src_fac_git_cmd_pr_check_status "$@" ;;
         *) if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi ;;
     esac; ;;
-    log|log) fac_git_cmd_git_log "$@" ;;
-    ida|insight-day) fac_git_cmd_daily_insight "$@" ;;
-    rel|release) fac_git_cmd_release "$@" ;;
-    cid|checkout-if-detached) fac_git_cmd_checkout_if_detached "$@" ;;
+    log)
+        TODAY_FLAG=0
+        ARGS=""; for arg in "$@"; do case "$arg" in
+            --today) src_fac_git_cmd_get_today_logs; TODAY_FLAG=1 ;;
+        *) ARGS="$ARGS \"$arg\"";; esac; done
+        if [ $TODAY_FLAG -eq 0 ]; then
+            eval set -- $(eval echo $ARGS);
+            src_fac_git_cmd_git_log "$@"
+        fi
+        ;;
+    ida|insight-day) src_fac_git_cmd_daily_insight "$@" ;;
+    rel|release) src_fac_git_cmd_release "$@" ;;
+    cid|checkout-if-detached) src_fac_git_cmd_checkout_if_detached "$@" ;;
     hub) c=$1; shift; case $c in
         _) _gh "$@" ;;
         *)
@@ -56,6 +67,7 @@ c=$1; shift; case $c in
         "    D secret add          " "Add OPENAI_API_KEY for AI commit messages" \
         "    gh auth login         " "Authenticate GitHub cli_main for PR management"
     ;;
+    fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
         cli_main git help; exit 1;

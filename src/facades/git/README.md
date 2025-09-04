@@ -168,7 +168,7 @@ D push  # Will use AI for commit message generation
 
 ### Branch Naming
 
-The kit auto-detects your username from git email format:
+The sdk auto-detects your username from git email format:
 
 - Email: `user+username@domain.com` → Branch: `username`
 - Manual override available during `D git che`
@@ -177,7 +177,7 @@ The kit auto-detects your username from git email format:
 
 ### Container Environment
 
-Git commands automatically run in kit container when available:
+Git commands automatically run in sdk container when available:
 
 - Ensures consistent environment
 - Access to all dependencies
@@ -231,7 +231,7 @@ git log --oneline -5
 gh auth status
 gh pr list
 
-# Check kit environment
+# Check sdk environment
 D status
 ```
 

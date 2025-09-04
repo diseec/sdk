@@ -13,7 +13,8 @@ src_inf_check_for_updates() {
 
     if cli_main informs src_inf_check_for_updates_kit; then
         local kit_update_available="true"
-    elif cli_main informs src_inf_check_for_updates_repo; then
+    fi
+    if cli_main informs src_inf_check_for_updates_repo; then
         local repo_update_available="true"
     fi
 

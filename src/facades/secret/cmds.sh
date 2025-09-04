@@ -5,38 +5,38 @@
 # ========================================
 
 # Add a new secret
-fac_sec_add_secret() {
-    fac_sec_check_openssl || return 1
-    fac_sec_validate_key_for_operation || return 1
-    fac_sec_ensure_encryption_key
+src_fac_sec_add_secret() {
+    src_fac_sec_check_openssl || return 1
+    src_fac_sec_validate_key_for_operation || return 1
+    src_fac_sec_ensure_encryption_key
     
-    local key=$(fac_sec_get_encryption_key)
+    local key=$(src_fac_sec_get_encryption_key)
     local secret_name secret_value
     
-    fac_sec_get_user_input "Enter secret name (will be used as environment variable)" secret_name
-    fac_sec_validate_secret_name "$secret_name" || return 1
+    src_fac_sec_get_user_input "Enter secret name (will be used as environment variable)" secret_name
+    src_fac_sec_validate_secret_name "$secret_name" || return 1
     
-    if fac_sec_secret_exists "$secret_name"; then
+    if src_fac_sec_secret_exists "$secret_name"; then
         logit -w "Secret '$secret_name' already exists."
-        if ! fac_sec_get_user_confirmation "Overwrite?"; then
+        if ! src_fac_sec_get_user_confirmation "Overwrite?"; then
             return 0
         fi
     fi
     
-    fac_sec_get_secret_input "Enter secret value" secret_value
+    src_fac_sec_get_secret_input "Enter secret value" secret_value
     
     if [ -z "$secret_value" ]; then
         logit -e "Secret value cannot be empty"
         return 1
     fi
     
-    fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
+    src_fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
     logit -o "Secret '$secret_name' added successfully"
 }
 
 # Export a single secret by name (returns just the value)
 # This function is non-interactive and expects all validations to be done beforehand
-fac_sec_export() {
+src_fac_sec_export() {
     if [ -z "$1" ]; then
         logit -e "Secret name required" >&2
         logit -i "Usage: secrets export <secret_name>" >&2
@@ -46,19 +46,19 @@ fac_sec_export() {
     local secret_name="$1"
     
     # Simple checks without interaction
-    if ! fac_sec_check_openssl; then
+    if ! src_fac_sec_check_openssl; then
         return 1
     fi
     
-    if ! fac_sec_secret_exists "$secret_name"; then
+    if ! src_fac_sec_secret_exists "$secret_name"; then
         logit -e "Secret '$secret_name' not found" >&2
         return 1
     fi
     
-    if ! fac_sec_is_key_configured; then
+    if ! src_fac_sec_is_key_configured; then
         logit -e "No encryption key configured" >&2
-        if fac_sec_get_user_confirmation "Would you like to set the encryption key now?"; then
-            fac_sec_set_key
+        if src_fac_sec_get_user_confirmation "Would you like to set the encryption key now?"; then
+            src_fac_sec_set_key
             if [ $? -ne 0 ]; then
                 return 1
             fi
@@ -68,9 +68,9 @@ fac_sec_export() {
     fi
     
     # Attempt to decrypt and return the value
-    local key=$(fac_sec_get_encryption_key)
-    local encrypted_value=$(fac_sec_read_secret_file "$secret_name")
-    local decrypted_value=$(fac_sec_decrypt_data "$encrypted_value" "$key")
+    local key=$(src_fac_sec_get_encryption_key)
+    local encrypted_value=$(src_fac_sec_read_secret_file "$secret_name")
+    local decrypted_value=$(src_fac_sec_decrypt_data "$encrypted_value" "$key")
     
     if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
         echo "$decrypted_value"
@@ -82,23 +82,23 @@ fac_sec_export() {
 }
 
 # Show all secrets in a readable format
-fac_sec_show_secrets() {
-    fac_sec_check_openssl || return 1
-    fac_sec_validate_key_for_operation || return 1
-    fac_sec_ensure_encryption_key
+src_fac_sec_show_secrets() {
+    src_fac_sec_check_openssl || return 1
+    src_fac_sec_validate_key_for_operation || return 1
+    src_fac_sec_ensure_encryption_key
     
-    if ! fac_sec_secrets_exist; then
+    if ! src_fac_sec_secrets_exist; then
         logit -w "No secrets found"
         return 0
     fi
     
-    local key=$(fac_sec_get_encryption_key)
+    local key=$(src_fac_sec_get_encryption_key)
     local secret_count=0
     
     for secret_file in "$SECRETS_DIR"/*; do
         if [ -f "$secret_file" ]; then
             local secret_name=$(basename "$secret_file")
-            local decrypted_value=$(fac_sec_decrypt_secret "$secret_name" "$key")
+            local decrypted_value=$(src_fac_sec_decrypt_secret "$secret_name" "$key")
             
             echo ""
             if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
@@ -122,7 +122,7 @@ fac_sec_show_secrets() {
 }
 
 # Remove a secret
-fac_sec_remove_secret() {
+src_fac_sec_remove_secret() {
     if [ -z "$1" ]; then
         logit -e "Secret name required"
         logit -i "Usage: secrets remove <secret_name>"
@@ -131,13 +131,13 @@ fac_sec_remove_secret() {
     
     local secret_name="$1"
     
-    if ! fac_sec_secret_exists "$secret_name"; then
+    if ! src_fac_sec_secret_exists "$secret_name"; then
         logit -e "Secret '$secret_name' not found"
         return 1
     fi
     
-    if fac_sec_get_user_confirmation "Are you sure you want to remove secret '$secret_name'?"; then
-        local secret_file=$(fac_sec_secret_file_path "$secret_name")
+    if src_fac_sec_get_user_confirmation "Are you sure you want to remove secret '$secret_name'?"; then
+        local secret_file=$(src_fac_sec_secret_file_path "$secret_name")
         rm "$secret_file"
         logit -o "Secret '$secret_name' removed"
     else
