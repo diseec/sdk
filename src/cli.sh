@@ -74,6 +74,7 @@ c=$1; shift; case $c in
         "" "" "$(ansi "1;90" "$(capitalize 'Infrastructure')")" "" \
         "    doc|docker               " "Docker operations" \
         "" "" "$(ansi "1;90" "$(capitalize 'Configuration')")" "" \
+        "    wor|workspace            " "Workspace configuration" \
         "    con|config               " "Configuration management" \
         "    set|settings             " "Settings operations" \
         "    sub|submodule            " "Unified submodule management (packages & services)" \
