@@ -16,10 +16,9 @@ src_fac_con_get_config_dir() {
     local config_dir=""
     
     case "$scope" in
-        global) config_dir="$ORG_DIR" ;;
-        # user) config_dir="$ORG_DIR/users/$(whoami)" ;;
-        workspace) config_dir="$ORG_DIR/workspaces/$REPO_NAME" ;;
-        project) config_dir="$ROOT_DIR/.$KIT_NAME" ;;
+        work) config_dir="$SCOPE_WORK_DIR" ;;
+        repo) config_dir="$SCOPE_REPO_DIR" ;;
+        user) config_dir="$SCOPE_USER_DIR" ;;
         *) logit -e "Invalid configuration scope: $scope" ; return 1 ;;
     esac
     
@@ -38,10 +37,9 @@ src_fac_con_get_config_file() {
     local config_file=""
     
     case "$scope" in
-        global) config_file="$config_dir/$CONFIG_GLOBAL_FILE" ;;
-        # user) config_file="$config_dir/$CONFIG_USER_FILE" ;;
-        workspace) config_file="$config_dir/$CONFIG_WORKSPACE_FILE" ;;
-        project) config_file="$config_dir/$CONFIG_PROJECT_FILE" ;;
+        work) config_file="$SCOPE_WORK_FILE" ;;
+        repo) config_file="$SCOPE_REPO_FILE" ;;
+        user) config_file="$SCOPE_USER_FILE" ;;
         *) logit -e "Invalid configuration scope: $scope" ; return 1 ;;
     esac
     
@@ -67,11 +65,11 @@ src_fac_con_validate_scope() {
     fi
     
     case "$scope" in
-        "global"|"workspace"|"project")
+        "user"|"repo"|"work")
             return 0
             ;;
         *)
-            logit -e "Invalid configuration scope: $scope. Valid scopes: global, user, workspace, project"
+            logit -e "Invalid configuration scope: $scope. Valid scopes: user, repo, work"
             return 1
             ;;
     esac

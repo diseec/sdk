@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source_once "$KIT_SRC_DIR/facades/format/index.sh"
+source_once "$SDK_SRC_DIR/facades/format/index.sh"
 
 c=$1; shift; case $c in
     pre|prettier) src_fac_for_prettier "$@" ;;

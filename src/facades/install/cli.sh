@@ -1,8 +1,9 @@
 #!/bin/bash
 
-source_once "$KIT_SRC_DIR/facades/setup/index.sh"
+source_once "$SDK_SRC_DIR/facades/install/index.sh"
 
 c=$1; shift; case $c in
+    pat|patch) src_fac_set_sdk "$@" ;;
     rep|repository) src_fac_set_repository "$@" ;;
     pre|prettier) src_fac_set_prettier "$@" ;;
     upd|update) src_fac_set_cmd_update "$@" ;;
@@ -17,7 +18,7 @@ c=$1; shift; case $c in
         hel|help|--help|-h)
             display_help "" "" \
                 "$(ansi 97 'System Setup')" "" \
-                "$(ansi 97 'Usage:    cli setup system <command>')" "" "" "" \
+                "$(ansi 97 'Usage:    cli install system <command>')" "" "" "" \
                 "    dep|dependency-check    " "Check system dependencies required by the project" \
                 "    ins|install             " "Install missing system dependencies defined in project metadata" \
                 "    -h|--help               " "Show this help message" \
@@ -27,10 +28,10 @@ c=$1; shift; case $c in
     hel|help|--help|-h)
         display_help "" "" \
             "$(ansi 97 'Setup Commands')" "" \
-            "$(ansi 97 'Usage:    cli setup <command> [options]')" "" \
+            "$(ansi 97 'Usage:    cli install <command> [options]')" "" \
             "    rep|repository   " "Setup repository (install toolchain and scaffold)" \
             "    pre|prettier  " "Install or configure Prettier" \
-            "    sys|system    " "System dependency helpers (see 'cli setup system -h')" \
+            "    sys|system    " "System dependency helpers (see 'cli install system -h')" \
             "    upd|update    " "Setup update hooks" \
             "    glo|globally  " "Install tools globally for developer machine" \
             "$@"

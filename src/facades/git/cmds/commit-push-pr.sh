@@ -30,10 +30,10 @@ src_fac_git_cmd_commit_push_pr() {
         echo "$REPO_NAME: Cpp for selected submodules..."
         cpp_submodule() {
             local module="$1"; local module_path="$2"
-            cd "$ROOT_DIR/$module_path" && D api v1 git.commit.push.pr.--recursive
+            cd "$WORK_DIR/$module_path" && D api v1 git.commit.push.pr.--recursive
             echo "$REPO_NAME: Cpp done for submodule '$module'."
         }
-        cli_main workspace function src_fac_wor_foreach_selected_module cpp_submodule
+        cli_main config function src_fac_con_opt_act_foreach_selected_module cpp_submodule
     fi
 
     handle_hook after_push

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source_once "$KIT_SRC_DIR/api/index.sh"
+source_once "$SDK_SRC_DIR/api/index.sh"
 
 c=$1; shift; case $c in
     v1) src_api_v1 "$@" ;;

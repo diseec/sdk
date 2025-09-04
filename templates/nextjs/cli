@@ -2,7 +2,7 @@
 
 cd $(dirname "$0"); command=$1; shift;
 
-. ./node_modules/@diseec/kit/src/helpers.sh
+. ./node_modules/@diseec/sdk/src/helpers.sh
 
 case $command in
     install)        
@@ -15,18 +15,18 @@ case $command in
             # fi
         fi
 
-        "./node_modules/@diseec/kit/cli.sh" install "$@" 
+        "./node_modules/@diseec/sdk/cli.sh" install "$@" 
     ;;
 
     help|-h)        
-        "./node_modules/@diseec/kit/cli.sh" "$command" \
+        "./node_modules/@diseec/sdk/cli.sh" "$command" \
          "" "" \
          "$(ansi 33 "Service Commands:")" "" \
          "    help         " "Display this help message"
     ;;
 
     *)              
-        "./node_modules/@diseec/kit/cli.sh" "$command" "$@" 
+        "./node_modules/@diseec/sdk/cli.sh" "$command" "$@" 
     ;;
 
 esac

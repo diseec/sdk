@@ -3,11 +3,11 @@
 # Test the AI module functionality
 
 # Source the AI module
-# source_module "$KIT_SRC_DIR/facades/ai/index.sh"
-source_module $KIT_SRC_DIR/facades/ai/config.sh
-source_module $KIT_SRC_DIR/facades/ai/utils.sh
-source_module $KIT_SRC_DIR/facades/ai/api.sh
-source_module $KIT_SRC_DIR/facades/ai/generators.sh
+# source_module "$SDK_SRC_DIR/facades/ai/index.sh"
+source_module $SDK_SRC_DIR/facades/ai/config.sh
+source_module $SDK_SRC_DIR/facades/ai/utils.sh
+source_module $SDK_SRC_DIR/facades/ai/api.sh
+source_module $SDK_SRC_DIR/facades/ai/generators.sh
 
 test_section "AI Module Tests"
 

@@ -27,10 +27,10 @@ The DISEEC DevOps Kit is a comprehensive automation toolkit designed to standard
 
 ```bash
 # Install globally
-npm install -g @diseec/kit
+npm install -g @diseec/sdk
 
 # Install in project
-npm install @diseec/kit --save-dev
+npm install @diseec/sdk --save-dev
 
 # Initialize project (copies templates including customizable cli)
 D install
@@ -38,7 +38,7 @@ D install
 
 ### Required Project Files
 
-Before using the kit, create these required Docker files:
+Before using the sdk, create these required Docker files:
 
 1. **Dockerfile** - Production-ready container configuration
 2. **docker-compose.yaml** - Production services configuration
@@ -49,7 +49,7 @@ Before using the kit, create these required Docker files:
 The `D install` command creates a project `cli` file that:
 
 - Makes the directory a recognized project (like `.git` for git)
-- Allows full customization of kit behavior
+- Allows full customization of sdk behavior
 - Can override, add, or remove functionalities
 - Use `$CLI_CORE` to call original commands
 - Use `$CLI_MAIN` to call the project cli itself
@@ -115,7 +115,7 @@ D secret help
 ## Project Structure
 
 ```
-kit/
+sdk/
 ├── src/                    # Core cli_main implementation
 │   ├── cli.sh             # Main cli_main entry point
 │   ├── core/              # Core utilities (env, output, wrappers)
@@ -157,7 +157,6 @@ kit/
 - `doc|docker` - Docker operations
 - `ser|service` - Service management
 - `pac|package` - Package management
-- `wor|workspace` - Workspace configuration
 
 ### Configuration & Security
 
@@ -172,7 +171,6 @@ kit/
 ```bash
 # Setup new project
 D install project
-D workspace init
 
 # Daily development
 D dev                    # Start development environment
@@ -248,7 +246,7 @@ MIT License - Internal DISEEC use only. See [LICENSE](LICENSE) for details.
 ## Support
 
 - **Documentation**: Check the [docs/](docs/) directory
-- **Issues**: [GitHub Issues](https://github.com/diseec/kit/issues)
+- **Issues**: [GitHub Issues](https://github.com/diseec/sdk/issues)
 - **Team**: Contact DISEEC DevOps team
 
 ---

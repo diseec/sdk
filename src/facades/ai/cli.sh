@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source_once "$KIT_SRC_DIR/facades/ai/index.sh"
+source_once "$SDK_SRC_DIR/facades/ai/index.sh"
 
-# AI Module - Abstracted AI operations for the kit
+# AI Module - Abstracted AI operations for the sdk
 # All functions in this module are prefixed with "ai_"
 
 # Initialize AI module on load

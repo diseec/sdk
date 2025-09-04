@@ -4,19 +4,19 @@
 # CORE CONSTANTS
 # =============================================================================
 # Organization and project constants that rarely change
-# These are the foundation values for the entire kit
+# These are the foundation values for the entire sdk
 
 readonly ORG_NAME="diseec"
-readonly KIT_NAME="kit"
-readonly TARGET_MOUNTED_DIR="/vise"
+readonly SDK_NAME="sdk"
 
 # Registry and repository configuration
 readonly IMAGE_REGISTRY_URL="image.registry.$ORG_NAME.com"
-readonly KIT_IMAGE="$IMAGE_REGISTRY_URL/$KIT_NAME"
 readonly REPO_HUB_URL="github.com/$ORG_NAME"
-readonly KIT_PACKAGE_NAME="$KIT_PACKAGE_NAME"
-readonly KIT_RELATIVE_PATH="node_modules/$KIT_PACKAGE_NAME"
+readonly SDK_IMAGE="$IMAGE_REGISTRY_URL/$SDK_NAME"
+readonly SDK_PACKAGE_NAME="$ORG_NAME/$SDK_NAME"
+readonly SDK_RELATIVE_PATH="node_modules/$SDK_PACKAGE_NAME"
 
-# Git configuration
-readonly GIT_MOUNT_DIR="/.git"
+# Container paths
+readonly GIT_DIR_CONTAINER="/.git"
+readonly WORK_DIR_CONTAINER="/work"
 

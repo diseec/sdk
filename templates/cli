@@ -4,12 +4,12 @@
 # DISEEC DevOps Toolkit
 # This script  provides a unified  command-line interface
 # for  project-level  DevOps  and  automation  tasks.  It
-# leverages  the  @diseec/kit  Node.js  package for  core
+# leverages  the  @diseec/sdk  Node.js  package for  core
 # functionality and can be extended here to add or modify
 # commands specific to this project.
 # -------------------------------------------------------
 
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/kit/index.sh"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/sdk/index.sh"
 
 c=$1; shift; case $c in
 

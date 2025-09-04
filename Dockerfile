@@ -1,7 +1,19 @@
 FROM node:20-alpine
 
+ENV IS_IN_SDK_CONTAINER=true
+
+# Build argument for SDK name with default value
+ARG SDK_NAME=sdk
+ARG WORK_DIR_CONTAINER="/work"
+
 # Install base dependencies
 RUN apk add --no-cache bash coreutils curl yq jq git openssl git-lfs
+
+WORKDIR /${SDK_NAME}
+
+COPY . .
+
+RUN npm install -g /${SDK_NAME}
 
 # Install GitHub cli_main using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \
@@ -27,20 +39,11 @@ RUN npm install -g prettier
 # Install network diagnostic tools for internet facade
 RUN apk add --no-cache wget iputils bind-tools traceroute bc
 
-ENV IS_IN_KIT_CONTAINER=true
-
-WORKDIR /kit
-
-COPY . .
-
-ENV IS_IN_CONTAINER=true
-
-RUN eval $(/kit/cli envs) && \
-    mkdir -p "$TARGET_MOUNTED_DIR" && \
-    npm install -g /kit
-
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["bash", "cli", "help"]
+RUN mkdir -p ${WORK_DIR_CONTAINER}
+WORKDIR ${WORK_DIR_CONTAINER}
+
+CMD ["D", "help"]

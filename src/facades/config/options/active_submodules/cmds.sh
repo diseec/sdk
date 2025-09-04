@@ -3,19 +3,19 @@
 # commands.sh - Command handlers for workspace operations
 
 # Initialize a workspace
-src_fac_wor_init() {
-    if [ ! -f "$(cli_main config function src_fac_con_get_config_file workspace)" ] && [ "$HAS_SUBMODULES" = "true" ]; then
+src_fac_con_opt_act_init() {
+    if [ ! -f "$(cli_main config function src_fac_con_get_config_file repo)" ] && [ "$HAS_SUBMODULES" = "true" ]; then
         logit -l "Initializing workspace configuration..."
-        src_fac_wor_create_config
+        src_fac_con_opt_act_create_config
     fi
 }
 
 # Show workspace status
-src_fac_wor_status() {
-    local config_file="$(cli_main config function src_fac_con_get_config_file workspace)"
+src_fac_con_opt_act_status() {
+    local config_file="$(cli_main config function src_fac_con_get_config_file repo)"
     if [ -f "$config_file" ]; then
         logit "config: $config_file"
-        local selected_modules=$(src_fac_wor_get_selected_modules)
+        local selected_modules=$(src_fac_con_opt_act_get_selected_modules)
         if [ -n "$selected_modules" ]; then
             active_modules=""
             for module in $selected_modules; do
@@ -31,12 +31,12 @@ src_fac_wor_status() {
         fi
     else
         logit -w "No workspace configuration found for $REPO_NAME"
-        echo "Run 'cli workspace init' to create one"
+        echo "Run 'cli config init' to create one"
     fi
 }
 
 # Select submodules for workspace
-src_fac_wor_select() {
-    logit --ansi="34" --icon="WORKSPACE" "Select submodules for your workspace"
-    src_fac_wor_create_config
+src_fac_con_opt_act_select() {
+    logit --ansi="34" --icon="Submodules" "Active submodules for your workspace"
+    src_fac_con_opt_act_create_config
 }

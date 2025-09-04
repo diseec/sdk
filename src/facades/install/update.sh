@@ -2,7 +2,7 @@
 
 # Get version information for a package
 src_fac_set_get_version_info() {
-    local package_name="$KIT_PACKAGE_NAME"
+    local package_name="$SDK_PACKAGE_NAME"
     
     # Get outdated info as JSON
     local outdated_json=$(_npm outdated "$package_name" --json 2>/dev/null)
@@ -13,10 +13,10 @@ src_fac_set_get_version_info() {
         # logit -d "JSON keys: $debug_output"
         
         # Try to extract versions using different approaches since npm outdated format varies
-        if echo "$outdated_json" | _jq -e '."@'$ORG_NAME'/'$KIT_NAME'" | has("current")' &>/dev/null; then
+        if echo "$outdated_json" | _jq -e '."@'$ORG_NAME'/'$SDK_NAME'" | has("current")' &>/dev/null; then
             # Object format with package name as key
-            local current_version=$(echo "$outdated_json" | _jq -r '."@'$ORG_NAME'/'$KIT_NAME'".current // ""')
-            local wanted_version=$(echo "$outdated_json" | _jq -r '."@'$ORG_NAME'/'$KIT_NAME'".wanted // ""')
+            local current_version=$(echo "$outdated_json" | _jq -r '."@'$ORG_NAME'/'$SDK_NAME'".current // ""')
+            local wanted_version=$(echo "$outdated_json" | _jq -r '."@'$ORG_NAME'/'$SDK_NAME'".wanted // ""')
         elif echo "$outdated_json" | _jq -e 'has(0)' &>/dev/null; then
             # Array format
             local current_version=$(echo "$outdated_json" | _jq -r '.[0].current // ""')
@@ -37,9 +37,9 @@ src_fac_set_get_version_info() {
     fi
 }
 
-# Check if kit version has changed
+# Check if sdk version has changed
 src_fac_set_has_version_changed() {
-    local package_name="$KIT_PACKAGE_NAME"
+    local package_name="$SDK_PACKAGE_NAME"
     
     # Get outdated info as JSON
     local outdated_json=$(_npm outdated "$package_name" --json 2>/dev/null)
@@ -59,13 +59,13 @@ src_fac_set_cmd_update() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    logit -l "Updating '$ROOT_DIR' with kit source '$KIT_DIR'..."
+    logit -l "Updating '$WORK_DIR' with sdk source '$SDK_DIR'..."
     logit -l "On branch '$CURRENT_BRANCH' Pulling changes for '$REPO_NAME'..."
 
     cli_main git _ pull origin
-    cli_main kit docker compose _ pull
-    cli_main safely kit act patch
-    logit -l "$KIT_NAME version patched to: $VERSION"
+
+    cli_main sdk patch
+    logit -l "$SDK_NAME version patched to: $VERSION"
 
     handle_hook before_update
 
@@ -80,10 +80,10 @@ src_fac_set_cmd_update() {
         update_dependencies() {
             local module="$1"
             local module_path="$2"
-            cd "$ROOT_DIR/$module_path" && D --patch api v1 update.--recursive
+            cd "$WORK_DIR/$module_path" && D --patch api v1 update.--recursive
             logit -l "Updated dependencies for '$module'."
         }
-        cli_main workspace function src_fac_wor_foreach_selected_module update_dependencies
+        cli_main config function src_fac_con_opt_act_foreach_selected_module update_dependencies
     fi
 
     handle_hook after_update

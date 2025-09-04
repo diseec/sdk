@@ -25,31 +25,31 @@ src_cor_env_uti_get_git_dir() {
         
         local gitdir_ref=$(awk -F': ' '/^gitdir:/ {print $2}' "$git_dir_or_file")
 
-        if [ "$IS_IN_KIT_CONTAINER" != "true" ]; then
+        if [ "$IS_IN_SDK_CONTAINER" != "true" ]; then
             echo "$target/$gitdir_ref"
             return 0
         fi
 
         # Conclusion is it's running in container, then we:
 
-        if [ "$target" = "$TARGET_MOUNTED_DIR" ]; then
-            echo "$GIT_MOUNT_DIR"
+        if [ "$target" = "$WORK_DIR_CONTAINER" ]; then
+            echo "$GIT_DIR_CONTAINER"
             return 0
         else
             # remove any leading ../ or ./ and strip up-to-and-including ".git/"
             module_ref=$(echo "$gitdir_ref" | awk -F'.git/' '{print $2}')
-            echo "$GIT_MOUNT_DIR/$module_ref"
+            echo "$GIT_DIR_CONTAINER/$module_ref"
             return 0
         fi
 
         echo "error: no git reference found"
     }
 
-    if [ "$KIT_TARGET_DIR" != "$KIT_DIR" ]; then
-        find_git_dir_for "$KIT_TARGET_DIR"
+    if [ "$WORK_DIR_HOST" != "$SDK_DIR" ]; then
+        find_git_dir_for "$WORK_DIR_HOST"
         return
     else
-        find_git_dir_for "$ROOT_DIR"
+        find_git_dir_for "$WORK_DIR"
         return
     fi
 }
@@ -83,7 +83,7 @@ src_cor_env_uti_get_repo_name() {
 
 src_cor_env_uti_get_current_branch() {
     # Replacement for: git rev-parse --abbrev-ref HEAD
-    local git_dir="$ROOT_DIR/.git"
+    local git_dir="$WORK_DIR/.git"
     local head_file=""
     
     if [ -d "$git_dir" ]; then
@@ -91,7 +91,7 @@ src_cor_env_uti_get_current_branch() {
         head_file="$git_dir/HEAD"
     elif [ -f "$git_dir" ]; then
         # Submodule or worktree: .git is a file pointing to actual gitdir
-        local gitdir_path="$ROOT_DIR/$(awk -F': ' '/^gitdir:/ {print $2}' "$git_dir")"
+        local gitdir_path="$WORK_DIR/$(awk -F': ' '/^gitdir:/ {print $2}' "$git_dir")"
         if [ -n "$gitdir_path" ] && [ -f "$gitdir_path/HEAD" ]; then
             head_file="$gitdir_path/HEAD"
         fi

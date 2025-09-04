@@ -4,13 +4,13 @@ src_cor_env_uti_validate_environment() {
     local errors=0
     
     # Check required directories
-    if [ ! -d "$ROOT_DIR" ]; then
-        echo "Error: ROOT_DIR not found: $ROOT_DIR" >&2
+    if [ ! -d "$WORK_DIR" ]; then
+        echo "Error: WORK_DIR not found: $WORK_DIR" >&2
         errors=$((errors + 1))
     fi
     
-    if [ ! -d "$KIT_DIR" ]; then
-        echo "Error: KIT_DIR not found: $KIT_DIR" >&2
+    if [ ! -d "$SDK_DIR" ]; then
+        echo "Error: SDK_DIR not found: $SDK_DIR" >&2
         errors=$((errors + 1))
     fi
     

@@ -8,45 +8,49 @@
 src_cor_env_uti_cli_auto_discovery() {
     if [ "$HAS_DISCOVERED_CLI" = "true" ]; then return 0; fi
 
-    # Canonicalize KIT_DIR
-    local kitdir=$(cd "$KIT_DIR" 2>/dev/null && pwd) || {
-        echo "Error: can't access '$KIT_DIR'" >&2
+    # Canonicalize SDK_DIR
+    local starting_dir=$(cd "$1" 2>/dev/null && pwd) || {
+        echo "Error: can't access '$1'" >&2
         exit 1
     }
-    
-    # Exception: if the script's directory == KIT_DIR, return the first cli
-    if [ "$IS_KIT_CLI" = "true" ]; then
-        printf '%s\n' "$kitdir"
+
+    # If we are in a SDK CLI context
+    if [ "$IS_SDK_CLI" = "true" ]; then
+        printf '%s\n' "$SDK_DIR"
         return 0
     fi
-    
-    # if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then # this breaks when a parent recursively do something on submodules then all of cli submodules point to the parent
-    #     printf '%s\n' "$TARGET_MOUNTED_DIR"
+
+    # # Do not lookup global SDK installation
+    # if [ "$(npm root -g)/$SDK_PACKAGE_NAME" = "$starting_dir" ]; then
+    #     return 1
+    # fi
+
+    # # this breaks when a parent recursively do something on submodules then all of cli submodules point to the parent
+    # if [ "$IS_IN_SDK_CONTAINER" = "true" ]; then
+    #     printf '%s\n' "$WORK_DIR_CONTAINER"
     #     return 0
     # fi
-    
-    # Start from the parent of KIT_DIR, as an absolute, canonical path
-    local start=$(cd "$kitdir/.." 2>/dev/null && pwd) || {
-        echo "Error: can't access '$kitdir/..'" >&2
-        exit 1
-    }
-    
-    local dir=$start
+
+    local dir=$starting_dir
     while :; do
-        if [ -f "$dir/cli" ]; then
-            # Skip if it's the same file as $kitdir/cli
-            if [ ! -e "$kitdir/cli" ] || [ ! "$dir/cli" -ef "$kitdir/cli" ]; then
-                HAS_DISCOVERED_CLI="true"
-                printf '%s\n' "$dir"
-                return 0
-            fi
+        if [ -f "$dir/cli" ] && [ ! -f "$WORK_DIR/D" ]; then
+            HAS_DISCOVERED_CLI="true"
+            printf '%s\n' "$dir"
+            return 0
         fi
-        [ "$dir" = "/" ] && break
+
+        # If not found just silently skip and return null
+        if [ "$dir" = "/" ]; then
+            # logit -e "'cli' not found, try cd to project root" >&2
+            # printf '%s\n' "$PWD"
+            break
+        fi
+
         dir=$(dirname -- "$dir")
     done
     
-    echo "Error: cli not found, looked up all levels from: $kitdir" >&2
-    exit 1
+    # echo "Error: cli not found, looked up all levels from: $starting_dir" >&2
+    # exit 1
 }
 
 src_cor_env_uti_get_org_dir() {

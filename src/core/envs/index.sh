@@ -6,27 +6,29 @@
 # Main environment file that loads all modules and initializes variables
 
 # Source all utility modules
-source $KIT_DIR/src/core/envs/constants.sh
-source $KIT_DIR/src/core/envs/utils/source_once.sh
-source $KIT_DIR/src/core/envs/utils/git_fallback_utils.sh
-source $KIT_DIR/src/core/envs/utils/cli_auto_discovery.sh
-source $KIT_DIR/src/core/envs/utils/env_detection.sh
-source $KIT_DIR/src/core/envs/utils/validate_environment.sh
+source $SDK_DIR/src/core/envs/constants.sh
+source $SDK_DIR/src/core/envs/utils/git_fallback_utils.sh
+source $SDK_DIR/src/core/envs/utils/cli_auto_discovery.sh
+source $SDK_DIR/src/core/envs/utils/env_detection.sh
+source $SDK_DIR/src/core/envs/utils/validate_environment.sh
 
 # =============================================================================
 # COMPUTED PATHS AND DIRECTORIES
 # =============================================================================
 
+# Store original arguments
+readonly ORIGINAL_ARGS=("$@")
+
 # Discover project root directory
-ROOT_DIR="$(src_cor_env_uti_cli_auto_discovery)"
-readonly ROOT_DIR
+WORK_DIR="$(src_cor_env_uti_cli_auto_discovery "$SDK_DIR")"
+readonly WORK_DIR
 
 # Kit and CLI paths
-readonly KIT_SRC_DIR="$KIT_DIR/src"
-readonly CLI_MAIN="$ROOT_DIR/cli"
-readonly CLI_CORE="$KIT_SRC_DIR/cli.sh"
+readonly SDK_SRC_DIR="$SDK_DIR/src"
+readonly CLI_MAIN="$WORK_DIR/cli"
+readonly CLI_CORE="$SDK_SRC_DIR/cli.sh"
 
-KIT_TARGET_DIR="$(src_cor_env_uti_get_kit_target_dit)"
+WORK_DIR_HOST="$(src_cor_env_uti_get_kit_target_dit)"
 
 # Organization directories
 ORG_DIR="$(src_cor_env_uti_get_org_dir)"
@@ -66,3 +68,10 @@ readonly CURRENT_BRANCH
 ######
 
 src_cor_env_uti_validate_environment
+
+
+ARGS=""; for arg in "$@"; do case "$arg" in
+    --log-level=*) export D_LOG_LEVEL="${arg#*=}";;
+    # --log-level*) export D_LOG_LEVEL="${arg#--log-level }";;
+    --debug) export D_LOG_LEVEL="DEBUG" ;;
+*) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);

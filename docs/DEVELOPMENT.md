@@ -21,7 +21,7 @@ Pulls changes and syncs project state intelligently.
 
 - Pulls git changes
 - Checks version changes (cached)
-- Full sync only when version changed: pulls kit image, installs deps, updates submodules
+- Full sync only when version changed: pulls sdk image, installs deps, updates submodules
 - **Project must define update logic in its cli file**
 
 ```bash
@@ -132,7 +132,7 @@ D pus
 
 ## safely / saf
 
-Runs commands in kit container for guaranteed environment.
+Runs commands in sdk container for guaranteed environment.
 
 - All dependencies pre-installed
 - Predictable execution

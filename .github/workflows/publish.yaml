@@ -68,16 +68,16 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ env.IMAGE_REGISTRY_URL }}/kit:latest
-          cache-from: type=registry,ref=${{ env.IMAGE_REGISTRY_URL }}/kit:cache
-          cache-to: type=registry,ref=${{ env.IMAGE_REGISTRY_URL }}/kit:cache,mode=max
+          tags: ${{ env.IMAGE_REGISTRY_URL }}/sdk:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_REGISTRY_URL }}/sdk:cache
+          cache-to: type=registry,ref=${{ env.IMAGE_REGISTRY_URL }}/sdk:cache,mode=max
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GH_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Pull image from registry
-        run: docker pull ${{ env.IMAGE_REGISTRY_URL }}/kit:latest
+        run: docker pull ${{ env.IMAGE_REGISTRY_URL }}/sdk:latest
       - name: Tag image for GitHub Container Registry
-        run: docker tag ${{ env.IMAGE_REGISTRY_URL }}/kit:latest ghcr.io/${{ github.repository }}:latest
+        run: docker tag ${{ env.IMAGE_REGISTRY_URL }}/sdk:latest ghcr.io/${{ github.repository }}:latest
 
       - name: Push image to GitHub Container Registry (latest tag)
         run: docker push ghcr.io/${{ github.repository }}:latest

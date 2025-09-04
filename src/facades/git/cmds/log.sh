@@ -62,7 +62,7 @@ src_fac_git_cmd_git_log() {
 #     local today_start=$(date '+%Y-%m-%d 00:00:00')
 #     local today_end=$(date '+%Y-%m-%d %H:%M:%S')
 #     local today_date=$(date '+%Y-%m-%d')
-#     local cache_dir=$(cli_main workspace function src_fac_wor_get_cache_subdir "insights")
+#     local cache_dir=$(cli_main config function src_fac_con_get_cache_subdir "repo" "insights")
 #     local cache_file="$cache_dir/daily_insight_$today_date.txt"
 
 #     # Check if cache exists for today
@@ -93,7 +93,7 @@ src_fac_git_cmd_git_log() {
 #     collect_repo_data() {
 #         local module_name="$1"
 #         local module_path="$2"
-#         local repo_path="$ROOT_DIR/$module_path"
+#         local repo_path="$WORK_DIR/$module_path"
         
 #         if [ ! -d "$repo_path/.git" ] && [ ! -f "$repo_path/.git" ]; then
 #             return 0
@@ -236,7 +236,7 @@ src_fac_git_cmd_git_log() {
 #     collect_repo_data "$REPO_NAME" "."
     
 #     # Process all selected submodules
-#     cli_main workspace function src_fac_wor_foreach_selected_module collect_repo_data
+#     cli_main config function src_fac_con_opt_act_foreach_selected_module collect_repo_data
     
 #     # If no data collected, show simple message
 #     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then
@@ -306,7 +306,7 @@ src_fac_git_cmd_git_log() {
 #         local ai_insight=$(cli_main ai function src_fac_ai_generate_daily_insight "$analysis_data")
         
 #         if [ -n "$ai_insight" ]; then
-#             # Cache directory is already created by cli_main workspace function src_fac_wor_get_cache_subdir
+#             # Cache directory is already created by cli_main config function src_fac_con_get_cache_subdir repo
             
 #             # Save the result to cache
 #             {

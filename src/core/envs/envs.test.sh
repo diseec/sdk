@@ -89,9 +89,9 @@ test_file_exists "$SCRIPT_DIR/envs.sh" "Main environment"
 echo -e "\n${YELLOW}Loading environment system...${NC}"
 
 # Set up minimal required environment for testing
-export KIT_DIR="$SCRIPT_DIR/.."
-export IS_KIT_CLI="false"
-export IS_IN_KIT_CONTAINER="false"
+export SDK_DIR="$SCRIPT_DIR/.."
+export IS_SDK_CLI="false"
+export IS_IN_SDK_CONTAINER="false"
 
 # Source the main environment file
 if source "$SCRIPT_DIR/envs.sh" 2>/dev/null; then
@@ -121,18 +121,18 @@ echo -e "\n${YELLOW}Testing constants...${NC}"
 
 # Test constants are set
 test_variable_set "ORG_NAME"
-test_variable_set "KIT_NAME"
-test_variable_set "TARGET_MOUNTED_DIR"
+test_variable_set "SDK_NAME"
+test_variable_set "WORK_DIR_CONTAINER"
 test_variable_set "IMAGE_REGISTRY_URL"
-test_variable_set "KIT_IMAGE"
+test_variable_set "SDK_IMAGE"
 test_variable_set "REPO_HUB_URL"
-test_variable_set "KIT_RELATIVE_PATH"
+test_variable_set "SDK_RELATIVE_PATH"
 
 echo -e "\n${YELLOW}Testing computed variables...${NC}"
 
 # Test computed variables are set
-test_variable_set "ROOT_DIR"
-test_variable_set "KIT_SRC_DIR"
+test_variable_set "WORK_DIR"
+test_variable_set "SDK_SRC_DIR"
 test_variable_set "cli_main"
 test_variable_set "cli_core"
 test_variable_set "ORG_DIR"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source_once "$KIT_SRC_DIR/facades/submodule/index.sh"
+source_once "$SDK_SRC_DIR/facades/submodule/index.sh"
 
 # Unified submodule management for packages and services
 # Uses structure: command submodule_type/path/to/reponame [options] [arguments]
@@ -174,7 +174,7 @@ case $command in
 
     hel|help|--help|-h) display_help "" "" \
         "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[D] submodule <command> submodule_type/path/to/reponame [options] [arguments]" \
-        "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$ORG_NAME/$KIT_NAME")")" \
+        "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$ORG_NAME/$SDK_NAME")")" \
         "" "" "$(ansi "1;90" "$(capitalize 'Commands')")" "" \
         "    add <path>               " "Add a new submodule from repository" \
         "    rem|remove|rm <path>     " "Remove an existing submodule" \

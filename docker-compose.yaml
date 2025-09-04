@@ -1,14 +1,14 @@
 services:
-  kit:
-    image: "$IMAGE_REGISTRY_URL/$KIT_NAME"
+  sdk:
+    image: "$IMAGE_REGISTRY_URL/$SDK_NAME"
     command: ["sleep", "infinity"]
     build:
-      context: "$KIT_DIR"
-    working_dir: "$TARGET_MOUNTED_DIR"
+      context: "$SDK_DIR"
+    working_dir: "$WORK_DIR_CONTAINER"
     # environment:
     # - GIT_DISCOVERY_ACROSS_FILESYSTEM=1
     # - GIT_TERMINAL_PROMPT=0 # avoid interactive prompts
     volumes:
-      - "$KIT_TARGET_DIR:$TARGET_MOUNTED_DIR"
+      - "$WORK_DIR_HOST:$WORK_DIR_CONTAINER"
       - "$HOME:/root"
-      - "$GIT_DIRECTORY:$GIT_MOUNT_DIR"
+      - "$GIT_DIRECTORY:$GIT_DIR_CONTAINER"

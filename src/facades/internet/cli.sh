@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source_once "$KIT_SRC_DIR/facades/internet/index.sh"
+source_once "$SDK_SRC_DIR/facades/internet/index.sh"
 
 # Internet connectivity checker CLI for Alpine container
 

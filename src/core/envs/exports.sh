@@ -1,16 +1,16 @@
 #!/bin/bash
 
 vars=( \
-    ROOT_DIR \
+    WORK_DIR \
     REPO_NAME \
-    KIT_DIR \
-    KIT_NAME \
+    SDK_DIR \
+    SDK_NAME \
     GIT_DIRECTORY \
     ORG_CACHE_DIR \
     IMAGE_REGISTRY_URL \
-    TARGET_MOUNTED_DIR \
-    GIT_MOUNT_DIR \
-    KIT_TARGET_DIR \
+    WORK_DIR_CONTAINER \
+    GIT_DIR_CONTAINER \
+    WORK_DIR_HOST \
 )
 
 # export "${vars[@]}" # reduces control

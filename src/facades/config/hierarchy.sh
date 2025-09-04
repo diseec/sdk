@@ -10,7 +10,7 @@
 # =============================================================================
 
 # Get configuration value with hierarchy resolution
-# Searches through scopes in order of precedence: project -> workspace -> user -> global
+# Searches through scopes in order of precedence: work -> repo -> user
 src_fac_con_get() {
     set -e
     local key_path="$1"
@@ -50,12 +50,12 @@ src_fac_con_get() {
     return 1
 }
 
-# Set configuration value in specified scope (defaults to workspace)
+# Set configuration value in specified scope (defaults to $DEFAULT_SCOPE)
 src_fac_con_set() {
     set -e
     local key_path="$1"
     local value="$2"
-    local scope="${3:-workspace}"  # Default to workspace scope
+    local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     
     # Validate inputs
     src_fac_con_validate_key_path "$key_path" || return 1
@@ -73,11 +73,11 @@ src_fac_con_set() {
     logit -l "Set '$key_path' = '$value' in '$scope' scope"
 }
 
-# Delete configuration key from specified scope (defaults to workspace)
+# Delete configuration key from specified scope (defaults to $DEFAULT_SCOPE)
 src_fac_con_delete() {
     set -e
     local key_path="$1"
-    local scope="${2:-workspace}"  # Default to workspace scope
+    local scope="${2:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     
     # Validate inputs
     src_fac_con_validate_key_path "$key_path" || return 1
@@ -103,7 +103,7 @@ src_fac_con_array_add() {
     set -e
     local key_path="$1"
     local value="$2"
-    local scope="${3:-workspace}"  # Default to workspace scope
+    local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     
     # Validate inputs
     src_fac_con_validate_key_path "$key_path" || return 1
@@ -126,7 +126,7 @@ src_fac_con_array_remove() {
     set -e
     local key_path="$1"
     local value="$2"
-    local scope="${3:-workspace}"  # Default to workspace scope
+    local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     
     # Validate inputs
     src_fac_con_validate_key_path "$key_path" || return 1

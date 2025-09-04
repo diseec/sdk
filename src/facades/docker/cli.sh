@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source_once "$KIT_SRC_DIR/facades/docker/index.sh"
+source_once "$SDK_SRC_DIR/facades/docker/index.sh"
 
 # cli_main envs > /dev/null # export envs so docker compose can pick them
 
@@ -9,14 +9,14 @@ c=$1; shift; case $c in
         ude|up-dev|up) src_fac_doc_up_development "$@" ;;
         upr|up-pro) src_fac_doc_up_production "$@" ;;
         exe|execute|exec) src_fac_doc_cmd_docker_execute "$@" ;;
-        bpa|build) _docker compose build --parallel "$@" ;;
+        bui|build) _docker compose build --parallel "$@" ;;
         _) _docker compose "$@" ;;
         hel|help|--help|-h) display_help "" "" \
             "$(ansi 97 'Docker Compose Commands')" "" \
             "    ude|up|up-dev   " "Start development environment" \
             "    upr|up-pro      " "Start production environment" \
             "    exe|exec        " "Execute command in compose service" \
-            "    bpa|build       " "Build all services in parallel" \
+            "    bui|build       " "Build all services in parallel" \
             "    _               " "Direct docker compose command passthrough"
         ;;
         *)

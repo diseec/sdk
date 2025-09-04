@@ -4,9 +4,9 @@ src_fac_for_prettier() {
 
     set -e;
 
-    # if ! grep -q '"prettier"' "$ROOT_DIR/package.json"; then
+    # if ! grep -q '"prettier"' "$WORK_DIR/package.json"; then
     #     logit -w "Prettier not found. Installing..."
-    #     $KIT_SRC_DIR/cmds/install/prettier.sh
+    #     $SDK_SRC_DIR/cmds/install/prettier.sh
     # fi
 
     # Use provided arguments or default file patterns

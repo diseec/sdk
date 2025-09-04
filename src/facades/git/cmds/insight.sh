@@ -150,7 +150,7 @@ src_fac_git_cmd_daily_insight() {
     local today_start=$(date '+%Y-%m-%d 00:00:00')
     local today_end=$(date '+%Y-%m-%d %H:%M:%S')
     local today_date=$(date '+%Y-%m-%d')
-    local cache_dir=$(cli_main workspace function src_fac_wor_get_cache_subdir "insights")
+    local cache_dir=$(cli_main config function src_fac_con_get_cache_subdir repo "insights")
     local cache_file="$cache_dir/daily_insight_$today_date.txt"
 
     # Check if cache exists for today
@@ -287,7 +287,7 @@ src_fac_git_cmd_collect_repo_data() {
     local -n total_deletions_ref="$9"
     local -n commit_list_ref="${10}"
     
-    local repo_path="$ROOT_DIR/$module_path"
+    local repo_path="$WORK_DIR/$module_path"
     
     # Skip if not a git repository
     if [ ! -d "$repo_path/.git" ] && [ ! -f "$repo_path/.git" ]; then
@@ -396,7 +396,7 @@ src_fac_git_cmd_daily_insight() {
     local today_end=$(echo "$date_range" | cut -d'|' -f2)
     local today_date=$(echo "$date_range" | cut -d'|' -f3)
     
-    local cache_dir=$(cli_main workspace function src_fac_wor_get_cache_subdir "insights")
+    local cache_dir=$(cli_main config function src_fac_con_get_cache_subdir repo "insights")
     local cache_file="$cache_dir/daily_insight_$today_date.txt"
 
     # Check cache and handle user choice
@@ -427,7 +427,7 @@ src_fac_git_cmd_daily_insight() {
     collect_repo_data_wrapper "$REPO_NAME" "."
     
     # Process all selected submodules
-    cli_main workspace function src_fac_wor_foreach_selected_module collect_repo_data_wrapper
+    cli_main config function src_fac_con_opt_act_foreach_selected_module collect_repo_data_wrapper
     
     # Check if any data was collected
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then
@@ -454,9 +454,6 @@ src_fac_git_cmd_daily_insight() {
     local deliverables=""
     local challenges=""
     local next_steps=""
-    
-    # Source the outputs.sh for the input function
-    source "$ROOT_DIR/packages/kit/src/core/outputs.sh"
     
     # Collect developer input
     work_focus=$(input "What was your main focus?")

@@ -21,10 +21,10 @@
 
 ```bash
 # Install globally (required)
-npm install -g @diseec/kit
+npm install -g @diseec/sdk
 
 # Install in project (required)
-npm install @diseec/kit --save-dev
+npm install @diseec/sdk --save-dev
 ```
 
 ### Step 2: Initialize Project
@@ -42,7 +42,7 @@ This creates:
 
 ### Step 3: Create Required Docker Files
 
-**REQUIRED**: Create these Docker files manually for the kit to work:
+**REQUIRED**: Create these Docker files manually for the sdk to work:
 
 1. **Dockerfile** (production-ready):
 
@@ -53,7 +53,7 @@ COPY package*.json ./
 RUN npm ci --only=production
 COPY . .
 
-# REQUIRED: Set container environment variable for DISEEC kit compatibility
+# REQUIRED: Set container environment variable for DISEEC sdk compatibility
 ENV IS_IN_CONTAINER=true
 
 EXPOSE 3000
@@ -66,7 +66,7 @@ CMD ["npm", "start"]
 services:
   my-project: # Must match repository name
     build:
-      context: ${ROOT_DIR}
+      context: ${WORK_DIR}
     ports:
       - 80:3000
 ```
@@ -103,8 +103,8 @@ project/
 │   ├── config.yaml       # Project configuration
 │   └── secrets.encrypted # Encrypted secrets (auto-created)
 ├── node_modules/
-│   └── @diseec/kit/      # Kit installation
-└── package.json          # With @diseec/kit dependency
+│   └── @diseec/sdk/      # Kit installation
+└── package.json          # With @diseec/sdk dependency
 ```
 
 ## cli_main Customization
@@ -123,7 +123,7 @@ install() {
 
 Variables available:
 
-- `$CLI_CORE` - Call original kit commands
+- `$CLI_CORE` - Call original sdk commands
 - `$CLI_MAIN` - Call the project cli itself
 
 ## Optional Setup
@@ -138,7 +138,7 @@ D secret add  # Add secret interactively
 ### Configure Workspace
 
 ```bash
-D workspace init  # For multi-module projects
+D config init  # For multi-module projects
 ```
 
 ### Git Configuration
@@ -154,7 +154,7 @@ git config --global user.email "your.email@diseec.com"
 
 ```bash
 brew install docker git node
-npm install -g @diseec/kit
+npm install -g @diseec/sdk
 ```
 
 ### Ubuntu/Debian
@@ -162,7 +162,7 @@ npm install -g @diseec/kit
 ```bash
 sudo apt install docker.io git nodejs npm
 sudo usermod -aG docker $USER
-npm install -g @diseec/kit
+npm install -g @diseec/sdk
 ```
 
 ### Windows (WSL2)
@@ -197,7 +197,7 @@ sudo usermod -aG docker $USER  # Linux
 
 ```bash
 # Check global installation
-npm list -g @diseec/kit
+npm list -g @diseec/sdk
 which D
 ```
 

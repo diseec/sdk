@@ -1,5 +1,5 @@
 {
-  "name": "@diseec/kit",
+  "name": "@diseec/sdk",
   "version": "0.0.0",
   "description": "A collection of reusable DevOps tools, CLI scripts, Dockerfiles, CI/CD templates, and configuration files to streamline development and deployment workflows across DISEEC projects. Ideal for standardizing project setup and automating common DevOps tasks.",
   "main": "index.sh",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/diseec/kit.git"
+    "url": "git+https://github.com/diseec/sdk.git"
   },
   "bin": {
     "D": "./D"
@@ -17,7 +17,7 @@
     "access": "public"
   },
   "keywords": [
-    "kit",
+    "sdk",
     "devops",
     "diseec",
     "dev",
@@ -27,9 +27,9 @@
   "author": "diseec",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/diseec/kit/issues"
+    "url": "https://github.com/diseec/sdk/issues"
   },
-  "homepage": "https://github.com/diseec/kit#readme",
+  "homepage": "https://github.com/diseec/sdk#readme",
   "systemDependencies": [
     "git",
     "curl",
@@ -37,6 +37,6 @@
     "docker"
   ],
   "devDependencies": {
-    "@diseec/kit": "*"
+    "@diseec/sdk": "*"
   }
 }

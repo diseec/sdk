@@ -14,7 +14,7 @@ src_cor_env_uti_is_in_container() {
 }
 
 src_cor_env_uti_has_submodules() {
-    if [ -f "$ROOT_DIR/.gitmodules" ] && [ -s "$ROOT_DIR/.gitmodules" ]; then
+    if [ -f "$WORK_DIR/.gitmodules" ] && [ -s "$WORK_DIR/.gitmodules" ]; then
         echo "true"
     else
         echo "false"
@@ -22,17 +22,17 @@ src_cor_env_uti_has_submodules() {
 }
 
 src_cor_env_uti_get_kit_version() {
-    if [ -f "$KIT_DIR/package.json" ]; then
-        grep '"version"' "$KIT_DIR/package.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/'
+    if [ -f "$SDK_DIR/package.json" ]; then
+        grep '"version"' "$SDK_DIR/package.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/'
     else
         echo "unknown"
     fi
 }
 
 src_cor_env_uti_get_kit_target_dit() {
-    if [ -z "$KIT_TARGET_DIR" ]; then
-        echo "$ROOT_DIR"
+    if [ -z "$WORK_DIR_HOST" ]; then
+        echo "$WORK_DIR"
     else
-        echo "$KIT_TARGET_DIR" # Is set when the command "D kit" has executed
+        echo "$WORK_DIR_HOST" # Is set when the command "D sdk" has executed
     fi
 }

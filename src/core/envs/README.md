@@ -7,7 +7,7 @@ The environment system has been reorganized into a modular structure for better 
 ## Structure
 
 ```
-packages/kit/src/core/
+packages/sdk/src/core/
 ├── envs.sh                     # Main entry point
 ├── config/
 │   └── constants.sh           # Organization and project constants
@@ -53,7 +53,7 @@ packages/kit/src/core/
 - **Contents**:
   - `src_cor_env_uti_is_in_container()`: Container environment detection
   - `src_cor_env_uti_has_submodules()`: Git submodules detection
-  - `src_cor_env_uti_get_kit_version()`: Extract kit version from package.json
+  - `src_cor_env_uti_get_kit_version()`: Extract sdk version from package.json
 - **Benefits**: Clear separation of concerns, reusable functions
 
 ### 5. Main Environment (`envs.sh`)
@@ -127,12 +127,12 @@ All variables are exported and available:
 
 ### Constants
 
-- `ORG_NAME`, `KIT_NAME`, `TARGET_MOUNTED_DIR`
-- `IMAGE_REGISTRY_URL`, `KIT_IMAGE`, `REPO_HUB_URL`, `KIT_RELATIVE_PATH`
+- `ORG_NAME`, `SDK_NAME`, `WORK_DIR_CONTAINER`
+- `IMAGE_REGISTRY_URL`, `SDK_IMAGE`, `REPO_HUB_URL`, `SDK_RELATIVE_PATH`
 
 ### Computed Paths
 
-- `ROOT_DIR`, `KIT_SRC_DIR`, `cli_main`, `cli_core`
+- `WORK_DIR`, `SDK_SRC_DIR`, `cli_main`, `cli_core`
 - `ORG_DIR`, `ORG_CACHE_DIR`
 
 ### Environment State

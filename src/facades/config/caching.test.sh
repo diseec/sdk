@@ -1,8 +1,8 @@
 #!/bin/bash
 # Test script for workspace cache functions
 
-# Source the workspace module
-source_module "$KIT_SRC_DIR/facades/workspace/index.sh"
+# Source the config module
+source_module "$KIT_SRC_DIR/facades/config/index.sh"
 
 test_section "Workspace Cache Functions"
 

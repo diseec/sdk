@@ -2,12 +2,12 @@
 
 src_inf_check_for_updates_repo() {
     # Check if the main repository is behind
-    current_branch=$(_git -C "$ROOT_DIR" rev-parse --abbrev-ref HEAD)
+    current_branch=$(_git -C "$WORK_DIR" rev-parse --abbrev-ref HEAD)
 
     if [ $? -eq 0 ] && [ -n "$current_branch" ]; then
-        _git -C "$ROOT_DIR" fetch origin
-        local_commit=$(_git -C "$ROOT_DIR" rev-parse @)
-        remote_commit=$(_git -C "$ROOT_DIR" rev-parse "@{u}")
+        _git -C "$WORK_DIR" fetch origin
+        local_commit=$(_git -C "$WORK_DIR" rev-parse @)
+        remote_commit=$(_git -C "$WORK_DIR" rev-parse "@{u}")
         
         if [ $? -eq 0 ] && [ "$local_commit" != "$remote_commit" ]; then
             logit --ansi="34" --icon="↓" "New commits available in $current_branch"
@@ -19,7 +19,7 @@ src_inf_check_for_updates_repo() {
             check_module_status() {
                 local module="$1"
                 local module_path="$2"
-                local full_path="$ROOT_DIR/$module_path"
+                local full_path="$WORK_DIR/$module_path"
                 cd "$full_path"
                 _git -C "$full_path" fetch origin
                 local_commit=$(_git -C "$full_path" rev-parse @)
@@ -30,7 +30,7 @@ src_inf_check_for_updates_repo() {
                     return 1  # Exit the loop early
                 fi
             }
-            cli_main workspace function src_fac_wor_foreach_selected_module check_module_status
+            cli_main config function src_fac_con_opt_act_foreach_selected_module check_module_status
             
             if $modules_behind; then
                 logit --ansi="34" --icon="↓" "New commits available in one or more selected modules"

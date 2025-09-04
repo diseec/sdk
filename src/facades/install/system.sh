@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 
 # Get system dependencies from package.json
 src_fac_set_get_system_deps() {
-    local pkg_json="$KIT_DIR/package.json"
+    local pkg_json="$SDK_DIR/package.json"
     
     # Extract systemDependencies array using grep, sed, and tr
     # This finds the line with "systemDependencies", then extracts the array content

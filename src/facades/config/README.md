@@ -16,7 +16,7 @@ The new configuration system provides:
 
 Configuration values are resolved in this order of precedence (highest to lowest):
 
-1. **Project** (`.kit/project.yaml`) - Project-specific overrides
+1. **Project** (`.sdk/project.yaml`) - Project-specific overrides
 2. **Workspace** (`$ORG_DIR/workspaces/$REPO_NAME/workspace.yaml`) - Repository-specific settings
 3. **User** (`$ORG_DIR/users/$USER/user.yaml`) - User-specific preferences
 4. **Global** (`$ORG_DIR/config.yaml`) - Organization-wide defaults
@@ -33,8 +33,8 @@ $ORG_DIR/
     └── $REPO_NAME/
         └── workspace.yaml                 # Workspace configuration
 
-$ROOT_DIR/
-└── .kit/
+$WORK_DIR/
+└── .sdk/
     └── project.yaml                       # Project configuration
 ```
 
@@ -81,7 +81,7 @@ user:
     editor: vim
 ```
 
-### Project Configuration (`$ROOT_DIR/.kit/project.yaml`)
+### Project Configuration (`$WORK_DIR/.sdk/project.yaml`)
 
 ```yaml
 project:
@@ -209,7 +209,7 @@ config cleanup                # Clean up old configuration files
 
 ### Secrets Management
 
-The kit encrypts sensitive data like API keys using AES-256-CBC encryption. This is essential for AI-powered features.
+The sdk encrypts sensitive data like API keys using AES-256-CBC encryption. This is essential for AI-powered features.
 
 **Setting Up Secrets:**
 
@@ -289,5 +289,5 @@ The system maintains backward compatibility through wrapper functions:
 - **Global config:** `~/.diseec/config.yaml` (organization defaults, encryption keys)
 - **User config:** `~/.diseec/users/$USER/user.yaml` (personal preferences)
 - **Workspace config:** `~/.diseec/workspaces/[repo-name]/workspace.yaml` (module selection)
-- **Project config:** `.kit/project.yaml` (local project settings)
+- **Project config:** `.sdk/project.yaml` (local project settings)
 - **Encrypted secrets:** `./secrets/` (encrypted files in your project)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source_once "$KIT_SRC_DIR/facades/secret/index.sh"
+source_once "$SDK_SRC_DIR/facades/secret/index.sh"
 
 mkdir -p "$SECRETS_DIR"
 

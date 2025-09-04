@@ -1,6 +1,6 @@
 # AI Module Documentation
 
-This module provides abstracted AI operations for the kit, with all functions prefixed with `ai_`. It handles OpenAI API calls with proper error handling, fallbacks, and flexible configuration.
+This module provides abstracted AI operations for the sdk, with all functions prefixed with `ai_`. It handles OpenAI API calls with proper error handling, fallbacks, and flexible configuration.
 
 ## Module Structure
 
@@ -134,7 +134,7 @@ Generate a daily development insight report.
 
 ```bash
 # Source the AI module
-$KIT_SRC_DIR/facades/ai/index.sh
+$SDK_SRC_DIR/facades/ai/index.sh
 
 # Generate content
 if src_fac_ai_is_available; then
@@ -189,9 +189,9 @@ The module provides comprehensive error handling:
 
 ## Integration
 
-This module is designed to integrate seamlessly with existing kit commands:
+This module is designed to integrate seamlessly with existing sdk commands:
 
-1. Source the module: `$KIT_SRC_DIR/facades/ai/index.sh`
+1. Source the module: `$SDK_SRC_DIR/facades/ai/index.sh`
 2. Check availability: `src_fac_ai_is_available`
 3. Use appropriate functions for your use case
 4. Handle errors gracefully with provided fallbacks

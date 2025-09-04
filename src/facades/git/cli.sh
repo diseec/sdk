@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source_once "$KIT_SRC_DIR/facades/git/index.sh"
+source_once "$SDK_SRC_DIR/facades/git/index.sh"
 
 # Git automation utilities for PR workflows
 # This script provides functions for:
