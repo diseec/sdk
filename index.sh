@@ -1,15 +1,43 @@
 #!/bin/bash
 
-# Guard to prevent multiple sourcing
-if [ "$_INDEXED" = "true" ]; then return 0; fi; _INDEXED="true";
+# =============================================================================
+# PROCESS COMMAND-LINE ARGUMENTS
+# =============================================================================
 
+# Set log level if not already set
+export D_LOG_LEVEL="${D_LOG_LEVEL:-DEBUG}" # change this to info when app stable
+
+_ARGS_ENVS_PROCESS=""; for arg in "$@"; do case "$arg" in
+    --log-level=*) D_LOG_LEVEL="${arg#*=}";;
+    # --log-level*) D_LOG_LEVEL="${arg#--log-level }";;
+    --debug) D_LOG_LEVEL="DEBUG" ;;
+*) _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\"";; esac; done; eval set -- $(eval echo $_ARGS_ENVS_PROCESS);
+
+# =============================================================================
+# INITIALIZATION
+# =============================================================================
+
+# Guard to prevent multiple loadings
+if [ "$_D_SDK_BOOTED" = "true" ]; then return 0; fi; _D_SDK_BOOTED="true";
+
+# Set SDK source directory if not already set
 if [ -z "${D_SDK_DIR:-}" ]; then
     D_SDK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
 
-# Bootstrap the core
+# Load common and bootstrap scripts
+source "$D_SDK_DIR/shared/index.sh"
 source "$D_SDK_DIR/bootstrap/index.sh"
 
-if [ -d "$D_CTX_DIR" ]; then
-    cd "$D_CTX_DIR"
-fi
+# =============================================================================
+#  SETUP ENVIRONMENT AND LOAD COMMON UTILITIES
+# =============================================================================
+
+# Setup environment variables
+sdk_boo_env_setup_environment "$@"
+
+# Set to context directory if available
+if [ -d "$D_CTX_DIR" ]; then cd "$D_CTX_DIR"; fi
+
+# Initialize debugger
+sdk_boo_debug_init
