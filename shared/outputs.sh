@@ -46,7 +46,7 @@ ansi() {
 
 logit() {
     local level="DEBUG" # DEBUG > INFO > WARNING > ERROR
-    local repo_name=${D_REPO_NAME:-d}
+    local repo_name=${D_REPO_NAME:-$D_CLI_GLOBAL_NAME}
     local type="--log"
     local default_ansi="90"
     local default_icon=""

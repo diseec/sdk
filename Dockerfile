@@ -11,10 +11,6 @@ RUN apk add --no-cache bash coreutils curl yq jq git openssl git-lfs
 
 WORKDIR /${D_SDK_NAME}
 
-COPY . .
-
-RUN npm install -g /${D_SDK_NAME}
-
 # Install GitHub cli_stub using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then \
@@ -38,6 +34,10 @@ RUN npm install -g prettier
 
 # Install network diagnostic tools for internet facade
 RUN apk add --no-cache wget iputils bind-tools traceroute bc
+
+COPY . .
+
+RUN npm install -g /${D_SDK_NAME}
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

@@ -11,10 +11,10 @@ ARGS=""; for arg in "$@"; do case "$arg" in
 *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
 if [ -n "$D_CTX_DIR" ]; then
-    # "$D_CTX_DIR/$D_CLI_LOCAL_NAME" install function sdk_fac_set_ensure_patched \
+    # "$D_CLI_STUB" install function sdk_fac_set_ensure_patched \
     #     "${D_IS_FORCE_PATCH:-false}" "$D_CTX_DIR"
-    ("$D_CTX_DIR/$D_CLI_LOCAL_NAME" "$@")
+    ("$D_CLI_STUB" "$@")
 else
-    ("$D_SDK_DIR/$D_CLI_LOCAL_NAME" "$@")
+    cli_sdk "$@"
 fi
 

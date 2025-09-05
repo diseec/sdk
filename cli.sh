@@ -38,7 +38,7 @@ c=$1; shift; case $c in
     set|settings)   mark_ctx_only; source_safely "$D_SDK_DIR/facades/settings/cli.sh" "$@" ;;
     inf|informs)    mark_ctx_only; source "$D_SDK_DIR/informs/cli.sh" "$@" ;;
     env|envs)       mark_ctx_only; source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
-    sdk)            mark_ctx_only; env D_CTX_DIR_HOST="$D_CTX_DIR" "$D_SDK_DIR/$D_SDK_NAME" "$@" ;;
+    sdk)            mark_ctx_only; env D_CTX_DIR_HOST="$D_CTX_DIR" "$D_CLI_SDK" "$@" ;;
     api)            mark_ctx_only; source "$D_SDK_DIR/api/cli.sh" "$@" ;;
     abo|about)      mark_ctx_only; about ;;
     hel|help|--help|-h) display_help "" "" \

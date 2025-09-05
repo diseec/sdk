@@ -1,18 +1,5 @@
 #!/bin/bash
 
-# =============================================================================
-# PROCESS COMMAND-LINE ARGUMENTS
-# =============================================================================
-
-# Set log level if not already set
-export D_LOG_LEVEL="${D_LOG_LEVEL:-DEBUG}" # change this to info when app stable
-
-_ARGS_ENVS_PROCESS=""; for arg in "$@"; do case "$arg" in
-    --log-level=*) D_LOG_LEVEL="${arg#*=}";;
-    # --log-level*) D_LOG_LEVEL="${arg#--log-level }";;
-    --debug) D_LOG_LEVEL="DEBUG" ;;
-*) _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\"";; esac; done; eval set -- $(eval echo $_ARGS_ENVS_PROCESS);
-
 sdk_boo_env_setup_environment() {
     # =============================================================================
     # ENVIRONMENT VARIABLES INITIALIZATION
@@ -30,10 +17,9 @@ sdk_boo_env_setup_environment() {
     # STORE ORIGINAL ENVIRONMENT VARIABLES
     # =============================================================================
 
-    readonly D_INI_ARGS=("$@")
-    
+    readonly D_INI_ARGS="$@"
     readonly D_INI_PWD="$PWD"
-    
+
     : ${D_CLI_EXECUTED:=false}
     readonly D_CLI_EXECUTED
     
@@ -58,6 +44,8 @@ sdk_boo_env_setup_environment() {
     fi
 
     readonly D_CLI_CORE="$D_SDK_DIR/cli.sh"
+
+    readonly D_CLI_SDK="$D_SDK_DIR/$D_SDK_NAME"
 
     D_CTX_DIR_HOST="$(sdk_boo_env_uti_get_kit_target_dit)"
 

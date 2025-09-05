@@ -1,5 +1,9 @@
 #!/bin/bash
 
+cli_sdk() {
+    source "$D_CLI_SDK" "$@"
+}
+
 cli_stub() {
     source "$D_CLI_STUB" "$@"
 }
@@ -65,7 +69,7 @@ source_safely() {
 mark_ctx_only() {
     # Mark the script to be allowed to only run when there is a project attached to the SDK context (i.e. D_CTX_DIR is set)
     if [ -z "${D_CTX_DIR:-}" ]; then
-        logit -e --icon="OOT" "Out of context! Command can only be run within a context: $D_CLI_GLOBAL_NAME $D_INI_ARGS"
+        logit -e --icon="E:OOC" "Command forbidden: $D_INI_ARGS" >&2
         exit 1
     fi
 }
