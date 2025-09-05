@@ -25,7 +25,7 @@ sdk_fac_ins_repository() {
 
     if [ ! -f "$(cli_ctx config path --scope=repository)" ] && [ "$D_HAS_SUBMODULES" = "true" ]; then
         logit -l "Initializing config configuration..."
-        cli_ctx safely config init
+        cli_ctx --safely config init
     fi
 
     cli_ctx git function sdk_fac_git_cmd_checkout_branch

@@ -1,122 +1,263 @@
-# SDK Testing Library
+# E2E Testing Framework for SDK
 
-A unified testing framework for the SDK, supporting both unit and end-to-end (E2E) testing.
+This document outlines how to use the end-to-end (E2E) testing framework for the SDK. The framework provides a modular, well-structured approach to testing the SDK's functionality in various environments.
 
-## Features
+## Table of Contents
 
-- Simple, consistent API for writing both unit and E2E tests
-- Comprehensive assertion library
-- Clean test output with color formatting
-- Isolated test environment for each test
-- Support for test timeouts
-- Test discovery and execution
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+- [Writing Tests](#writing-tests)
+- [Running Tests](#running-tests)
+- [Assertions](#assertions)
+- [Project Setup](#project-setup)
+- [Container Support](#container-support)
+- [Test Discovery](#test-discovery)
+- [Examples](#examples)
 
-## Directory Structure
+## Overview
 
-```
-testing/
-├── bin/                   # Executable test runners
-│   ├── run.sh             # Main test runner script
-│   ├── run-unit.sh        # Unit test runner
-│   └── run-e2e.sh         # E2E test runner
-├── core/                  # Core functionality
-│   ├── bootstrap.sh       # Environment setup
-│   ├── runner.sh          # Test execution engine
-│   ├── discovery.sh       # Test discovery
-│   └── reporting.sh       # Test result reporting
-├── lib/                   # Supporting libraries
-│   ├── assertions.sh      # Assertion functions
-│   ├── formatting.sh      # Output formatting
-│   ├── utils.sh           # General utilities
-│   └── mocks.sh           # Test mocking utilities
-├── frameworks/            # Test frameworks
-│   ├── unit/              # Unit testing framework
-│   │   └── framework.sh   # Unit test helpers
-│   └── e2e/               # E2E testing framework
-│       └── framework.sh   # E2E test helpers
-├── examples/              # Example test files
-│   ├── unit/              # Unit test examples
-│   └── e2e/               # E2E test examples
-└── index.sh               # Main entry point
-```
+The E2E testing framework is designed to:
 
-## Usage
+- Quickly set up test projects for creating test scenarios
+- Support testing in container environments
+- Provide elegant, easy-to-use assertions
+- Offer a user-friendly API
+- Auto-discover tests across the project
+- Filter and run specific tests
 
-### Running Tests
+The framework is implemented as a library within the SDK at `packages/sdk/lib/tester/`.
+
+## Getting Started
+
+### Installation
+
+The testing framework is included in the SDK, so no separate installation is needed. To use it, you need to have the SDK installed in your project.
+
+### Basic Usage
+
+To run all tests:
 
 ```bash
-# Run all tests
-./lib/testing/bin/run.sh
-
-# Run only unit tests
-./lib/testing/bin/run.sh --unit
-
-# Run only E2E tests
-./lib/testing/bin/run.sh --e2e
-
-# Run a specific test file
-./lib/testing/bin/run.sh path/to/test.sh
-
-# List available tests
-./lib/testing/bin/run.sh --list
+d test run
 ```
 
-### Writing Unit Tests
+To list all available tests:
 
-Unit tests should be placed in a `tests/unit` directory with the naming pattern `*.test.sh`.
+```bash
+d test list
+```
+
+To run specific tests:
+
+```bash
+d test run --filter=git
+```
+
+## Writing Tests
+
+Tests are written as shell scripts that end with `.test.sh`. Each test file should:
+
+1. Include a test name and description as comments
+2. Use the assertion functions provided by the framework
+3. Return an appropriate exit code
+
+### Test File Structure
 
 ```bash
 #!/bin/bash
-# Example unit test
 
-# Source the testing framework
-source "$D_SDK_DIR/lib/testing/frameworks/unit/framework.sh"
+# TEST: My Test Name
+# DESCRIPTION: What this test does
 
-test_section "Example Section"
+# Source testing framework
+source_once "$D_SDK_DIR/lib/tester/index.sh"
 
-test_case "Example test case"
-assert_equals "1 + 1 should equal 2" 2 $((1 + 1))
+# Test sections
+sdk_lib_tester_utils_section "Section 1"
+
+# Your test assertions
+assert_equal "expected" "actual" "Values should be equal"
+assert_success "command" "Command should succeed"
+
+# More test sections as needed
+sdk_lib_tester_utils_section "Section 2"
+
+# More assertions...
+
+# Return result
+exit $(( SDK_TESTER_ASSERT_FAILED > 0 ? 1 : 0 ))
 ```
 
-### Writing E2E Tests
+### Test Metadata
 
-E2E tests should be placed in a `tests/e2e` directory with the naming pattern `*.e2e.test.sh`.
+Each test file should include metadata as comments:
+
+- `# TEST: Test Name` - The name of the test (required)
+- `# DESCRIPTION: Test Description` - A brief description of what the test does (optional)
+
+## Running Tests
+
+### Running All Tests
+
+To run all tests in the project:
 
 ```bash
-#!/bin/bash
-# Example E2E test
-
-# Source the testing framework
-source "$D_SDK_DIR/lib/testing/frameworks/e2e/framework.sh"
-
-test_section "CLI Commands"
-
-test_case "Version command"
-e2e_run_command "d --version"
-e2e_assert_success "Command should succeed"
-e2e_assert_output_contains "Should show version" "v"
+d test run
 ```
 
-## Available Assertions
+### Filtering Tests
 
-The testing library provides a rich set of assertions for validating test behavior:
+To run tests matching a specific pattern:
 
-- `assert_equals` - Assert that two values are equal
-- `assert_not_equals` - Assert that two values are not equal
-- `assert_contains` - Assert that a string contains a substring
-- `assert_matches` - Assert that a string matches a regex pattern
-- `assert_success` - Assert that a command succeeds
-- `assert_failure` - Assert that a command fails
-- ... and many more
+```bash
+d test run --filter=git
+```
 
-## Environment
+The filter matches any part of the test file path, making it easy to run related tests.
 
-Tests run in an isolated environment with the following variables set:
+### Running Specific Tests
 
-- `D_SDK_DIR` - Path to the SDK root directory
-- `TEST_TEMP_DIR` - A temporary directory for test artifacts
-- `CURRENT_TEST_FILE` - Path to the current test file
+To run specific test files:
 
-## License
+```bash
+d test run path/to/specific.test.sh
+```
 
-See the SDK license for details.
+### Running Tests in a Container
+
+To run tests in the SDK container for a consistent environment:
+
+```bash
+d test run --safely
+```
+
+### Summary Mode
+
+To only show a summary of test results:
+
+```bash
+d test run --summary-only
+```
+
+## Assertions
+
+The framework provides a rich set of assertion functions to make testing easier:
+
+### Basic Assertions
+
+```bash
+assert_equal "expected" "actual" "Optional message"
+assert_not_equal "expected" "actual" "Optional message"
+assert_true "condition" "Optional message"
+assert_false "condition" "Optional message"
+```
+
+### String Assertions
+
+```bash
+assert_contains "haystack" "needle" "Optional message"
+assert_not_contains "haystack" "needle" "Optional message"
+```
+
+### Command Assertions
+
+```bash
+assert_success "command" "Optional message"
+assert_failure "command" [expected_exit_code] "Optional message"
+```
+
+### File Assertions
+
+```bash
+assert_file_exists "path/to/file" "Optional message"
+assert_dir_exists "path/to/dir" "Optional message"
+assert_file_contains "path/to/file" "pattern" "Optional message"
+```
+
+## Project Setup
+
+The framework provides utilities to set up test projects:
+
+### Creating a Test Project
+
+```bash
+d test setup --name=my-test-project
+```
+
+### Using a Template
+
+```bash
+d test setup --name=my-test-project --template=custom-template
+```
+
+### In Test Scripts
+
+You can also create and manage test projects programmatically in your tests:
+
+```bash
+# Create a temporary project
+temp_project=$(sdk_lib_tester_create_temp_project)
+
+# Run commands in the project
+sdk_lib_tester_run_in_project "$temp_project" "./cli command"
+
+# Clean up when done
+sdk_lib_tester_cleanup_temp_project "$temp_project"
+```
+
+## Container Support
+
+The framework is designed to work seamlessly with the SDK's container support:
+
+### Testing if Running in Container
+
+```bash
+if [[ "${SDK_TESTER_IN_CONTAINER:-0}" == "1" ]]; then
+  # Container-specific tests
+else
+  # Non-container tests
+fi
+```
+
+### Requiring Container Environment
+
+```bash
+# Skip test if not in container
+sdk_lib_tester_utils_require_container
+```
+
+### Running Tests in Container
+
+```bash
+d test run --safely
+```
+
+## Test Discovery
+
+The framework automatically discovers tests across the project:
+
+### Test Pattern
+
+Tests are identified by the file extension `.test.sh`.
+
+### Listing Tests
+
+```bash
+d test list
+```
+
+### Filtering Tests
+
+```bash
+d test list --filter=pattern
+```
+
+## Examples
+
+Example tests are provided in the `packages/sdk/lib/tester/examples/tests/` directory:
+
+- `basic.test.sh`: Demonstrates basic assertions
+- `container.test.sh`: Shows container-aware testing
+- `project-setup.test.sh`: Illustrates project setup and testing
+
+Review these examples to get started with your own tests.

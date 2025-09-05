@@ -273,7 +273,7 @@ input() {
             display_prompt="$prompt [$(ansi 90 "$default_value")]"
         fi
         
-        printf "$(logit --ansi="34" --icon=">" "$display_prompt") "
+        printf "$(logit --ansi="35" --icon=">" "$display_prompt") "
         
         # Read input
         local user_input=""
