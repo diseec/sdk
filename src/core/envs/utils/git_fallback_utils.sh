@@ -17,8 +17,8 @@ src_cor_env_uti_get_git_dir() {
         fi
 
         if [ ! -f "$git_dir_or_file" ]; then
-            echo "error: '$git_dir_or_file' is not a valid git reference"
-            return 1
+            # echo "error: '$git_dir_or_file' is not a valid git reference"
+            return 0
         fi
 
         # Submodule or worktree: .git is a file pointing to actual gitdir

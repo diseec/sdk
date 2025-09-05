@@ -97,9 +97,10 @@ c=$1; shift; case $c in
         # if [ $? -ne 0 ]; then logit -e "Failed to run command in $SDK_NAME container"; fi
     ;;
     -v|--version)
-        echo "sdk: v$VERSION source: $SDK_DIR"
+        echo "$SDK_NAME: v$VERSION source: $SDK_DIR"
         d_version="$(_npm list -g @diseec/sdk --depth=0 --json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')"
-        echo "D: v$d_version"
+        echo "D-cli: v$d_version"
+        echo "Image ID: $(_docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep "$SDK_IMAGE")"
     ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi

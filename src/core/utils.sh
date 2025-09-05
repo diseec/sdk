@@ -29,7 +29,6 @@ source_once() {
 safely() {
     # use this in cli case statement or anywhere be like:
     # cmd) safely && cmd "$@" ;;
-k
     if [ "$IS_IN_KIT_CONTAINER" = "true" ]; then
         return 0
     elif [ "$IS_IN_CONTAINER" = "true" ]; then

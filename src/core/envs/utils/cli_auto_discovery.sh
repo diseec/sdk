@@ -9,8 +9,8 @@ src_cor_env_uti_cli_auto_discovery() {
     # Initialize HAS_DISCOVERED_CLI if not set
     : ${HAS_DISCOVERED_CLI:=false}
     : ${IS_SDK_CLI:=false}
-    
-    if [ "$HAS_DISCOVERED_CLI" = "true" ]; then return 0; fi
+
+    # if [ "$HAS_DISCOVERED_CLI" = "true" ]; then return 0; fi
 
     # Canonicalize SDK_DIR
     local starting_dir=$(cd "$1" 2>/dev/null && pwd) || {
@@ -37,7 +37,7 @@ src_cor_env_uti_cli_auto_discovery() {
 
     local dir=$starting_dir
     while :; do
-        if [ -f "$dir/cli" ] && [ ! -f "$WORK_DIR/D" ]; then
+        if [ -f "$dir/cli" ] && [ ! -f "$dir/D" ]; then
             HAS_DISCOVERED_CLI="true"
             printf '%s\n' "$dir"
             return 0

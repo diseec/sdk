@@ -109,7 +109,7 @@ logit() {
     if [ -n "$content" ]; then
         content="$(ansi 90 "$content")"
     else
-        content="An empty log!";
+        content="Sunshine, rainbows and sh*t!";
     fi
 
     # Handle logging levels

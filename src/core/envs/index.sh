@@ -19,8 +19,10 @@ source $SDK_DIR/src/core/envs/utils/validate_environment.sh
 # Store original arguments
 readonly ORIGINAL_ARGS=("$@")
 
-# Discover project root directory
-WORK_DIR="$(src_cor_env_uti_cli_auto_discovery "$SDK_DIR")"
+# Discover project root directory if not already set
+if [ -z "${WORK_DIR:-}" ]; then
+    WORK_DIR="$(src_cor_env_uti_cli_auto_discovery "$SDK_DIR")"
+fi
 readonly WORK_DIR
 
 # Kit and CLI paths
