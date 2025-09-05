@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sdk_fac_set_repository() {
+sdk_fac_ins_repository() {
     set -e;
 
     logit -l "Installing ..."

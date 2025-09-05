@@ -1,13 +1,13 @@
 #!/bin/bash
 
-sdk_fac_set_sdk() {
+sdk_fac_ins_sdk() {
     set -e
 
     # docker pull image.registry.diseec.com/kit \
     #     --disable-content-trust > /dev/null 2>&1
     cli_stub docker compose _ pull; > /dev/null 2>&1
 
-    sdk_fac_set_sdk_process() {
+    sdk_fac_ins_sdk_process() {
         if [ "$IS_IN_SDK_CONTAINER" != "true" ]; then
             logit -e "The 'patch' command works only on bench! (the sdk container)"; return 1; 
         fi
@@ -46,23 +46,22 @@ sdk_fac_set_sdk() {
         logit -l "$D_SDK_NAME patched for: $package_name"
     }
 
-    safely && sdk_fac_set_sdk_process
+    safely && sdk_fac_ins_sdk_process
 }
 
-sdk_fac_set_ensure_patched() {
-    local is_forced="$1";
-    local ctx_dir="$2";
-    local sdk_dir="$ctx_dir/$D_SDK_NPM_PATH";
+sdk_fac_ins_ensure_patched() {
+    local is_forced="${1:-false}";
+    local sdk_dir="$D_CTX_DIR/$D_SDK_NPM_PATH";
 
     # Patch operation applied only either asked to or target project is missing the sdk
-    if { [ _HAS_PATCHED != "true" ] && \
-        [ -f "$ctx_dir/$D_CLI_LOCAL_NAME" ] && \
-        [ ! -f "$ctx_dir/$D_CLI_GLOBAL_NAME" ] && \
+    if { [ _D_SDK_HAS_PATCHED != "true" ] && \
+        [ -f "$D_CTX_DIR/$D_CLI_LOCAL_NAME" ] && \
+        [ ! -f "$D_CTX_DIR/$D_SDK_NAME" ] && \
         { [ ! -d "$sdk_dir" ] || \
         [ -z "$(ls -A "$sdk_dir" 2> /dev/null)" ]; } } || \
         [ "$is_forced" = "true" ]; then
 
-        _HAS_PATCHED="true"
+        _D_SDK_HAS_PATCHED="true"
         main_cli sdk patch
 
         # abort if patch failed

@@ -3,17 +3,17 @@
 source_once "$D_SDK_DIR/facades/install/index.sh"
 
 c=$1; shift; case $c in
-    pat|patch) sdk_fac_set_sdk "$@" ;;
-    rep|repository) sdk_fac_set_repository "$@" ;;
-    pre|prettier) sdk_fac_set_prettier "$@" ;;
-    upd|update) sdk_fac_set_cmd_update "$@" ;;
-    glo|globally) sdk_fac_set_globally "$@" ;;
+    pat|patch) sdk_fac_ins_sdk "$@" ;;
+    rep|repository) sdk_fac_ins_repository "$@" ;;
+    pre|prettier) sdk_fac_ins_prettier "$@" ;;
+    upd|update) sdk_fac_ins_cmd_update "$@" ;;
+    glo|globally) sdk_fac_ins_globally "$@" ;;
     sys|system) c=$1; shift; case $c in
         dep|dependency-check)
-            sdk_fac_set_check_system_dependencies
+            sdk_fac_ins_check_system_dependencies
         ;;
         ins|install)
-            sdk_fac_set_install_system_dependencies
+            sdk_fac_ins_install_system_dependencies
         ;;
         hel|help|--help|-h)
             display_help "" "" \

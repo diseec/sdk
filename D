@@ -1,18 +1,11 @@
 #!/bin/bash
 
-set -e
-
 : ${D_CLI_EXECUTED:=true}
 
 source "$(cd "$(npm root -g)" && pwd)/@diseec/sdk/index.sh"
 
-ARGS=""; for arg in "$@"; do case "$arg" in
-    --patch) D_IS_FORCE_PATCH="true" ;;
-*) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
-
 if [ -n "$D_CTX_DIR" ]; then
-    # "$D_CLI_STUB" install function sdk_fac_set_ensure_patched \
-    #     "${D_IS_FORCE_PATCH:-false}" "$D_CTX_DIR"
+    "$D_CLI_STUB" install function sdk_fac_ins_ensure_patched "$_D_SDK_PATCH_FORCE"
     ("$D_CLI_STUB" "$@")
 else
     cli_sdk "$@"

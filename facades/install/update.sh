@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get version information for a package
-sdk_fac_set_get_version_info() {
+sdk_fac_ins_get_version_info() {
     local package_name="$D_SDK_NPM_PKG"
     
     # Get outdated info as JSON
@@ -38,7 +38,7 @@ sdk_fac_set_get_version_info() {
 }
 
 # Check if sdk version has changed
-sdk_fac_set_has_version_changed() {
+sdk_fac_ins_has_version_changed() {
     local package_name="$D_SDK_NPM_PKG"
     
     # Get outdated info as JSON
@@ -51,7 +51,7 @@ sdk_fac_set_has_version_changed() {
     fi
 }
 
-sdk_fac_set_cmd_update() {
+sdk_fac_ins_cmd_update() {
     set -e
     
     local IS_RECURSIVE="false"
