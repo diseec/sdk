@@ -62,7 +62,7 @@ sdk_fac_git_cmd_git_log() {
 #     local today_start=$(date '+%Y-%m-%d 00:00:00')
 #     local today_end=$(date '+%Y-%m-%d %H:%M:%S')
 #     local today_date=$(date '+%Y-%m-%d')
-#     local cache_dir=$(cli_stub config function sdk_fac_con_get_cache_subdir "repo" "insights")
+#     local cache_dir=$(cli_stub config function sdk_fac_con_get_cache_subdir "repository" "insights")
 #     local cache_file="$cache_dir/daily_insight_$today_date.txt"
 
 #     # Check if cache exists for today
@@ -306,7 +306,7 @@ sdk_fac_git_cmd_git_log() {
 #         local ai_insight=$(cli_stub ai function sdk_fac_ai_generate_daily_insight "$analysis_data")
         
 #         if [ -n "$ai_insight" ]; then
-#             # Cache directory is already created by cli_stub config function sdk_fac_con_get_cache_subdir repo
+#             # Cache directory is already created by cli_stub config function sdk_fac_con_get_cache_subdir repository
             
 #             # Save the result to cache
 #             {

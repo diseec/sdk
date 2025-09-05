@@ -2,24 +2,19 @@
 
 set -e
 
-readonly D_IS_GLOBAL_CLI_USED="true"
+: ${D_CLI_EXECUTED:=true}
 
 source "$(cd "$(npm root -g)" && pwd)/@diseec/sdk/index.sh"
 
 ARGS=""; for arg in "$@"; do case "$arg" in
     --patch) D_IS_FORCE_PATCH="true" ;;
 *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
-# sdk_boo_env_uti_cli_auto_discovery
-PWD_CTX_DIR="$(sdk_boo_env_uti_cli_auto_discovery "$D_OLD_PWD")";
 
-if [ -n "$PWD_CTX_DIR" ]; then
-    # "$PWD_CTX_DIR/$D_CLI_LOCAL_NAME" install function sdk_fac_set_ensure_patched \
-    #     "${D_IS_FORCE_PATCH:-false}" "$PWD_CTX_DIR"
-    # X $PWD_CTX_DIR
-    env D_CTX_DIR="$PWD_CTX_DIR" "$PWD_CTX_DIR/$D_CLI_LOCAL_NAME" "$@"
-elif [ -n "$D_CTX_DIR" ]; then
-    "$D_CTX_DIR/$D_CLI_LOCAL_NAME" "$@"
+if [ -n "$D_CTX_DIR" ]; then
+    # "$D_CTX_DIR/$D_CLI_LOCAL_NAME" install function sdk_fac_set_ensure_patched \
+    #     "${D_IS_FORCE_PATCH:-false}" "$D_CTX_DIR"
+    ("$D_CTX_DIR/$D_CLI_LOCAL_NAME" "$@")
 else
-    "$D_SDK_DIR/$D_CLI_LOCAL_NAME" "$@"
+    ("$D_SDK_DIR/$D_CLI_LOCAL_NAME" "$@")
 fi
 

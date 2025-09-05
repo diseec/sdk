@@ -6,21 +6,24 @@
 # Functions for discovering project structure and paths
 
 sdk_boo_env_uti_cli_auto_discovery() {
-    : ${D_IS_GLOBAL_CLI_USED:=false}
     : ${HAS_DISCOVERED_CLI:=false}
-    : ${IS_SDK_CLI:=false}
 
-    if [ "$HAS_DISCOVERED_CLI" = "true" ] || [ "$D_IS_GLOBAL_CLI_USED" = "true" ]; then
-        return 0; fi
+    if [ "$D_CLI_EXECUTED" = "true" ]; then
+        local starting_dir="$D_INI_PWD"
+    else
+        local starting_dir="$D_SDK_DIR"
+    fi
+
+    if [ "$HAS_DISCOVERED_CLI" = "true" ]; then return 0; fi
 
     # Canonicalize D_SDK_DIR
-    local starting_dir=$(cd "$1" 2>/dev/null && pwd) || {
+    starting_dir=$(cd "$1" 2>/dev/null && pwd) || {
         echo "Error: can't access '$1'" >&2
         exit 1
     }
 
     # If we are in a SDK CLI context
-    if [ "$IS_SDK_CLI" = "true" ]; then
+    if [ "$D_SDK_CLI_EXECUTED" = "true" ]; then
         printf '%s\n' "$D_SDK_DIR"
         return 0
     fi
@@ -38,7 +41,7 @@ sdk_boo_env_uti_cli_auto_discovery() {
 
     local dir=$starting_dir
     while :; do
-        if [ -f "$dir/$D_CLI_LOCAL_NAME" ] && [ ! -f "$dir/$D_CLI_GLOBAL_NAME" ]; then
+        if [ -f "$dir/$D_CLI_LOCAL_NAME" ]; then
             HAS_DISCOVERED_CLI="true"
             printf '%s\n' "$dir"
             return 0

@@ -42,7 +42,7 @@ This creates:
 
 ### Step 3: Create Required Docker Files
 
-**REQUIRED**: Create these Docker files manually for the sdk to work:
+**REQUIRED**: Create these Docker files manually for the sdk to the context:
 
 1. **Dockerfile** (production-ready):
 

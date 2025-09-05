@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IS_SDK_CLI="true"
+: ${D_SDK_CLI_EXECUTED:=true}
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
 

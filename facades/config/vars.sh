@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly DEFAULT_SCOPE="work"
+readonly DEFAULT_SCOPE="context"
 
 # =============================================================================
 # FUNDAMENTAL ARCHITECTURAL
@@ -26,12 +26,12 @@ readonly SCOPE_USER_DIR="$D_ORG_DIR"
 # =============================================================================
 
 # Configuration file names and structure
-readonly SCOPE_WORK_FILE="$SCOPE_CTX_DIR/config.yaml"
+readonly SCOPE_CTX_FILE="$SCOPE_CTX_DIR/config.yaml"
 readonly SCOPE_REPO_FILE="$SCOPE_REPO_DIR/config.yaml"
 readonly SCOPE_USER_FILE="$SCOPE_USER_DIR/config.yaml"
 
 # Configuration scopes in order of precedence (highest to lowest)
-readonly CONFIG_SCOPES="work repo user"
+readonly CONFIG_SCOPES="context repository user"
 
 # =============================================================================
 # CACHE CONSTANTS

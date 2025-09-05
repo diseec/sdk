@@ -79,19 +79,19 @@ c=$1; shift; case $c in
         "    sta|status               " "Show configuration summary" \
         "    hel|help                 " "Show this help message" \
         "" "" "$(ansi 97 'Scopes')" "" \
-        "    work                     " "Project-specific shared configuration ($SCOPE_WORK_FILE)" \
-        "    repo                     " "Project-specific local configuration ($SCOPE_REPO_FILE)" \
+        "    context                  " "Project-specific shared configuration ($SCOPE_CTX_FILE)" \
+        "    repository               " "Project-specific local configuration ($SCOPE_REPO_FILE)" \
         "    user                     " "User-specific configuration ($SCOPE_USER_FILE)" \
         "" "" "$(ansi 97 'Hierarchy')" "" \
         "    Configuration values are resolved in this order of precedence:" \
-        "    work > repo > user" \
+        "    context > repository > user" \
         "" "" "$(ansi 97 'Examples')" "" \
-        "    config --scope=work get work.submodules" \
+        "    config --scope=context get context.submodules" \
         "    config -s=user set defaults.shell zsh" \
-        "    config --scope work add work.submodules my-service" \
+        "    config --scope context add context.submodules my-service" \
         "    config which organization.name" \
-        "    config --scope=work list" \
-        "    config --scope work delete \"some.key\"" \
+        "    config --scope=context list" \
+        "    config --scope context delete \"some.key\"" \
         "$@"
     ;;
     fun|function) "$@" ;;

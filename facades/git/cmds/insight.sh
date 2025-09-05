@@ -150,7 +150,7 @@ sdk_fac_git_cmd_daily_insight() {
     local today_start=$(date '+%Y-%m-%d 00:00:00')
     local today_end=$(date '+%Y-%m-%d %H:%M:%S')
     local today_date=$(date '+%Y-%m-%d')
-    local cache_dir=$(cli_stub config function sdk_fac_con_get_cache_subdir repo "insights")
+    local cache_dir=$(cli_stub config function sdk_fac_con_get_cache_subdir repository "insights")
     local cache_file="$cache_dir/daily_insight_$today_date.txt"
 
     # Check if cache exists for today
@@ -396,7 +396,7 @@ sdk_fac_git_cmd_daily_insight() {
     local today_end=$(echo "$date_range" | cut -d'|' -f2)
     local today_date=$(echo "$date_range" | cut -d'|' -f3)
     
-    local cache_dir=$(cli_stub config function sdk_fac_con_get_cache_subdir repo "insights")
+    local cache_dir=$(cli_stub config function sdk_fac_con_get_cache_subdir repository "insights")
     local cache_file="$cache_dir/daily_insight_$today_date.txt"
 
     # Check cache and handle user choice

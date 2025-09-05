@@ -30,8 +30,15 @@ sdk_boo_env_setup_environment() {
     # STORE ORIGINAL ENVIRONMENT VARIABLES
     # =============================================================================
 
-    readonly D_OLD_ARGS=("$@")
-    readonly D_OLD_PWD="$PWD"
+    readonly D_INI_ARGS=("$@")
+    
+    readonly D_INI_PWD="$PWD"
+    
+    : ${D_CLI_EXECUTED:=false}
+    readonly D_CLI_EXECUTED
+    
+    : ${D_SDK_CLI_EXECUTED:=false}
+    readonly D_SDK_CLI_EXECUTED
 
     # =============================================================================
     # COMPUTED PATHS AND DIRECTORIES
@@ -39,12 +46,17 @@ sdk_boo_env_setup_environment() {
 
     # Discover project root directory if not already set
     if [ -z "${D_CTX_DIR:-}" ]; then
-        D_CTX_DIR="$(sdk_boo_env_uti_cli_auto_discovery "$D_SDK_DIR")"
+        D_CTX_DIR="$(sdk_boo_env_uti_cli_auto_discovery)"
     fi
     readonly D_CTX_DIR
 
     # Kit and CLI paths
-    readonly D_CLI_STUB="$D_CTX_DIR/$D_CLI_LOCAL_NAME"
+    if [ "$D_SDK_CLI_EXECUTED" = "true" ]; then
+        readonly D_CLI_STUB="$D_CTX_DIR/$D_SDK_NAME"
+    else
+        readonly D_CLI_STUB="$D_CTX_DIR/$D_CLI_LOCAL_NAME"
+    fi
+
     readonly D_CLI_CORE="$D_SDK_DIR/cli.sh"
 
     D_CTX_DIR_HOST="$(sdk_boo_env_uti_get_kit_target_dit)"

@@ -33,9 +33,9 @@ safely() {
         return 0
     elif [ "$D_IS_IN_CONTAINER" = "true" ]; then
         CONTAINER_ID=$(hostname 2>/dev/null || echo "unknown")
-        logit -e "Trying to run '${D_OLD_ARGS[@]}' command in '$D_SDK_NAME' container, but already in a different container: $CONTAINER_ID" >&2
+        logit -e "Trying to run '${D_INI_ARGS[@]}' command in '$D_SDK_NAME' container, but already in a different container: $CONTAINER_ID" >&2
         exit 1
-    else cli_stub safely "${D_OLD_ARGS[@]}";
+    else cli_stub safely "${D_INI_ARGS[@]}";
         return 1
     fi
 }
@@ -65,7 +65,7 @@ source_safely() {
 mark_ctx_only() {
     # Mark the script to be allowed to only run when there is a project attached to the SDK context (i.e. D_CTX_DIR is set)
     if [ -z "${D_CTX_DIR:-}" ]; then
-        logit -e --icon="OOT" "Out of context! Command can only be run within a context: $D_CLI_GLOBAL_NAME $D_OLD_ARGS"
+        logit -e --icon="OOT" "Out of context! Command can only be run within a context: $D_CLI_GLOBAL_NAME $D_INI_ARGS"
         exit 1
     fi
 }

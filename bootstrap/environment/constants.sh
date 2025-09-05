@@ -20,5 +20,5 @@ readonly D_SDK_NPM_PATH="node_modules/$D_SDK_NPM_PKG"
 
 # Container paths
 readonly D_GIT_DIR_CONTAINER="/.git"
-readonly D_CTX_DIR_CONTAINER="/work"
+readonly D_CTX_DIR_CONTAINER="/ctx"
 

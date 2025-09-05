@@ -4,7 +4,7 @@ ENV IS_IN_SDK_CONTAINER=true
 
 # Build argument for SDK name with default value
 ARG D_SDK_NAME=sdk
-ARG D_CTX_DIR_CONTAINER="/work"
+ARG D_CTX_DIR_CONTAINER="/ctx"
 
 # Install base dependencies
 RUN apk add --no-cache bash coreutils curl yq jq git openssl git-lfs

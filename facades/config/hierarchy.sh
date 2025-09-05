@@ -10,7 +10,7 @@
 # =============================================================================
 
 # Get configuration value with hierarchy resolution
-# Searches through scopes in order of precedence: work -> repo -> user
+# Searches through scopes in order of precedence: context -> repository -> user
 sdk_fac_con_get() {
     set -e
     local key_path="$1"

@@ -90,7 +90,7 @@ echo -e "\n${YELLOW}Loading environment system...${NC}"
 
 # Set up minimal required environment for testing
 export D_SDK_DIR="$SCRIPT_DIR/.."
-export IS_SDK_CLI="false"
+export D_SDK_CLI_EXECUTED="false"
 export IS_IN_SDK_CONTAINER="false"
 
 # Source the main environment file

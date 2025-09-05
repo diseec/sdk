@@ -109,8 +109,8 @@ get_system_info() {
 get_env_variables() {
     printf "\n\033[1;90mENV VARIABLES\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 58 | tr ' ' '-')"
     printf "\033[90mPWD            \033[0m \033[90m%s\033[0m\n" "${PWD:-unknown}"
-    printf "\033[90mD_OLD_PWD      \033[0m \033[90m%s\033[0m\n" "${D_OLD_PWD:-unknown}"
-    printf "\033[90mD_OLD_ARGS     \033[0m \033[90m%s\033[0m\n" "${D_OLD_ARGS:-unknown}"
+    printf "\033[90mD_INI_PWD      \033[0m \033[90m%s\033[0m\n" "${D_INI_PWD:-unknown}"
+    printf "\033[90mD_INI_ARGS     \033[0m \033[90m%s\033[0m\n" "${D_INI_ARGS:-unknown}"
     printf "\033[90mD_LOG_LEVEL    \033[0m \033[90m%s\033[0m\n" "${D_LOG_LEVEL:-unknown}"
     printf "\033[90mD_SDK_DIR      \033[0m \033[90m%s\033[0m\n" "${D_SDK_DIR:-unknown}"
     printf "\033[90mD_CTX_DIR      \033[0m \033[90m%s\033[0m\n" "${D_CTX_DIR:-unknown}"

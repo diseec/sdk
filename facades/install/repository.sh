@@ -23,7 +23,7 @@ sdk_fac_set_repository() {
 
     _git config --global credential.helper store
 
-    if [ ! -f "$(cli_stub config path --scope=repo)" ] && [ "$D_HAS_SUBMODULES" = "true" ]; then
+    if [ ! -f "$(cli_stub config path --scope=repository)" ] && [ "$D_HAS_SUBMODULES" = "true" ]; then
         logit -l "Initializing config configuration..."
         cli_stub safely config init
     fi

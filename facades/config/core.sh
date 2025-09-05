@@ -16,8 +16,8 @@ sdk_fac_con_get_config_dir() {
     local config_dir=""
     
     case "$scope" in
-        work) config_dir="$SCOPE_CTX_DIR" ;;
-        repo) config_dir="$SCOPE_REPO_DIR" ;;
+        context) config_dir="$SCOPE_CTX_DIR" ;;
+        repository) config_dir="$SCOPE_REPO_DIR" ;;
         user) config_dir="$SCOPE_USER_DIR" ;;
         *) logit -e "Invalid configuration scope: $scope" ; return 1 ;;
     esac
@@ -37,8 +37,8 @@ sdk_fac_con_get_config_file() {
     local config_file=""
     
     case "$scope" in
-        work) config_file="$SCOPE_WORK_FILE" ;;
-        repo) config_file="$SCOPE_REPO_FILE" ;;
+        context) config_file="$SCOPE_CTX_FILE" ;;
+        repository) config_file="$SCOPE_REPO_FILE" ;;
         user) config_file="$SCOPE_USER_FILE" ;;
         *) logit -e "Invalid configuration scope: $scope" ; return 1 ;;
     esac
@@ -65,11 +65,11 @@ sdk_fac_con_validate_scope() {
     fi
     
     case "$scope" in
-        "user"|"repo"|"work")
+        "user"|"repository"|"context")
             return 0
             ;;
         *)
-            logit -e "Invalid configuration scope: $scope. Valid scopes: user, repo, work"
+            logit -e "Invalid configuration scope: $scope. Valid scopes: user, repository, context"
             return 1
             ;;
     esac
