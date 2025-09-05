@@ -54,7 +54,7 @@ RUN npm ci --only=production
 COPY . .
 
 # REQUIRED: Set container environment variable for DISEEC sdk compatibility
-ENV IS_IN_CONTAINER=true
+ENV D_IS_IN_CONTAINER=true
 
 EXPOSE 3000
 CMD ["npm", "start"]
@@ -66,7 +66,7 @@ CMD ["npm", "start"]
 services:
   my-project: # Must match repository name
     build:
-      context: ${WORK_DIR}
+      context: ${D_CTX_DIR}
     ports:
       - 80:3000
 ```
@@ -116,15 +116,15 @@ The project `cli` file allows full customization:
 install() {
     echo "Installing project dependencies..."
     npm install
-    $CLI_CORE install  # Call original install command
+    $D_CLI_CORE install  # Call original install command
 }
 
 ```
 
 Variables available:
 
-- `$CLI_CORE` - Call original sdk commands
-- `$CLI_MAIN` - Call the project cli itself
+- `$D_CLI_CORE` - Call original sdk commands
+- `$D_CLI_MAIN` - Call the project cli itself
 
 ## Optional Setup
 

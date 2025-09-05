@@ -51,15 +51,15 @@ The `D install` command creates a project `cli` file that:
 - Makes the directory a recognized project (like `.git` for git)
 - Allows full customization of sdk behavior
 - Can override, add, or remove functionalities
-- Use `$CLI_CORE` to call original commands
-- Use `$CLI_MAIN` to call the project cli itself
+- Use `$D_CLI_CORE` to call original commands
+- Use `$D_CLI_MAIN` to call the project cli itself
 
 ```bash
 # Example project cli customization
 install() {
     echo "Installing project dependencies..."
     npm install
-    $CLI_CORE install  # Call original install command
+    $D_CLI_CORE install  # Call original install command
 }
 ```
 
@@ -94,8 +94,8 @@ D secret help
 
 | Feature                                    | Documentation                                 |
 | ------------------------------------------ | --------------------------------------------- | ------------------------------------------- | --- |
-| [Git Workflows](src/facades/git/README.md) | AI-powered git automation and PR management   |
-| <!--                                       | [Configuration](src/facades/config/README.md) | Project and workspace configuration options | --> |
+| [Git Workflows](facades/git/README.md) | AI-powered git automation and PR management   |
+| <!--                                       | [Configuration](facades/config/README.md) | Project and workspace configuration options | --> |
 
 <!--
 | [Secrets Management](docs/SECRETS.md)     | Secure credential storage and management   |
@@ -116,16 +116,14 @@ D secret help
 
 ```
 sdk/
-├── src/                    # Core cli_main implementation
-│   ├── cli.sh             # Main cli_main entry point
-│   ├── core/              # Core utilities (env, output, wrappers)
-│   ├── cmds/              # Command implementations
-│   ├── facades/           # High-level API facades
-│   └── informs/           # Information and validation scripts
-├── templates/             # Project templates and scaffolding
-├── docs/                  # Comprehensive documentation
-├── legacy/               # Legacy scripts (deprecated)
-└── index.sh              # Kit initialization script
+├── cli.sh          # Main cli_main entry point
+├── core/           # Core utilities (env, output, wrappers)
+├── cmds/           # Command implementations
+├── facades/        # High-level API facades
+├── informs/        # Information and validation scripts
+├── templates/      # Project templates and scaffolding
+├── docs/           # Comprehensive documentation
+└── index.sh        # Kit initialization script
 ```
 
 ## Command Categories

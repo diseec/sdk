@@ -1,8 +1,8 @@
 services:
   placeholderforservicename:
-    image: ${REGISTRY_URL}/${REPO_NAME}
+    image: ${REGISTRY_URL}/${D_REPO_NAME}
     build:
-      context: ${WORK_DIR}
+      context: ${D_CTX_DIR}
     pull_policy: missing
     restart: unless-stopped
     ports:

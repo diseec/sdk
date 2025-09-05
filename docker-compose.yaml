@@ -1,14 +1,14 @@
 services:
   sdk:
-    image: "$IMAGE_REGISTRY_URL/$SDK_NAME"
+    image: "$D_REGISTRY_URL/$D_SDK_NAME"
     command: ["sleep", "infinity"]
     build:
-      context: "$SDK_DIR"
-    working_dir: "$WORK_DIR_CONTAINER"
+      context: "$D_SDK_DIR"
+    working_dir: "$D_CTX_DIR_CONTAINER"
     # environment:
     # - GIT_DISCOVERY_ACROSS_FILESYSTEM=1
     # - GIT_TERMINAL_PROMPT=0 # avoid interactive prompts
     volumes:
-      - "$WORK_DIR_HOST:$WORK_DIR_CONTAINER"
+      - "$D_CTX_DIR_HOST:$D_CTX_DIR_CONTAINER"
       - "$HOME:/root"
-      - "$GIT_DIRECTORY:$GIT_DIR_CONTAINER"
+      - "$D_GIT_DIR:$D_GIT_DIR_CONTAINER"

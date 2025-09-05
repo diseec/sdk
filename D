@@ -2,23 +2,24 @@
 
 set -e
 
-CURRENT_WORKING_DIR="$PWD"
+readonly D_IS_GLOBAL_CLI_USED="true"
 
 source "$(cd "$(npm root -g)" && pwd)/@diseec/sdk/index.sh"
 
 ARGS=""; for arg in "$@"; do case "$arg" in
     --patch) D_IS_FORCE_PATCH="true" ;;
 *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+# src_cor_env_uti_cli_auto_discovery
+PWD_CTX_DIR="$(src_cor_env_uti_cli_auto_discovery "$D_OLD_PWD")";
 
-PWD_WORK_DIR="$(src_cor_env_uti_cli_auto_discovery "$CURRENT_WORKING_DIR")";
-
-if [ -n "$PWD_WORK_DIR" ]; then
-    # "$PWD_WORK_DIR/cli" install function src_fac_set_ensure_patched \
-    #     "${D_IS_FORCE_PATCH:-false}" "$PWD_WORK_DIR"
-    env WORK_DIR="PWD_WORK_DIR" "$PWD_WORK_DIR/cli" "$@"
-elif [ -n "$WORK_DIR" ]; then
-    "$WORK_DIR/cli" "$@"
+if [ -n "$PWD_CTX_DIR" ]; then
+    # "$PWD_CTX_DIR/$D_CLI_LOCAL_NAME" install function src_fac_set_ensure_patched \
+    #     "${D_IS_FORCE_PATCH:-false}" "$PWD_CTX_DIR"
+    # X $PWD_CTX_DIR
+    env D_CTX_DIR="$PWD_CTX_DIR" "$PWD_CTX_DIR/$D_CLI_LOCAL_NAME" "$@"
+elif [ -n "$D_CTX_DIR" ]; then
+    "$D_CTX_DIR/$D_CLI_LOCAL_NAME" "$@"
 else
-    "$SDK_DIR/cli" "$@"
+    "$D_SDK_DIR/$D_CLI_LOCAL_NAME" "$@"
 fi
 

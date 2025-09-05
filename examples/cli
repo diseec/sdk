@@ -64,7 +64,7 @@ c=$1; shift; case $c in
     # hook:before_push) logit -i "Commands before pushing changes..." ;;
     # hook:after_push) logit -i "Commands after pushing changes..." ;;
 
-    # hel|help|--help|-h) cli_core help "" "" "$(ansi "1;90" "$(capitalize "$REPO_NAME Commands")")" "" \
+    # hel|help|--help|-h) cli_core help "" "" "$(ansi "1;90" "$(capitalize "$D_REPO_NAME Commands")")" "" \
     #     "    myc|mycommand" "            Display the help message" ;;
 
     *) cli_core $c "$@" ;;

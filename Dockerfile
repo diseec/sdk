@@ -3,17 +3,17 @@ FROM node:20-alpine
 ENV IS_IN_SDK_CONTAINER=true
 
 # Build argument for SDK name with default value
-ARG SDK_NAME=sdk
-ARG WORK_DIR_CONTAINER="/work"
+ARG D_SDK_NAME=sdk
+ARG D_CTX_DIR_CONTAINER="/work"
 
 # Install base dependencies
 RUN apk add --no-cache bash coreutils curl yq jq git openssl git-lfs
 
-WORKDIR /${SDK_NAME}
+WORKDIR /${D_SDK_NAME}
 
 COPY . .
 
-RUN npm install -g /${SDK_NAME}
+RUN npm install -g /${D_SDK_NAME}
 
 # Install GitHub cli_main using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \
@@ -43,7 +43,7 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-RUN mkdir -p ${WORK_DIR_CONTAINER}
-WORKDIR ${WORK_DIR_CONTAINER}
+RUN mkdir -p ${D_CTX_DIR_CONTAINER}
+WORKDIR ${D_CTX_DIR_CONTAINER}
 
 CMD ["D", "help"]

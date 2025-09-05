@@ -5,6 +5,6 @@ services:
     pull_policy: missing
     volumes:
       - .:/app
-      - ${ORG_CACHE_DIR}:/usr/local/share/.cache/yarn
+      - ${D_ORG_CACHE_DIR}:/usr/local/share/.cache/yarn
     env_file:
       - .env.dev

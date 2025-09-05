@@ -1,8 +1,8 @@
 services:
   www:
-    image: ${IMAGE_REGISTRY_URL}/${REPO_NAME}
+    image: ${D_REGISTRY_URL}/${D_REPO_NAME}
     build:
-      context: ${WORK_DIR}
+      context: ${D_CTX_DIR}
     pull_policy: always
     restart: unless-stopped
     ports:
