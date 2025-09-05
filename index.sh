@@ -29,6 +29,7 @@ fi
 # Load common and bootstrap scripts
 source "$D_SDK_DIR/shared/index.sh"
 source "$D_SDK_DIR/bootstrap/index.sh"
+source "$D_SDK_DIR/cmds/index.sh"
 
 # =============================================================================
 #  SETUP ENVIRONMENT AND LOAD COMMON UTILITIES
