@@ -13,7 +13,7 @@ _ARGS_ENVS_PROCESS=""; for arg in "$@"; do case "$arg" in
     --debug) D_LOG_LEVEL="DEBUG" ;;
 *) _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\"";; esac; done; eval set -- $(eval echo $_ARGS_ENVS_PROCESS);
 
-src_cor_env_setup_environment() {
+sdk_boo_env_setup_environment() {
     # =============================================================================
     # ENVIRONMENT VARIABLES INITIALIZATION
     # =============================================================================
@@ -39,7 +39,7 @@ src_cor_env_setup_environment() {
 
     # Discover project root directory if not already set
     if [ -z "${D_CTX_DIR:-}" ]; then
-        D_CTX_DIR="$(src_cor_env_uti_cli_auto_discovery "$D_SDK_DIR")"
+        D_CTX_DIR="$(sdk_boo_env_uti_cli_auto_discovery "$D_SDK_DIR")"
     fi
     readonly D_CTX_DIR
 
@@ -47,13 +47,13 @@ src_cor_env_setup_environment() {
     readonly D_CLI_MAIN="$D_CTX_DIR/$D_CLI_LOCAL_NAME"
     readonly D_CLI_CORE="$D_SDK_DIR/cli.sh"
 
-    D_CTX_DIR_HOST="$(src_cor_env_uti_get_kit_target_dit)"
+    D_CTX_DIR_HOST="$(sdk_boo_env_uti_get_kit_target_dit)"
 
     # Organization directories
-    D_ORG_DIR="$(src_cor_env_uti_get_org_dir)"
+    D_ORG_DIR="$(sdk_boo_env_uti_get_org_dir)"
     readonly D_ORG_DIR
 
-    D_ORG_CACHE_DIR="$(src_cor_env_uti_get_cache_dir)"
+    D_ORG_CACHE_DIR="$(sdk_boo_env_uti_get_cache_dir)"
     readonly D_ORG_CACHE_DIR
 
     # =============================================================================
@@ -61,27 +61,27 @@ src_cor_env_setup_environment() {
     # =============================================================================
 
     # Container detection
-    D_IS_IN_CONTAINER="$(src_cor_env_uti_is_in_container)"
+    D_IS_IN_CONTAINER="$(sdk_boo_env_uti_is_in_container)"
     readonly D_IS_IN_CONTAINER
 
-    D_HAS_SUBMODULES="$(src_cor_env_uti_has_submodules)"
+    D_HAS_SUBMODULES="$(sdk_boo_env_uti_has_submodules)"
     readonly D_HAS_SUBMODULES
 
     # Version information
-    D_VERSION="$(src_cor_env_uti_get_kit_version)"
+    D_VERSION="$(sdk_boo_env_uti_get_kit_version)"
     readonly D_VERSION
 
     # Git repository information
-    D_GIT_DIR="$(src_cor_env_uti_get_git_dir)"
+    D_GIT_DIR="$(sdk_boo_env_uti_get_git_dir)"
     readonly D_GIT_DIR
 
-    D_REPO_URL="$(src_cor_env_uti_get_repo_url)"
+    D_REPO_URL="$(sdk_boo_env_uti_get_repo_url)"
     readonly D_REPO_URL
 
-    D_REPO_NAME="$(src_cor_env_uti_get_repo_name)"
+    D_REPO_NAME="$(sdk_boo_env_uti_get_repo_name)"
     readonly D_REPO_NAME
 
-    D_CURRENT_BRANCH="$(src_cor_env_uti_get_current_branch)"
+    D_CURRENT_BRANCH="$(sdk_boo_env_uti_get_current_branch)"
     readonly D_CURRENT_BRANCH
 
     # =============================================================================
@@ -89,6 +89,6 @@ src_cor_env_setup_environment() {
     # =============================================================================
 
     # Validate essential environment variables
-    src_cor_env_uti_validate_environment
+    sdk_boo_env_uti_validate_environment
 }
 

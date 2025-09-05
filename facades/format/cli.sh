@@ -3,7 +3,7 @@
 source_once "$D_SDK_DIR/facades/format/index.sh"
 
 c=$1; shift; case $c in
-    pre|prettier) src_fac_for_prettier "$@" ;;
+    pre|prettier) sdk_fac_for_prettier "$@" ;;
     hel|help|--help|-h)
         display_help "" "" \
             "$(ansi 97 'Formatting')" "" \

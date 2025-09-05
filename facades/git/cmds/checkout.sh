@@ -1,6 +1,6 @@
 #!/bin/bash
 
-src_fac_git_cmd_checkout_branch() {
+sdk_fac_git_cmd_checkout_branch() {
     echo "$D_REPO_NAME: Setting up branch tracking..."
 
     # Check for uncommitted changes
@@ -24,7 +24,7 @@ src_fac_git_cmd_checkout_branch() {
     _git fetch && _git checkout $BRANCH || _git checkout -b $BRANCH origin/$BRANCH || _git checkout -b $BRANCH;
 }
 
-src_fac_git_cmd_checkout_if_detached() {
+sdk_fac_git_cmd_checkout_if_detached() {
     if _git symbolic-ref HEAD >/dev/null 2>&1; then
         # echo "$D_REPO_NAME: Already on a branch, no checkout needed."
         return 0
@@ -49,7 +49,7 @@ src_fac_git_cmd_checkout_if_detached() {
             echo "$D_REPO_NAME: Deleting temporary branch '$TEMP_BRANCH'..."
             _git branch -d "$TEMP_BRANCH"
         else
-            src_fac_git_cmd_checkout_branch
+            sdk_fac_git_cmd_checkout_branch
             # After branch checkout, check for uncommitted changes left behind
             if [ -n "$(_git status --porcelain)" ]; then
                 logit -e "You have uncommitted changes that may have been left behind after switching from detached HEAD."

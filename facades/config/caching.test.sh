@@ -2,7 +2,7 @@
 # Test script for workspace cache functions
 
 # Source the config module
-source_module "$KIT_SRC_DIR/facades/config/index.sh"
+source_module "$D_SDK_DIR/facades/config/index.sh"
 
 test_section "Workspace Cache Functions"
 

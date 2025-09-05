@@ -100,58 +100,58 @@ project:
 
 ### Core Functions
 
-#### `src_fac_con_get <key.path> [scope]`
+#### `sdk_fac_con_get <key.path> [scope]`
 
 Get configuration value with hierarchy resolution
 
 ```bash
-src_fac_con_get "organization.name"           # Returns from highest precedence scope
-src_fac_con_get "workspace.submodules" workspace  # Get only from workspace scope
+sdk_fac_con_get "organization.name"           # Returns from highest precedence scope
+sdk_fac_con_get "workspace.submodules" workspace  # Get only from workspace scope
 ```
 
-#### `src_fac_con_set <key.path> <value> [scope]`
+#### `sdk_fac_con_set <key.path> <value> [scope]`
 
 Set configuration value in specified scope (defaults to workspace)
 
 ```bash
-src_fac_con_set "defaults.shell" "zsh" global
-src_fac_con_set "workspace.version" "2.0"         # Sets in workspace scope
+sdk_fac_con_set "defaults.shell" "zsh" global
+sdk_fac_con_set "workspace.version" "2.0"         # Sets in workspace scope
 ```
 
-#### `src_fac_con_delete <key.path> [scope]`
+#### `sdk_fac_con_delete <key.path> [scope]`
 
 Delete configuration key from specified scope
 
 ```bash
-src_fac_con_delete "old.setting" workspace
+sdk_fac_con_delete "old.setting" workspace
 ```
 
 ### Array Operations
 
-#### `src_fac_con_array_add <key.path> <value> [scope]`
+#### `sdk_fac_con_array_add <key.path> <value> [scope]`
 
 Add value to configuration array
 
 ```bash
-src_fac_con_array_add "workspace.submodules" "new-service"
+sdk_fac_con_array_add "workspace.submodules" "new-service"
 ```
 
-#### `src_fac_con_array_remove <key.path> <value> [scope]`
+#### `sdk_fac_con_array_remove <key.path> <value> [scope]`
 
 Remove value from configuration array
 
 ```bash
-src_fac_con_array_remove "workspace.submodules" "old-service"
+sdk_fac_con_array_remove "workspace.submodules" "old-service"
 ```
 
 ### Introspection
 
-#### `src_fac_con_which <key.path>`
+#### `sdk_fac_con_which <key.path>`
 
 Show configuration value resolution path
 
 ```bash
-src_fac_con_which "defaults.shell"
+sdk_fac_con_which "defaults.shell"
 # Output:
 # Configuration resolution for 'defaults.shell':
 #   ✔ [project] zsh (ACTIVE)
@@ -160,22 +160,22 @@ src_fac_con_which "defaults.shell"
 #   - [global] bash (overridden)
 ```
 
-#### `src_fac_con_list_keys [scope]`
+#### `sdk_fac_con_list_keys [scope]`
 
 List all configuration keys
 
 ```bash
-src_fac_con_list_keys workspace    # List keys from workspace scope
-src_fac_con_list_keys              # List keys from all scopes
+sdk_fac_con_list_keys workspace    # List keys from workspace scope
+sdk_fac_con_list_keys              # List keys from all scopes
 ```
 
-#### `src_fac_con_print [scope]`
+#### `sdk_fac_con_print [scope]`
 
 Print configuration for scope or all scopes
 
 ```bash
-src_fac_con_print workspace        # Print workspace configuration
-src_fac_con_print                  # Print all configurations
+sdk_fac_con_print workspace        # Print workspace configuration
+sdk_fac_con_print                  # Print all configurations
 ```
 
 ## CLI Usage

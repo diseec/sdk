@@ -1,6 +1,6 @@
 #!/bin/bash
 
-src_fac_git_cmd_pull_merge() {
+sdk_fac_git_cmd_pull_merge() {
     set -e
 
     local IS_RECURSIVE="false"
@@ -22,6 +22,6 @@ src_fac_git_cmd_pull_merge() {
             local module_path="$2"
             cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME api v1 pull.--recursive
         }
-        cli_main config function src_fac_con_opt_act_foreach_selected_module pull_submodule
+        cli_main config function sdk_fac_con_opt_act_foreach_selected_module pull_submodule
     fi
 }

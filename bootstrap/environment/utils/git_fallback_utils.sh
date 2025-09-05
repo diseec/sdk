@@ -5,7 +5,7 @@
 # =============================================================================
 # Git-related functions and operations
 
-src_cor_env_uti_get_git_dir() {
+sdk_boo_env_uti_get_git_dir() {
     find_git_dir_for() {
         local target="$1"
         local git_dir_or_file="$target/.git"
@@ -54,26 +54,26 @@ src_cor_env_uti_get_git_dir() {
     fi
 }
 
-src_cor_env_uti_get_git_config_file() {
+sdk_boo_env_uti_get_git_config_file() {
     local git_dir
-    git_dir=$(src_cor_env_uti_get_git_dir)
+    git_dir=$(sdk_boo_env_uti_get_git_dir)
     if [ -d "$git_dir" ]; then
         echo "$git_dir/config"
     fi
 }
 
-src_cor_env_uti_get_repo_url() {
+sdk_boo_env_uti_get_repo_url() {
     local git_config_file
-    git_config_file=$(src_cor_env_uti_get_git_config_file)
+    git_config_file=$(sdk_boo_env_uti_get_git_config_file)
     
     if [ -f "$git_config_file" ]; then
         awk -F' = ' '/\[remote "origin"\]/ {found=1} found && /url =/ {print $2; exit}' "$git_config_file"
     fi
 }
 
-src_cor_env_uti_get_repo_name() {
+sdk_boo_env_uti_get_repo_name() {
     local repo_url
-    repo_url=$(src_cor_env_uti_get_repo_url)
+    repo_url=$(sdk_boo_env_uti_get_repo_url)
     
     if [ -n "$repo_url" ]; then
         # Remove trailing .git if present
@@ -81,7 +81,7 @@ src_cor_env_uti_get_repo_name() {
     fi
 }
 
-src_cor_env_uti_get_current_branch() {
+sdk_boo_env_uti_get_current_branch() {
     # Replacement for: git rev-parse --abbrev-ref HEAD
     local git_dir="$D_CTX_DIR/.git"
     local head_file=""

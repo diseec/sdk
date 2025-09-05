@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Generate commit message using AI
-src_fac_git_cmd_generate_commit_message() {
+sdk_fac_git_cmd_generate_commit_message() {
     local diff_output="$(_git diff --staged)"
   
     if [ -z "$diff_output" ]; then
@@ -22,17 +22,17 @@ src_fac_git_cmd_generate_commit_message() {
     local diff_preview="$(_git diff --staged | head -n 300)"
   
     # Use AI to generate commit message, with fallback
-    if cli_main ai function src_fac_ai_is_available; then
-        cli_main ai function src_fac_ai_generate_commit_message "$diff_summary" "$diff_preview"
+    if cli_main ai function sdk_fac_ai_is_available; then
+        cli_main ai function sdk_fac_ai_generate_commit_message "$diff_summary" "$diff_preview"
     else
         # Fallback: generate simple commit message based on modified files
         local files_changed=$(_git diff --staged --name-only | sort | uniq)
-        cli_main ai function src_fac_ai_fallback_commit_message "$files_changed"
+        cli_main ai function sdk_fac_ai_fallback_commit_message "$files_changed"
     fi
 }
 
 # Handle detached HEAD state
-src_fac_git_cmd_warn_detached_head() {
+sdk_fac_git_cmd_warn_detached_head() {
   # Check if we're in detached HEAD state
   if ! _git symbolic-ref HEAD >/dev/null 2>&1; then
     logit -e "Currently in detached HEAD state"
@@ -48,9 +48,9 @@ src_fac_git_cmd_warn_detached_head() {
 }
 
 # Commit all changes with AI-generated message
-src_fac_git_cmd_commit() {
+sdk_fac_git_cmd_commit() {
     # Handle detached HEAD state first
-    src_fac_git_cmd_warn_detached_head
+    sdk_fac_git_cmd_warn_detached_head
     if [ $? -ne 0 ]; then return 1; fi
   
     # Don't allow commits directly to main
@@ -76,7 +76,7 @@ src_fac_git_cmd_commit() {
         return 0
     fi
 
-    if ! cli_main ai function src_fac_ai_init_interactive; then
+    if ! cli_main ai function sdk_fac_ai_init_interactive; then
         logit -w "AI module loaded but API key not available"
     fi
 
@@ -85,7 +85,7 @@ src_fac_git_cmd_commit() {
     local commit_msg=""
     local has_accepted_commit_message="false"
     while ! $has_accepted_commit_message; do
-        commit_msg=$(src_fac_git_cmd_generate_commit_message)
+        commit_msg=$(sdk_fac_git_cmd_generate_commit_message)
         if [ -z "$commit_msg" ]; then
             logit -e "Failed to generate commit message."
             return 1

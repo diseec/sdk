@@ -1,6 +1,6 @@
 #!/bin/bash
 
-src_inf_check_for_updates_repo() {
+sdk_inf_check_for_updates_repo() {
     # Check if the main repository is behind
     current_branch=$(_git -C "$D_CTX_DIR" rev-parse --abbrev-ref HEAD)
 
@@ -30,7 +30,7 @@ src_inf_check_for_updates_repo() {
                     return 1  # Exit the loop early
                 fi
             }
-            cli_main config function src_fac_con_opt_act_foreach_selected_module check_module_status
+            cli_main config function sdk_fac_con_opt_act_foreach_selected_module check_module_status
             
             if $modules_behind; then
                 logit --ansi="34" --icon="↓" "New commits available in one or more selected modules"

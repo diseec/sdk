@@ -6,14 +6,14 @@ c=$1; shift; case $c in
         # # cli_main about
         # X "cli_main config summary"
         cli_main config summary
-        # X "src_inf_check_system_dependencies"
-        cli_main informs src_inf_check_system_dependencies
-        # X "src_inf_check_internet_connection"
-        cli_main informs src_inf_check_internet_connection
+        # X "sdk_inf_check_system_dependencies"
+        cli_main informs sdk_inf_check_system_dependencies
+        # X "sdk_inf_check_internet_connection"
+        cli_main informs sdk_inf_check_internet_connection
         # X "cli_main git status"
         cli_main git status
-        # X "src_inf_check_for_updates"
-        cli_main informs src_inf_check_for_updates
+        # X "sdk_inf_check_for_updates"
+        cli_main informs sdk_inf_check_for_updates
     ;;
     ins|install)    mark_ctx_only; source "$D_SDK_DIR/facades/install/cli.sh" "$@" ;;
     ude|update)     mark_ctx_only; cli_main install update "$@" ;;

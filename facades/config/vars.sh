@@ -8,7 +8,7 @@ readonly DEFAULT_SCOPE="work"
 
 readonly CLONES_DIR_NAME="repositories"
 
-src_fac_con_get_scope_ctx_dir() {
+sdk_fac_con_get_scope_ctx_dir() {
     local repo_name="$1"
     if [ -n "$D_CTX_DIR" ] && [ -d "$D_CTX_DIR" ]; then
         echo "$D_CTX_DIR/.$D_SDK_NAME"
@@ -17,7 +17,7 @@ src_fac_con_get_scope_ctx_dir() {
     fi
 }
 
-readonly SCOPE_CTX_DIR="$(src_fac_con_get_scope_ctx_dir "$D_REPO_NAME")"
+readonly SCOPE_CTX_DIR="$(sdk_fac_con_get_scope_ctx_dir "$D_REPO_NAME")"
 readonly SCOPE_REPO_DIR="$D_ORG_DIR/$CLONES_DIR_NAME/$D_REPO_NAME"
 readonly SCOPE_USER_DIR="$D_ORG_DIR"
 

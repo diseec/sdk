@@ -5,7 +5,7 @@
 # ========================================
 
 # Get user confirmation for yes/no questions
-src_fac_sec_get_user_confirmation() {
+sdk_fac_sec_get_user_confirmation() {
     local prompt="$1"
     local default="${2:-N}"
     printf "$(logit --ansi="35" --icon="?" "$prompt \033[35m[Y/N]\033[0m")"
@@ -22,7 +22,7 @@ src_fac_sec_get_user_confirmation() {
 }
 
 # Get user input with prompt
-src_fac_sec_get_user_input() {
+sdk_fac_sec_get_user_input() {
     local prompt="$1"
     local var_name="$2"
 
@@ -31,7 +31,7 @@ src_fac_sec_get_user_input() {
 }
 
 # Get secret value with hidden input
-src_fac_sec_get_secret_input() {
+sdk_fac_sec_get_secret_input() {
     local prompt="$1"
     local var_name="$2"
 
@@ -43,10 +43,10 @@ src_fac_sec_get_secret_input() {
 }
 
 # Test encryption key with existing secrets
-src_fac_sec_test_key_with_secrets() {
+sdk_fac_sec_test_key_with_secrets() {
     local key="$1"
     
-    if ! src_fac_sec_secrets_exist; then
+    if ! sdk_fac_sec_secrets_exist; then
         return 0
     fi
     
@@ -55,7 +55,7 @@ src_fac_sec_test_key_with_secrets() {
         if [ -f "$secret_file" ]; then
             local secret_name=$(basename "$secret_file")
             local encrypted_value=$(cat "$secret_file")
-            local decrypted_value=$(src_fac_sec_decrypt_data "$encrypted_value" "$key")
+            local decrypted_value=$(sdk_fac_sec_decrypt_data "$encrypted_value" "$key")
             
             if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
                 echo "Key validated successfully with secret: $secret_name"
@@ -70,7 +70,7 @@ src_fac_sec_test_key_with_secrets() {
 }
 
 # Re-encrypt all secrets with a new key
-src_fac_sec_reencrypt_all_secrets() {
+sdk_fac_sec_reencrypt_all_secrets() {
     local old_key="$1"
     local new_key="$2"
     
@@ -79,10 +79,10 @@ src_fac_sec_reencrypt_all_secrets() {
         if [ -f "$secret_file" ]; then
             local secret_name=$(basename "$secret_file")
             local encrypted_value=$(cat "$secret_file")
-            local decrypted_value=$(src_fac_sec_decrypt_data "$encrypted_value" "$old_key")
+            local decrypted_value=$(sdk_fac_sec_decrypt_data "$encrypted_value" "$old_key")
             
             if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
-                local new_encrypted=$(src_fac_sec_encrypt_data "$decrypted_value" "$new_key")
+                local new_encrypted=$(sdk_fac_sec_encrypt_data "$decrypted_value" "$new_key")
                 echo "$new_encrypted" > "$secret_file"
                 echo "$secret_name re-encrypted successfully"
             else

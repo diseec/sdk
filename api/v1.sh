@@ -1,6 +1,6 @@
 #!/bin/bash
 
-src_api_v1(){
+sdk_api_v1(){
     local c=$1; shift; case $c in
         install) cli_main install ;;
         install.--recursive) cli_main install --recursive ;;

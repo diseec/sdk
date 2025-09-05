@@ -163,14 +163,14 @@ trace_error_handler() {
     exit $exit_code
 }
 
-# Start tracing - can be called explicitly or will be called by src_cor_debug_init
+# Start tracing - can be called explicitly or will be called by sdk_boo_debug_init
 start_tracing() {
     if [[ "$D_TRACE_ENABLED" == "true" ]]; then
         trap trace_error_handler ERR
     fi
 }
 
-function src_cor_debug_init() {
+function sdk_boo_debug_init() {
     # Set default values for potentially unbound variables
     : "${D_LOG_LEVEL:=INFO}"
     : "${DEBUG:=false}"

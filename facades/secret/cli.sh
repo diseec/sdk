@@ -5,14 +5,14 @@ source_once "$D_SDK_DIR/facades/secret/index.sh"
 mkdir -p "$SECRETS_DIR"
 
 c=$1; shift; case "$c" in
-    kse|key-set) src_fac_sec_set_key "$@" ;;
-    kre|key-reset) src_fac_sec_reset_key "$@" ;;
-    ksh|key-show) src_fac_sec_show_key "$@" ;;
-    add) src_fac_sec_add_secret "$@" ;;
-    exp|export) src_fac_sec_export "$@" ;;
-    pri|print) src_fac_sec_show_secrets "$@" ;;
-    cle|clear) src_fac_sec_clear_secrets "$@" ;;
-    rem|remove|rm|del|delete) src_fac_sec_remove_secret "$@" ;;
+    kse|key-set) sdk_fac_sec_set_key "$@" ;;
+    kre|key-reset) sdk_fac_sec_reset_key "$@" ;;
+    ksh|key-show) sdk_fac_sec_show_key "$@" ;;
+    add) sdk_fac_sec_add_secret "$@" ;;
+    exp|export) sdk_fac_sec_export "$@" ;;
+    pri|print) sdk_fac_sec_show_secrets "$@" ;;
+    cle|clear) sdk_fac_sec_clear_secrets "$@" ;;
+    rem|remove|rm|del|delete) sdk_fac_sec_remove_secret "$@" ;;
     fun|function) "$@" ;;
     *) display_help "" "" \
         "$(ansi 97 'Secrets Commands')" "" \

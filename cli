@@ -9,7 +9,7 @@ c=$1; shift; case $c in
     tes|test)  source_safely "$D_SDK_DIR/lib/tester/cli.sh" "$@" ;;
     pul|pull)  cli_main git _ pull origin main "$@" ;;
     clo|clone)
-        local scope_dir="$(src_fac_con_get_scope_ctx_dir "$1")"
+        local scope_dir="$(sdk_fac_con_get_scope_ctx_dir "$1")"
         cli_main git _ clone https://$D_REPOSITORY_URL/"$1" "$scope_dir"
         logit -l "Cloned repository into $scope_dir"
         ;;

@@ -10,7 +10,7 @@
 # =============================================================================
 
 # Check for yq availability and set operation mode
-src_fac_con_yaml_init() {
+sdk_fac_con_yaml_init() {
     if command -v yq >/dev/null 2>&1; then
         YAML_USE_YQ="true"
         return 0
@@ -26,7 +26,7 @@ src_fac_con_yaml_init() {
 # =============================================================================
 
 # Get value using yq
-src_fac_con_yaml_get_yq() {
+sdk_fac_con_yaml_get_yq() {
     local config_file="$1"
     local key_path="$2"
     
@@ -34,7 +34,7 @@ src_fac_con_yaml_get_yq() {
 }
 
 # Set value using yq
-src_fac_con_yaml_set_yq() {
+sdk_fac_con_yaml_set_yq() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
@@ -43,7 +43,7 @@ src_fac_con_yaml_set_yq() {
 }
 
 # Delete key using yq
-src_fac_con_yaml_delete_yq() {
+sdk_fac_con_yaml_delete_yq() {
     local config_file="$1"
     local key_path="$2"
     
@@ -51,7 +51,7 @@ src_fac_con_yaml_delete_yq() {
 }
 
 # Add to array using yq
-src_fac_con_yaml_array_add_yq() {
+sdk_fac_con_yaml_array_add_yq() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
@@ -60,7 +60,7 @@ src_fac_con_yaml_array_add_yq() {
 }
 
 # Remove from array using yq
-src_fac_con_yaml_array_remove_yq() {
+sdk_fac_con_yaml_array_remove_yq() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
@@ -69,7 +69,7 @@ src_fac_con_yaml_array_remove_yq() {
 }
 
 # List all keys using yq
-src_fac_con_yaml_keys_yq() {
+sdk_fac_con_yaml_keys_yq() {
     local config_file="$1"
     
     _yq -r 'paths(scalars) | join(".")' "$config_file" 2>/dev/null || echo ""
@@ -80,7 +80,7 @@ src_fac_con_yaml_keys_yq() {
 # =============================================================================
 
 # Get value using grep/sed fallback
-src_fac_con_yaml_get_fallback() {
+sdk_fac_con_yaml_get_fallback() {
     local config_file="$1"
     local key_path="$2"
     
@@ -101,7 +101,7 @@ src_fac_con_yaml_get_fallback() {
 }
 
 # Set value using grep/sed fallback
-src_fac_con_yaml_set_fallback() {
+sdk_fac_con_yaml_set_fallback() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
@@ -122,7 +122,7 @@ src_fac_con_yaml_set_fallback() {
 }
 
 # Delete key using grep fallback
-src_fac_con_yaml_delete_fallback() {
+sdk_fac_con_yaml_delete_fallback() {
     local config_file="$1"
     local key_path="$2"
     
@@ -133,7 +133,7 @@ src_fac_con_yaml_delete_fallback() {
 }
 
 # List keys using grep fallback
-src_fac_con_yaml_keys_fallback() {
+sdk_fac_con_yaml_keys_fallback() {
     local config_file="$1"
     
     if [ -f "$config_file" ]; then
@@ -146,54 +146,54 @@ src_fac_con_yaml_keys_fallback() {
 # =============================================================================
 
 # Get value from YAML file
-src_fac_con_yaml_get() {
+sdk_fac_con_yaml_get() {
     local config_file="$1"
     local key_path="$2"
-    src_fac_con_yaml_init
+    sdk_fac_con_yaml_init
 
     if [ "$YAML_USE_YQ" = "true" ]; then
-        src_fac_con_yaml_get_yq "$config_file" "$key_path"
+        sdk_fac_con_yaml_get_yq "$config_file" "$key_path"
     else
-        src_fac_con_yaml_get_fallback "$config_file" "$key_path"
+        sdk_fac_con_yaml_get_fallback "$config_file" "$key_path"
     fi
 }
 
 # Set value in YAML file
-src_fac_con_yaml_set() {
+sdk_fac_con_yaml_set() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
-    src_fac_con_yaml_init
+    sdk_fac_con_yaml_init
 
     if [ "$YAML_USE_YQ" = "true" ]; then
-        src_fac_con_yaml_set_yq "$config_file" "$key_path" "$value"
+        sdk_fac_con_yaml_set_yq "$config_file" "$key_path" "$value"
     else
-        src_fac_con_yaml_set_fallback "$config_file" "$key_path" "$value"
+        sdk_fac_con_yaml_set_fallback "$config_file" "$key_path" "$value"
     fi
 }
 
 # Delete key from YAML file
-src_fac_con_yaml_delete() {
+sdk_fac_con_yaml_delete() {
     local config_file="$1"
     local key_path="$2"
-    src_fac_con_yaml_init
+    sdk_fac_con_yaml_init
 
     if [ "$YAML_USE_YQ" = "true" ]; then
-        src_fac_con_yaml_delete_yq "$config_file" "$key_path"
+        sdk_fac_con_yaml_delete_yq "$config_file" "$key_path"
     else
-        src_fac_con_yaml_delete_fallback "$config_file" "$key_path"
+        sdk_fac_con_yaml_delete_fallback "$config_file" "$key_path"
     fi
 }
 
 # Add to array in YAML file
-src_fac_con_yaml_array_add() {
+sdk_fac_con_yaml_array_add() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
-    src_fac_con_yaml_init
+    sdk_fac_con_yaml_init
 
     if [ "$YAML_USE_YQ" = "true" ]; then
-        src_fac_con_yaml_array_add_yq "$config_file" "$key_path" "$value"
+        sdk_fac_con_yaml_array_add_yq "$config_file" "$key_path" "$value"
     else
         logit -e "Array operations require yq. Please install yq."
         return 1
@@ -201,14 +201,14 @@ src_fac_con_yaml_array_add() {
 }
 
 # Remove from array in YAML file
-src_fac_con_yaml_array_remove() {
+sdk_fac_con_yaml_array_remove() {
     local config_file="$1"
     local key_path="$2"
     local value="$3"
-    src_fac_con_yaml_init
+    sdk_fac_con_yaml_init
 
     if [ "$YAML_USE_YQ" = "true" ]; then
-        src_fac_con_yaml_array_remove_yq "$config_file" "$key_path" "$value"
+        sdk_fac_con_yaml_array_remove_yq "$config_file" "$key_path" "$value"
     else
         logit -e "Array operations require yq. Please install yq."
         return 1
@@ -216,13 +216,13 @@ src_fac_con_yaml_array_remove() {
 }
 
 # List all keys in YAML file
-src_fac_con_yaml_keys() {
+sdk_fac_con_yaml_keys() {
     local config_file="$1"
-    src_fac_con_yaml_init
+    sdk_fac_con_yaml_init
 
     if [ "$YAML_USE_YQ" = "true" ]; then
-        src_fac_con_yaml_keys_yq "$config_file"
+        sdk_fac_con_yaml_keys_yq "$config_file"
     else
-        src_fac_con_yaml_keys_fallback "$config_file"
+        sdk_fac_con_yaml_keys_fallback "$config_file"
     fi
 }

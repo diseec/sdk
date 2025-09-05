@@ -11,32 +11,32 @@
 
 # Get configuration value with hierarchy resolution
 # Searches through scopes in order of precedence: work -> repo -> user
-src_fac_con_get() {
+sdk_fac_con_get() {
     set -e
     local key_path="$1"
     local specific_scope="$2"  # Optional: if specified, only check this scope
     
     # Validate key path
-    src_fac_con_validate_key_path "$key_path" || return 1
+    sdk_fac_con_validate_key_path "$key_path" || return 1
     
     # If specific scope is provided, only check that scope
     if [ -n "$specific_scope" ]; then
-        src_fac_con_validate_scope "$specific_scope" || return 1
-        local config_file="$(src_fac_con_get_config_file "$specific_scope")"
-        src_fac_con_yaml_get "$config_file" "$key_path"
+        sdk_fac_con_validate_scope "$specific_scope" || return 1
+        local config_file="$(sdk_fac_con_get_config_file "$specific_scope")"
+        sdk_fac_con_yaml_get "$config_file" "$key_path"
         return $?
     fi
     
     # Search through scopes in order of precedence
     for scope in $CONFIG_SCOPES; do
-        local config_file="$(src_fac_con_get_config_file "$scope")"
+        local config_file="$(sdk_fac_con_get_config_file "$scope")"
         
         # Skip if config file doesn't exist for this scope
         if [ ! -f "$config_file" ]; then
             continue
         fi
         
-        local value="$(src_fac_con_yaml_get "$config_file" "$key_path")"
+        local value="$(sdk_fac_con_yaml_get "$config_file" "$key_path")"
         
         # Return the first non-null value found
         if [ "$value" != "null" ] && [ -n "$value" ]; then
@@ -51,15 +51,15 @@ src_fac_con_get() {
 }
 
 # Set configuration value in specified scope (defaults to $DEFAULT_SCOPE)
-src_fac_con_set() {
+sdk_fac_con_set() {
     set -e
     local key_path="$1"
     local value="$2"
     local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     
     # Validate inputs
-    src_fac_con_validate_key_path "$key_path" || return 1
-    src_fac_con_validate_scope "$scope" || return 1
+    sdk_fac_con_validate_key_path "$key_path" || return 1
+    sdk_fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
         logit -e "Configuration value cannot be empty"
@@ -67,30 +67,30 @@ src_fac_con_set() {
     fi
     
     # Ensure config file exists and set value
-    local config_file="$(src_fac_con_get_config_file "$scope")"
-    src_fac_con_yaml_set "$config_file" "$key_path" "$value"
+    local config_file="$(sdk_fac_con_get_config_file "$scope")"
+    sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
     
     logit -l "Set '$key_path' = '$value' in '$scope' scope"
 }
 
 # Delete configuration key from specified scope (defaults to $DEFAULT_SCOPE)
-src_fac_con_delete() {
+sdk_fac_con_delete() {
     set -e
     local key_path="$1"
     local scope="${2:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     
     # Validate inputs
-    src_fac_con_validate_key_path "$key_path" || return 1
-    src_fac_con_validate_scope "$scope" || return 1
+    sdk_fac_con_validate_key_path "$key_path" || return 1
+    sdk_fac_con_validate_scope "$scope" || return 1
     
-    local config_file="$(src_fac_con_get_config_file "$scope")"
+    local config_file="$(sdk_fac_con_get_config_file "$scope")"
     
     if [ ! -f "$config_file" ]; then
         logit -w "Configuration file does not exist for scope: $scope"
         return 1
     fi
     
-    src_fac_con_yaml_delete "$config_file" "$key_path"
+    sdk_fac_con_yaml_delete "$config_file" "$key_path"
     logit -l "Deleted $key_path from $scope scope"
 }
 
@@ -99,15 +99,15 @@ src_fac_con_delete() {
 # =============================================================================
 
 # Add value to configuration array
-src_fac_con_array_add() {
+sdk_fac_con_array_add() {
     set -e
     local key_path="$1"
     local value="$2"
     local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     
     # Validate inputs
-    src_fac_con_validate_key_path "$key_path" || return 1
-    src_fac_con_validate_scope "$scope" || return 1
+    sdk_fac_con_validate_key_path "$key_path" || return 1
+    sdk_fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
         logit -e "Array value cannot be empty"
@@ -115,36 +115,36 @@ src_fac_con_array_add() {
     fi
     
     # Ensure config file exists and add to array
-    local config_file="$(src_fac_con_get_config_file "$scope")"
-    src_fac_con_yaml_array_add "$config_file" "$key_path" "$value"
+    local config_file="$(sdk_fac_con_get_config_file "$scope")"
+    sdk_fac_con_yaml_array_add "$config_file" "$key_path" "$value"
 
     logit -l "Added '$value' to '$key_path' array in '$scope' scope"
 }
 
 # Remove value from configuration array
-src_fac_con_array_remove() {
+sdk_fac_con_array_remove() {
     set -e
     local key_path="$1"
     local value="$2"
     local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     
     # Validate inputs
-    src_fac_con_validate_key_path "$key_path" || return 1
-    src_fac_con_validate_scope "$scope" || return 1
+    sdk_fac_con_validate_key_path "$key_path" || return 1
+    sdk_fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
         logit -e "Array value cannot be empty"
         return 1
     fi
     
-    local config_file="$(src_fac_con_get_config_file "$scope")"
+    local config_file="$(sdk_fac_con_get_config_file "$scope")"
     
     if [ ! -f "$config_file" ]; then
         logit -w "Configuration file does not exist for scope: $scope"
         return 1
     fi
     
-    src_fac_con_yaml_array_remove "$config_file" "$key_path" "$value"
+    sdk_fac_con_yaml_array_remove "$config_file" "$key_path" "$value"
     logit -l "Removed '$value' from '$key_path' array in '$scope' scope"
 }
 
@@ -153,40 +153,40 @@ src_fac_con_array_remove() {
 # =============================================================================
 
 # List all configuration keys from all scopes
-src_fac_con_list_keys() {
+sdk_fac_con_list_keys() {
     set -e
     local scope="$1"  # Optional: if specified, only list keys from this scope
     
     if [ -n "$scope" ]; then
-        src_fac_con_validate_scope "$scope" || return 1
-        local config_file="$(src_fac_con_get_config_file "$scope")"
+        sdk_fac_con_validate_scope "$scope" || return 1
+        local config_file="$(sdk_fac_con_get_config_file "$scope")"
         
         if [ -f "$config_file" ]; then
             echo "Keys in '$scope' scope:"
-            src_fac_con_yaml_keys "$config_file" | sed 's/^/  /'
+            sdk_fac_con_yaml_keys "$config_file" | sed 's/^/  /'
         else
             echo "No configuration file found for '$scope' scope"
         fi
     else
         echo "Configuration keys by scope:"
         for scope in $CONFIG_SCOPES; do
-            local config_file="$(src_fac_con_get_config_file "$scope")"
+            local config_file="$(sdk_fac_con_get_config_file "$scope")"
             
             if [ -f "$config_file" ]; then
                 echo ""
                 echo "[$scope]"
-                src_fac_con_yaml_keys "$config_file" | sed 's/^/  /'
+                sdk_fac_con_yaml_keys "$config_file" | sed 's/^/  /'
             fi
         done
     fi
 }
 
 # Show configuration value resolution path
-src_fac_con_which() {
+sdk_fac_con_which() {
     set -e
     local key_path="$1"
     
-    src_fac_con_validate_key_path "$key_path" || return 1
+    sdk_fac_con_validate_key_path "$key_path" || return 1
     
     echo "Configuration resolution for '$key_path':"
     
@@ -194,10 +194,10 @@ src_fac_con_which() {
     local found_scope=""
     
     for scope in $CONFIG_SCOPES; do
-        local config_file="$(src_fac_con_get_config_file "$scope")"
+        local config_file="$(sdk_fac_con_get_config_file "$scope")"
         
         if [ -f "$config_file" ]; then
-            local value="$(src_fac_con_yaml_get "$config_file" "$key_path")"
+            local value="$(sdk_fac_con_yaml_get "$config_file" "$key_path")"
             
             if [ "$value" != "null" ] && [ -n "$value" ]; then
                 if [ -z "$found_value" ]; then
@@ -225,14 +225,14 @@ src_fac_con_which() {
 }
 
 # Print configuration for a specific scope
-src_fac_con_print() {
+sdk_fac_con_print() {
     set -e
     local scope="${1:-all}"  # Default to all scopes
     
     if [ "$scope" = "all" ]; then
         echo "Complete configuration hierarchy:"
         for scope in $CONFIG_SCOPES; do
-            local config_file="$(src_fac_con_get_config_file "$scope")"
+            local config_file="$(sdk_fac_con_get_config_file "$scope")"
             
             echo ""
             echo "[$scope] - $config_file"
@@ -243,8 +243,8 @@ src_fac_con_print() {
             fi
         done
     else
-        src_fac_con_validate_scope "$scope" || return 1
-        local config_file="$(src_fac_con_get_config_file "$scope")"
+        sdk_fac_con_validate_scope "$scope" || return 1
+        local config_file="$(sdk_fac_con_get_config_file "$scope")"
         
         echo "Configuration for $scope scope:"
         echo "File: $config_file"

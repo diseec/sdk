@@ -6,7 +6,7 @@ source_once "$D_SDK_DIR/facades/ai/index.sh"
 # All functions in this module are prefixed with "ai_"
 
 # Initialize AI module on load
-if ! src_fac_ai_init_interactive; then
+if ! sdk_fac_ai_init_interactive; then
     logit -w "AI module loaded but API key not available"
 fi
 

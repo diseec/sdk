@@ -1,6 +1,6 @@
 #!/bin/bash
 
-src_inf_check_for_updates() {
+sdk_inf_check_for_updates() {
     if ! cli_main internet is-online; then
         logit --ansi="31" --icon="⊘" "Disconnected, skipping update check..."
         return 0
@@ -11,10 +11,10 @@ src_inf_check_for_updates() {
         return 0
     fi
 
-    if cli_main informs src_inf_check_for_updates_kit; then
+    if cli_main informs sdk_inf_check_for_updates_kit; then
         local kit_update_available="true"
     fi
-    if cli_main informs src_inf_check_for_updates_repo; then
+    if cli_main informs sdk_inf_check_for_updates_repo; then
         local repo_update_available="true"
     fi
 

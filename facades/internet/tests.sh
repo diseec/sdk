@@ -3,29 +3,29 @@
 # Optimized connectivity tests for Alpine container environment
 
 # Quick connectivity test - this is the primary function for the is-online command
-src_fac_int_quick_check() {
+sdk_fac_int_quick_check() {
     local timeout=$QUICK_TIMEOUT
     local overall_status=true
     local start_time=$(date +%s.%N)
     
     # Test gateway
-    src_fac_int_get_gateway
+    sdk_fac_int_get_gateway
     if [ -n "$LOCAL_GATEWAY" ]; then
         local test_start=$(date +%s.%N)
         if ping -c $PING_COUNT -W "$timeout" "$LOCAL_GATEWAY" >/dev/null 2>&1; then
             local test_end=$(date +%s.%N)
-            local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-            src_fac_int_log_status "SUCCESS" "Gateway ping" "$LOCAL_GATEWAY" "${duration}s"
+            local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+            sdk_fac_int_log_status "SUCCESS" "Gateway ping" "$LOCAL_GATEWAY" "${duration}s"
             GATEWAY_STATUS="SUCCESS"
         else
             local test_end=$(date +%s.%N)
-            local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-            src_fac_int_log_status "FAIL" "Gateway ping" "$LOCAL_GATEWAY (timeout after ${timeout}s)" "${duration}s"
+            local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+            sdk_fac_int_log_status "FAIL" "Gateway ping" "$LOCAL_GATEWAY (timeout after ${timeout}s)" "${duration}s"
             GATEWAY_STATUS="FAIL"
             overall_status=false
         fi
     else
-        src_fac_int_log_status "FAIL" "Gateway detection" "No default gateway found"
+        sdk_fac_int_log_status "FAIL" "Gateway detection" "No default gateway found"
         GATEWAY_STATUS="FAIL"
         overall_status=false
     fi
@@ -34,13 +34,13 @@ src_fac_int_quick_check() {
     local test_start=$(date +%s.%N)
     if ping -c $PING_COUNT -W "$timeout" "$QUICK_DNS" >/dev/null 2>&1; then
         local test_end=$(date +%s.%N)
-        local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-        src_fac_int_log_status "SUCCESS" "DNS server ping" "$QUICK_DNS" "${duration}s"
+        local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+        sdk_fac_int_log_status "SUCCESS" "DNS server ping" "$QUICK_DNS" "${duration}s"
         DNS_STATUS="SUCCESS"
     else
         local test_end=$(date +%s.%N)
-        local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-        src_fac_int_log_status "FAIL" "DNS server ping" "$QUICK_DNS (timeout after ${timeout}s)" "${duration}s"
+        local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+        sdk_fac_int_log_status "FAIL" "DNS server ping" "$QUICK_DNS (timeout after ${timeout}s)" "${duration}s"
         DNS_STATUS="FAIL"
         overall_status=false
     fi
@@ -51,28 +51,28 @@ src_fac_int_quick_check() {
     if curl -s --max-time $QUICK_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$QUICK_SITE" >/dev/null 2>&1 || \
        wget -q --timeout=$QUICK_TIMEOUT --tries=1 -O /dev/null "https://$QUICK_SITE" >/dev/null 2>&1; then
         local test_end=$(date +%s.%N)
-        local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-        src_fac_int_log_status "SUCCESS" "Internet HTTPS" "$QUICK_SITE" "${duration}s"
+        local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+        sdk_fac_int_log_status "SUCCESS" "Internet HTTPS" "$QUICK_SITE" "${duration}s"
         HTTP_STATUS="SUCCESS"
     else
         # Try ping if HTTPS fails
         if ping -c $PING_COUNT -W $QUICK_TIMEOUT "$QUICK_SITE" >/dev/null 2>&1; then
             local test_end=$(date +%s.%N)
-            local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-            src_fac_int_log_status "FAIL" "Internet connectivity" "$QUICK_SITE - ping OK but HTTPS blocked/filtered" "${duration}s"
+            local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+            sdk_fac_int_log_status "FAIL" "Internet connectivity" "$QUICK_SITE - ping OK but HTTPS blocked/filtered" "${duration}s"
             HTTP_STATUS="BLOCKED"
             overall_status=false
         else
             local test_end=$(date +%s.%N)
-            local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-            src_fac_int_log_status "FAIL" "Internet connectivity" "$QUICK_SITE - both ping and HTTPS failed" "${duration}s"
+            local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+            sdk_fac_int_log_status "FAIL" "Internet connectivity" "$QUICK_SITE - both ping and HTTPS failed" "${duration}s"
             HTTP_STATUS="FAIL"
             overall_status=false
         fi
     fi
     
     local end_time=$(date +%s.%N)
-    local total_duration=$(src_fac_int_calculate_duration "$start_time" "$end_time")
+    local total_duration=$(sdk_fac_int_calculate_duration "$start_time" "$end_time")
     if [ "$MODE" = "diagnose" ] && [ "$SILENT_MODE" != "true" ]; then
         logit -l "Quick check completed in ${total_duration}s"
     fi
@@ -81,7 +81,7 @@ src_fac_int_quick_check() {
 }
 
 # Test DNS servers for resolution
-src_fac_int_test_dns_servers() {
+sdk_fac_int_test_dns_servers() {
     if [ "$SILENT_MODE" != "true" ]; then
         echo ""
         printf "${WHITE}DNS Server Tests ${NC}\n"
@@ -94,7 +94,7 @@ src_fac_int_test_dns_servers() {
         
         # First test: Can we ping the DNS server?
         if ping -c $PING_COUNT -W $DNS_PING_TIMEOUT "$dns" >/dev/null 2>&1; then
-            src_fac_int_log_status "SUCCESS" "DNS server" "$dns is reachable"
+            sdk_fac_int_log_status "SUCCESS" "DNS server" "$dns is reachable"
             
             # Second test: Can we resolve domains using this DNS?
             local resolved=false
@@ -115,31 +115,31 @@ src_fac_int_test_dns_servers() {
             fi
             
             local test_end=$(date +%s.%N)
-            local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
+            local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
             
             if [ "$resolved" = "true" ]; then
-                src_fac_int_log_status "SUCCESS" "DNS resolution" "Using $dns" "${duration}s"
+                sdk_fac_int_log_status "SUCCESS" "DNS resolution" "Using $dns" "${duration}s"
                 dns_servers_working=true
             else
-                src_fac_int_log_status "FAIL" "DNS resolution" "Using $dns - server reached but resolution failed" "${duration}s"
+                sdk_fac_int_log_status "FAIL" "DNS resolution" "Using $dns - server reached but resolution failed" "${duration}s"
             fi
         else
             local test_end=$(date +%s.%N)
-            local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-            src_fac_int_log_status "FAIL" "DNS server" "$dns unreachable" "${duration}s"
+            local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+            sdk_fac_int_log_status "FAIL" "DNS server" "$dns unreachable" "${duration}s"
         fi
     done
     
     # Even if direct DNS ping fails, check if DNS resolution still works
     if [ "$dns_servers_working" = "false" ]; then
         if command -v nslookup >/dev/null 2>&1 && nslookup $DNS_TEST_DOMAIN >/dev/null 2>&1; then
-            src_fac_int_log_status "SUCCESS" "DNS resolution" "System DNS resolution works" 
+            sdk_fac_int_log_status "SUCCESS" "DNS resolution" "System DNS resolution works" 
             dns_servers_working=true
         elif command -v dig >/dev/null 2>&1 && dig $DNS_TEST_DOMAIN +short >/dev/null 2>&1; then
-            src_fac_int_log_status "SUCCESS" "DNS resolution" "System DNS resolution works"
+            sdk_fac_int_log_status "SUCCESS" "DNS resolution" "System DNS resolution works"
             dns_servers_working=true
         elif command -v host >/dev/null 2>&1 && host $DNS_TEST_DOMAIN >/dev/null 2>&1; then
-            src_fac_int_log_status "SUCCESS" "DNS resolution" "System DNS resolution works"
+            sdk_fac_int_log_status "SUCCESS" "DNS resolution" "System DNS resolution works"
             dns_servers_working=true
         fi
     fi
@@ -148,7 +148,7 @@ src_fac_int_test_dns_servers() {
 }
 
 # Test access to international sites
-src_fac_int_test_international_sites() {
+sdk_fac_int_test_international_sites() {
     if [ "$SILENT_MODE" != "true" ]; then
         echo ""
         printf "${WHITE}International Site Access ${NC}\n"
@@ -166,20 +166,20 @@ src_fac_int_test_international_sites() {
         if curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$site" >/dev/null 2>&1 || \
            wget -q --timeout=$SITE_HTTPS_TIMEOUT --tries=1 -O /dev/null "https://$site" >/dev/null 2>&1; then
             local test_end=$(date +%s.%N)
-            local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-            src_fac_int_log_status "SUCCESS" "HTTPS access" "$site" "${duration}s"
+            local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+            sdk_fac_int_log_status "SUCCESS" "HTTPS access" "$site" "${duration}s"
             sites_accessible=true
             sites_success=$((sites_success + 1))
         else
             # Try ping if HTTPS fails
             if ping -c 1 -W 2 "$site" >/dev/null 2>&1; then
                 local test_end=$(date +%s.%N)
-                local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-                src_fac_int_log_status "WARNING" "HTTPS blocked" "$site (ping works but HTTPS fails)" "${duration}s"
+                local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+                sdk_fac_int_log_status "WARNING" "HTTPS blocked" "$site (ping works but HTTPS fails)" "${duration}s"
             else
                 local test_end=$(date +%s.%N)
-                local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-                src_fac_int_log_status "FAIL" "Site access" "$site (unreachable)" "${duration}s"
+                local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+                sdk_fac_int_log_status "FAIL" "Site access" "$site (unreachable)" "${duration}s"
             fi
         fi
     done
@@ -195,7 +195,7 @@ src_fac_int_test_international_sites() {
 }
 
 # Test access to regional sites (Iran)
-src_fac_int_test_regional_sites() {
+sdk_fac_int_test_regional_sites() {
     if [ "$SILENT_MODE" != "true" ]; then
         echo ""
         printf "${WHITE}Regional Site Access ${NC}\n"
@@ -213,20 +213,20 @@ src_fac_int_test_regional_sites() {
         if curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$site" >/dev/null 2>&1 || \
            wget -q --timeout=$SITE_HTTPS_TIMEOUT --tries=1 -O /dev/null "https://$site" >/dev/null 2>&1; then
             local test_end=$(date +%s.%N)
-            local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-            src_fac_int_log_status "SUCCESS" "HTTPS access" "$site" "${duration}s"
+            local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+            sdk_fac_int_log_status "SUCCESS" "HTTPS access" "$site" "${duration}s"
             sites_accessible=true
             sites_success=$((sites_success + 1))
         else
             # Try ping if HTTPS fails
             if ping -c 1 -W 2 "$site" >/dev/null 2>&1; then
                 local test_end=$(date +%s.%N)
-                local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-                src_fac_int_log_status "WARNING" "HTTPS blocked" "$site (ping works but HTTPS fails)" "${duration}s"
+                local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+                sdk_fac_int_log_status "WARNING" "HTTPS blocked" "$site (ping works but HTTPS fails)" "${duration}s"
             else
                 local test_end=$(date +%s.%N)
-                local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-                src_fac_int_log_status "FAIL" "Site access" "$site (unreachable)" "${duration}s"
+                local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+                sdk_fac_int_log_status "FAIL" "Site access" "$site (unreachable)" "${duration}s"
             fi
         fi
     done
@@ -242,7 +242,7 @@ src_fac_int_test_regional_sites() {
 }
 
 # Test access to CDN sites
-src_fac_int_test_cdn_connectivity() {
+sdk_fac_int_test_cdn_connectivity() {
     if [ "$SILENT_MODE" != "true" ]; then
         echo ""
         printf "${WHITE}CDN Access ${NC}\n"
@@ -260,20 +260,20 @@ src_fac_int_test_cdn_connectivity() {
         if curl -s --max-time $SITE_HTTPS_TIMEOUT --connect-timeout $CONNECT_TIMEOUT -I "https://$site" >/dev/null 2>&1 || \
            wget -q --timeout=$SITE_HTTPS_TIMEOUT --tries=1 -O /dev/null "https://$site" >/dev/null 2>&1; then
             local test_end=$(date +%s.%N)
-            local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-            src_fac_int_log_status "SUCCESS" "HTTPS access" "$site" "${duration}s"
+            local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+            sdk_fac_int_log_status "SUCCESS" "HTTPS access" "$site" "${duration}s"
             sites_accessible=true
             sites_success=$((sites_success + 1))
         else
             # Try ping if HTTPS fails
             if ping -c 1 -W 2 "$site" >/dev/null 2>&1; then
                 local test_end=$(date +%s.%N)
-                local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-                src_fac_int_log_status "WARNING" "HTTPS blocked" "$site (ping works but HTTPS fails)" "${duration}s"
+                local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+                sdk_fac_int_log_status "WARNING" "HTTPS blocked" "$site (ping works but HTTPS fails)" "${duration}s"
             else
                 local test_end=$(date +%s.%N)
-                local duration=$(src_fac_int_calculate_duration "$test_start" "$test_end")
-                src_fac_int_log_status "FAIL" "Site access" "$site (unreachable)" "${duration}s"
+                local duration=$(sdk_fac_int_calculate_duration "$test_start" "$test_end")
+                sdk_fac_int_log_status "FAIL" "Site access" "$site (unreachable)" "${duration}s"
             fi
         fi
     done
@@ -289,7 +289,7 @@ src_fac_int_test_cdn_connectivity() {
 }
 
 # Test connection quality using lightweight methods
-src_fac_int_test_connection_quality() {
+sdk_fac_int_test_connection_quality() {
     if [ "$SILENT_MODE" != "true" ]; then
         echo ""
         printf "${WHITE}Connection Quality Analysis ${NC}\n"
@@ -326,29 +326,29 @@ src_fac_int_test_connection_quality() {
         
         if [ -n "$avg_latency" ]; then
             if (( $(echo "$avg_latency < $GOOD_LATENCY_THRESHOLD" | bc -l) )); then
-                src_fac_int_log_status "SUCCESS" "Latency" "${avg_latency}ms - Good (<${GOOD_LATENCY_THRESHOLD}ms)"
+                sdk_fac_int_log_status "SUCCESS" "Latency" "${avg_latency}ms - Good (<${GOOD_LATENCY_THRESHOLD}ms)"
             elif (( $(echo "$avg_latency < $MODERATE_LATENCY_THRESHOLD" | bc -l) )); then
-                src_fac_int_log_status "WARNING" "Latency" "${avg_latency}ms - Moderate (${GOOD_LATENCY_THRESHOLD}-${MODERATE_LATENCY_THRESHOLD}ms)"
+                sdk_fac_int_log_status "WARNING" "Latency" "${avg_latency}ms - Moderate (${GOOD_LATENCY_THRESHOLD}-${MODERATE_LATENCY_THRESHOLD}ms)"
             else
-                src_fac_int_log_status "FAIL" "Latency" "${avg_latency}ms - Poor (>${MODERATE_LATENCY_THRESHOLD}ms)"
+                sdk_fac_int_log_status "FAIL" "Latency" "${avg_latency}ms - Poor (>${MODERATE_LATENCY_THRESHOLD}ms)"
             fi
         fi
         
         # Check if packet_loss is a numeric value before comparing
         if [ -n "$packet_loss" ] && [[ "$packet_loss" =~ ^[0-9]+$ ]]; then
             if [ "$packet_loss" -eq 0 ]; then
-                src_fac_int_log_status "SUCCESS" "Packet Loss" "0% - No packet loss"
+                sdk_fac_int_log_status "SUCCESS" "Packet Loss" "0% - No packet loss"
             elif [ "$packet_loss" -lt $ACCEPTABLE_PACKET_LOSS ]; then
-                src_fac_int_log_status "WARNING" "Packet Loss" "${packet_loss}% - Minor packet loss"
+                sdk_fac_int_log_status "WARNING" "Packet Loss" "${packet_loss}% - Minor packet loss"
             else
-                src_fac_int_log_status "FAIL" "Packet Loss" "${packet_loss}% - Significant packet loss"
+                sdk_fac_int_log_status "FAIL" "Packet Loss" "${packet_loss}% - Significant packet loss"
             fi
         else
             # If we couldn't parse the packet loss properly, just show the raw value
-            src_fac_int_log_status "INFO" "Packet Loss" "Could not determine percentage"
+            sdk_fac_int_log_status "INFO" "Packet Loss" "Could not determine percentage"
         fi
     else
-        src_fac_int_log_status "FAIL" "Connectivity Test" "Unable to measure latency to $latency_target"
+        sdk_fac_int_log_status "FAIL" "Connectivity Test" "Unable to measure latency to $latency_target"
     fi
     
     # Basic HTTP throughput test
@@ -384,7 +384,7 @@ src_fac_int_test_connection_quality() {
         if [ $? -eq 0 ]; then
             local download_end=$(date +%s.%N)
             download_success=true
-            download_time=$(src_fac_int_calculate_duration "$download_start" "$download_end")
+            download_time=$(sdk_fac_int_calculate_duration "$download_start" "$download_end")
             download_size=$SPEED_TEST_FILE_SIZE  # 1MB in bytes
         fi
     fi
@@ -396,14 +396,14 @@ src_fac_int_test_connection_quality() {
         local speed_mbps=$(printf "%.2f" $(echo "$speed_kbps / 125" | bc -l))  # 125 KB/s = 1 Mbps
         
         if (( $(echo "$speed_mbps > $GOOD_SPEED_THRESHOLD" | bc -l) )); then
-            src_fac_int_log_status "SUCCESS" "Download Speed" "${speed_mbps} Mbps - Good (>$GOOD_SPEED_THRESHOLD Mbps)"
+            sdk_fac_int_log_status "SUCCESS" "Download Speed" "${speed_mbps} Mbps - Good (>$GOOD_SPEED_THRESHOLD Mbps)"
         elif (( $(echo "$speed_mbps > $MODERATE_SPEED_THRESHOLD" | bc -l) )); then
-            src_fac_int_log_status "WARNING" "Download Speed" "${speed_mbps} Mbps - Moderate ($MODERATE_SPEED_THRESHOLD-$GOOD_SPEED_THRESHOLD Mbps)"
+            sdk_fac_int_log_status "WARNING" "Download Speed" "${speed_mbps} Mbps - Moderate ($MODERATE_SPEED_THRESHOLD-$GOOD_SPEED_THRESHOLD Mbps)"
         else
-            src_fac_int_log_status "FAIL" "Download Speed" "${speed_mbps} Mbps - Poor (<$MODERATE_SPEED_THRESHOLD Mbps)"
+            sdk_fac_int_log_status "FAIL" "Download Speed" "${speed_mbps} Mbps - Poor (<$MODERATE_SPEED_THRESHOLD Mbps)"
         fi
     else
-        src_fac_int_log_status "FAIL" "Download Test" "Unable to measure download speed"
+        sdk_fac_int_log_status "FAIL" "Download Test" "Unable to measure download speed"
     fi
     
     return 0

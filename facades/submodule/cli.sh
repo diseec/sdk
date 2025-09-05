@@ -15,7 +15,7 @@ relative_path=""
 submodule_path=""
 
 # Function to extract information from the path format
-src_fac_sub_parse_path_format() {
+sdk_fac_sub_parse_path_format() {
     local full_path="$1"
     
     # Split the path into components
@@ -56,7 +56,7 @@ if [[ $# -gt 0 ]]; then
 
     # Second argument should be the path if available
     if [[ $# -gt 0 && "$1" == */* ]]; then
-        src_fac_sub_parse_path_format "$1" || exit 1
+        sdk_fac_sub_parse_path_format "$1" || exit 1
         shift
     fi
     

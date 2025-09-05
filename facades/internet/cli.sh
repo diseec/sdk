@@ -9,7 +9,7 @@ c=$1; shift; case $c in
         MODE="is-online"
         SILENT_MODE=true
         # Quick check for internet connectivity - returns 0 if online, 1 if offline
-        src_fac_int_quick_check
+        sdk_fac_int_quick_check
         return $?
         ;;
     tes|test)
@@ -20,7 +20,7 @@ c=$1; shift; case $c in
         fi
         
         # Run basic connectivity test
-        if src_fac_int_quick_check; then
+        if sdk_fac_int_quick_check; then
             overall_status=true
         else
             overall_status=false
@@ -48,10 +48,10 @@ c=$1; shift; case $c in
         quick_check_success=false
         
         # Run comprehensive tests
-        src_fac_int_test_network_interface || overall_status=false
+        sdk_fac_int_test_network_interface || overall_status=false
         
         # Run quick check first to see if we have basic internet connectivity
-        if src_fac_int_quick_check; then
+        if sdk_fac_int_quick_check; then
             quick_check_success=true
         else
             quick_check_success=false
@@ -60,7 +60,7 @@ c=$1; shift; case $c in
         
         # Special handling for DNS tests
         dns_result=0
-        src_fac_int_test_dns_servers
+        sdk_fac_int_test_dns_servers
         dns_result=$?
         
         # Consider DNS failure as overall failure
@@ -68,24 +68,24 @@ c=$1; shift; case $c in
             overall_status=false
         fi
         
-        src_fac_int_test_international_sites || overall_status=false
-        src_fac_int_test_regional_sites || overall_status=false
-        src_fac_int_test_cdn_connectivity || overall_status=false
+        sdk_fac_int_test_international_sites || overall_status=false
+        sdk_fac_int_test_regional_sites || overall_status=false
+        sdk_fac_int_test_cdn_connectivity || overall_status=false
         
         # Optional advanced tests
-        # confirm "Run connection quality tests? (takes ~10 seconds)" src_fac_int_test_connection_quality
-        src_fac_int_test_connection_quality
+        # confirm "Run connection quality tests? (takes ~10 seconds)" sdk_fac_int_test_connection_quality
+        sdk_fac_int_test_connection_quality
         
         # If something failed, run the diagnostic
         if [ "$overall_status" = "false" ]; then
-            src_fac_int_diagnose_connection_issues
+            sdk_fac_int_diagnose_connection_issues
         fi
         
         # Offer advanced diagnostics if still failing
         # if [ "$overall_status" = "false" ]; then
-        #     confirm "Run advanced diagnostics? (takes ~15 seconds)" src_fac_int_advanced_diagnostics
+        #     confirm "Run advanced diagnostics? (takes ~15 seconds)" sdk_fac_int_advanced_diagnostics
         # fi
-        src_fac_int_advanced_diagnostics
+        sdk_fac_int_advanced_diagnostics
         
         echo ""
         # Display a summary

@@ -3,8 +3,8 @@
 # submodules.sh - Functions for managing git submodules and module discovery
 
 # Get the list of selected submodules from workspace config
-src_fac_con_opt_act_get_selected_modules() {
-    local config_file="$(cli_main config function src_fac_con_get_config_file repo)"
+sdk_fac_con_opt_act_get_selected_modules() {
+    local config_file="$(cli_main config function sdk_fac_con_get_config_file repo)"
 
     if [ ! -f "$config_file" ]; then
         # If workspace config doesn't exist, just return empty (no submodules selected)
@@ -18,7 +18,7 @@ src_fac_con_opt_act_get_selected_modules() {
 }
 
 # Parse the .gitmodules file to extract available submodules
-src_fac_con_opt_act_get_available_modules() {
+sdk_fac_con_opt_act_get_available_modules() {
     local gitmodules_file="$D_CTX_DIR/.gitmodules"
     
     if [ ! -f "$gitmodules_file" ]; then
@@ -33,7 +33,7 @@ src_fac_con_opt_act_get_available_modules() {
 }
 
 # Get the module path from a module name
-src_fac_con_opt_act_get_module_path() {
+sdk_fac_con_opt_act_get_module_path() {
     local module_name="$1"
     
     if [ -z "$module_name" ]; then
@@ -47,9 +47,9 @@ src_fac_con_opt_act_get_module_path() {
 }
 
 # Check if a module is selected in the workspace configuration
-src_fac_con_opt_act_is_module_selected() {
+sdk_fac_con_opt_act_is_module_selected() {
     local module_name="$1"
-    local selected_modules=$(src_fac_con_opt_act_get_selected_modules)
+    local selected_modules=$(sdk_fac_con_opt_act_get_selected_modules)
     
     for selected_module in $selected_modules; do
         if [ "$selected_module" = "$module_name" ]; then
@@ -61,12 +61,12 @@ src_fac_con_opt_act_is_module_selected() {
 }
 
 # Run a callback function for each selected module
-# Usage: src_fac_con_opt_act_foreach_selected_module callback_function [additional_args...]
-src_fac_con_opt_act_foreach_selected_module() {
+# Usage: sdk_fac_con_opt_act_foreach_selected_module callback_function [additional_args...]
+sdk_fac_con_opt_act_foreach_selected_module() {
     if [ "$D_HAS_SUBMODULES" != "true" ]; then return; fi
     local callback_function="$1"
     shift
-    local selected_modules=$(src_fac_con_opt_act_get_selected_modules)
+    local selected_modules=$(sdk_fac_con_opt_act_get_selected_modules)
 
     if [ -z "$selected_modules" ]; then
         # No submodules selected is a valid state - just return success
@@ -75,7 +75,7 @@ src_fac_con_opt_act_foreach_selected_module() {
     fi
 
     for module in $selected_modules; do
-        local module_path=$(src_fac_con_opt_act_get_module_path "$module")
+        local module_path=$(sdk_fac_con_opt_act_get_module_path "$module")
         if [ -n "$module_path" ]; then
             "$callback_function" "$module" "$module_path" "$@"
         else
@@ -85,8 +85,8 @@ src_fac_con_opt_act_foreach_selected_module() {
 }
 
 # Get a space-separated list of services based on selected modules
-src_fac_con_opt_act_get_services_filter() {
-    local selected_modules=$(src_fac_con_opt_act_get_selected_modules)
+sdk_fac_con_opt_act_get_services_filter() {
+    local selected_modules=$(sdk_fac_con_opt_act_get_selected_modules)
     local services_filter=""
     local docker_compose_file="$D_CTX_DIR/docker-compose.yaml"
     

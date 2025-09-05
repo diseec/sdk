@@ -1,13 +1,13 @@
 #!/bin/bash
 
-src_fac_set_sdk() {
+sdk_fac_set_sdk() {
     set -e
 
     # docker pull image.registry.diseec.com/kit \
     #     --disable-content-trust > /dev/null 2>&1
     cli_main docker compose _ pull; > /dev/null 2>&1
 
-    src_fac_set_sdk_process() {
+    sdk_fac_set_sdk_process() {
         if [ "$IS_IN_SDK_CONTAINER" != "true" ]; then
             logit -e "The 'patch' command works only on bench! (the sdk container)"; return 1; 
         fi
@@ -46,10 +46,10 @@ src_fac_set_sdk() {
         logit -l "$D_SDK_NAME patched for: $package_name"
     }
 
-    safely && src_fac_set_sdk_process
+    safely && sdk_fac_set_sdk_process
 }
 
-src_fac_set_ensure_patched() {
+sdk_fac_set_ensure_patched() {
     local is_forced="$1";
     local ctx_dir="$2";
     local sdk_dir="$ctx_dir/$D_SDK_NPM_PATH";

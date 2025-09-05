@@ -1,6 +1,6 @@
 #!/bin/bash
 
-src_fac_set_repository() {
+sdk_fac_set_repository() {
     set -e;
 
     logit -l "Installing ..."
@@ -28,8 +28,8 @@ src_fac_set_repository() {
         cli_main safely config init
     fi
 
-    cli_main git function src_fac_git_cmd_checkout_branch
-    cli_main git function src_fac_git_cmd_checkout_if_detached
+    cli_main git function sdk_fac_git_cmd_checkout_branch
+    cli_main git function sdk_fac_git_cmd_checkout_if_detached
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         logit -l "Cloning selected submodules..."
@@ -38,7 +38,7 @@ src_fac_set_repository() {
             _git submodule update --init --recursive --remote "$module_path"
             logit -l "Initialized submodule '$module_path'."
         }
-        cli_main config function src_fac_con_opt_act_foreach_selected_module initialize_submodule
+        cli_main config function sdk_fac_con_opt_act_foreach_selected_module initialize_submodule
     fi
 
     cli_main sdk stop;
@@ -51,7 +51,7 @@ src_fac_set_repository() {
             cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive
             logit -l "Installed dependencies for '$module'."
         }
-        cli_main config function src_fac_con_opt_act_foreach_selected_module install_dependencies
+        cli_main config function sdk_fac_con_opt_act_foreach_selected_module install_dependencies
     fi
 
     handle_hook after_install

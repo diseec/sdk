@@ -1,6 +1,6 @@
 #!/bin/bash
 
-src_inf_summary_branch_status() {
+sdk_inf_summary_branch_status() {
     if cli_main internet is-online; then
         _git fetch origin
     else

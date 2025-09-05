@@ -5,7 +5,7 @@
 # =============================================================================
 # Functions to detect various environment states
 
-src_cor_env_uti_is_in_container() {
+sdk_boo_env_uti_is_in_container() {
     if [ -f "/.dockerenv" ] || [ "$D_IS_IN_CONTAINER" = "true" ]; then
         echo "true"
     else
@@ -13,7 +13,7 @@ src_cor_env_uti_is_in_container() {
     fi
 }
 
-src_cor_env_uti_has_submodules() {
+sdk_boo_env_uti_has_submodules() {
     if [ -f "$D_CTX_DIR/.gitmodules" ] && [ -s "$D_CTX_DIR/.gitmodules" ]; then
         echo "true"
     else
@@ -21,7 +21,7 @@ src_cor_env_uti_has_submodules() {
     fi
 }
 
-src_cor_env_uti_get_kit_version() {
+sdk_boo_env_uti_get_kit_version() {
     if [ -f "$D_SDK_DIR/package.json" ]; then
         grep '"version"' "$D_SDK_DIR/package.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/'
     else
@@ -29,7 +29,7 @@ src_cor_env_uti_get_kit_version() {
     fi
 }
 
-src_cor_env_uti_get_kit_target_dit() {
+sdk_boo_env_uti_get_kit_target_dit() {
     if [ -z "$D_CTX_DIR_HOST" ]; then
         echo "$D_CTX_DIR"
     else

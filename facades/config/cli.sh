@@ -40,23 +40,23 @@ eval set -- $(eval echo $ARGS)
 
 c=$1; shift; case $c in
     # Basic operations
-    ini|init) src_fac_con_opt_act_init "$@" ;;
-    sum|summary) src_fac_con_opt_act_status "$@" ;;
-    get) src_fac_con_get "$@" "$SCOPE" ;;
-    set) src_fac_con_set "$@" "$SCOPE" ;;
-    add) src_fac_con_array_add "$@" "$SCOPE" ;;
-    rem|remove) src_fac_con_array_remove "$@" "$SCOPE" ;;
-    del|delete) src_fac_con_delete "$@" "$SCOPE" ;;
-    pat|path) src_fac_con_get_config_file "$SCOPE" ;;
-    whi|which) src_fac_con_which "$@" ;;
+    ini|init) sdk_fac_con_opt_act_init "$@" ;;
+    sum|summary) sdk_fac_con_opt_act_status "$@" ;;
+    get) sdk_fac_con_get "$@" "$SCOPE" ;;
+    set) sdk_fac_con_set "$@" "$SCOPE" ;;
+    add) sdk_fac_con_array_add "$@" "$SCOPE" ;;
+    rem|remove) sdk_fac_con_array_remove "$@" "$SCOPE" ;;
+    del|delete) sdk_fac_con_delete "$@" "$SCOPE" ;;
+    pat|path) sdk_fac_con_get_config_file "$SCOPE" ;;
+    whi|which) sdk_fac_con_which "$@" ;;
     pri|print) 
         # Print can work without scope (prints all scopes) or with scope
-        if [ -n "$SCOPE" ]; then src_fac_con_print "$@" "$SCOPE"
-        else src_fac_con_print "$@"; fi
+        if [ -n "$SCOPE" ]; then sdk_fac_con_print "$@" "$SCOPE"
+        else sdk_fac_con_print "$@"; fi
     ;;
 
     # Available settings
-    ssu|select_submodule) src_fac_con_opt_act_select "$@" ;;
+    ssu|select_submodule) sdk_fac_con_opt_act_select "$@" ;;
 
     hel|help|--help|-h) display_help "" "" \
         "$(ansi 97 'Configuration Management System')" "" \

@@ -1,11 +1,11 @@
 #!/bin/bash
 # TODO support recursive
 # Check if current branch has a PR
-src_fac_git_cmd_has_open_pr() {
+sdk_fac_git_cmd_has_open_pr() {
   set -e
   local branch="$D_CURRENT_BRANCH"
   
-  if src_fac_git_cmd_check_gh_cli; then
+  if sdk_fac_git_cmd_check_gh_cli; then
     # Try to get PR number for current branch
     pr_number=$(_gh pr list --head "$branch" --json number -q '.[0].number' 2>/dev/null)
     if [ -n "$pr_number" ] && [ "$pr_number" != "null" ]; then
@@ -35,8 +35,8 @@ src_fac_git_cmd_has_open_pr() {
 }
 
 # Create a new PR or update existing one
-src_fac_git_cmd_pr_create() {
-    local pr_number=$(src_fac_git_cmd_has_open_pr)
+sdk_fac_git_cmd_pr_create() {
+    local pr_number=$(sdk_fac_git_cmd_has_open_pr)
     local branch="$D_CURRENT_BRANCH"
 
     if [ "$D_CURRENT_BRANCH" = "main" ]; then
@@ -49,7 +49,7 @@ src_fac_git_cmd_pr_create() {
     else
     # Create a new PR
     logit -l "Creating new PR for branch: $branch"
-    if src_fac_git_cmd_check_gh_cli; then
+    if sdk_fac_git_cmd_check_gh_cli; then
       # Use last commit message as PR title/body
       local pr_title=$(_git log -1 --pretty=%s)
       local pr_body=$(_git log -1 --pretty=%b)
@@ -73,8 +73,8 @@ src_fac_git_cmd_pr_create() {
   fi
   
   # Provide links
-  if src_fac_git_cmd_check_gh_cli; then
-    local pr_link=$(_gh pr view "$(src_fac_git_cmd_has_open_pr)" --json url -q .url)
+  if sdk_fac_git_cmd_check_gh_cli; then
+    local pr_link=$(_gh pr view "$(sdk_fac_git_cmd_has_open_pr)" --json url -q .url)
   fi
   local commit_link="https://github.com/$D_ORG_NAME/$D_REPO_NAME/commit/$(_git rev-parse HEAD)"
 
@@ -82,14 +82,14 @@ src_fac_git_cmd_pr_create() {
 }
 
 # Check PR status and show comments/issues
-src_fac_git_cmd_pr_check_status() {
+sdk_fac_git_cmd_pr_check_status() {
   if ! cli_main internet is-online; then
       logit --ansi="31" --icon="⊘" "Disconnected, skipping PR status check..."
       return 0
   fi
   logit -l "Checking PR status..."
 
-  local pr_number=$(src_fac_git_cmd_has_open_pr)
+  local pr_number=$(sdk_fac_git_cmd_has_open_pr)
   local branch="$D_CURRENT_BRANCH"
 
   if [ -z "$pr_number" ]; then
@@ -99,7 +99,7 @@ src_fac_git_cmd_pr_check_status() {
 
   # echo "Checking PR #$pr_number status..."
 
-  if src_fac_git_cmd_check_gh_cli; then
+  if sdk_fac_git_cmd_check_gh_cli; then
       # Get PR details
       local pr_data=$(_gh pr view "$pr_number" --json title,url,reviewDecision,reviews,comments)
 

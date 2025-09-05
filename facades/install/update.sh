@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get version information for a package
-src_fac_set_get_version_info() {
+sdk_fac_set_get_version_info() {
     local package_name="$D_SDK_NPM_PKG"
     
     # Get outdated info as JSON
@@ -38,7 +38,7 @@ src_fac_set_get_version_info() {
 }
 
 # Check if sdk version has changed
-src_fac_set_has_version_changed() {
+sdk_fac_set_has_version_changed() {
     local package_name="$D_SDK_NPM_PKG"
     
     # Get outdated info as JSON
@@ -51,7 +51,7 @@ src_fac_set_has_version_changed() {
     fi
 }
 
-src_fac_set_cmd_update() {
+sdk_fac_set_cmd_update() {
     set -e
     
     local IS_RECURSIVE="false"
@@ -73,7 +73,7 @@ src_fac_set_cmd_update() {
     cli_main install
 
     logit -i "Pulling latest changes..."
-    cli_main git function src_fac_git_cmd_pull_merge
+    cli_main git function sdk_fac_git_cmd_pull_merge
 
     if [  "$IS_RECURSIVE" = "true"  ]; then
         logit -l "Updating dependencies in selected submodules..."
@@ -83,7 +83,7 @@ src_fac_set_cmd_update() {
             cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 update.--recursive
             logit -l "Updated dependencies for '$module'."
         }
-        cli_main config function src_fac_con_opt_act_foreach_selected_module update_dependencies
+        cli_main config function sdk_fac_con_opt_act_foreach_selected_module update_dependencies
     fi
 
     handle_hook after_update

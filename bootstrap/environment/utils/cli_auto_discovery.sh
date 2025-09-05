@@ -5,7 +5,7 @@
 # =============================================================================
 # Functions for discovering project structure and paths
 
-src_cor_env_uti_cli_auto_discovery() {
+sdk_boo_env_uti_cli_auto_discovery() {
     : ${D_IS_GLOBAL_CLI_USED:=false}
     : ${HAS_DISCOVERED_CLI:=false}
     : ${IS_SDK_CLI:=false}
@@ -58,7 +58,7 @@ src_cor_env_uti_cli_auto_discovery() {
     # exit 1
 }
 
-src_cor_env_uti_get_org_dir() {
+sdk_boo_env_uti_get_org_dir() {
     local org_dir="$HOME/$D_ORG_NAME"
     if [ ! -d "$org_dir" ]; then 
         mkdir -p "$org_dir"
@@ -66,8 +66,8 @@ src_cor_env_uti_get_org_dir() {
     echo "$org_dir"
 }
 
-src_cor_env_uti_get_cache_dir() {
-    local org_cache_dir="$(src_cor_env_uti_get_org_dir)/.cache"
+sdk_boo_env_uti_get_cache_dir() {
+    local org_cache_dir="$(sdk_boo_env_uti_get_org_dir)/.cache"
     if [ ! -d "$org_cache_dir" ]; then 
         mkdir -p "$org_cache_dir"
     fi

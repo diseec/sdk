@@ -3,9 +3,9 @@
 # Functions for managing cache directories based on scope
 
 # Get the base cache directory
-# Usage: src_fac_con_get_cache_dir <scope>
+# Usage: sdk_fac_con_get_cache_dir <scope>
 # Output: Path to the <scope> cache directory
-src_fac_con_get_cache_dir() {
+sdk_fac_con_get_cache_dir() {
     local scope="$1"
     local cache_dir=""
     
@@ -26,12 +26,12 @@ src_fac_con_get_cache_dir() {
 }
 
 # Get a specific cache subdirectory
-# Usage: src_fac_con_get_cache_subdir "<scope>" "subdir_name"
+# Usage: sdk_fac_con_get_cache_subdir "<scope>" "subdir_name"
 # Output: Path to the requested cache subdirectory
-src_fac_con_get_cache_subdir() {
+sdk_fac_con_get_cache_subdir() {
     local scope="$1"
     local subdir_name="$2"
-    local base_cache_dir=$(src_fac_con_get_cache_dir "$scope")
+    local base_cache_dir=$(sdk_fac_con_get_cache_dir "$scope")
     local cache_subdir="$base_cache_dir/$subdir_name"
     
     # Create the subdirectory if it doesn't exist

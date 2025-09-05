@@ -6,9 +6,9 @@ source_once "$D_SDK_DIR/facades/docker/index.sh"
 
 c=$1; shift; case $c in
     com|compose) c=$1; shift; case $c in
-        ude|up-dev|up) src_fac_doc_up_development "$@" ;;
-        upr|up-pro) src_fac_doc_up_production "$@" ;;
-        exe|execute|exec) src_fac_doc_cmd_docker_execute "$@" ;;
+        ude|up-dev|up) sdk_fac_doc_up_development "$@" ;;
+        upr|up-pro) sdk_fac_doc_up_production "$@" ;;
+        exe|execute|exec) sdk_fac_doc_cmd_docker_execute "$@" ;;
         bui|build) _docker compose build --parallel "$@" ;;
         _) _docker compose "$@" ;;
         hel|help|--help|-h) display_help "" "" \

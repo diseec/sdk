@@ -9,33 +9,33 @@ source_once "$D_SDK_DIR/facades/git/index.sh"
 
 c=$1; shift; case $c in
     sta|status)
-        cli_main informs src_inf_forbid_dev_on_main
-        cli_main informs src_inf_summary_branch_status
-        src_fac_git_cmd_pr_check_status
+        cli_main informs sdk_inf_forbid_dev_on_main
+        cli_main informs sdk_inf_summary_branch_status
+        sdk_fac_git_cmd_pr_check_status
     ;;
-    cpp|commit-push-pr) src_fac_git_cmd_commit_push_pr "$@" ;;
-    che|checkout) src_fac_git_cmd_checkout_branch "$@" ;;
-    com|commit) src_fac_git_cmd_commit "$@" ;;
-    pul|pull) src_fac_git_cmd_pull_merge "$@" ;;
-    pus|push) src_fac_git_cmd_push "$@" ;;
+    cpp|commit-push-pr) sdk_fac_git_cmd_commit_push_pr "$@" ;;
+    che|checkout) sdk_fac_git_cmd_checkout_branch "$@" ;;
+    com|commit) sdk_fac_git_cmd_commit "$@" ;;
+    pul|pull) sdk_fac_git_cmd_pull_merge "$@" ;;
+    pus|push) sdk_fac_git_cmd_push "$@" ;;
     pre|pull-request|pr) c=$1; shift; case $c in
-        cre|create) src_fac_git_cmd_pr_create "$@" ;;
-        sta|status) src_fac_git_cmd_pr_check_status "$@" ;;
+        cre|create) sdk_fac_git_cmd_pr_create "$@" ;;
+        sta|status) sdk_fac_git_cmd_pr_check_status "$@" ;;
         *) if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi ;;
     esac; ;;
     log)
         TODAY_FLAG=0
         ARGS=""; for arg in "$@"; do case "$arg" in
-            --today) src_fac_git_cmd_get_today_logs; TODAY_FLAG=1 ;;
+            --today) sdk_fac_git_cmd_get_today_logs; TODAY_FLAG=1 ;;
         *) ARGS="$ARGS \"$arg\"";; esac; done
         if [ $TODAY_FLAG -eq 0 ]; then
             eval set -- $(eval echo $ARGS);
-            src_fac_git_cmd_git_log "$@"
+            sdk_fac_git_cmd_git_log "$@"
         fi
         ;;
-    ida|insight-day) src_fac_git_cmd_daily_insight "$@" ;;
-    rel|release) src_fac_git_cmd_release "$@" ;;
-    cid|checkout-if-detached) src_fac_git_cmd_checkout_if_detached "$@" ;;
+    ida|insight-day) sdk_fac_git_cmd_daily_insight "$@" ;;
+    rel|release) sdk_fac_git_cmd_release "$@" ;;
+    cid|checkout-if-detached) sdk_fac_git_cmd_checkout_if_detached "$@" ;;
     hub) c=$1; shift; case $c in
         _) _gh "$@" ;;
         *)
