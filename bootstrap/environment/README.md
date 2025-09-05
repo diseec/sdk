@@ -132,7 +132,7 @@ All variables are exported and available:
 
 ### Computed Paths
 
-- `D_CTX_DIR`, `D_SDK_DIR`, `cli_main`, `cli_core`
+- `D_CTX_DIR`, `D_SDK_DIR`, `cli_stub`, `cli_core`
 - `D_ORG_DIR`, `D_ORG_CACHE_DIR`
 
 ### Environment State

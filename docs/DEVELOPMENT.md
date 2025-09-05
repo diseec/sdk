@@ -124,7 +124,7 @@ Auto-commit with AI and create PR.
 - Blocks commits to main
 - AI commit messages (needs OPENAI_API_KEY)
 - Creates/updates GitHub PR
-- **Requires GitHub cli_main for PR management**
+- **Requires GitHub cli_stub for PR management**
 
 ```bash
 D pus

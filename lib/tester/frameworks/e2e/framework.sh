@@ -87,7 +87,7 @@ source "\$D_SDK_DIR/index.sh"
 # Additional project-specific commands can be added here
 c=\$1; shift; case \$c in
     custom) echo "Custom command" ;;
-    *)     cli_main "\$c" "\$@" ;;
+    *)     cli_stub "\$c" "\$@" ;;
 esac
 EOF
     chmod +x "cli"

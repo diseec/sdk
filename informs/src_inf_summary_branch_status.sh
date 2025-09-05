@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sdk_inf_summary_branch_status() {
-    if cli_main internet is-online; then
+    if cli_stub internet is-online; then
         _git fetch origin
     else
         logit --ansi="31" --icon="⊘" "Disconnected, cannot fetch branch status..."

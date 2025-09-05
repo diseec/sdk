@@ -42,14 +42,14 @@ c=$1; shift; case $c in
     ;;
 
     dev)
-        cli_main sdk start > /dev/null 2>&1
+        cli_stub sdk start > /dev/null 2>&1
         confirm "Run post dev ops?" \
-            cli_main status \
-            confirm "Pull and merge latest changes?" cli_main pull --recursive
+            cli_stub status \
+            confirm "Pull and merge latest changes?" cli_stub pull --recursive
         cli_core dev "$@"
-        cli_main format
-        confirm "Commit, push and PR changes?" cli_main push --recursive
-        cli_main sdk stop
+        cli_stub format
+        confirm "Commit, push and PR changes?" cli_stub push --recursive
+        cli_stub sdk stop
     ;;
 
     for|format) cli_core format "**/*.{js,jsx,ts,tsx,json,css,scss,md}" ;;

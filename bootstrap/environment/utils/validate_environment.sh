@@ -15,8 +15,8 @@ sdk_boo_env_uti_validate_environment() {
     fi
     
     # # Check required files
-    # if [ ! -f "$D_CLI_MAIN" ]; then
-    #     echo "Warning: D_CLI_MAIN not found: $D_CLI_MAIN" >&2
+    # if [ ! -f "$D_CLI_STUB" ]; then
+    #     echo "Warning: D_CLI_STUB not found: $D_CLI_STUB" >&2
     # fi
     
     return $errors

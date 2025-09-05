@@ -3,30 +3,30 @@
 c=$1; shift; case $c in
     sta|status)
         mark_ctx_only
-        # # cli_main about
-        # X "cli_main config summary"
-        cli_main config summary
+        # # cli_stub about
+        # X "cli_stub config summary"
+        cli_stub config summary
         # X "sdk_inf_check_system_dependencies"
-        cli_main informs sdk_inf_check_system_dependencies
+        cli_stub informs sdk_inf_check_system_dependencies
         # X "sdk_inf_check_internet_connection"
-        cli_main informs sdk_inf_check_internet_connection
-        # X "cli_main git status"
-        cli_main git status
+        cli_stub informs sdk_inf_check_internet_connection
+        # X "cli_stub git status"
+        cli_stub git status
         # X "sdk_inf_check_for_updates"
-        cli_main informs sdk_inf_check_for_updates
+        cli_stub informs sdk_inf_check_for_updates
     ;;
     ins|install)    mark_ctx_only; source "$D_SDK_DIR/facades/install/cli.sh" "$@" ;;
-    ude|update)     mark_ctx_only; cli_main install update "$@" ;;
-    dev|develop)    mark_ctx_only; cli_main docker compose up-dev "$@" ;;
-    bpa|build)      mark_ctx_only; cli_main docker compose build "$@" ;;
-    run)            mark_ctx_only; cli_main docker compose execute "$D_REPO_NAME" "$@" ;;
-    exe|execute)    mark_ctx_only; cli_main docker compose execute "$@" ;;
-    she|shell)      mark_ctx_only; cli_main run /bin/bash "$@" ;;
-    pus|push)       mark_ctx_only; cli_main git commit-push-pr "$@" ;;
-    pul|pull)       mark_ctx_only; cli_main git pull "$@" ;;
-    dai|daily)      mark_ctx_only; cli_main git insight-day "$@" ;;
+    ude|update)     mark_ctx_only; cli_stub install update "$@" ;;
+    dev|develop)    mark_ctx_only; cli_stub docker compose up-dev "$@" ;;
+    bpa|build)      mark_ctx_only; cli_stub docker compose build "$@" ;;
+    run)            mark_ctx_only; cli_stub docker compose execute "$D_REPO_NAME" "$@" ;;
+    exe|execute)    mark_ctx_only; cli_stub docker compose execute "$@" ;;
+    she|shell)      mark_ctx_only; cli_stub run /bin/bash "$@" ;;
+    pus|push)       mark_ctx_only; cli_stub git commit-push-pr "$@" ;;
+    pul|pull)       mark_ctx_only; cli_stub git pull "$@" ;;
+    dai|daily)      mark_ctx_only; cli_stub git insight-day "$@" ;;
     tes|test)       mark_ctx_only; $D_SDK_DIR/cmds/test.sh "$@" ;; # TODO
-    pru|prune)      mark_ctx_only; cli_main docker _ system prune "$@" ;;
+    pru|prune)      mark_ctx_only; cli_stub docker _ system prune "$@" ;;
     for|format)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/format/cli.sh" prettier "$@" ;;
     doc|docker)     mark_ctx_only; source "$D_SDK_DIR/facades/docker/cli.sh" "$@" ;;
     int|internet)   mark_ctx_only; source_safely "$D_SDK_DIR/facades/internet/cli.sh" "$@" ;;
@@ -38,7 +38,7 @@ c=$1; shift; case $c in
     set|settings)   mark_ctx_only; source_safely "$D_SDK_DIR/facades/settings/cli.sh" "$@" ;;
     inf|informs)    mark_ctx_only; source "$D_SDK_DIR/informs/cli.sh" "$@" ;;
     env|envs)       mark_ctx_only; source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
-    sdk)            mark_ctx_only; env D_CTX_DIR_HOST="$D_CTX_DIR" "$D_SDK_DIR/$D_CLI_LOCAL_NAME" "$@" ;;
+    sdk)            mark_ctx_only; env D_CTX_DIR_HOST="$D_CTX_DIR" "$D_SDK_DIR/$D_SDK_NAME" "$@" ;;
     api)            mark_ctx_only; source "$D_SDK_DIR/api/cli.sh" "$@" ;;
     abo|about)      mark_ctx_only; about ;;
     hel|help|--help|-h) display_help "" "" \
@@ -57,7 +57,7 @@ c=$1; shift; case $c in
         "        -h|--help            " "Brief usage and docs information" \
         "" "" "$(ansi "1;90" "$(capitalize 'Project Management')")" "" \
         "    ins|install              " "Install project dependencies and tools" \
-        "    ude|update               " "Update cli_main and sync project" \
+        "    ude|update               " "Update cli_stub and sync project" \
         "    sta|status               " "Show comprehensive project status" \
         "" "" "$(ansi "1;90" "$(capitalize 'Workflow & Environment')")" "" \
         "    dai|daily                " "$(ansi 36 '✦') $(ansi 90 'Generate daily insights')" \
@@ -84,7 +84,7 @@ c=$1; shift; case $c in
         "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
         "    env|envs                 " "Manage environment variables. Examples:" \
         "                             " "$(ansi "2;90" 'set -a; eval "$($D_CLI_GLOBAL_NAME envs)"; set +a')" \
-        "                             " "$(ansi "2;90" 'eval "$(cli_main envs)" > /dev/null')" \
+        "                             " "$(ansi "2;90" 'eval "$(cli_stub envs)" > /dev/null')" \
         "    saf|safely               " "Safe command execution" \
         "    api                      " "API operations" \
         "    sdk                      " "SDK container operations" \
@@ -93,9 +93,9 @@ c=$1; shift; case $c in
     saf|safely)
         mark_ctx_only
         # logit -d "CLI:$D_CLI_CORE:SAFELY:ARGS: $@";
-        cli_main "$D_SDK_NAME" stop > /dev/null 2>&1 || true ;
-        cli_main "$D_SDK_NAME" run --quiet "$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME" "$@"
-        # cli_main "$D_SDK_NAME" run "$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME" "$@"
+        cli_stub "$D_SDK_NAME" stop > /dev/null 2>&1 || true ;
+        cli_stub "$D_SDK_NAME" run --quiet "$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME" "$@"
+        # cli_stub "$D_SDK_NAME" run "$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME" "$@"
         # if [ $? -ne 0 ]; then logit -e "Failed to run command in $D_SDK_NAME container"; fi
     ;;
     -v|--version)
@@ -110,6 +110,6 @@ c=$1; shift; case $c in
     ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-        cli_main help; exit 1;
+        cli_stub help; exit 1;
     ;;
 esac

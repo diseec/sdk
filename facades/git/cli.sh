@@ -9,8 +9,8 @@ source_once "$D_SDK_DIR/facades/git/index.sh"
 
 c=$1; shift; case $c in
     sta|status)
-        cli_main informs sdk_inf_forbid_dev_on_main
-        cli_main informs sdk_inf_summary_branch_status
+        cli_stub informs sdk_inf_forbid_dev_on_main
+        cli_stub informs sdk_inf_summary_branch_status
         sdk_fac_git_cmd_pr_check_status
     ;;
     cpp|commit-push-pr) sdk_fac_git_cmd_commit_push_pr "$@" ;;
@@ -40,7 +40,7 @@ c=$1; shift; case $c in
         _) _gh "$@" ;;
         *)
             if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-            # cli_main git hub help; exit 1;
+            # cli_stub git hub help; exit 1;
         ;;
     esac ;;
     _) _git "$@" ;;
@@ -65,11 +65,11 @@ c=$1; shift; case $c in
         "    $D_CLI_GLOBAL_NAME pull [--recursive]  " "Alias for pull" \
         "" "" "$(ansi 33 'Setup Required')" "" \
         "    $D_CLI_GLOBAL_NAME secret add          " "Add OPENAI_API_KEY for AI commit messages" \
-        "    gh auth login         " "Authenticate GitHub cli_main for PR management"
+        "    gh auth login         " "Authenticate GitHub cli_stub for PR management"
     ;;
     fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-        cli_main git help; exit 1;
+        cli_stub git help; exit 1;
     ;;
 esac

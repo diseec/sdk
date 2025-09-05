@@ -8,11 +8,11 @@
 
 ## Overview
 
-The DISEEC DevOps Kit is a comprehensive automation toolkit designed to standardize and streamline development workflows across projects. It provides a unified cli_main interface, container orchestration, secrets management, and project lifecycle automation for teams building modern applications.
+The DISEEC DevOps Kit is a comprehensive automation toolkit designed to standardize and streamline development workflows across projects. It provides a unified cli_stub interface, container orchestration, secrets management, and project lifecycle automation for teams building modern applications.
 
 ### Key Features
 
-- **Unified cli_main Interface** - Single command interface for all development operations
+- **Unified cli_stub Interface** - Single command interface for all development operations
 - **Container Orchestration** - Docker and Docker Compose automation
 - **Secure Secrets Management** - AES-256 encrypted secrets with automatic key generation
 - **Git Workflow Automation** - AI-powered commit messages and PR management
@@ -52,7 +52,7 @@ The `D install` command creates a project `cli` file that:
 - Allows full customization of sdk behavior
 - Can override, add, or remove functionalities
 - Use `$D_CLI_CORE` to call original commands
-- Use `$D_CLI_MAIN` to call the project cli itself
+- Use `$D_CLI_STUB` to call the project cli itself
 
 ```bash
 # Example project cli customization
@@ -92,10 +92,10 @@ D secret help
 
 ### Feature Documentation
 
-| Feature                                    | Documentation                                 |
-| ------------------------------------------ | --------------------------------------------- | ------------------------------------------- | --- |
-| [Git Workflows](facades/git/README.md) | AI-powered git automation and PR management   |
-| <!--                                       | [Configuration](facades/config/README.md) | Project and workspace configuration options | --> |
+| Feature                                | Documentation                               |
+| -------------------------------------- | ------------------------------------------- | ------------------------------------------- | --- |
+| [Git Workflows](facades/git/README.md) | AI-powered git automation and PR management |
+| <!--                                   | [Configuration](facades/config/README.md)   | Project and workspace configuration options | --> |
 
 <!--
 | [Secrets Management](docs/SECRETS.md)     | Secure credential storage and management   |
@@ -109,14 +109,14 @@ D secret help
 | ------------------------------------------ | ------------------------------------------- |
 | [Custom Commands](docs/EXTENDING.md)       | Adding custom commands and integrations     |
 | [CI/CD Integration](docs/CICD.md)          | Continuous integration and deployment setup |
-| [Style Guide](docs/STYLE-GUIDE.md)         | cli_main styling and color conventions           |
+| [Style Guide](docs/STYLE-GUIDE.md)         | cli_stub styling and color conventions           |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues and solutions                 | -->
 
 ## Project Structure
 
 ```
 sdk/
-├── cli.sh          # Main cli_main entry point
+├── cli.sh          # Main cli_stub entry point
 ├── core/           # Core utilities (env, output, wrappers)
 ├── cmds/           # Command implementations
 ├── facades/        # High-level API facades
@@ -131,7 +131,7 @@ sdk/
 ### Project Management
 
 - `ins|install` - Install dependencies and setup tools
-- `ude|update` - Update cli_main and sync project
+- `ude|update` - Update cli_stub and sync project
 - `sta|status` - Show comprehensive project status
 
 ### Development Environment
@@ -217,7 +217,7 @@ D docker compose down            # Stop services
 
 ### Optional Dependencies
 
-- **GitHub cli_main** (`gh`) - Enhanced git workflow features
+- **GitHub cli_stub** (`gh`) - Enhanced git workflow features
 - **yq** - Advanced YAML configuration management
 - **OpenAI API Key** - AI-powered git commit messages
 

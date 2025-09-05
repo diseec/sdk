@@ -15,7 +15,7 @@ COPY . .
 
 RUN npm install -g /${D_SDK_NAME}
 
-# Install GitHub cli_main using prebuilt binary for the current architecture
+# Install GitHub cli_stub using prebuilt binary for the current architecture
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then \
     ARCH_TAG="linux_amd64"; \

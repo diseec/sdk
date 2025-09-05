@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sdk_inf_check_for_updates() {
-    if ! cli_main internet is-online; then
+    if ! cli_stub internet is-online; then
         logit --ansi="31" --icon="⊘" "Disconnected, skipping update check..."
         return 0
     fi
@@ -11,14 +11,14 @@ sdk_inf_check_for_updates() {
         return 0
     fi
 
-    if cli_main informs sdk_inf_check_for_updates_kit; then
+    if cli_stub informs sdk_inf_check_for_updates_kit; then
         local kit_update_available="true"
     fi
-    if cli_main informs sdk_inf_check_for_updates_repo; then
+    if cli_stub informs sdk_inf_check_for_updates_repo; then
         local repo_update_available="true"
     fi
 
     if [ "$kit_update_available" = "true" ] || [ "$repo_update_available" = "true" ]; then
-        confirm "Apply updates now?" cli_main update --recursive
+        confirm "Apply updates now?" cli_stub update --recursive
     fi
 }

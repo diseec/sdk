@@ -133,7 +133,7 @@ echo -e "\n${YELLOW}Testing computed variables...${NC}"
 # Test computed variables are set
 test_variable_set "D_CTX_DIR"
 test_variable_set "D_SDK_DIR"
-test_variable_set "cli_main"
+test_variable_set "cli_stub"
 test_variable_set "cli_core"
 test_variable_set "D_ORG_DIR"
 test_variable_set "D_ORG_CACHE_DIR"

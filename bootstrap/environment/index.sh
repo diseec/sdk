@@ -44,7 +44,7 @@ sdk_boo_env_setup_environment() {
     readonly D_CTX_DIR
 
     # Kit and CLI paths
-    readonly D_CLI_MAIN="$D_CTX_DIR/$D_CLI_LOCAL_NAME"
+    readonly D_CLI_STUB="$D_CTX_DIR/$D_CLI_LOCAL_NAME"
     readonly D_CLI_CORE="$D_SDK_DIR/cli.sh"
 
     D_CTX_DIR_HOST="$(sdk_boo_env_uti_get_kit_target_dit)"

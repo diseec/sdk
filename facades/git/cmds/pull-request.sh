@@ -58,7 +58,7 @@ sdk_fac_git_cmd_pr_create() {
         pr_body="Changes in this PR:\n\n$(_git diff --stat origin/main..HEAD)"
       fi
       
-      # Create PR using GitHub cli_main
+      # Create PR using GitHub cli_stub
       local pr_url=$(_gh pr create --title "$pr_title" --body "$pr_body" --base main)
       if [ $? -ne 0 ]; then
         logit -e "Failed to create PR."
@@ -66,7 +66,7 @@ sdk_fac_git_cmd_pr_create() {
       fi
       echo -e "Created pull request: \033[4m$pr_url\033[24m"
     else
-      logit -e "Install GitHub cli_main (gh) for automatic PR creation"
+      logit -e "Install GitHub cli_stub (gh) for automatic PR creation"
       echo -e "Create PR manually at: \033[4mhttps://github.com/$D_ORG_NAME/$D_REPO_NAME/pull/new/$branch\033[24m"
       return 1
     fi
@@ -83,7 +83,7 @@ sdk_fac_git_cmd_pr_create() {
 
 # Check PR status and show comments/issues
 sdk_fac_git_cmd_pr_check_status() {
-  if ! cli_main internet is-online; then
+  if ! cli_stub internet is-online; then
       logit --ansi="31" --icon="⊘" "Disconnected, skipping PR status check..."
       return 0
   fi

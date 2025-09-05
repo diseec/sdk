@@ -115,7 +115,7 @@ sdk_fac_sec_show_secrets() {
     if [ $secret_count -gt 0 ]; then
         echo "Total: $secret_count secrets"
         echo "To export a secret as environment variables:"
-        echo "export SECRET_NAME=\"\$(\$D_CLI_MAIN secret export 'SECRET_NAME')\""
+        echo "export SECRET_NAME=\"\$(\$D_CLI_STUB secret export 'SECRET_NAME')\""
     else
         logit -w "No secrets were displayed"
     fi

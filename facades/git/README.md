@@ -49,7 +49,7 @@ D pull --recursive        # Pull/merge in all submodules
 ### Automated PR Management
 
 - **Auto PR Creation**: Creates PRs with commit message as title/body
-- **GitHub cli_main Integration**: Full PR management via `gh` cli_main
+- **GitHub cli_stub Integration**: Full PR management via `gh` cli_stub
 - **Status Checking**: Shows review status, comments, and approval state
 - **Smart Detection**: Finds existing PRs for current branch
 
@@ -144,10 +144,10 @@ D git pre           # Create PR without new commits
 
 ## Advanced Configuration
 
-### GitHub cli_main Setup
+### GitHub cli_stub Setup
 
 ```bash
-# Install and authenticate GitHub cli_main
+# Install and authenticate GitHub cli_stub
 gh auth login
 
 # Verify authentication
@@ -191,7 +191,7 @@ Git commands automatically run in sdk container when available:
 
 ### Fallback Modes
 
-- **No GitHub cli_main**: Creates PR links for manual creation
+- **No GitHub cli_stub**: Creates PR links for manual creation
 - **No OpenAI API**: Uses intelligent file-based commit messages
 - **No Internet**: Local git operations only
 
@@ -204,7 +204,7 @@ Git commands automatically run in sdk container when available:
 - Repository is already up to date
 - Check `git status` for pending changes
 
-**"GitHub cli_main not authenticated"**
+**"GitHub cli_stub not authenticated"**
 
 ```bash
 gh auth login
@@ -227,7 +227,7 @@ gh auth login
 git status
 git log --oneline -5
 
-# Verify GitHub cli_main
+# Verify GitHub cli_stub
 gh auth status
 gh pr list
 

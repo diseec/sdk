@@ -1,22 +1,22 @@
 #!/bin/bash
 
 _prettier() {
-    # cli_main $D_SDK_NAME run --quiet prettier "$@"
+    # cli_stub $D_SDK_NAME run --quiet prettier "$@"
     prettier "$@"
 }
 
 _node() {
-    # cli_main $D_SDK_NAME run --quiet node "$@"
+    # cli_stub $D_SDK_NAME run --quiet node "$@"
     node "$@"
 }
 
 _npm() {
-    # cli_main $D_SDK_NAME run --quiet npm "$@"
+    # cli_stub $D_SDK_NAME run --quiet npm "$@"
     npm "$@"
 }
 
 _docker() {
-    # cli_main $D_SDK_NAME run --quiet docker "$@"
+    # cli_stub $D_SDK_NAME run --quiet docker "$@"
 
     env \
     D_CTX_DIR="$D_CTX_DIR" \
@@ -33,22 +33,22 @@ _docker() {
 }
 
 _jq() {
-    # cli_main $D_SDK_NAME run --quiet yq "$@"
+    # cli_stub $D_SDK_NAME run --quiet yq "$@"
     jq "$@"
 }
 
 _yq() {
-    # cli_main $D_SDK_NAME run --quiet yq "$@"
+    # cli_stub $D_SDK_NAME run --quiet yq "$@"
     yq "$@"
 }
 
 _openssl() {
-    # cli_main $D_SDK_NAME run --quiet openssl "$@"
+    # cli_stub $D_SDK_NAME run --quiet openssl "$@"
     openssl "$@"
 }
 
 _git() {
-    # cli_main $D_SDK_NAME run --quiet git "$@"
+    # cli_stub $D_SDK_NAME run --quiet git "$@"
     if [ "$IS_IN_SDK_CONTAINER" = "true" ]; then
         GIT_WORK_TREE="$D_CTX_DIR" GIT_DIR="$D_GIT_DIR" git "$@"
     else
@@ -57,7 +57,7 @@ _git() {
 }
 
 _gh() {
-    # cli_main $D_SDK_NAME run --quiet gh "$@"
+    # cli_stub $D_SDK_NAME run --quiet gh "$@"
     if [ "$IS_IN_SDK_CONTAINER" = "true" ]; then
         GIT_WORK_TREE="$D_CTX_DIR" GIT_DIR="$D_GIT_DIR" gh "$@"
     else

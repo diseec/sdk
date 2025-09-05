@@ -4,7 +4,7 @@
 
 # Get the list of selected submodules from workspace config
 sdk_fac_con_opt_act_get_selected_modules() {
-    local config_file="$(cli_main config function sdk_fac_con_get_config_file repo)"
+    local config_file="$(cli_stub config function sdk_fac_con_get_config_file repo)"
 
     if [ ! -f "$config_file" ]; then
         # If workspace config doesn't exist, just return empty (no submodules selected)

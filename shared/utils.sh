@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cli_main() {
-    source "$D_CLI_MAIN" "$@"
+cli_stub() {
+    source "$D_CLI_STUB" "$@"
 }
 
 cli_core() {
@@ -35,7 +35,7 @@ safely() {
         CONTAINER_ID=$(hostname 2>/dev/null || echo "unknown")
         logit -e "Trying to run '${D_OLD_ARGS[@]}' command in '$D_SDK_NAME' container, but already in a different container: $CONTAINER_ID" >&2
         exit 1
-    else cli_main safely "${D_OLD_ARGS[@]}";
+    else cli_stub safely "${D_OLD_ARGS[@]}";
         return 1
     fi
 }
