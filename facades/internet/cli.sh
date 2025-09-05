@@ -101,7 +101,7 @@ c=$1; shift; case $c in
     -s|--silent)
         SILENT_MODE=true
         # Re-run the script with the silent flag
-        cli_stub internet "$@"
+        cli_ctx internet "$@"
         return $?
         ;;
         x) echo dsaf;;
@@ -125,6 +125,6 @@ c=$1; shift; case $c in
     fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-        cli_stub internet help; exit 1;
+        cli_ctx internet help; exit 1;
         ;;
 esac

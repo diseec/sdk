@@ -42,3 +42,6 @@ if [ -d "$D_CTX_DIR" ]; then cd "$D_CTX_DIR"; fi
 
 # Initialize debugger
 sdk_boo_debug_init
+
+# Add help command if no arguments provided
+if [ $# -eq 0 ]; then set -- --help; fi

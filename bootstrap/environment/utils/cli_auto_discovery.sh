@@ -8,7 +8,7 @@
 sdk_boo_env_uti_cli_auto_discovery() {
     : ${HAS_DISCOVERED_CLI:=false}
 
-    if [ "$D_CLI_EXECUTED" = "true" ]; then
+    if [ "$D_D_CLI_EXECUTED" = "true" ]; then
         local starting_dir="$D_INI_PWD"
     else
         local starting_dir="$D_SDK_DIR"
@@ -24,7 +24,8 @@ sdk_boo_env_uti_cli_auto_discovery() {
 
     # If we are in a SDK CLI context
     if [ "$D_SDK_CLI_EXECUTED" = "true" ]; then
-        printf '%s\n' "$D_SDK_DIR"
+        printf '%s\n' "$D_SDK_DIR" # SDK itself cannot be its own context
+        HAS_DISCOVERED_CLI="true"
         return 0
     fi
 

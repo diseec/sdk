@@ -22,12 +22,12 @@ sdk_fac_git_cmd_generate_commit_message() {
     local diff_preview="$(_git diff --staged | head -n 300)"
   
     # Use AI to generate commit message, with fallback
-    if cli_stub ai function sdk_fac_ai_is_available; then
-        cli_stub ai function sdk_fac_ai_generate_commit_message "$diff_summary" "$diff_preview"
+    if cli_ctx ai function sdk_fac_ai_is_available; then
+        cli_ctx ai function sdk_fac_ai_generate_commit_message "$diff_summary" "$diff_preview"
     else
         # Fallback: generate simple commit message based on modified files
         local files_changed=$(_git diff --staged --name-only | sort | uniq)
-        cli_stub ai function sdk_fac_ai_fallback_commit_message "$files_changed"
+        cli_ctx ai function sdk_fac_ai_fallback_commit_message "$files_changed"
     fi
 }
 
@@ -76,7 +76,7 @@ sdk_fac_git_cmd_commit() {
         return 0
     fi
 
-    if ! cli_stub ai function sdk_fac_ai_init_interactive; then
+    if ! cli_ctx ai function sdk_fac_ai_init_interactive; then
         logit -w "AI module loaded but API key not available"
     fi
 

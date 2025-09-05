@@ -8,11 +8,11 @@
 
 ## Overview
 
-The DISEEC DevOps Kit is a comprehensive automation toolkit designed to standardize and streamline development workflows across projects. It provides a unified cli_stub interface, container orchestration, secrets management, and project lifecycle automation for teams building modern applications.
+The DISEEC DevOps Kit is a comprehensive automation toolkit designed to standardize and streamline development workflows across projects. It provides a unified cli_ctx interface, container orchestration, secrets management, and project lifecycle automation for teams building modern applications.
 
 ### Key Features
 
-- **Unified cli_stub Interface** - Single command interface for all development operations
+- **Unified cli_ctx Interface** - Single command interface for all development operations
 - **Container Orchestration** - Docker and Docker Compose automation
 - **Secure Secrets Management** - AES-256 encrypted secrets with automatic key generation
 - **Git Workflow Automation** - AI-powered commit messages and PR management
@@ -109,14 +109,14 @@ D secret help
 | ------------------------------------------ | ------------------------------------------- |
 | [Custom Commands](docs/EXTENDING.md)       | Adding custom commands and integrations     |
 | [CI/CD Integration](docs/CICD.md)          | Continuous integration and deployment setup |
-| [Style Guide](docs/STYLE-GUIDE.md)         | cli_stub styling and color conventions           |
+| [Style Guide](docs/STYLE-GUIDE.md)         | cli_ctx styling and color conventions           |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues and solutions                 | -->
 
 ## Project Structure
 
 ```
 sdk/
-├── cli.sh          # Main cli_stub entry point
+├── cli.sh          # Main cli_ctx entry point
 ├── core/           # Core utilities (env, output, wrappers)
 ├── cmds/           # Command implementations
 ├── facades/        # High-level API facades
@@ -131,7 +131,7 @@ sdk/
 ### Project Management
 
 - `ins|install` - Install dependencies and setup tools
-- `ude|update` - Update cli_stub and sync project
+- `ude|update` - Update cli_ctx and sync project
 - `sta|status` - Show comprehensive project status
 
 ### Development Environment
@@ -217,7 +217,7 @@ D docker compose down            # Stop services
 
 ### Optional Dependencies
 
-- **GitHub cli_stub** (`gh`) - Enhanced git workflow features
+- **GitHub cli_ctx** (`gh`) - Enhanced git workflow features
 - **yq** - Advanced YAML configuration management
 - **OpenAI API Key** - AI-powered git commit messages
 

@@ -11,7 +11,7 @@
 
 ### Optional Dependencies
 
-- **GitHub cli_stub** (`gh`) - Enhanced git workflow features
+- **GitHub cli_ctx** (`gh`) - Enhanced git workflow features
 - **yq** - Advanced YAML configuration management
 - **OpenAI API Key** - AI-powered git commit messages
 
@@ -36,7 +36,7 @@ D install
 
 This creates:
 
-- `cli` file - Customizable project cli_stub
+- `cli` file - Customizable project cli_ctx
 - `.diseec/` directory - Configuration and secrets
 - Template files for customization
 
@@ -86,7 +86,7 @@ services:
 ### Step 4: Verify Installation
 
 ```bash
-# Check cli_stub is working
+# Check cli_ctx is working
 D help
 D --version
 D status
@@ -99,7 +99,7 @@ After installation:
 ```
 ~/.diseec/
 project/
-├── cli                    # Customizable project cli_stub
+├── cli                    # Customizable project cli_ctx
 │   ├── config.yaml       # Project configuration
 │   └── secrets.encrypted # Encrypted secrets (auto-created)
 ├── node_modules/
@@ -107,7 +107,7 @@ project/
 └── package.json          # With @diseec/sdk dependency
 ```
 
-## cli_stub Customization
+## cli_ctx Customization
 
 The project `cli` file allows full customization:
 

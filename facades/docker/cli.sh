@@ -2,7 +2,7 @@
 
 source_once "$D_SDK_DIR/facades/docker/index.sh"
 
-# cli_stub envs > /dev/null # export envs so docker compose can pick them
+# cli_ctx envs > /dev/null # export envs so docker compose can pick them
 
 c=$1; shift; case $c in
     com|compose) c=$1; shift; case $c in
@@ -21,7 +21,7 @@ c=$1; shift; case $c in
         ;;
         *)
             if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-            cli_stub docker compose help; exit 1;
+            cli_ctx docker compose help; exit 1;
         ;;
     esac ;;
     _) _docker "$@" ;;
@@ -33,6 +33,6 @@ c=$1; shift; case $c in
     fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-        cli_stub docker help; exit 1;
+        cli_ctx docker help; exit 1;
     ;;
 esac

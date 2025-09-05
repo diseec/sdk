@@ -30,7 +30,7 @@ sdk_inf_check_for_updates_repo() {
                     return 1  # Exit the loop early
                 fi
             }
-            cli_stub config function sdk_fac_con_opt_act_foreach_selected_module check_module_status
+            cli_ctx config function sdk_fac_con_opt_act_foreach_selected_module check_module_status
             
             if $modules_behind; then
                 logit --ansi="34" --icon="↓" "New commits available in one or more selected modules"

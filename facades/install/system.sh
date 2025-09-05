@@ -166,7 +166,7 @@ sdk_fac_ins_install_yarn() {
 }
 
 sdk_fac_ins_install_gh() {
-    # Custom GitHub cli_stub installation using the same logic as Dockerfile
+    # Custom GitHub cli_ctx installation using the same logic as Dockerfile
     local arch=$(uname -m)
     local arch_tag
     
@@ -182,7 +182,7 @@ sdk_fac_ins_install_gh() {
     local version="2.47.0"
     local url="https://github.com/cli/cli/releases/download/v${version}/gh_${version}_${arch_tag}.tar.gz"
     
-    echo -e "${BLUE}Installing GitHub cli_stub from binary...${NC}"
+    echo -e "${BLUE}Installing GitHub cli_ctx from binary...${NC}"
     
     mkdir -p /tmp/gh && \
     cd /tmp/gh && \

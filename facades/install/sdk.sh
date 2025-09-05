@@ -5,7 +5,7 @@ sdk_fac_ins_sdk() {
 
     # docker pull image.registry.diseec.com/kit \
     #     --disable-content-trust > /dev/null 2>&1
-    cli_stub docker compose _ pull; > /dev/null 2>&1
+    cli_ctx docker compose _ pull; > /dev/null 2>&1
 
     sdk_fac_ins_sdk_process() {
         if [ "$IS_IN_SDK_CONTAINER" != "true" ]; then

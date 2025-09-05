@@ -4,7 +4,7 @@
 
 # Initialize a workspace
 sdk_fac_con_opt_act_init() {
-    if [ ! -f "$(cli_stub config function sdk_fac_con_get_config_file repository)" ] && [ "$D_HAS_SUBMODULES" = "true" ]; then
+    if [ ! -f "$(cli_ctx config function sdk_fac_con_get_config_file repository)" ] && [ "$D_HAS_SUBMODULES" = "true" ]; then
         logit -l "Initializing workspace configuration..."
         sdk_fac_con_opt_act_create_config
     fi
@@ -12,7 +12,7 @@ sdk_fac_con_opt_act_init() {
 
 # Show workspace status
 sdk_fac_con_opt_act_status() {
-    local config_file="$(cli_stub config function sdk_fac_con_get_config_file repository)"
+    local config_file="$(cli_ctx config function sdk_fac_con_get_config_file repository)"
     if [ -f "$config_file" ]; then
         logit "config: $config_file"
         local selected_modules=$(sdk_fac_con_opt_act_get_selected_modules)

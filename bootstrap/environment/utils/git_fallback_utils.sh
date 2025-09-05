@@ -6,6 +6,8 @@
 # Git-related functions and operations
 
 sdk_boo_env_uti_get_git_dir() {
+    if [ "$D_SDK_CLI_EXECUTED" = "true" ] || [ -z "$D_CTX_DIR_HOST" ]; then return 0; fi
+
     find_git_dir_for() {
         local target="$1"
         local git_dir_or_file="$target/.git"

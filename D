@@ -1,13 +1,13 @@
 #!/bin/bash
 
-: ${D_CLI_EXECUTED:=true}
+: ${D_D_CLI_EXECUTED:=true}
 
 source "$(cd "$(npm root -g)" && pwd)/@diseec/sdk/index.sh"
 
 if [ -n "$D_CTX_DIR" ]; then
-    "$D_CLI_STUB" install function sdk_fac_ins_ensure_patched "$_D_SDK_PATCH_FORCE"
+    ("$D_CLI_STUB" install function sdk_fac_ins_ensure_patched "$_D_SDK_PATCH_FORCE")
     ("$D_CLI_STUB" "$@")
 else
-    cli_sdk "$@"
+    ("$D_CLI_SDK" "$@")
 fi
 

@@ -20,8 +20,8 @@ sdk_boo_env_setup_environment() {
     readonly D_INI_ARGS="$@"
     readonly D_INI_PWD="$PWD"
 
-    : ${D_CLI_EXECUTED:=false}
-    readonly D_CLI_EXECUTED
+    : ${D_D_CLI_EXECUTED:=false}
+    readonly D_D_CLI_EXECUTED
     
     : ${D_SDK_CLI_EXECUTED:=false}
     readonly D_SDK_CLI_EXECUTED
@@ -36,16 +36,19 @@ sdk_boo_env_setup_environment() {
     fi
     readonly D_CTX_DIR
 
-    # Kit and CLI paths
-    if [ "$D_SDK_CLI_EXECUTED" = "true" ]; then
-        readonly D_CLI_STUB="$D_CTX_DIR/$D_SDK_NAME"
-    else
-        readonly D_CLI_STUB="$D_CTX_DIR/$D_CLI_LOCAL_NAME"
-    fi
-
+    readonly D_CLI_SDK="$D_SDK_DIR/$D_SDK_NAME"
     readonly D_CLI_CORE="$D_SDK_DIR/cli.sh"
 
-    readonly D_CLI_SDK="$D_SDK_DIR/$D_SDK_NAME"
+    # Kit and CLI paths
+    if [ -n "$D_CTX_DIR" ]; then
+        if [ "$D_SDK_CLI_EXECUTED" = "true" ]; then
+            readonly D_CLI_STUB="$D_CLI_SDK"
+            readonly D_CLI_STUB_CONTAINER="$D_CTX_DIR_CONTAINER/$D_SDK_NAME"
+        else
+            readonly D_CLI_STUB="$D_CTX_DIR/$D_CLI_LOCAL_NAME"
+            readonly D_CLI_STUB_CONTAINER="$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME"
+        fi
+    fi
 
     D_CTX_DIR_HOST="$(sdk_boo_env_uti_get_kit_target_dit)"
 

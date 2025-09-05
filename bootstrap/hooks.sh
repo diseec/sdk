@@ -22,12 +22,12 @@ handle_hook() {
         local hook="$3"
         local name="$4"
         
-        # Skip if cli_stub doesn't exist or isn't executable
+        # Skip if cli_ctx doesn't exist or isn't executable
         if [ ! -x "$cli" ]; then
             return 0
         fi
         
-        # Check if the cli_stub has a handler for this hook
+        # Check if the cli_ctx has a handler for this hook
         (cd "$dir" && grep -q "hook:$hook" "$cli") >/dev/null 2>&1
         has_handler=$?
         
@@ -42,7 +42,7 @@ handle_hook() {
         
         # Execute the command directly without capturing output
         # This allows interactive prompts to work properly
-        # Check if the cli_stub has a handler for this hook (but not commented out)
+        # Check if the cli_ctx has a handler for this hook (but not commented out)
         # This pattern ensures no # appears before hook:$hook on the same line
         (cd "$dir" && grep -q "^[^#]*hook:$hook" "$cli") >/dev/null 2>&1
         has_handler=$?

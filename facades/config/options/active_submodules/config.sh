@@ -13,11 +13,11 @@
 
 # Create configuration with new structure
 sdk_fac_con_opt_act_create_config() {
-    local config_file="$(cli_stub config function sdk_fac_con_get_config_file repository)"
+    local config_file="$(cli_ctx config function sdk_fac_con_get_config_file repository)"
 
     # Check if config already exists and has content
     if [ -f "$config_file" ] && [ -s "$config_file" ]; then
-        local submodules="$(cli_stub config function sdk_fac_con_get submodules repository 2>/dev/null)"
+        local submodules="$(cli_ctx config function sdk_fac_con_get submodules repository 2>/dev/null)"
         if [ "$submodules" != "null" ] && [ -n "$submodules" ]; then
             printf "$(logit -q "Config already exists. Overwrite? \033[35m[Y/N]\033[0m")"
             stty -echo -icanon time 0 min 1
@@ -76,10 +76,10 @@ sdk_fac_con_opt_act_create_config() {
     fi
     
     # Clear existing submodules and set empty array
-    cli_stub config function sdk_fac_con_delete submodules repository 2>/dev/null || true
+    cli_ctx config function sdk_fac_con_delete submodules repository 2>/dev/null || true
     
     # Always create empty array first, then add modules
-    local config_file="$(cli_stub config function sdk_fac_con_get_config_file repository)"
+    local config_file="$(cli_ctx config function sdk_fac_con_get_config_file repository)"
     if command -v _yq >/dev/null 2>&1; then
         _yq -i ".submodules = []" "$config_file"
     else
@@ -89,7 +89,7 @@ sdk_fac_con_opt_act_create_config() {
     
     # Add selected modules to the array
     for module in $selected_modules; do
-        cli_stub config function sdk_fac_con_array_add submodules "$module" repository
+        cli_ctx config function sdk_fac_con_array_add submodules "$module" repository
     done
 
     logit -l "Workspace configuration saved to $config_file"

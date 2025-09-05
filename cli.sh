@@ -3,44 +3,39 @@
 c=$1; shift; case $c in
     sta|status)
         mark_ctx_only
-        # # cli_stub about
-        # X "cli_stub config summary"
-        cli_stub config summary
-        # X "sdk_inf_check_system_dependencies"
-        cli_stub informs sdk_inf_check_system_dependencies
-        # X "sdk_inf_check_internet_connection"
-        cli_stub informs sdk_inf_check_internet_connection
-        # X "cli_stub git status"
-        cli_stub git status
-        # X "sdk_inf_check_for_updates"
-        cli_stub informs sdk_inf_check_for_updates
+        # cli_ctx about
+        cli_ctx config summary
+        cli_ctx informs sdk_inf_check_system_dependencies
+        cli_ctx informs sdk_inf_check_internet_connection
+        cli_ctx git status
+        cli_ctx informs sdk_inf_check_for_updates
     ;;
     ins|install)    mark_ctx_only; source "$D_SDK_DIR/facades/install/cli.sh" "$@" ;;
-    ude|update)     mark_ctx_only; cli_stub install update "$@" ;;
-    dev|develop)    mark_ctx_only; cli_stub docker compose up-dev "$@" ;;
-    bpa|build)      mark_ctx_only; cli_stub docker compose build "$@" ;;
-    run)            mark_ctx_only; cli_stub docker compose execute "$D_REPO_NAME" "$@" ;;
-    exe|execute)    mark_ctx_only; cli_stub docker compose execute "$@" ;;
-    she|shell)      mark_ctx_only; cli_stub run /bin/bash "$@" ;;
-    pus|push)       mark_ctx_only; cli_stub git commit-push-pr "$@" ;;
-    pul|pull)       mark_ctx_only; cli_stub git pull "$@" ;;
-    dai|daily)      mark_ctx_only; cli_stub git insight-day "$@" ;;
-    tes|test)       mark_ctx_only; $D_SDK_DIR/cmds/test.sh "$@" ;; # TODO
-    pru|prune)      mark_ctx_only; cli_stub docker _ system prune "$@" ;;
+    ude|update)     mark_ctx_only; cli_ctx install update "$@" ;;
+    dev|develop)    mark_ctx_only; cli_ctx docker compose up-dev "$@" ;;
+    bpa|build)      cli_ctx docker compose build "$@" ;;
+    run)            cli_ctx docker compose execute "$D_REPO_NAME" "$@" ;;
+    exe|execute)    cli_ctx docker compose execute "$@" ;;
+    she|shell)      cli_ctx run /bin/bash "$@" ;;
+    clo|clone)      cli_ctx git clone "$@" ;;
+    pus|push)       mark_ctx_only; cli_ctx git commit-push-pr "$@" ;;
+    pul|pull)       mark_ctx_only; cli_ctx git pull "$@" ;;
+    dai|daily)      mark_ctx_only; cli_ctx git insight-day "$@" ;;
+    pru|prune)      cli_ctx docker _ system prune "$@" ;;
+    tes|test)       mark_ctx_only; "$D_SDK_DIR/cmds/test.sh" "$@" ;; # TODO
     for|format)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/format/cli.sh" prettier "$@" ;;
-    doc|docker)     mark_ctx_only; source "$D_SDK_DIR/facades/docker/cli.sh" "$@" ;;
-    int|internet)   mark_ctx_only; source_safely "$D_SDK_DIR/facades/internet/cli.sh" "$@" ;;
-    ain|ai)         mark_ctx_only; source_safely "$D_SDK_DIR/facades/ai/cli.sh" "$@" ;;
-    git)            mark_ctx_only; source_safely "$D_SDK_DIR/facades/git/cli.sh" "$@" ;;
     sub|submodule)  mark_ctx_only; source "$D_SDK_DIR/facades/submodule/cli.sh" "$@" ;;
-    con|config)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/config/cli.sh" "$@" ;;
     sec|secret)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/secret/cli.sh" "$@" ;;
-    set|settings)   mark_ctx_only; source_safely "$D_SDK_DIR/facades/settings/cli.sh" "$@" ;;
     inf|informs)    mark_ctx_only; source "$D_SDK_DIR/informs/cli.sh" "$@" ;;
-    env|envs)       mark_ctx_only; source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
-    sdk)            mark_ctx_only; env D_CTX_DIR_HOST="$D_CTX_DIR" "$D_CLI_SDK" "$@" ;;
-    api)            mark_ctx_only; source "$D_SDK_DIR/api/cli.sh" "$@" ;;
-    abo|about)      mark_ctx_only; about ;;
+    con|config)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/config/cli.sh" "$@" ;;
+    doc|docker)     source "$D_SDK_DIR/facades/docker/cli.sh" "$@" ;;
+    git)            source_safely "$D_SDK_DIR/facades/git/cli.sh" "$@" ;;
+    int|internet)   source_safely "$D_SDK_DIR/facades/internet/cli.sh" "$@" ;;
+    ain|ai)         source_safely "$D_SDK_DIR/facades/ai/cli.sh" "$@" ;;
+    env|envs)       source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
+    sdk)            env D_CTX_DIR_HOST="$D_CTX_DIR" "$D_CLI_SDK" "$@" ;;
+    api)            source "$D_SDK_DIR/api/cli.sh" "$@" ;;
+    abo|about)      about ;;
     hel|help|--help|-h) display_help "" "" \
         "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[$D_CLI_GLOBAL_NAME]/[bash $D_CLI_LOCAL_NAME] [command] [subcommand] [options] [arguments]" \
         "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$D_ORG_NAME/$D_SDK_NAME")")" \
@@ -57,7 +52,7 @@ c=$1; shift; case $c in
         "        -h|--help            " "Brief usage and docs information" \
         "" "" "$(ansi "1;90" "$(capitalize 'Project Management')")" "" \
         "    ins|install              " "Install project dependencies and tools" \
-        "    ude|update               " "Update cli_stub and sync project" \
+        "    ude|update               " "Update cli_ctx and sync project" \
         "    sta|status               " "Show comprehensive project status" \
         "" "" "$(ansi "1;90" "$(capitalize 'Workflow & Environment')")" "" \
         "    dai|daily                " "$(ansi 36 '✦') $(ansi 90 'Generate daily insights')" \
@@ -84,7 +79,7 @@ c=$1; shift; case $c in
         "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
         "    env|envs                 " "Manage environment variables. Examples:" \
         "                             " "$(ansi "2;90" 'set -a; eval "$($D_CLI_GLOBAL_NAME envs)"; set +a')" \
-        "                             " "$(ansi "2;90" 'eval "$(cli_stub envs)" > /dev/null')" \
+        "                             " "$(ansi "2;90" 'eval "$(cli_ctx envs)" > /dev/null')" \
         "    saf|safely               " "Safe command execution" \
         "    api                      " "API operations" \
         "    sdk                      " "SDK container operations" \
@@ -93,9 +88,9 @@ c=$1; shift; case $c in
     saf|safely)
         mark_ctx_only
         # logit -d "CLI:$D_CLI_CORE:SAFELY:ARGS: $@";
-        cli_stub "$D_SDK_NAME" stop > /dev/null 2>&1 || true ;
-        cli_stub "$D_SDK_NAME" run --quiet "$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME" "$@"
-        # cli_stub "$D_SDK_NAME" run "$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME" "$@"
+        cli_ctx "$D_SDK_NAME" stop > /dev/null 2>&1 || true ;
+        cli_ctx "$D_SDK_NAME" run --quiet "$D_CLI_STUB_CONTAINER" "$@"
+        # cli_ctx "$D_SDK_NAME" run "$D_CLI_STUB_CONTAINER" "$@"
         # if [ $? -ne 0 ]; then logit -e "Failed to run command in $D_SDK_NAME container"; fi
     ;;
     -v|--version)
@@ -109,7 +104,9 @@ c=$1; shift; case $c in
         echo "$(ansi "2;90" "$D_CLI_GLOBAL_NAME-CTX") $(ansi "2;90" "$D_CTX_DIR")"
     ;;
     *)
-        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-        cli_stub help; exit 1;
+        if [[ -n "$c" ]]; then
+            logit -e "Unknown command: '$c'";
+            confirm "Show quick docs?" cli_ctx help; exit 1;
+        else cli_ctx help; exit 1; fi
     ;;
 esac

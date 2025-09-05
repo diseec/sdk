@@ -11,4 +11,5 @@ services:
     volumes:
       - "$D_CTX_DIR_HOST:$D_CTX_DIR_CONTAINER"
       - "$HOME:/root"
-      - "$D_GIT_DIR:$D_GIT_DIR_CONTAINER"
+      # - "$D_GIT_DIR:$D_GIT_DIR_CONTAINER"
+      - "${D_GIT_DIR:-/tmp/empty}:${D_GIT_DIR_CONTAINER:-/tmp/empty}"
