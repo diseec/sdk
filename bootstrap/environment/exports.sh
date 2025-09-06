@@ -11,6 +11,7 @@ vars=( \
     D_CTX_DIR_CONTAINER \
     D_GIT_DIR_CONTAINER \
     D_CTX_DIR_HOST \
+    D_CONTAINER_HOME \
 )
 
 # export "${vars[@]}" # reduces control

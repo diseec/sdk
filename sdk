@@ -6,7 +6,6 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
 
 c=$1; shift; case $c in
     pat|patch) cli_ctx install sdk "$@" ;;
-    tes|test)  source_safely "$D_SDK_DIR/lib/tester/cli.sh" "$@" ;;
     pul|pull)  cli_ctx git _ pull origin main "$@" ;;
     bui|build)
         _docker compose build \

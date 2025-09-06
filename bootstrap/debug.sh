@@ -6,8 +6,8 @@
 : "${D_TRACE_DEPTH:=10}"  # How many stack frames to show (max)
 : "${D_TRACE_ENABLED:=true}"  # Enable/disable tracing
 
-# Original X function - preserved (using logit as requested)
-X() {
+# Original x function - preserved (using logit as requested)
+x() {
     local file="${BASH_SOURCE[1]##*/}"
     local line="${BASH_LINENO[0]:-0}"
     local func="${FUNCNAME[1]:-unknown}"

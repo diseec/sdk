@@ -15,12 +15,14 @@ c=$1; shift; case $c in
         sdk_fac_git_cmd_pr_check_status
         ;;
     clo|clone)
-        echo $ctx_dir
-        local ctx_dir="$(cli_ctx config function sdk_fac_con_get_suggest_ctx_dir "$1")"
-        cli_ctx git _ clone https://$D_REPOSITORY_URL/"$1" "$ctx_dir"
-        logit -l "Initializing recursively.., cloned into: $ctx_dir"
-        cd "$ctx_dir"
-        ("$D_CLI_GLOBAL_NAME" install --patch --recursive)
+        X $ctx_dir
+        cli_ctx config help
+        # cli_ctx config help sdk_fac_con_get_suggest_ctx_dir "$1"
+        # local ctx_dir="$(cli_ctx config function sdk_fac_con_get_suggest_ctx_dir "$1")"
+        # cli_ctx git _ clone https://$D_REPOSITORY_URL/"$1" "$ctx_dir"
+        # logit -l "Initializing recursively.., cloned into: $ctx_dir"
+        # cd "$ctx_dir"
+        # ("$D_CLI_GLOBAL_NAME" install --patch --recursive)
         ;;
     cpp|commit-push-pr) mark_ctx_only; sdk_fac_git_cmd_commit_push_pr "$@" ;;
     che|checkout) mark_ctx_only; sdk_fac_git_cmd_checkout_branch "$@" ;;

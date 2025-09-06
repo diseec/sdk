@@ -1,42 +1,123 @@
 #!/bin/bash
 
-# TEST: Basic Assertion Example
-# DESCRIPTION: Demonstrates basic assertion capabilities of the testing framework
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ EXAMPLE TEST FILE                                                       ┃
+# ┃ This demonstrates how to write tests using the DISEEC SDK tester       ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-# Source testing framework (this is handled automatically when the test is run by the framework)
-source_once "$D_SDK_DIR/lib/tester/index.sh"
+# Optional: Suite setup - runs once before all tests in this file
+suite_setup() {
+    # Create any shared test resources
+    export TEST_WORKSPACE
+    TEST_WORKSPACE=$(create_test_workspace "example_tests")
+    
+    # Create some test files
+    create_test_file "$TEST_WORKSPACE/sample.txt" "Hello, World!"
+    create_test_file "$TEST_WORKSPACE/empty.txt"
+    create_test_dir "$TEST_WORKSPACE/subdir"
+}
 
-# Mark the beginning of a test section
-sdk_lib_tester_utils_section "Basic Assertions"
+# Optional: Suite teardown - runs once after all tests in this file
+suite_teardown() {
+    # Clean up shared test resources
+    cleanup_test_workspace "$TEST_WORKSPACE"
+}
 
-# Test equality assertions
-assert_equal "hello" "hello" "String equality check should pass"
-assert_not_equal "hello" "world" "String inequality check should pass"
+# Optional: Test setup - runs before each individual test
+test_setup() {
+    # Set up any per-test state
+    export TEST_VAR="initialized"
+}
 
-# Test boolean assertions
-assert_true "[[ 2 -eq 2 ]]" "Numeric equality should be true"
-assert_false "[[ 2 -eq 3 ]]" "Numeric inequality should be false"
+# Optional: Test teardown - runs after each individual test  
+test_teardown() {
+    # Clean up any per-test state
+    unset TEST_VAR
+}
 
-# Test string operations
-assert_contains "hello world" "world" "String should contain substring"
-assert_not_contains "hello world" "universe" "String should not contain substring"
+# Test functions must start with "test_"
 
-# Mark a new test section
-sdk_lib_tester_utils_section "Command Execution"
+test_basic_assertions() {
+    # Test equality assertions
+    assert_equals "hello" "hello" "Strings should be equal"
+    assert_not_equals "hello" "world" "Different strings should not be equal"
+    
+    # Test numeric comparisons
+    assert_greater_than 10 5 "10 should be greater than 5"
+    assert_less_than 3 7 "3 should be less than 7"
+}
 
-# Test command execution
-assert_success "echo 'command output'" "Echo command should succeed"
-assert_failure "exit 1" 1 "Exit with code 1 should fail with expected exit code"
+test_string_operations() {
+    local test_string="The quick brown fox jumps over the lazy dog"
+    
+    # Test string contains
+    assert_contains "$test_string" "quick" "Should contain 'quick'"
+    assert_contains "$test_string" "fox" "Should contain 'fox'"
+    assert_not_contains "$test_string" "cat" "Should not contain 'cat'"
+    
+    # Test regex matching
+    assert_matches "$test_string" "^The.*dog$" "Should match start and end pattern"
+    assert_matches "test@example.com" "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" "Should match email pattern"
+}
 
-# Test file operations
-touch "$SDK_TEST_TMP_DIR/test-file.txt"
-echo "test content" > "$SDK_TEST_TMP_DIR/test-file.txt"
+test_file_operations() {
+    # Test file existence
+    assert_file_exists "$TEST_WORKSPACE/sample.txt" "Sample file should exist"
+    assert_file_not_exists "$TEST_WORKSPACE/nonexistent.txt" "Nonexistent file should not exist"
+    
+    # Test directory existence
+    assert_dir_exists "$TEST_WORKSPACE" "Test workspace should exist"
+    assert_dir_exists "$TEST_WORKSPACE/subdir" "Subdirectory should exist"
+}
 
-assert_file_exists "$SDK_TEST_TMP_DIR/test-file.txt" "File should exist"
-assert_file_contains "$SDK_TEST_TMP_DIR/test-file.txt" "test content" "File should contain content"
+test_command_execution() {
+    # Test command success and failure
+    assert_command_success "echo 'hello world'" "Echo command should succeed"
+    assert_command_success "ls $TEST_WORKSPACE" "Listing test workspace should succeed"
+    
+    assert_command_fails "ls /nonexistent/directory/that/does/not/exist" "Listing nonexistent directory should fail"
+    assert_command_fails "false" "False command should fail"
+}
 
-# Print assertion stats (this is handled automatically when the test is run by the framework)
-sdk_lib_tester_assert_stats
+test_empty_and_not_empty() {
+    local empty_var=""
+    local non_empty_var="content"
+    
+    assert_empty "$empty_var" "Empty variable should be empty"
+    assert_not_empty "$non_empty_var" "Non-empty variable should not be empty"
+    assert_not_empty "$TEST_VAR" "TEST_VAR from setup should not be empty"
+}
 
-# Exit with the number of failed assertions (0 means all passed)
-exit $(( SDK_TESTER_ASSERT_FAILED > 0 ? 1 : 0 ))
+test_conditional_tests() {
+    # Sometimes you might want to skip tests based on conditions
+    if [ ! -x "$(command -v git)" ]; then
+        skip_test "Git not available, skipping git-related test"
+        return 0
+    fi
+    
+    # This test will only run if git is available
+    assert_command_success "git --version" "Git should be available and working"
+}
+
+test_failure_demonstration() {
+    # This test will intentionally fail to show error reporting
+    # Uncomment the line below to see failure output:
+    # assert_equals "expected" "actual" "This assertion will fail"
+    
+    # This test passes
+    assert_equals "same" "same" "This assertion will pass"
+}
+
+# You can also test your own functions
+my_helper_function() {
+    local input="$1"
+    echo "processed: $input"
+}
+
+test_custom_functions() {
+    local result
+    result=$(my_helper_function "test input")
+    
+    assert_equals "processed: test input" "$result" "Helper function should process input correctly"
+    assert_contains "$result" "processed:" "Result should contain prefix"
+}

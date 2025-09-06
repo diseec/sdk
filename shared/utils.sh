@@ -39,7 +39,8 @@ safely() {
         CONTAINER_ID=$(hostname 2>/dev/null || echo "unknown")
         logit -e "Trying to run '${D_INI_ARGS[@]}' command in '$D_SDK_NAME' container, but already in a different container: $CONTAINER_ID" >&2
         exit 1
-    else cli_ctx --safely "${D_INI_ARGS[@]}";
+    else
+        cli_ctx --safely "${D_INI_ARGS[@]}";
         return 1
     fi
 }
