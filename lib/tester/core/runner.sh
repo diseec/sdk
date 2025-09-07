@@ -38,9 +38,6 @@ _sdk_tester_parse_options() {
                 ;;
         esac
     done
-    
-    # Return remaining arguments
-    printf '%s\n' "${args[@]}"
 }
 
 # Execute a single test file
@@ -53,7 +50,6 @@ _sdk_tester_run_test_file() {
     
     # Show file header (without newline, results will be on same line)
     sdk_tester_show_file_header "$test_file"
-    
     if [ "$TESTER_DRY_RUN" = "true" ]; then
         printf " \033[90m(dry run)\033[0m\n"
         return 0
@@ -104,7 +100,7 @@ _sdk_tester_run_test_file() {
                 test_functions_array+=("$test_function")
             fi
         done <<< "$test_functions"
-        
+
         # Now execute each test function in current shell
         for test_function in "${test_functions_array[@]}"; do
             TESTER_CURRENT_TEST="$test_function"
@@ -138,7 +134,11 @@ _sdk_tester_run_test_file() {
                 return 1
             fi
         done
-        
+
+        if [ "$TESTER_VERBOSE" = "true" ]; then
+            echo ""
+        fi
+
         # Run suite teardown if defined (always run)
         if declare -f suite_teardown >/dev/null 2>&1; then
             suite_teardown
@@ -171,12 +171,8 @@ _sdk_tester_run_test_file() {
     local file_failed=$((TESTER_FAILED_TESTS - file_start_failed))
     local file_skipped=$((TESTER_SKIPPED_TESTS - file_start_skipped))
     
-    echo ""
-
     # Show compact results on same line as file header
     sdk_tester_show_file_results "$file_passed" "$file_failed" "$file_skipped" "$file_total"
-    
-    echo ""
     
     return 0
 }
@@ -184,11 +180,10 @@ _sdk_tester_run_test_file() {
 # Main test runner function
 sdk_tester_run_tests() {
     # Parse options and get remaining arguments
-    local remaining_args
     _sdk_tester_parse_options "$@" # requires separate call to set env vars
-    remaining_args=($(_sdk_tester_parse_options "$@"))
-    local pattern="${remaining_args[0]:-}"
     
+    echo ""
+
     # Initialize test state
     sdk_tester_initialize
     TESTER_START_TIME=$(date +%s)
@@ -222,7 +217,7 @@ sdk_tester_run_tests() {
             test_files_array+=("$test_file")
         fi
     done <<< "$test_files"
-    
+
     # Execute each test file in current shell
     for test_file in "${test_files_array[@]}"; do
         if ! _sdk_tester_run_test_file "$test_file"; then
