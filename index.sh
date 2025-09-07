@@ -42,7 +42,9 @@ sdk_boo_env_setup_environment "$@"
 if [ -d "$D_CTX_DIR" ]; then cd "$D_CTX_DIR"; fi
 
 # Initialize debugger
-sdk_boo_debug_init
+# TODO this causes: /ctx/node_modules/@diseec/sdk/shared/utils.sh: line 65: pop_var_context: head of shell_variables not a function context
+# because the script starts from host and then continues to container where the context is changed and then in case of error it tries to call pop_var_context and for some reason it fails
+# sdk_boo_debug_init
 
 # Add help command if no arguments provided
 if [ $# -eq 0 ]; then set -- --help; fi

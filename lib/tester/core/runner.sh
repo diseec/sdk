@@ -51,12 +51,11 @@ _sdk_tester_run_test_file() {
     
     TESTER_CURRENT_SUITE="$relative_path"
     
-    if [ "$TESTER_QUIET" != "true" ]; then
-        logit -i "Running $(ansi 90 "$relative_path")"
-    fi
+    # Show file header (without newline, results will be on same line)
+    sdk_tester_show_file_header "$test_file"
     
     if [ "$TESTER_DRY_RUN" = "true" ]; then
-        logit --ansi="$TESTER_COLOR_DIM" "  [DRY RUN] Would execute test file"
+        printf " \033[90m(dry run)\033[0m\n"
         return 0
     fi
     
@@ -76,21 +75,14 @@ _sdk_tester_run_test_file() {
         test_functions=$(declare -F | grep "declare -f test_" | sed 's/declare -f //')
         
         if [ -z "$test_functions" ]; then
-            logit -w "  No test functions found (functions should start with 'test_')"
+            printf " \033[33m[!]\033[0m \033[90mno test functions\033[0m\n"
             return 0
-        fi
-        
-        if [ "$TESTER_VERBOSE" = "true" ]; then
-            logit --ansi="$TESTER_COLOR_DIM" "  Found test functions: $(echo "$test_functions" | tr '\n' ' ')"
         fi
         
         # Run suite setup if defined
         if declare -f suite_setup >/dev/null 2>&1; then
-            if [ "$TESTER_VERBOSE" = "true" ]; then
-                logit --ansi="$TESTER_COLOR_DIM" "  Running suite setup..."
-            fi
             if ! suite_setup; then
-                logit -e "  Suite setup failed"
+                printf " \033[31m✖\033[0m \033[90msetup failed\033[0m\n"
                 return 1
             fi
         fi
@@ -107,8 +99,9 @@ _sdk_tester_run_test_file() {
         for test_function in "${test_functions_array[@]}"; do
             TESTER_CURRENT_TEST="$test_function"
             
+            # Show test function start in verbose mode
             if [ "$TESTER_VERBOSE" = "true" ]; then
-                logit --ansi="90" "    → $test_function"
+                printf "\n    \033[90m→\033[0m \033[97m%s\033[0m" "$test_function"
             fi
             
             # Run test setup if defined
@@ -125,6 +118,11 @@ _sdk_tester_run_test_file() {
                 test_teardown
             fi
             
+            # Show test function completion in verbose mode
+            if [ "$TESTER_VERBOSE" = "true" ]; then
+                printf "\n"
+            fi
+            
             # Check if we should fail fast
             if [ $test_exit_code -ne 0 ] && [ "$TESTER_FAIL_FAST" = "true" ]; then
                 return 1
@@ -133,9 +131,6 @@ _sdk_tester_run_test_file() {
         
         # Run suite teardown if defined (always run)
         if declare -f suite_teardown >/dev/null 2>&1; then
-            if [ "$TESTER_VERBOSE" = "true" ]; then
-                logit --ansi="$TESTER_COLOR_DIM" "  Running suite teardown..."
-            fi
             suite_teardown
         fi
         
@@ -144,23 +139,18 @@ _sdk_tester_run_test_file() {
             return $exit_code
         fi
     else
-        logit -e "  Test file not found: $test_file"
+        printf " \033[31m✖\033[0m \033[90mnot found\033[0m\n"
         return 1
     fi
     
-    # Calculate and display file-specific results
+    # Calculate and display file-specific results compactly
     local file_total=$((TESTER_TOTAL_TESTS - file_start_total))
     local file_passed=$((TESTER_PASSED_TESTS - file_start_passed))
     local file_failed=$((TESTER_FAILED_TESTS - file_start_failed))
     local file_skipped=$((TESTER_SKIPPED_TESTS - file_start_skipped))
     
-    if [ "$TESTER_QUIET" != "true" ] && [ $file_total -gt 0 ]; then
-        if [ $file_failed -gt 0 ]; then
-            logit -f "$file_passed passed, $file_failed failed, $file_skipped skipped"
-        else
-            logit -o "$file_passed passed, $file_failed failed, $file_skipped skipped"
-        fi
-    fi
+    # Show compact results on same line as file header
+    sdk_tester_show_file_results "$file_passed" "$file_failed" "$file_skipped" "$file_total"
     
     return 0
 }
@@ -176,28 +166,16 @@ sdk_tester_run_tests() {
     sdk_tester_initialize
     TESTER_START_TIME=$(date +%s)
     
-    if [ "$TESTER_VERBOSE" = "true" ]; then
-        logit --ansi="$TESTER_COLOR_DIM" "Initialized counters: TOTAL=$TESTER_TOTAL_TESTS, PASSED=$TESTER_PASSED_TESTS, FAILED=$TESTER_FAILED_TESTS"
-    fi
-    
-    # Show header
-    if [ "$TESTER_QUIET" != "true" ]; then
-        logit -i "DISEEC SDK TESTING FRAMEWORK"
-        if [ -n "$pattern" ]; then
-            logit -l "Filter: $pattern"
-        fi
-        echo ""
-    fi
-    
     # Get test files
     local test_files
     test_files=$(_sdk_tester_get_test_files "$pattern")
     
     if [ -z "$test_files" ]; then
+        local timestamp=$(date "+%H:%M:%S")
         if [ -n "$pattern" ]; then
-            logit -w "No test files found matching pattern: $pattern"
+            printf "\033[90m[%s]\033[0m\033[33m[!]\033[0m \033[90mNo tests match pattern:\033[0m \033[97m%s\033[0m\n" "$timestamp" "$pattern"
         else
-            logit -w "No test files found. Create files ending with '.test.sh' to get started."
+            printf "\033[90m[%s]\033[0m\033[33m[!]\033[0m \033[90mNo test files found. Create\033[0m \033[97m*.test.sh\033[0m \033[90mfiles to start\033[0m\n" "$timestamp"
         fi
         return 1
     fi
@@ -205,10 +183,8 @@ sdk_tester_run_tests() {
     local test_count
     test_count=$(echo "$test_files" | wc -l | tr -d ' ')
     
-    if [ "$TESTER_QUIET" != "true" ]; then
-        logit -i "Discovered $test_count test file(s)"
-        echo ""
-    fi
+    # Show compact header
+    sdk_tester_show_header "$test_count" "$pattern"
     
     # Run tests (convert to array to avoid subshell issues)
     local failed_files=()
@@ -229,7 +205,7 @@ sdk_tester_run_tests() {
             fi
         fi
     done
-    
+
     # Show summary
     sdk_tester_show_summary
 }

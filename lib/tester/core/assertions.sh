@@ -17,21 +17,22 @@ _tester_assert_result() {
     
     if [ "$success" = "true" ]; then
         TESTER_PASSED_TESTS=$((TESTER_PASSED_TESTS + 1))
-        if [ "$TESTER_VERBOSE" = "true" ]; then
-            logit -o "$message"
-        fi
+        # Always call the reporter function for consistent handling
+        sdk_tester_show_assertion_result "true" "$message" "$test_name"
         return 0
     else
         TESTER_FAILED_TESTS=$((TESTER_FAILED_TESTS + 1))
-        logit -f "$message"
+        # Always call the reporter function for consistent handling
+        sdk_tester_show_assertion_result "false" "$message" "$test_name"
         
-        if [ -n "$expected" ] && [ -n "$actual" ]; then
-            logit -l "Expected: $expected"
-            logit -l "Actual:   $actual"
+        # Show details only if verbose
+        if [ "$TESTER_VERBOSE" = "true" ] && [ -n "$expected" ] && [ -n "$actual" ]; then
+            printf "\n        \033[90mexpected:\033[0m \033[97m%s\033[0m\n" "$expected"
+            printf "        \033[90mactual  :\033[0m \033[97m%s\033[0m" "$actual"
         fi
         
         if [ "$TESTER_FAIL_FAST" = "true" ]; then
-            logit -e "Fail-fast enabled. Stopping test execution."
+            printf "\n      \033[31m[!]\033[0m \033[90mFail-fast mode enabled, stopping\033[0m\n"
             return 1
         fi
         return 1
@@ -218,7 +219,11 @@ assert_less_than() {
 skip_test() {
     local reason="${1:-"Test skipped"}"
     TESTER_SKIPPED_TESTS=$((TESTER_SKIPPED_TESTS + 1))
-    logit -w "$(ansi 33 "⊘") $reason"
+    TESTER_TOTAL_TESTS=$((TESTER_TOTAL_TESTS + 1))
+    
+    if [ "$TESTER_VERBOSE" = "true" ]; then
+        printf "  \033[33m⊘\033[0m"
+    fi
     return 0
 }
 

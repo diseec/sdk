@@ -2,8 +2,17 @@
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃ TEST REPORTER                                                           ┃
-# ┃ Beautiful test result reporting with statistics and summaries           ┃
+# ┃ Elegant test result reporting with compact, trace-inspired styling      ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+# Show minimal test header - clean and focused
+sdk_tester_show_header() {
+    local test_count="$1"
+    local pattern="$2"
+    
+    # Don't show the "Found X test file(s)" line - too noisy
+    return 0
+}
 
 # Show test execution summary
 sdk_tester_show_summary() {
@@ -12,44 +21,38 @@ sdk_tester_show_summary() {
     fi
     
     local end_time=$(date +%s)
-    local duration=$((end_time - TESTER_START_TIME))
+    local duration=$(_sdk_tester_format_duration $((end_time - TESTER_START_TIME)))
     
-    echo ""
-    logit -i "TEST RESULTS SUMMARY"
-    echo ""
+    # Compact results display - inspired by debug trace aesthetic
+    printf "\033[1;90mRESULTS\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
     
-    # Show counts using SDK styling
     if [ $TESTER_TOTAL_TESTS -gt 0 ]; then
-        logit -l "Passed:   $TESTER_PASSED_TESTS"
-        logit -l "Failed:   $TESTER_FAILED_TESTS" 
-        logit -l "Skipped:  $TESTER_SKIPPED_TESTS"
-        logit -l "Total:    $TESTER_TOTAL_TESTS"
-        echo ""
+        # Single line with all key metrics, color-coded by status
+        if [ $TESTER_FAILED_TESTS -eq 0 ]; then
+            printf "\033[32m✓\033[0m \033[97m%d\033[0m\033[90m passed\033[0m" "$TESTER_PASSED_TESTS"
+        else
+            printf "\033[31m✖\033[0m \033[97m%d\033[0m\033[90m passed\033[0m \033[31m%d\033[0m\033[90m failed\033[0m" "$TESTER_PASSED_TESTS" "$TESTER_FAILED_TESTS"
+        fi
         
-        # Calculate success rate
+        # Add skipped count if any
+        if [ $TESTER_SKIPPED_TESTS -gt 0 ]; then
+            printf " \033[33m%d\033[0m\033[90m skipped\033[0m" "$TESTER_SKIPPED_TESTS"
+        fi
+        
+        # Success rate and duration on same line
         local success_rate=0
         if [ $TESTER_TOTAL_TESTS -gt 0 ]; then
             success_rate=$(( (TESTER_PASSED_TESTS * 100) / TESTER_TOTAL_TESTS ))
         fi
         
-        logit -l "Success Rate: ${success_rate}%"
-        logit -l "Duration:     ${duration}s"
+        printf " \033[90m|\033[0m \033[97m%d%%\033[0m\033[90m success\033[0m \033[90m|\033[0m \033[97m%s\033[0m\n" "$success_rate" "$duration"
+        
     else
-        logit -w "No tests were executed"
-    fi
-    
-    echo ""
-    
-    # Final status message
-    if [ $TESTER_FAILED_TESTS -eq 0 ]; then
-        if [ $TESTER_TOTAL_TESTS -gt 0 ]; then
-            logit -o "All tests passed!"
-        fi
-        return 0
-    else
-        logit -f "Some tests failed. Fix them and try again."
+        printf "\033[33m[!]\033[0m \033[90mNo tests executed\033[0m\n"
         return 1
     fi
+    
+    return 0
 }
 
 # Show detailed test progress (for verbose mode)
@@ -64,15 +67,21 @@ sdk_tester_show_progress() {
     fi
 }
 
-# Show test file header
+# Show test file header - compact style with results in timestamp
 sdk_tester_show_file_header() {
     local test_file="$1"
     local search_root="${D_CTX_DIR:-$(pwd)}"
     local relative_path="${test_file#$search_root/}"
     
     if [ "$TESTER_QUIET" != "true" ]; then
-        echo ""
-        logit --ansi="$TESTER_COLOR_SUITE" "$(ansi $TESTER_COLOR_SUITE "▶") Testing $(ansi 97 "$relative_path")"
+        # Extract directory and filename for different styling
+        local dir_path="$(dirname "$relative_path")"
+        local filename="$(basename "$relative_path")"
+        
+        local timestamp=$(date "+%H:%M:%S")
+        
+        # Show path in gray, filename in white (print as temp status)
+        # This will be overwritten by the results
     fi
 }
 
@@ -85,16 +94,75 @@ _sdk_tester_format_duration() {
     elif [ $seconds -lt 3600 ]; then
         local minutes=$((seconds / 60))
         local secs=$((seconds % 60))
-        echo "${minutes}m ${secs}s"
+        echo "${minutes}m${secs}s"
     else
         local hours=$((seconds / 3600))
         local minutes=$(((seconds % 3600) / 60))
         local secs=$((seconds % 60))
-        echo "${hours}h ${minutes}m ${secs}s"
+        echo "${hours}h${minutes}m${secs}s"
     fi
 }
 
-# Show individual assertion result (for verbose mode)
+# Show compact file test results - move counts to timestamp brackets
+sdk_tester_show_file_results() {
+    local file_passed="$1"
+    local file_failed="$2" 
+    local file_skipped="$3"
+    local file_total="$4"
+    
+    if [ "$TESTER_QUIET" != "true" ] && [ $file_total -gt 0 ]; then
+        local timestamp=$(date "+%H:%M:%S")
+        local search_root="${D_CTX_DIR:-$(pwd)}"
+        local relative_path="${TESTER_CURRENT_SUITE}"
+        
+        # Extract directory and filename for different styling
+        local dir_path="$(dirname "$relative_path")"
+        local filename="$(basename "$relative_path")"
+
+        # Show timestamp with counts, then path with filename styled
+        printf "\033[90m[%s][\033[97m%d\033[0m\033[90m/%d]\033[0m " "$timestamp" "$file_passed" "$file_total"
+        
+        # Show path in gray, filename in white
+        if [ "$dir_path" = "." ]; then
+            printf "\033[97m%s\033[0m" "$filename"
+        else
+            printf "\033[90m%s/\033[0m\033[97m%s\033[0m" "$dir_path" "$filename"
+        fi
+        
+        # Add success indicator at the end
+        if [ $file_failed -gt 0 ]; then
+            printf " \033[31m✖\033[0m"
+        else
+            printf " \033[32m✓\033[0m"
+        fi
+        
+        # Show failure details if verbose mode
+        if [ "$TESTER_VERBOSE" = "true" ] && [ $file_failed -gt 0 ]; then
+            printf " \033[31m(%d failed)\033[0m" "$file_failed"
+        fi
+        if [ "$TESTER_VERBOSE" = "true" ] && [ $file_skipped -gt 0 ]; then
+            printf " \033[33m(%d skipped)\033[0m" "$file_skipped"
+        fi
+        
+        printf "\n"
+    elif [ "$TESTER_QUIET" != "true" ]; then
+        # First output a newline to ensure we're on a fresh line
+        printf "\n"
+        local timestamp=$(date "+%H:%M:%S")
+        local relative_path="${TESTER_CURRENT_SUITE}"
+        local dir_path="$(dirname "$relative_path")"
+        local filename="$(basename "$relative_path")"
+        
+        printf "\033[90m[%s][0/0]\033[0m " "$timestamp"
+        if [ "$dir_path" = "." ]; then
+            printf "\033[97m%s\033[0m \033[33m[!]\033[0m" "$filename"
+        else
+            printf "\033[90m%s/\033[0m\033[97m%s\033[0m \033[33m[!]\033[0m" "$dir_path" "$filename"
+        fi
+    fi
+}
+
+# Show individual assertion result - compact with verbose expansion
 sdk_tester_show_assertion_result() {
     local success="$1"
     local message="$2"
@@ -102,9 +170,9 @@ sdk_tester_show_assertion_result() {
     
     if [ "$TESTER_VERBOSE" = "true" ]; then
         if [ "$success" = "true" ]; then
-            logit --ansi="$TESTER_COLOR_DIM" "      $(ansi $TESTER_COLOR_PASS "✓") $message"
+            printf " \033[32m·\033[0m"
         else
-            logit --ansi="$TESTER_COLOR_FAIL" "      $(ansi $TESTER_COLOR_FAIL "✖") $message"
+            printf "\n      \033[31m✖\033[0m \033[90m%s\033[0m" "$message"
         fi
     fi
 }

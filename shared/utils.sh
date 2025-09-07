@@ -62,7 +62,6 @@ source_safely() {
             logit -e "Script path must end with .sh: $script_path"
             return 1
         fi
-        
         source_once "$script_path" "$@"
     fi
 }
