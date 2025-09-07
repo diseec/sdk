@@ -215,10 +215,20 @@ The tester is fully integrated with the SDK:
    ```
 
 5. **Group related tests**: Use descriptive file names
+
    ```bash
    auth.test.sh          # Authentication tests
    database.test.sh      # Database tests
    validation.test.sh    # Input validation tests
+   ```
+
+6. **Try to keep it e2e**: Use 'D' command
+
+   ```bash
+    version_output=$(D --version)
+
+    # Test that output contains expected elements
+    assert_not_empty "$version_output" "Version output should not be empty"
    ```
 
 ## Output Examples

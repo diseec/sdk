@@ -6,7 +6,6 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
 
 c=$1; shift; case $c in
     tes|test)  cli_core test run --verbose --fail-fast "$@" ;;
-    pat|patch) cli_ctx install sdk "$@" ;;
     pul|pull)  cli_ctx git _ pull origin main "$@" ;;
     bui|build)
         _docker compose build \

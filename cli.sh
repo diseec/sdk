@@ -2,6 +2,7 @@
 
 c=$1; shift; case $c in
     sta|status)     sdk_cmd_status "$@" ;;
+    pat|patch)      cli_ctx install sdk "$@" ;;
     ins|install)    mark_ctx_only; source "$D_SDK_DIR/facades/install/cli.sh" "$@" ;;
     ude|update)     mark_ctx_only; cli_ctx install update "$@" ;;
     dev|develop)    mark_ctx_only; cli_ctx docker compose up-dev "$@" ;;
