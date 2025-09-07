@@ -50,7 +50,8 @@ sdk_fac_ins_sdk() {
 }
 
 sdk_fac_ins_ensure_patched() {
-    local is_forced="${1:-false}";
+    mark_ctx_only
+    local is_forced="${_D_SDK_PATCH_FORCE:-false}";
     local sdk_dir="$D_CTX_DIR/$D_SDK_NPM_PATH";
 
     # Patch operation applied only either asked to or target project is missing the sdk
@@ -62,7 +63,7 @@ sdk_fac_ins_ensure_patched() {
         [ "$is_forced" = "true" ]; then
 
         _D_SDK_HAS_PATCHED="true"
-        main_cli sdk patch
+        cli_ctx install patch
 
         # abort if patch failed
         if [ $? -ne 0 ]; then

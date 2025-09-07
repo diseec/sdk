@@ -5,15 +5,15 @@
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
 
 c=$1; shift; case $c in
-    tes|test)  cli_core test run --verbose --fail-fast "$@" ;;
-    pul|pull)  cli_ctx git _ pull origin main "$@" ;;
+    tes|test)   mark_ctx_only; source_safely "$D_SDK_DIR/lib/tester/cli.sh" "$@" ;;
+    pul|pull)   cli_ctx git _ pull origin main "$@" ;;
+    run)        cli_ctx docker compose execute $D_SDK_NAME "$@" ;;
     bui|build)
         _docker compose build \
             --build-arg D_SDK_NAME="$D_SDK_NAME" \
             --build-arg D_CTX_DIR_CONTAINER="$D_CTX_DIR_CONTAINER" \
             --parallel "$@"
         ;;
-    run) cli_ctx docker compose execute $D_SDK_NAME "$@" ;;
     sta|start)
         logit -l "Starting $D_SDK_NAME container..."
         # cli_ctx docker compose _ up --no-color --detach --force-recreate "$@"
@@ -40,7 +40,6 @@ c=$1; shift; case $c in
             "    sto|stop                " "Stop sdk container" \
             "    act <command>           " "Run sdk-powered commands to manage/modify projects" "" "" \
             "" "" "$(ansi "1;94" "$(capitalize 'Repository Modifier Commands')")" "" \
-            "    pat|patch             " "Force fresh install to mounted directory" \
             "    clo|clone             " "Clone a repository into the workspace" "" "" \
             "$(ansi "2;90" 'This cli manages the sdk container and project operations,')" "" \
             "$(ansi "2;90" 'for project cli, use the installed cli in your project root.')" ""

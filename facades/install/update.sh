@@ -64,7 +64,7 @@ sdk_fac_ins_cmd_update() {
 
     cli_ctx git _ pull origin
 
-    cli_ctx sdk patch
+    cli_ctx install patch
     logit -l "$D_SDK_NAME version patched to: $D_VERSION"
 
     handle_hook before_update

@@ -2,7 +2,6 @@
 
 c=$1; shift; case $c in
     sta|status)     sdk_cmd_status "$@" ;;
-    pat|patch)      cli_ctx install sdk "$@" ;;
     ins|install)    mark_ctx_only; source "$D_SDK_DIR/facades/install/cli.sh" "$@" ;;
     ude|update)     mark_ctx_only; cli_ctx install update "$@" ;;
     dev|develop)    mark_ctx_only; cli_ctx docker compose up-dev "$@" ;;
@@ -15,7 +14,6 @@ c=$1; shift; case $c in
     pul|pull)       mark_ctx_only; cli_ctx git pull "$@" ;;
     dai|daily)      mark_ctx_only; cli_ctx git insight-day "$@" ;;
     pru|prune)      cli_ctx docker _ system prune "$@" ;;
-    tes|test)       mark_ctx_only; source_safely "$D_SDK_DIR/lib/tester/cli.sh" "$@" ;;
     for|format)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/format/cli.sh" prettier "$@" ;;
     sub|submodule)  mark_ctx_only; source "$D_SDK_DIR/facades/submodule/cli.sh" "$@" ;;
     sec|secret)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/secret/cli.sh" "$@" ;;
@@ -28,9 +26,15 @@ c=$1; shift; case $c in
     env|envs)       source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
     sdk)            (env D_CTX_DIR_HOST="$D_CTX_DIR" "$D_CLI_SDK" "$@") ;;
     api)            source "$D_SDK_DIR/api/cli.sh" "$@" ;;
+
+    # OPTIONS
     --safely|-s)    sdk_cmd_opt_safely "$@" ;;
     --version)      sdk_cmd_opt_version "$@" ;;
     --about)        sdk_cmd_opt_about "$@" ;;
     --help|-h|hel|help) sdk_cmd_opt_help "$@" ;;
+
+    # TEMPORARY ALIASES
+    rst|run-sdk-tests|t) cli_core sdk test run --verbose --fail-fast "$@" ;;
+
     *) sdk_cmd_any "$@" ;;
 esac

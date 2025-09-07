@@ -48,3 +48,4 @@ if [ -d "$D_CTX_DIR" ]; then cd "$D_CTX_DIR"; fi
 
 # Add help command if no arguments provided
 if [ $# -eq 0 ]; then set -- --help; fi
+
