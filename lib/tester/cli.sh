@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# -eq 0 ]; then set -- run; fi
+if [ $# -eq 0 ]; then set -- run --verbose; fi
 
 # Source the tester framework
 source_once "$D_SDK_DIR/lib/tester/index.sh"

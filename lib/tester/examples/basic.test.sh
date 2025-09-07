@@ -105,7 +105,7 @@ test_failure_demonstration() {
     # assert_equals "expected" "actual" "This assertion will fail"
     
     # This test passes
-    assert_equals "same" "samex" "This assertion will pass"
+    assert_equals "same" "same" "This assertion will pass"
 }
 
 # You can also test your own functions

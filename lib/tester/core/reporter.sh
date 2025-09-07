@@ -109,7 +109,7 @@ sdk_tester_show_file_results() {
     local file_failed="$2" 
     local file_skipped="$3"
     local file_total="$4"
-    
+
     if [ "$TESTER_QUIET" != "true" ] && [ $file_total -gt 0 ]; then
         local timestamp=$(date "+%H:%M:%S")
         local search_root="${D_CTX_DIR:-$(pwd)}"

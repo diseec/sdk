@@ -101,7 +101,7 @@ _sdk_tester_run_test_file() {
             
             # Show test function start in verbose mode
             if [ "$TESTER_VERBOSE" = "true" ]; then
-                printf "\n    \033[90m→\033[0m \033[97m%s\033[0m" "$test_function"
+                printf "    \033[90m→\033[0m \033[97m%s\033[0m" "$test_function"
             fi
             
             # Run test setup if defined
@@ -149,8 +149,12 @@ _sdk_tester_run_test_file() {
     local file_failed=$((TESTER_FAILED_TESTS - file_start_failed))
     local file_skipped=$((TESTER_SKIPPED_TESTS - file_start_skipped))
     
+    echo ""
+
     # Show compact results on same line as file header
     sdk_tester_show_file_results "$file_passed" "$file_failed" "$file_skipped" "$file_total"
+    
+    echo ""
     
     return 0
 }
@@ -159,6 +163,7 @@ _sdk_tester_run_test_file() {
 sdk_tester_run_tests() {
     # Parse options and get remaining arguments
     local remaining_args
+    _sdk_tester_parse_options "$@" # requires separate call to set env vars
     remaining_args=($(_sdk_tester_parse_options "$@"))
     local pattern="${remaining_args[0]:-}"
     
@@ -168,12 +173,12 @@ sdk_tester_run_tests() {
     
     # Get test files
     local test_files
-    test_files=$(_sdk_tester_get_test_files "$pattern")
+    test_files=$(_sdk_tester_get_test_files "${args[@]}")
     
     if [ -z "$test_files" ]; then
         local timestamp=$(date "+%H:%M:%S")
-        if [ -n "$pattern" ]; then
-            printf "\033[90m[%s]\033[0m\033[33m[!]\033[0m \033[90mNo tests match pattern:\033[0m \033[97m%s\033[0m\n" "$timestamp" "$pattern"
+        if [ -n "${args[@]}" ]; then
+            printf "\033[90m[%s]\033[0m\033[33m[!]\033[0m \033[90mNo tests match pattern:\033[0m \033[97m%s\033[0m\n" "$timestamp" "${args[@]}"
         else
             printf "\033[90m[%s]\033[0m\033[33m[!]\033[0m \033[90mNo test files found. Create\033[0m \033[97m*.test.sh\033[0m \033[90mfiles to start\033[0m\n" "$timestamp"
         fi
@@ -184,7 +189,7 @@ sdk_tester_run_tests() {
     test_count=$(echo "$test_files" | wc -l | tr -d ' ')
     
     # Show compact header
-    sdk_tester_show_header "$test_count" "$pattern"
+    sdk_tester_show_header "$test_count" "${args[@]}"
     
     # Run tests (convert to array to avoid subshell issues)
     local failed_files=()
@@ -208,6 +213,8 @@ sdk_tester_run_tests() {
 
     # Show summary
     sdk_tester_show_summary
+
+    echo ""
 }
 
 # Filter and run tests
