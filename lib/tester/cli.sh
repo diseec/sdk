@@ -1,9 +1,22 @@
 #!/bin/bash
 
-if [ $# -eq 0 ]; then set -- run --verbose; fi
-
 # Source the tester framework
 source_once "$D_SDK_DIR/lib/tester/index.sh"
+
+export TESTER_VERBOSE=false
+export TESTER_FAIL_FAST=false
+export TESTER_QUIET=false
+export TESTER_DRY_RUN=false
+
+if [ $# -eq 0 ]; then set -- run --verbose --fail-fast; fi
+
+ARGS=""; for arg in "$@"; do case "$arg" in
+    # -x=*|--x=*) X="${arg#*=}";;
+    --verbose|-v) export TESTER_VERBOSE=true ;;
+    --fail-fast) export TESTER_FAIL_FAST=true ;;
+    --quiet|-q) export TESTER_QUIET=true ;;
+    --dry-run) export TESTER_DRY_RUN=true ;;
+*) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
 # Main CLI command handler
 c=$1; shift; case $c in
@@ -74,10 +87,10 @@ c=$1; shift; case $c in
         ;;
     *)
         if [[ -n "$c" ]]; then 
-            logit -e "Unknown tester command: '$c'"
-            logit -i "Run '$D_CLI_GLOBAL_NAME tester help' for available commands"
+            logit -e "Unknown test command: '$c'"
+            logit -i "Run '$D_CLI_GLOBAL_NAME test help' for available commands"
             exit 1
         fi
-        cli_ctx tester help
+        cli_ctx test help
         ;;
 esac

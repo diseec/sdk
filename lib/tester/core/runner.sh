@@ -5,41 +5,6 @@
 # ┃ Executes test files and manages test execution lifecycle                ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-# Parse command line options for test runner
-_sdk_tester_parse_options() {
-    export TESTER_VERBOSE=false
-    export TESTER_FAIL_FAST=false
-    export TESTER_QUIET=false
-    export TESTER_DRY_RUN=false
-    
-    local args=()
-    
-    while [ $# -gt 0 ]; do
-        case "$1" in
-            --verbose|-v)
-                export TESTER_VERBOSE=true
-                shift
-                ;;
-            --fail-fast)
-                export TESTER_FAIL_FAST=true
-                shift
-                ;;
-            --quiet|-q)
-                export TESTER_QUIET=true
-                shift
-                ;;
-            --dry-run)
-                export TESTER_DRY_RUN=true
-                shift
-                ;;
-            *)
-                args+=("$1")
-                shift
-                ;;
-        esac
-    done
-}
-
 # Execute a single test file
 _sdk_tester_run_test_file() {
     local test_file="$1"
@@ -100,6 +65,10 @@ _sdk_tester_run_test_file() {
                 test_functions_array+=("$test_function")
             fi
         done <<< "$test_functions"
+
+        if [ "$TESTER_VERBOSE" = "true" ]; then
+            echo ""
+        fi
 
         # Now execute each test function in current shell
         for test_function in "${test_functions_array[@]}"; do
@@ -179,8 +148,6 @@ _sdk_tester_run_test_file() {
 
 # Main test runner function
 sdk_tester_run_tests() {
-    # Parse options and get remaining arguments
-    _sdk_tester_parse_options "$@" # requires separate call to set env vars
     
     echo ""
 
@@ -190,12 +157,12 @@ sdk_tester_run_tests() {
     
     # Get test files
     local test_files
-    test_files=$(_sdk_tester_get_test_files "${args[@]}")
+    test_files=$(_sdk_tester_get_test_files "$@")
     
     if [ -z "$test_files" ]; then
         local timestamp=$(date "+%H:%M:%S")
-        if [ -n "${args[@]}" ]; then
-            printf "\033[90m[%s]\033[0m\033[33m[!]\033[0m \033[90mNo tests match pattern:\033[0m \033[97m%s\033[0m\n" "$timestamp" "${args[@]}"
+        if [ -n "$@" ]; then
+            printf "\033[90m[%s]\033[0m\033[33m[!]\033[0m \033[90mNo tests match pattern:\033[0m \033[97m%s\033[0m\n" "$timestamp" "$@"
         else
             printf "\033[90m[%s]\033[0m\033[33m[!]\033[0m \033[90mNo test files found. Create\033[0m \033[97m*.test.sh\033[0m \033[90mfiles to start\033[0m\n" "$timestamp"
         fi
@@ -206,7 +173,7 @@ sdk_tester_run_tests() {
     test_count=$(echo "$test_files" | wc -l | tr -d ' ')
     
     # Show compact header
-    sdk_tester_show_header "$test_count" "${args[@]}"
+    sdk_tester_show_header "$test_count" "$@"
     
     # Run tests (convert to array to avoid subshell issues)
     local failed_files=()
@@ -227,6 +194,8 @@ sdk_tester_run_tests() {
             fi
         fi
     done
+
+    echo ""
 
     # Show summary
     sdk_tester_show_summary
