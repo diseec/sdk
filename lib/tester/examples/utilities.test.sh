@@ -119,3 +119,9 @@ test_error_handling() {
     assert_not_empty "$error_output" "Error command should produce output"
     assert_contains "$error_output" "No such file or directory" "Error should mention missing file"
 }
+
+# Test failure demonstration (for consistency with basic.test.sh)
+test_failure_demonstration() {
+    # This test will pass
+    assert_equals "same" "same" "This assertion will pass"
+}

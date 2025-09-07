@@ -67,6 +67,16 @@ _sdk_tester_run_test_file() {
     
     # Source and execute the test file
     if [ -f "$test_file" ]; then
+        # Before sourcing a new test file, unset any existing test functions
+        # to avoid mixing tests between files
+        local existing_test_functions
+        existing_test_functions=$(declare -F | grep "declare -f test_" | sed 's/declare -f //')
+        if [ -n "$existing_test_functions" ]; then
+            while IFS= read -r func_name; do
+                unset -f "$func_name" 2>/dev/null || true
+            done <<< "$existing_test_functions"
+        fi
+        
         # Source the test file in current shell to preserve test state
         source "$test_file"
         
@@ -132,6 +142,18 @@ _sdk_tester_run_test_file() {
         # Run suite teardown if defined (always run)
         if declare -f suite_teardown >/dev/null 2>&1; then
             suite_teardown
+            # Unset the suite_setup and suite_teardown functions to avoid carrying them to the next file
+            unset -f suite_setup 2>/dev/null || true
+            unset -f suite_teardown 2>/dev/null || true
+        fi
+        
+        # Also unset test_setup and test_teardown functions
+        if declare -f test_setup >/dev/null 2>&1; then
+            unset -f test_setup 2>/dev/null || true
+        fi
+        
+        if declare -f test_teardown >/dev/null 2>&1; then
+            unset -f test_teardown 2>/dev/null || true
         fi
         
         local exit_code=$?
