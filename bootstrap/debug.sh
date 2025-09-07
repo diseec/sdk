@@ -152,6 +152,7 @@ trace_error_handler() {
     # Display environment variables and system information using the new functions
     get_env_variables
     get_system_info
+    printf "\033[31m-------------------------------------------------------------------------------\033[0m\n"
     printf "\n"
     
     # Always exit with error code (original or 1 if it was 0)

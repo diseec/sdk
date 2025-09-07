@@ -44,7 +44,7 @@ c=$1; shift; case $c in
         # Clean test artifacts and temporary files
         sdk_tester_clean_artifacts
         ;;
-    --help|-h)
+    --help|-h|hel|help)
         display_help "" "" \
             "$(ansi "1;90" "$(capitalize 'USAGE')")                        " "[$D_CLI_GLOBAL_NAME tester]/[bash $D_CLI_LOCAL_NAME tester] [command] [options]" \
             "                             " "$(ansi "2;90" "Simple and elegant testing framework for shell scripts")" \
