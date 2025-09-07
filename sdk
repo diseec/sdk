@@ -34,7 +34,7 @@ c=$1; shift; case $c in
             echo "$output"
         fi
         ;;
-        --help|-h) cli_core --help \
+        --help|-h|hel|help) cli_core --help \
             "" "" "$(ansi "1;94" "$(capitalize 'Kit Container Lifecycle')")" "" \
             "    sta|start               " "Start sdk container (for fast subsequent ops)" \
             "    sto|stop                " "Stop sdk container" \

@@ -29,7 +29,7 @@ sdk_boo_env_uti_get_kit_version() {
     fi
 }
 
-sdk_boo_env_uti_get_kit_target_dit() {
+sdk_boo_env_uti_get_kit_target_dir() {
     if [ -z "$D_CTX_DIR_HOST" ]; then
         echo "$D_CTX_DIR"
     else

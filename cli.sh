@@ -26,11 +26,11 @@ c=$1; shift; case $c in
     int|internet)   source_safely "$D_SDK_DIR/facades/internet/cli.sh" "$@" ;;
     ain|ai)         source_safely "$D_SDK_DIR/facades/ai/cli.sh" "$@" ;;
     env|envs)       source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
-    sdk)            env D_CTX_DIR_HOST="$D_CTX_DIR" "$D_CLI_SDK" "$@" ;;
+    sdk)            (env D_CTX_DIR_HOST="$D_CTX_DIR" "$D_CLI_SDK" "$@") ;;
     api)            source "$D_SDK_DIR/api/cli.sh" "$@" ;;
-    --help|-h)      sdk_cmd_opt_help "$@" ;;
     --safely|-s)    sdk_cmd_opt_safely "$@" ;;
     --version)      sdk_cmd_opt_version "$@" ;;
     --about)        sdk_cmd_opt_about "$@" ;;
+    --help|-h|hel|help) sdk_cmd_opt_help "$@" ;;
     *) sdk_cmd_any "$@" ;;
 esac

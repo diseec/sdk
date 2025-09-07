@@ -11,7 +11,7 @@ test_version_output_format() {
     # Run the version command and capture output
     local version_output
     
-    version_output=$(cli_ctx --version)
+    version_output=$(D --version)
 
     # Test that output contains expected elements
     assert_not_empty "$version_output" "Version output should not be empty"

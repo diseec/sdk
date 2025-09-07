@@ -50,7 +50,7 @@ sdk_boo_env_setup_environment() {
         fi
     fi
 
-    D_CTX_DIR_HOST="$(sdk_boo_env_uti_get_kit_target_dit)"
+    D_CTX_DIR_HOST="$(sdk_boo_env_uti_get_kit_target_dir)"
 
     # Organization directories
     D_ORG_DIR="$(sdk_boo_env_uti_get_org_dir)"

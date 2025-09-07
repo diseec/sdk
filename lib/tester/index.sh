@@ -40,6 +40,11 @@ sdk_tester_initialize() {
     export TESTER_COLOR_SUITE="96"     # Cyan
     export TESTER_COLOR_HEADER="1;90"  # Bold Gray
     export TESTER_COLOR_DIM="2;90"     # Dim Gray
+
+    # Ensure D command called in tests point to the local D since is a global
+    D() {
+        (env D_SDK_DIR="$D_SDK_DIR" "$D_SDK_DIR/$D_CLI_GLOBAL_NAME" "$@")
+    }
 }
 
 # Initialize on source
