@@ -1,0 +1,8 @@
+services:
+  sdk:
+    extends:
+      file: "$D_SDK_DIR/docker/docker-compose.yaml"
+      service: sdk
+    entrypoint: "/entrypoints/testing.sh"
+    image: "$D_REGISTRY_URL/$D_SDK_NAME"
+    volumes: []

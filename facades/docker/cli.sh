@@ -9,8 +9,8 @@ c=$1; shift; case $c in
         ude|up-dev|up) sdk_fac_doc_up_development "$@" ;;
         upr|up-pro) sdk_fac_doc_up_production "$@" ;;
         exe|execute|exec) sdk_fac_doc_cmd_docker_execute "$@" ;;
-        bui|build) _docker compose build --parallel "$@" ;;
-        _) _docker compose "$@" ;;
+        bui|build) cli_ctx docker compose _ build --parallel "$@" ;;
+        _) sdk_fac_doc_compose "$@" ;;
         hel|help|--help|-h) display_help "" "" \
             "$(ansi 97 'Docker Compose Commands')" "" \
             "    ude|up|up-dev   " "Start development environment" \

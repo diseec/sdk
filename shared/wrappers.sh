@@ -17,19 +17,6 @@ _npm() {
 
 _docker() {
     # cli_ctx $D_SDK_NAME run --quiet docker "$@"
-
-    env \
-    D_CTX_DIR="$D_CTX_DIR" \
-    D_REPO_NAME="$D_REPO_NAME" \
-    D_SDK_DIR="$D_SDK_DIR" \
-    D_SDK_NAME="$D_SDK_NAME" \
-    D_GIT_DIR="$D_GIT_DIR" \
-    D_ORG_CACHE_DIR="$D_ORG_CACHE_DIR" \
-    D_REGISTRY_URL="$D_REGISTRY_URL" \
-    D_CTX_DIR_CONTAINER="$D_CTX_DIR_CONTAINER" \
-    D_GIT_DIR_CONTAINER="$D_GIT_DIR_CONTAINER" \
-    D_CTX_DIR_HOST="$D_CTX_DIR_HOST" \
-    D_CONTAINER_HOME="$D_CONTAINER_HOME" \
     docker "$@"
 }
 

@@ -36,7 +36,7 @@ sdk_boo_env_uti_cli_auto_discovery() {
 
     # # this breaks when a parent recursively do something on submodules then all of $D_CLI_LOCAL_NAME submodules point to the parent
     # if [ "$IS_IN_SDK_CONTAINER" = "true" ]; then
-    #     printf '%s\n' "$D_CTX_DIR_CONTAINER"
+    #     printf '%s\n' "$D_CONT_CTX_DIR"
     #     return 0
     # fi
 

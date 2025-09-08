@@ -1,0 +1,22 @@
+#!/bin/bash
+
+sdk_fac_doc_compose() {
+    env \
+    D_ENV="$D_ENV" \
+    D_CTX_DIR="$D_CTX_DIR" \
+    D_REPO_NAME="$D_REPO_NAME" \
+    D_SDK_DIR="$D_SDK_DIR" \
+    D_SDK_NAME="$D_SDK_NAME" \
+    D_GIT_DIR="$D_GIT_DIR" \
+    D_ORG_DIR="$D_ORG_DIR" \
+    D_ORG_CACHE_DIR="$D_ORG_CACHE_DIR" \
+    D_REGISTRY_URL="$D_REGISTRY_URL" \
+    D_HOST_CTX_DIR="$D_HOST_CTX_DIR" \
+    D_MOUNT_MODE="$D_MOUNT_MODE" \
+    D_CONT_CTX_DIR="$D_CONT_CTX_DIR" \
+    D_CONT_GIT_DIR="$D_CONT_GIT_DIR" \
+    D_CONT_ORG_DIR="$D_CONT_ORG_DIR" \
+    D_CONT_ENTRY="$D_CONT_ENTRY" \
+    D_CONT_HOME_DIR="$D_CONT_HOME_DIR" \
+    docker compose "$@"
+}

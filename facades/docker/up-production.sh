@@ -10,7 +10,7 @@ sdk_fac_doc_up_production() {
 
     # Set up a trap to ensure we stop all containers on exit or interrupt
     cleanup() {
-        _docker compose -f "$D_CTX_DIR/docker-compose.yaml" down
+        cli_ctx docker compose _ -f "$D_CTX_DIR/docker-compose.yaml" down
         exit 0
     }
     # Trap SIGINT (Ctrl+C) and EXIT
@@ -18,9 +18,9 @@ sdk_fac_doc_up_production() {
 
     if [ -n "$services_filter" ]; then
         logit "Starting selected services in production mode: $services_filter"
-        _docker compose -f "$D_CTX_DIR/docker-compose.yaml" up $services_filter "$@"
+        cli_ctx docker compose _ -f "$D_CTX_DIR/docker-compose.yaml" up $services_filter "$@"
     else
-        _docker compose -f "$D_CTX_DIR/docker-compose.yaml" up "$@"
+        cli_ctx docker compose _ -f "$D_CTX_DIR/docker-compose.yaml" up "$@"
     fi
 
 }

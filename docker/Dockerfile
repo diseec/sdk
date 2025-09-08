@@ -4,7 +4,7 @@ ENV IS_IN_SDK_CONTAINER=true
 
 # Build argument for SDK name with default value
 ARG D_SDK_NAME=sdk
-ARG D_CTX_DIR_CONTAINER="/ctx"
+ARG D_CONT_CTX_DIR="/ctx"
 
 # Install base dependencies
 RUN apk add --no-cache bash coreutils curl yq jq git openssl git-lfs
@@ -39,11 +39,13 @@ COPY . .
 
 RUN npm install -g /${D_SDK_NAME}
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+COPY docker/entrypoints /entrypoints
+RUN chmod +x /entrypoints/*.sh
+# COPY entrypoint.sh /entrypoint.sh
+# RUN chmod +x /entrypoint.sh
+# ENTRYPOINT ["/entrypoint.sh"]
 
-RUN mkdir -p ${D_CTX_DIR_CONTAINER}
-WORKDIR ${D_CTX_DIR_CONTAINER}
+RUN mkdir -p ${D_CONT_CTX_DIR}
+WORKDIR ${D_CONT_CTX_DIR}
 
 CMD ["D", "help"]

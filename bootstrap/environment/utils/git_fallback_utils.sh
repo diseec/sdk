@@ -6,7 +6,7 @@
 # Git-related functions and operations
 
 sdk_boo_env_uti_get_git_dir() {
-    if [ "$D_SDK_CLI_EXECUTED" = "true" ] && [ -z "$D_CTX_DIR_HOST" ]; then return 0; fi
+    if [ "$D_SDK_CLI_EXECUTED" = "true" ] && [ -z "$D_HOST_CTX_DIR" ]; then return 0; fi
 
     find_git_dir_for() {
         local target="$1"
@@ -34,21 +34,21 @@ sdk_boo_env_uti_get_git_dir() {
 
         # Conclusion is it's running in container, then we:
 
-        if [ "$target" = "$D_CTX_DIR_CONTAINER" ]; then
-            echo "$D_GIT_DIR_CONTAINER"
+        if [ "$target" = "$D_CONT_CTX_DIR" ]; then
+            echo "$D_CONT_GIT_DIR"
             return 0
         else
             # remove any leading ../ or ./ and strip up-to-and-including ".git/"
             module_ref=$(echo "$gitdir_ref" | awk -F'.git/' '{print $2}')
-            echo "$D_GIT_DIR_CONTAINER/$module_ref"
+            echo "$D_CONT_GIT_DIR/$module_ref"
             return 0
         fi
 
         echo "error: no git reference found"
     }
 
-    if [ "$D_CTX_DIR_HOST" != "$D_SDK_DIR" ]; then
-        find_git_dir_for "$D_CTX_DIR_HOST"
+    if [ "$D_HOST_CTX_DIR" != "$D_SDK_DIR" ]; then
+        find_git_dir_for "$D_HOST_CTX_DIR"
         return
     else
         find_git_dir_for "$D_CTX_DIR"

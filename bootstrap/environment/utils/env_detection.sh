@@ -30,9 +30,9 @@ sdk_boo_env_uti_get_kit_version() {
 }
 
 sdk_boo_env_uti_get_kit_target_dir() {
-    if [ -z "$D_CTX_DIR_HOST" ]; then
+    if [ -z "$D_HOST_CTX_DIR" ]; then
         echo "$D_CTX_DIR"
     else
-        echo "$D_CTX_DIR_HOST" # Is set when the command "D sdk" has executed
+        echo "$D_HOST_CTX_DIR" # Is set when the command "D sdk" has executed
     fi
 }

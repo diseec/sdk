@@ -12,17 +12,17 @@ sdk_fac_ins_sdk() {
             logit -e "The 'patch' command works only on bench! (the sdk container)"; return 1; 
         fi
 
-        target_kit="$D_CTX_DIR_CONTAINER/$D_SDK_NPM_PATH"
+        target_kit="$D_CONT_CTX_DIR/$D_SDK_NPM_PATH"
 
         if [ -L "$target_kit" ]; then
             logit -w "$target_kit is a symlink, most probably to a global sdk installation. Aborting patch to avoid overwriting global sdk."
             return 1
         fi
 
-        VERSION_SPECIFIER=$(_node -p "require('$D_CTX_DIR_CONTAINER/package.json').dependencies?.['$D_SDK_NPM_PKG'] || require('$D_CTX_DIR_CONTAINER/package.json').devDependencies['$D_SDK_NPM_PKG']")
+        VERSION_SPECIFIER=$(_node -p "require('$D_CONT_CTX_DIR/package.json').dependencies?.['$D_SDK_NPM_PKG'] || require('$D_CONT_CTX_DIR/package.json').devDependencies['$D_SDK_NPM_PKG']")
 
         if [ -z "$VERSION_SPECIFIER" ]; then
-            logit -e "$D_SDK_NPM_PKG not found in '$D_CTX_DIR_CONTAINER/package.json'. $PWD"
+            logit -e "$D_SDK_NPM_PKG not found in '$D_CONT_CTX_DIR/package.json'. $PWD"
             exit 1
         fi
 
@@ -32,17 +32,17 @@ sdk_fac_ins_sdk() {
         TMPDIR=$(mktemp -d)
         (cd $TMPDIR && _npm install "$package_name")
 
-        logit -l "Patching $package_name to $D_CTX_DIR_CONTAINER .."
+        logit -l "Patching $package_name to $D_CONT_CTX_DIR .."
         rm -rf "$target_kit" 2>/dev/null 
         mkdir -p "$target_kit" 2>/dev/null
         cp -r "$TMPDIR/$D_SDK_NPM_PATH"/* "$target_kit"
 
-        if [ ! -f "$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME" ]; then
+        if [ ! -f "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME" ]; then
             logit -l "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file..."
-            cp "/$D_SDK_NAME/templates/$D_CLI_LOCAL_NAME" "$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME";
+            cp "/$D_SDK_NAME/templates/$D_CLI_LOCAL_NAME" "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME";
         fi
 
-        # if [ ! -f "$D_CTX_DIR_CONTAINER/.gitignore" ]; then cp "/$D_SDK_NAME/templates/.gitignore" "$D_CTX_DIR_CONTAINER/.gitignore"; fi
+        # if [ ! -f "$D_CONT_CTX_DIR/.gitignore" ]; then cp "/$D_SDK_NAME/templates/.gitignore" "$D_CONT_CTX_DIR/.gitignore"; fi
         logit -l "$D_SDK_NAME patched for: $package_name"
     }
 

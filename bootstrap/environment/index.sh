@@ -7,11 +7,13 @@ sdk_boo_env_setup_environment() {
     # Main environment file that loads all modules and initializes variables
 
     # Source all utility modules
-    source $D_SDK_DIR/bootstrap/environment/constants.sh
     source $D_SDK_DIR/bootstrap/environment/utils/git_fallback_utils.sh
     source $D_SDK_DIR/bootstrap/environment/utils/cli_auto_discovery.sh
     source $D_SDK_DIR/bootstrap/environment/utils/env_detection.sh
     source $D_SDK_DIR/bootstrap/environment/utils/validate_environment.sh
+    source $D_SDK_DIR/bootstrap/environment/utils/computed_paths.sh
+
+    export D_ENV # Valid environments: DEVELOPMENT, TESTING, PRODUCTION
 
     # =============================================================================
     # STORE ORIGINAL ENVIRONMENT VARIABLES
@@ -25,6 +27,33 @@ sdk_boo_env_setup_environment() {
     
     : ${D_SDK_CLI_EXECUTED:=false}
     readonly D_SDK_CLI_EXECUTED
+
+    # =============================================================================
+    # CORE CONSTANTS
+    # =============================================================================
+    # Organization and project constants that rarely change
+    # These are the foundation values for the entire sdk
+
+    readonly D_ORG_NAME="diseec"
+    readonly D_SDK_NAME="sdk"
+    readonly D_CLI_GLOBAL_NAME="D"
+    readonly D_CLI_LOCAL_NAME="cli"
+
+    # Registry and repository configuration
+    readonly D_REGISTRY_URL="image.registry.$D_ORG_NAME.com"
+    readonly D_REPOSITORY_URL="github.com/$D_ORG_NAME"
+    readonly D_SDK_IMAGE="$D_REGISTRY_URL/$D_SDK_NAME"
+    readonly D_SDK_NPM_PKG="@$D_ORG_NAME/$D_SDK_NAME"
+    readonly D_SDK_NPM_PATH="node_modules/$D_SDK_NPM_PKG"
+
+    # =============================================================================
+    # CONTAINER & DOCKER CONFIGURATION
+    # =============================================================================
+
+    readonly D_CONT_HOME_DIR="/root"
+    readonly D_CONT_GIT_DIR="/.git"
+    readonly D_CONT_CTX_DIR="/ctx"
+    readonly D_CONT_ORG_DIR="/$D_ORG_NAME"
 
     # =============================================================================
     # COMPUTED PATHS AND DIRECTORIES
@@ -43,14 +72,14 @@ sdk_boo_env_setup_environment() {
     if [ -n "$D_CTX_DIR" ]; then
         if [ "$D_SDK_CLI_EXECUTED" = "true" ]; then
             readonly D_CLI_STUB="$D_CLI_SDK"
-            readonly D_CLI_STUB_CONTAINER="$D_CTX_DIR_CONTAINER/$D_SDK_NAME"
+            readonly D_CLI_STUB_CONTAINER="$D_CONT_CTX_DIR/$D_SDK_NAME"
         else
             readonly D_CLI_STUB="$D_CTX_DIR/$D_CLI_LOCAL_NAME"
-            readonly D_CLI_STUB_CONTAINER="$D_CTX_DIR_CONTAINER/$D_CLI_LOCAL_NAME"
+            readonly D_CLI_STUB_CONTAINER="$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME"
         fi
     fi
 
-    D_CTX_DIR_HOST="$(sdk_boo_env_uti_get_kit_target_dir)"
+    D_HOST_CTX_DIR="$(sdk_boo_env_uti_get_kit_target_dir)"
 
     # Organization directories
     D_ORG_DIR="$(sdk_boo_env_uti_get_org_dir)"

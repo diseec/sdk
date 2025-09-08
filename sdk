@@ -9,9 +9,9 @@ c=$1; shift; case $c in
     pul|pull)   cli_ctx git _ pull origin main "$@" ;;
     run)        cli_ctx docker compose execute $D_SDK_NAME "$@" ;;
     bui|build)
-        _docker compose build \
+        cli_ctx docker compose _ build \
             --build-arg D_SDK_NAME="$D_SDK_NAME" \
-            --build-arg D_CTX_DIR_CONTAINER="$D_CTX_DIR_CONTAINER" \
+            --build-arg D_CONT_CTX_DIR="$D_CONT_CTX_DIR" \
             --parallel "$@"
         ;;
     sta|start)
@@ -44,6 +44,21 @@ c=$1; shift; case $c in
             "$(ansi "2;90" 'This cli manages the sdk container and project operations,')" "" \
             "$(ansi "2;90" 'for project cli, use the installed cli in your project root.')" ""
         ;;
+    
+    # Overrides
+    doc|docker) c=$1; shift; case $c in
+        com|compose) c=$1; shift; case $c in
+            _)
+                if [ "$D_ENV" = "testing" ]; then
+                    local compose_file="$D_CTX_DIR/docker/docker-compose.testing.yaml"
+                else
+                    local compose_file="$D_CTX_DIR/docker/docker-compose.yaml"
+                fi
+                cli_core docker compose $c -f "$compose_file" "$@"
+                ;;
+            *) cli_core docker compose $c "$@" ;;
+        esac ;;
+    esac ;;
 
     *) cli_core $c "$@" ;;
 esac

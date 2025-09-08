@@ -15,7 +15,7 @@ sdk_cmd_opt_version() {
 
     # Check if we're running in Docker or on host
     if command -v docker >/dev/null 2>&1; then
-        build_id="$(_docker images --format '{{.ID}} {{.Repository}}:{{.Tag}}' | grep "$D_SDK_IMAGE" | head -1 | awk '{print $1}')"
+        build_id="$(cli_ctx docker _ images --format '{{.ID}} {{.Repository}}:{{.Tag}}' | grep "$D_SDK_IMAGE" | head -1 | awk '{print $1}')"
     else
         build_id="[In Docker - not available]"
     fi

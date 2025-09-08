@@ -8,10 +8,9 @@ vars=( \
     D_GIT_DIR \
     D_ORG_CACHE_DIR \
     D_REGISTRY_URL \
-    D_CTX_DIR_CONTAINER \
-    D_GIT_DIR_CONTAINER \
-    D_CTX_DIR_HOST \
-    D_CONTAINER_HOME \
+    D_CONT_CTX_DIR \
+    D_CONT_GIT_DIR \
+    D_HOST_CTX_DIR \
 )
 
 # export "${vars[@]}" # reduces control
