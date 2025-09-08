@@ -30,7 +30,12 @@ test_config_add_new_array() {
     # Verify the array was created and contains the item
     local array_value
     array_value=$(cd "$TEST_WORKSPACE" && D config --scope=user get new.array)
-    assert_contains "$array_value" "item1" "Array should contain the added item"
+    
+    # Expected output is exactly one item
+    local expected_output="item1"
+    
+    # Direct exact comparison
+    assert_equals "$expected_output" "$array_value" "Array should contain exactly item1"
 }
 
 # Test adding multiple items to an array
@@ -40,20 +45,22 @@ test_config_add_multiple_items() {
     cd "$TEST_WORKSPACE" && D config --scope=user add multiple.array "item2" > /dev/null
     cd "$TEST_WORKSPACE" && D config --scope=user add multiple.array "item3" > /dev/null
     
-    # Verify all items were added
+    # Get the full array output for verification
     local array_value
     array_value=$(cd "$TEST_WORKSPACE" && D config --scope=user get multiple.array)
-    assert_contains "$array_value" "item1" "Array should contain first item"
-    assert_contains "$array_value" "item2" "Array should contain second item"
-    assert_contains "$array_value" "item3" "Array should contain third item"
     
-    # Verify order using print command
-    local json_content
-    json_content=$(cd "$TEST_WORKSPACE" && D config --scope=user print)
+    # Expected output is space-separated values
+    local expected_output="item1 item2 item3"
     
-    # The order check might be implementation-dependent
-    # We're assuming the JSON representation will show the array in order
-    assert_matches "$json_content" ".*\"item1\".*\"item2\".*\"item3\".*" "Items should be in the order they were added"
+    # Direct comparison of exact expected output
+    assert_equals "$expected_output" "$array_value" "Array should contain exactly item1, item2, item3 in that order"
+    
+    # Verify we can iterate over the output
+    local count=0
+    for item in $array_value; do
+        count=$((count + 1))
+    done
+    assert_equals "3" "$count" "Should be able to iterate over all array items"
 }
 
 # Test adding duplicate items
@@ -62,20 +69,22 @@ test_config_add_duplicate_items() {
     cd "$TEST_WORKSPACE" && D config --scope=user add duplicate.array "item1" > /dev/null
     cd "$TEST_WORKSPACE" && D config --scope=user add duplicate.array "item1" > /dev/null
     
-    # Verify how the system handles duplicates
-    # This test might need adjustment based on the actual implementation
-    # Some systems might allow duplicates, others might prevent them
-    
+    # Get the array value for verification
     local array_value
     array_value=$(cd "$TEST_WORKSPACE" && D config --scope=user get duplicate.array)
     
-    # Count occurrences of "item1" in the array
-    local count
-    count=$(echo "$array_value" | grep -o "item1" | wc -l)
+    # Expected output is exactly one item (no duplicates)
+    local expected_output="item1"
     
-    # Adjust this assertion based on expected behavior
-    # Here we're assuming duplicates are prevented
-    assert_equals "1" "$count" "Duplicate items should be handled properly"
+    # Direct comparison of exact expected output
+    assert_equals "$expected_output" "$array_value" "Duplicate items should be handled properly"
+    
+    # Count items to ensure only one exists
+    local count=0
+    for item in $array_value; do
+        count=$((count + 1))
+    done
+    assert_equals "1" "$count" "Should have exactly one item after adding duplicates"
 }
 
 # Test adding to arrays in different scopes
@@ -85,15 +94,21 @@ test_config_add_different_scopes() {
     cd "$TEST_WORKSPACE" && D config --scope=repository add scope.array "repo_item" > /dev/null
     cd "$TEST_WORKSPACE" && D config --scope=context add scope.array "context_item" > /dev/null
     
-    # Verify items were added to the correct arrays
+    # Verify items were added to the correct arrays with exact expectations
     local user_array repo_array context_array
     user_array=$(cd "$TEST_WORKSPACE" && D config --scope=user get scope.array)
     repo_array=$(cd "$TEST_WORKSPACE" && D config --scope=repository get scope.array)
     context_array=$(cd "$TEST_WORKSPACE" && D config --scope=context get scope.array)
     
-    assert_contains "$user_array" "user_item" "User scope array should contain user item"
-    assert_contains "$repo_array" "repo_item" "Repository scope array should contain repo item"
-    assert_contains "$context_array" "context_item" "Context scope array should contain context item"
+    # Expected outputs for each scope
+    local expected_user="user_item"
+    local expected_repo="repo_item"
+    local expected_context="context_item"
+    
+    # Direct exact comparisons
+    assert_equals "$expected_user" "$user_array" "User scope array should contain exactly user_item"
+    assert_equals "$expected_repo" "$repo_array" "Repository scope array should contain exactly repo_item"
+    assert_equals "$expected_context" "$context_array" "Context scope array should contain exactly context_item"
 }
 
 # Test adding to a nested array
@@ -104,11 +119,33 @@ test_config_add_nested_array() {
     # Verify it was added correctly
     local array_value
     array_value=$(cd "$TEST_WORKSPACE" && D config --scope=user get nested.config.array)
-    assert_contains "$array_value" "nested_item" "Nested array should contain the added item"
     
-    # Verify the structure was created correctly
-    local json_content
-    json_content=$(cd "$TEST_WORKSPACE" && D config --scope=user print)
-    assert_contains "$json_content" "nested" "JSON should contain the nested object"
-    assert_contains "$json_content" "config" "JSON should contain the config object"
+    # Expected output is exactly one item
+    local expected_output="nested_item"
+    
+    # Direct exact comparison
+    assert_equals "$expected_output" "$array_value" "Nested array should contain exactly nested_item"
+    
+    # Verify the structure was created correctly by getting the print output
+    # Using exact substrings we expect to find in the output
+    local print_output
+    print_output=$(cd "$TEST_WORKSPACE" && D config --scope=user print)
+    
+    # We need to verify the nested structure exists, but the exact format may vary
+    # Check that "nested:" appears and "config:" appears after it
+    local nested_line
+    nested_line=$(echo "$print_output" | grep -n "nested:" | cut -d: -f1)
+    local config_line
+    config_line=$(echo "$print_output" | grep -n "config:" | cut -d: -f1)
+    
+    # Assert that both lines were found
+    [ -n "$nested_line" ]
+    assert_equals "$?" "0" "Output should contain nested: section"
+    
+    [ -n "$config_line" ]
+    assert_equals "$?" "0" "Output should contain config: section"
+    
+    # Assert that config comes after nested (numerically greater line number)
+    [ "$config_line" -gt "$nested_line" ]
+    assert_equals "$?" "0" "The config section should be nested inside the nested section"
 }

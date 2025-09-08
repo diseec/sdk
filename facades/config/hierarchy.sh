@@ -23,7 +23,15 @@ sdk_fac_con_get() {
     if [ -n "$specific_scope" ]; then
         sdk_fac_con_validate_scope "$specific_scope" || return 1
         local config_file="$(sdk_fac_con_get_config_file "$specific_scope")"
-        sdk_fac_con_yaml_get "$config_file" "$key_path"
+        local value="$(sdk_fac_con_yaml_get "$config_file" "$key_path")"
+        
+        # If it's an array (starts with "- "), format it for script usability
+        if [[ "$value" == "-"* ]]; then
+            # Convert YAML list format to space-separated values
+            echo "$value" | sed 's/^- //' | tr '\n' ' ' | sed 's/ $//'
+        else
+            echo "$value"
+        fi
         return $?
     fi
     
@@ -40,7 +48,13 @@ sdk_fac_con_get() {
         
         # Return the first non-null value found
         if [ "$value" != "null" ] && [ -n "$value" ]; then
-            echo "$value"
+            # If it's an array (starts with "- "), format it for script usability
+            if [[ "$value" == "-"* ]]; then
+                # Convert YAML list format to space-separated values
+                echo "$value" | sed 's/^- //' | tr '\n' ' ' | sed 's/ $//'
+            else
+                echo "$value"
+            fi
             return 0
         fi
     done
@@ -51,11 +65,13 @@ sdk_fac_con_get() {
 }
 
 # Set configuration value in specified scope (defaults to $DEFAULT_SCOPE)
+# Enhanced to handle both scalar values and arrays
 sdk_fac_con_set() {
     set -e
     local key_path="$1"
     local value="$2"
     local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
+    local is_array="${4:-false}"        # Optional: specify if value should be treated as array element
     
     # Validate inputs
     sdk_fac_con_validate_key_path "$key_path" || return 1
@@ -66,18 +82,30 @@ sdk_fac_con_set() {
         return 1
     fi
     
-    # Ensure config file exists and set value
+    # Ensure config file exists
     local config_file="$(sdk_fac_con_get_config_file "$scope")"
-    sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
     
-    logit -l "Set '$key_path' = '$value' in '$scope' scope"
+    # Check if this is an array operation
+    if [ "$is_array" = "true" ]; then
+        # Handle as array operation - add value to array
+        sdk_fac_con_yaml_array_add "$config_file" "$key_path" "$value"
+        logit -l "Added '$value' to '$key_path' array in '$scope' scope"
+    else
+        # Handle as scalar operation - set value
+        sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
+        logit -l "Set '$key_path' = '$value' in '$scope' scope"
+    fi
+    
+    return 0
 }
 
-# Delete configuration key from specified scope (defaults to $DEFAULT_SCOPE)
+# Delete configuration key or array element from specified scope (defaults to $DEFAULT_SCOPE)
+# Enhanced to handle both keys and array elements
 sdk_fac_con_delete() {
     set -e
     local key_path="$1"
-    local scope="${2:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
+    local value="$2"          # Optional: if provided, remove this value from array
+    local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     
     # Validate inputs
     sdk_fac_con_validate_key_path "$key_path" || return 1
@@ -90,8 +118,18 @@ sdk_fac_con_delete() {
         return 1
     fi
     
-    sdk_fac_con_yaml_delete "$config_file" "$key_path"
-    logit -l "Deleted $key_path from $scope scope"
+    # Check if this is an array element removal
+    if [ -n "$value" ]; then
+        # Remove value from array
+        sdk_fac_con_yaml_array_remove "$config_file" "$key_path" "$value"
+        logit -l "Removed '$value' from '$key_path' array in '$scope' scope"
+    else
+        # Delete entire key
+        sdk_fac_con_yaml_delete "$config_file" "$key_path"
+        logit -l "Deleted '$key_path' from '$scope' scope"
+    fi
+    
+    return 0
 }
 
 # =============================================================================

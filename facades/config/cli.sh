@@ -44,8 +44,8 @@ c=$1; shift; case $c in
     sum|summary) sdk_fac_con_opt_act_status "$@" ;;
     get) sdk_fac_con_get "$@" "$SCOPE" ;;
     set) sdk_fac_con_set "$@" "$SCOPE" ;;
-    add) sdk_fac_con_array_add "$@" "$SCOPE" ;;
-    rem|remove) sdk_fac_con_array_remove "$@" "$SCOPE" ;;
+    add) sdk_fac_con_set "$@" "$SCOPE" "true" ;;
+    rem|remove) sdk_fac_con_delete "$@" "$SCOPE" ;;
     del|delete) sdk_fac_con_delete "$@" "$SCOPE" ;;
     pat|path) sdk_fac_con_get_config_file "$SCOPE" ;;
     whi|which) sdk_fac_con_which "$@" ;;

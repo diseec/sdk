@@ -66,12 +66,18 @@ sdk_fac_con_yaml_array_add_yq() {
         return 0
     fi
     
-    # Check if value already exists in the array using contains
-    local exists
-    exists=$(_yq -r ".${key_path} | contains([\"${value}\"]) // false" "$config_file")
+    # Check if value already exists in the array
+    # Simplify the approach - use a direct iteration pattern that's more reliable
+    local exists=false
+    local values
+    values=$(_yq -r ".${key_path}[]" "$config_file" 2>/dev/null || echo "")
+    
+    if echo "$values" | grep -q "^${value}$"; then
+        exists=true
+    fi
     
     # Only add if it doesn't exist
-    if [ "$exists" != "true" ]; then
+    if [ "$exists" = "false" ]; then
         _yq -i ".${key_path} += [\"${value}\"]" "$config_file"
     fi
 }
