@@ -56,7 +56,24 @@ sdk_fac_con_yaml_array_add_yq() {
     local key_path="$2"
     local value="$3"
     
-    _yq -i ".${key_path} += [\"${value}\"]" "$config_file"
+    # First check if the array exists - if not, just create it with the value
+    local array_exists
+    array_exists=$(_yq -r ".${key_path} // \"null\"" "$config_file")
+    
+    if [ "$array_exists" = "null" ]; then
+        # Array doesn't exist, create it with the new value
+        _yq -i ".${key_path} = [\"${value}\"]" "$config_file"
+        return 0
+    fi
+    
+    # Check if value already exists in the array using contains
+    local exists
+    exists=$(_yq -r ".${key_path} | contains([\"${value}\"]) // false" "$config_file")
+    
+    # Only add if it doesn't exist
+    if [ "$exists" != "true" ]; then
+        _yq -i ".${key_path} += [\"${value}\"]" "$config_file"
+    fi
 }
 
 # Remove from array using yq

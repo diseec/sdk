@@ -27,6 +27,7 @@ test_setup() {
 test_teardown() {
     # Override this function in test files for per-test cleanup
     # This runs after each individual test function
+    rm -fr "$D_ORG_DIR"
     return 0
 }
 
