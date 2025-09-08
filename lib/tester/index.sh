@@ -21,7 +21,7 @@ source_once "$D_SDK_DIR/lib/tester/core/suite.sh"
 
 # Initialize tester framework
 sdk_tester_initialize() {
-    D_ENV="TESTING"
+    export D_ENV="TESTING"; 
 
     # Set up global test state variables
     export TESTER_TOTAL_TESTS=0

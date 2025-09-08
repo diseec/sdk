@@ -1,4 +1,4 @@
-
 - test important funcs
+  - each test func shall run on isolated container (right now is all in one)
 
 - template repository (git feautre)

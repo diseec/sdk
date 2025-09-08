@@ -20,6 +20,7 @@ suite_teardown() {
 
 # Test basic set functionality
 test_config_set_basic() {
+    ls -a;
     # Set a simple string value
     local output
     output=$(cd "$TEST_WORKSPACE" && D config --scope=user set simple.key "simple_value")

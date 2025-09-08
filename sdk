@@ -49,10 +49,10 @@ c=$1; shift; case $c in
     doc|docker) c=$1; shift; case $c in
         com|compose) c=$1; shift; case $c in
             _)
-                if [ "$D_ENV" = "testing" ]; then
+                if [ "$D_ENV" = "TESTING" ]; then
                     local compose_file="$D_CTX_DIR/docker/docker-compose.testing.yaml"
                 else
-                    local compose_file="$D_CTX_DIR/docker/docker-compose.yaml"
+                    local compose_file="$D_CTX_DIR/docker/docker-compose.development.yaml"
                 fi
                 cli_core docker compose $c -f "$compose_file" "$@"
                 ;;

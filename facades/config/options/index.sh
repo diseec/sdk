@@ -1,4 +1,4 @@
 #!/bin/bash
 
-source "$D_SDK_DIR/facades/config/options/active_modules/index.sh"
+source "$D_SDK_DIR/facades/config/options/active_submodules/index.sh"
 
