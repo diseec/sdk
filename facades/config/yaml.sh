@@ -130,7 +130,17 @@ sdk_fac_con_yaml_array_remove_yq() {
     local key_path="$2"
     local value="$3"
     
-    _yq eval -i ".${key_path} |= map(select(. != \"${value}\"))" "$config_file"
+    # First check if the target is a scalar value that matches what we want to remove
+    local current_value
+    current_value=$(_yq eval ".${key_path}" "$config_file" 2>/dev/null)
+    
+    if [ "$current_value" = "$value" ]; then
+        # It's a scalar value that matches - replace with empty array
+        _yq eval -i ".${key_path} = []" "$config_file"
+    else
+        # It's an array - use the map/select approach
+        _yq eval -i ".${key_path} |= map(select(. != \"${value}\"))" "$config_file"
+    fi
 }
 
 # List all keys using yq

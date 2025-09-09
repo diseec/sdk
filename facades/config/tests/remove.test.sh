@@ -11,14 +11,14 @@ suite_setup() {
     # Initialize config
     cd "$TEST_WORKSPACE" && D config init > /dev/null
     
-    # Set up some test arrays using set with array syntax
-    cd "$TEST_WORKSPACE" && D config --scope=user set simple.array '["item1", "item2", "item3"]' > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=user set nested.array '["item1", "item2", "item3"]' > /dev/null
+    # Set up some test arrays using comma-separated format
+    cd "$TEST_WORKSPACE" && D config --scope=user set simple.array 'item1,item2,item3' > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=user set nested.array 'item1,item2,item3' > /dev/null
     
-    # Set up arrays in different scopes using set with array syntax
-    cd "$TEST_WORKSPACE" && D config --scope=user set scope.array '["user_item"]' > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=repository set scope.array '["repo_item"]' > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=context set scope.array '["context_item"]' > /dev/null
+    # Set up arrays in different scopes using comma-separated format
+    cd "$TEST_WORKSPACE" && D config --scope=user set scope.array 'user_item' > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=repository set scope.array 'repo_item' > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=context set scope.array 'context_item' > /dev/null
 }
 
 # Suite teardown - runs once after all tests in this file
@@ -47,7 +47,7 @@ test_config_remove_item() {
 # Test removing the last item from an array
 test_config_remove_last_item() {
     # Create a single-item array
-    cd "$TEST_WORKSPACE" && D config --scope=user set single.array '["only_item"]' > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=user set single.array 'only_item' > /dev/null
     
     # Remove the only item
     cd "$TEST_WORKSPACE" && D config --scope=user remove single.array "only_item" > /dev/null
@@ -178,7 +178,7 @@ test_config_remove_delete_parent_key() {
 # Test deleting an array entirely
 test_config_remove_delete_array() {
     # Set up an array
-    cd "$TEST_WORKSPACE" && D config --scope=user set array.test '["item1", "item2"]' > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=user set array.test 'item1,item2' > /dev/null
     
     # Delete the entire array
     cd "$TEST_WORKSPACE" && D config --scope=user remove array.test > /dev/null
