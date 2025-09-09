@@ -2,19 +2,6 @@
 
 # Test for the 'secret key-show' command
 
-# Suite setup - runs once before all tests in this file
-suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "secret_key_show_tests")
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
-}
-
 # Test key-show command with no key configured
 test_secret_key_show_no_key_configured() {
     local output

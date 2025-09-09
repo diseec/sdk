@@ -4,9 +4,6 @@
 
 # Suite setup - runs once before all tests in this file
 suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "config_which_tests")
     
     # Initialize config
     d config init > /dev/null
@@ -20,12 +17,6 @@ suite_setup() {
     d config --scope=user set user.only "user_only_value" > /dev/null
     d config --scope=repository set repo.only "repo_only_value" > /dev/null
     d config --scope=context set context.only "context_only_value" > /dev/null
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
 }
 
 # Test which shows config resolution path for shared key

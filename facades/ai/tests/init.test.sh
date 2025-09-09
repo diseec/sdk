@@ -4,9 +4,6 @@
 
 # Suite setup - runs once before all tests in this file
 suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "ai_init_tests")
     
     # Store original OPENAI_API_KEY for restoration
     export ORIGINAL_OPENAI_API_KEY="$OPENAI_API_KEY"
@@ -14,9 +11,6 @@ suite_setup() {
 
 # Suite teardown - runs once after all tests in this file
 suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
-    
     # Restore original API key
     export OPENAI_API_KEY="$ORIGINAL_OPENAI_API_KEY"
 }

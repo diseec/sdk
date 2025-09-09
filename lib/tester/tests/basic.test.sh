@@ -7,20 +7,10 @@
 
 # Optional: Suite setup - runs once before all tests in this file
 suite_setup() {
-    # Create any shared test resources
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "example_tests")
-    
     # Create some test files
     create_test_file "$TEST_WORKSPACE/sample.txt" "Hello, World!"
     create_test_file "$TEST_WORKSPACE/empty.txt"
     create_test_dir "$TEST_WORKSPACE/subdir"
-}
-
-# Optional: Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up shared test resources
-    cleanup_test_workspace "$TEST_WORKSPACE"
 }
 
 # Optional: Test setup - runs before each individual test

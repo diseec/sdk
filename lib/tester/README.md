@@ -154,12 +154,12 @@ test_final_test() {
 
 # Runs once before all tests in this file
 suite_setup() {
-    export TEST_WORKSPACE=$(create_test_workspace)
+    #
 }
 
 # Runs once after all tests in this file
 suite_teardown() {
-    cleanup_test_workspace "$TEST_WORKSPACE"
+    #
 }
 
 # Runs before each individual test

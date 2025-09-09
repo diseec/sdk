@@ -4,20 +4,11 @@
 
 # Suite setup - runs once before all tests in this file
 suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "ai_prompt_tests")
     
     # Create a test prompt file for testing
     export TEST_PROMPT_FILE="$TEST_WORKSPACE/test.prompt"
     echo "# Test prompt for demonstration" > "$TEST_PROMPT_FILE"
     echo "This is a test prompt with {{INPUT}} placeholder." >> "$TEST_PROMPT_FILE"
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
 }
 
 # Test prompt list command

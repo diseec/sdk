@@ -2,19 +2,6 @@
 
 # Test for the 'secret exists' command
 
-# Suite setup - runs once before all tests in this file
-suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "secret_exists_tests")
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
-}
-
 # Test exists command with missing argument
 test_secret_exists_missing_argument() {
     local output

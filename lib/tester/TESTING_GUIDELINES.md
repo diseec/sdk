@@ -25,28 +25,18 @@ Tests in the tester framework follow a specific structure:
 
 # Suite setup - runs once before all tests in this file
 suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "feature_name_tests")
-
     # Initialize any required state
-    d some-command init > /dev/null
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
+    D some-command init > /dev/null
 }
 
 # Individual test function
 test_specific_feature() {
     # Setup
-    d some-command setup-action > /dev/null
+    D some-command setup-action > /dev/null
 
     # Execute the code under test
     local result
-    result=$(d some-command action-to-test)
+    result=$(D some-command action-to-test)
 
     # Assertions
     assert_equals "expected" "$result" "Message describing the expectation"

@@ -4,10 +4,6 @@
 
 # Suite setup - runs once before all tests in this file
 suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "config_summary_tests")
-    
     # Initialize config
     d config init > /dev/null
     
@@ -17,11 +13,6 @@ suite_setup() {
     d config --scope=context set context.key "context_value" > /dev/null
 }
 
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
-}
 
 # Test summary shows all scopes
 test_config_summary_shows_all_scopes() {

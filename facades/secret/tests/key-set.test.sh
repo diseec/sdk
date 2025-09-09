@@ -48,10 +48,6 @@ EOF
 EOF
 )file
 suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "secret_key_set_tests")
-    
     # Set up secrets directory
     export SECRETS_DIR="$TEST_WORKSPACE/secrets"
     mkdir -p "$SECRETS_DIR" 2>/dev/null || {
@@ -59,12 +55,6 @@ suite_setup() {
         export SKIP_TESTS="true"
         return 0
     }
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
 }
 
 # Test key-set command requires OpenSSL

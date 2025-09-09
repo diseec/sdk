@@ -4,10 +4,6 @@
 
 # Suite setup - runs once before all tests in this file
 suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "config_remove_tests")
-    
     # Initialize config
     d config init > /dev/null
     
@@ -20,13 +16,6 @@ suite_setup() {
     d config --scope=repository set scope.array 'repo_item' > /dev/null
     d config --scope=context set scope.array 'context_item' > /dev/null
 }
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
-}
-
 # Test removing an item from an array
 test_config_remove_item() {
     # Remove an item from the array

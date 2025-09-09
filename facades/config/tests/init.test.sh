@@ -2,19 +2,6 @@
 
 # Test for the 'config init' command
 
-# Suite setup - runs once before all tests in this file
-suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "config_init_tests")
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
-}
-
 # Test init command creates configuration files
 test_config_init_creates_files() {
     # Run the init command

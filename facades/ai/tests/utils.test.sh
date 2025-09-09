@@ -2,19 +2,6 @@
 
 # Test for AI utility functions
 
-# Suite setup - runs once before all tests in this file
-suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "ai_utils_tests")
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
-}
-
 # Test token counting function
 test_sdk_fac_ai_count_tokens() {
     local test_text="This is a test sentence with multiple words."

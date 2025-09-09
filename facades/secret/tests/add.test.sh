@@ -32,42 +32,36 @@ test_secret_add_decline_overwrite() {
         return 0
     fi
     
-    # First add a secret
+    # Create a script for running the test to avoid TTY issues
+    local test_script="$TEST_WORKSPACE/test_script.sh"
+    cat > "$test_script" << 'TESTSCRIPT'
+#!/bin/bash
+# Add initial secret
+echo -e "DECLINE_OVERWRITE_SECRET\noriginal_value" | D secret add
+
+# Try to add same secret again but decline overwrite
+echo -e "DECLINE_OVERWRITE_SECRET\nnew_value\nn" | D secret add
+
+# Export to verify value
+D secret export DECLINE_OVERWRITE_SECRET
+TESTSCRIPT
+    chmod +x "$test_script"
+    
+    # Run the test script
+    cd "$TEST_WORKSPACE"
     local output1
-    output1=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
-DECLINE_OVERWRITE_SECRET
-original_value
-EOF
-)
-    local add_result1=$?
+    output1=$(SECRETS_DIR="$SECRETS_DIR" ./test_script.sh 2>&1)
+    local test_result=$?
     
-    if [ "$add_result1" -ne 0 ]; then
-        # Skip if first add failed
-        return 0
-    fi
+    # Extract the export result which should be the last line
+    local export_output
+    export_output=$(echo "$output1" | tail -n 1)
     
-    # Try to add same secret again but decline overwrite with "n"
-    local output2
-    output2=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
-DECLINE_OVERWRITE_SECRET
-new_value
-n
-EOF
-)
-    local add_result2=$?
+    # Check if the output contains the overwrite prompt
+    assert_contains "$output1" "already exists\|Overwrite" "Should ask about overwriting"
     
-    # Should ask about overwriting
-    assert_contains "$output2" "already exists\|Overwrite" "Should ask about overwriting"
-    
-    # Should succeed (user chose not to overwrite, which is valid)
-    if [ "$add_result2" -eq 0 ]; then
-        # Verify the original value is preserved
-        local export_output
-        export_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret export DECLINE_OVERWRITE_SECRET 2>&1)
-        if [ $? -eq 0 ]; then
-            assert_equals "original_value" "$export_output" "Should preserve original value when overwrite declined"
-        fi
-    fi
+    # Verify the original value is preserved
+    assert_equals "original_value" "$export_output" "Should preserve original value when overwrite declined"
 }
 
 
@@ -76,27 +70,28 @@ EOF
 suite_teardown() {
     # Restore original secrets directory
     export SECRETS_DIR="$ORIGINAL_SECRETS_DIR"
-    
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
 }
 
 # Test add command requires OpenSSL
 test_secret_add_requires_openssl() {
-    # Skip if OpenSSL is not available (we can't test this scenario easily)
-    local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
-    local result=$?
+    # Mock the OpenSSL availability check to force failure
+    # This is done by defining a local _openssl function that will override the system one
+    _openssl() {
+        return 127  # Command not found exit code
+    }
+    export -f _openssl
     
-    if [ "$result" -ne 0 ]; then
-        # OpenSSL not available - command should fail
-        local output
-        output=$(echo -e "TEST_SECRET\ntest_value" | D secret add 2>&1)
-        local add_result=$?
-        
-        assert_not_equals "0" "$add_result" "Add command should fail without OpenSSL"
-        assert_contains "$output" "OpenSSL\|required\|available" "Should indicate OpenSSL requirement"
-    fi
+    # Now test the command with our mocked OpenSSL
+    local output
+    output=$(echo -e "TEST_SECRET\ntest_value" | D secret add 2>&1)
+    local add_result=$?
+    
+    # Clean up our mock
+    unset -f _openssl
+    
+    # Verify results
+    assert_not_equals "0" "$add_result" "Add command should fail without OpenSSL"
+    assert_contains "$output" "OpenSSL\|required\|available" "Should indicate OpenSSL requirement"
 }
 
 # Test add command basic functionality with simulated input

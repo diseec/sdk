@@ -4,10 +4,6 @@
 
 # Suite setup - runs once before all tests in this file
 suite_setup() {
-    # Create a test workspace
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "secret_available_tests")
-    
     # Ensure we have a writable secrets directory for testing
     export ORIGINAL_SECRETS_DIR="$SECRETS_DIR"
     export SECRETS_DIR="$TEST_WORKSPACE/secrets"
@@ -21,9 +17,6 @@ suite_setup() {
 suite_teardown() {
     # Restore original secrets directory
     export SECRETS_DIR="$ORIGINAL_SECRETS_DIR"
-    
-    # Clean up test workspace
-    cleanup_test_workspace "$TEST_WORKSPACE"
 }
 
 # Test availability check basic functionality
