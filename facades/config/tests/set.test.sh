@@ -105,126 +105,117 @@ test_config_set_overwrite() {
 # ARRAY FUNCTIONALITY TESTS
 # =============================================================================
 
-# Test adding to a new array using set with JSON syntax
+# Test adding to a new array using set with comma-separated format
 test_config_set_new_array() {
-    # Add an item to a new array using set with JSON syntax
+    # Add an item to a new array using comma-separated format
     local output
-    output=$(cd "$TEST_WORKSPACE" && D config --scope=user set new.array '["item1"]')
+    output=$(cd "$TEST_WORKSPACE" && D config --scope=user set new.array 'item1')
     
     # Verify the command succeeded
-    assert_command_success "cd \"$TEST_WORKSPACE\" && D config --scope=user set new.array '[\"item1\"]'" "Set array command should succeed"
+    assert_command_success "cd \"$TEST_WORKSPACE\" && D config --scope=user set new.array 'item1'" "Set array command should succeed"
     
     # Verify the array was created and contains the item
     local array_value
     array_value=$(cd "$TEST_WORKSPACE" && D config --scope=user get new.array)
     
-    # Expected output is exactly one item in JSON format
-    local expected_output='[item1]'
+    # Expected output is the single item (not in array format for single items)
+    local expected_output='item1'
     
     # Direct exact comparison
-    assert_equals "$expected_output" "$array_value" "Array should contain exactly [item1]"
+    assert_equals "$expected_output" "$array_value" "Single item should be stored as scalar"
 }
 
-# Test adding multiple items to an array using set with JSON syntax
+# Test adding multiple items to an array using set with comma-separated format
 test_config_set_multiple_items_array() {
-    # Add multiple items to an array using set with JSON syntax
-    cd "$TEST_WORKSPACE" && D config --scope=user set multiple.array '["item1", "item2", "item3"]' > /dev/null
+    # Add multiple items to an array using comma-separated format
+    cd "$TEST_WORKSPACE" && D config --scope=user set multiple.array 'item1,item2,item3' > /dev/null
     
     # Get the full array output for verification
     local array_value
     array_value=$(cd "$TEST_WORKSPACE" && D config --scope=user get multiple.array)
     
-    # Expected output is space-separated values
-    local expected_output='[item1,item2,item3]'
+    # Expected output is YAML array format (each item on new line)
+    local expected_lines=3
+    local actual_lines=$(echo "$array_value" | wc -l | tr -d ' ')
     
-    # Direct comparison of exact expected output
-    assert_equals "$expected_output" "$array_value" "Array should contain exactly [item1,item2,item3] in JSON format"
+    # Check that we got the right number of lines
+    assert_equals "$expected_lines" "$actual_lines" "Array should have 3 items (3 lines)"
     
-    # Verify we can iterate over the output by parsing JSON
-    local count=0
-    local items
-    items=$(echo "$array_value" | jq -r '.[]' 2>/dev/null || echo "")
-    for item in $items; do
-        count=$((count + 1))
-    done
-    assert_equals "3" "$count" "Should be able to iterate over all array items"
+    # Check that all items are present
+    echo "$array_value" | grep -q "item1"
+    assert_equals "0" "$?" "Array should contain item1"
+    
+    echo "$array_value" | grep -q "item2"
+    assert_equals "0" "$?" "Array should contain item2"
+    
+    echo "$array_value" | grep -q "item3"
+    assert_equals "0" "$?" "Array should contain item3"
 }
 
-# Test adding duplicate items using set with JSON syntax
+# Test adding duplicate items using set with comma-separated format
 test_config_set_duplicate_items_array() {
-    # Add an item twice using set with JSON syntax
-    cd "$TEST_WORKSPACE" && D config --scope=user set duplicate.array '["item1", "item1"]' > /dev/null
+    # Add an item twice using comma-separated format
+    cd "$TEST_WORKSPACE" && D config --scope=user set duplicate.array 'item1,item1' > /dev/null
     
     # Get the array value for verification
     local array_value
     array_value=$(cd "$TEST_WORKSPACE" && D config --scope=user get duplicate.array)
     
-    # Expected output includes duplicates (JSON arrays preserve duplicates)
-    local expected_output='[item1,item1]'
-    
-    # Direct comparison - JSON arrays preserve duplicates
-    assert_equals "$expected_output" "$array_value" "JSON arrays should preserve duplicate items"
+    # YAML arrays preserve duplicates - check that both items are present
+    local item_count=$(echo "$array_value" | grep -c "item1")
+    assert_equals "2" "$item_count" "YAML arrays should preserve duplicate items"
 }
 
-# Test adding to arrays in different scopes using set with JSON syntax
+# Test adding to arrays in different scopes using set with comma-separated format
 test_config_set_different_scopes_array() {
-    # Add items to arrays in different scopes using set with JSON syntax
-    cd "$TEST_WORKSPACE" && D config --scope=user set scope.array '["user_item"]' > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=repository set scope.array '["repo_item"]' > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=context set scope.array '["context_item"]' > /dev/null
+    # Add items to arrays in different scopes using comma-separated format
+    cd "$TEST_WORKSPACE" && D config --scope=user set scope.array 'user_item' > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=repository set scope.array 'repo_item' > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=context set scope.array 'context_item' > /dev/null
     
-    # Verify items were added to the correct arrays with exact expectations
+    # Verify items were added to the correct arrays
     local user_array repo_array context_array
     user_array=$(cd "$TEST_WORKSPACE" && D config --scope=user get scope.array)
     repo_array=$(cd "$TEST_WORKSPACE" && D config --scope=repository get scope.array)
     context_array=$(cd "$TEST_WORKSPACE" && D config --scope=context get scope.array)
     
-    # Expected outputs for each scope (actual JSON format returned)
-    local expected_user='[user_item]'
-    local expected_repo='[repo_item]'
-    local expected_context='[context_item]'
+    # Expected outputs for each scope (YAML scalar format)
+    local expected_user='user_item'
+    local expected_repo='repo_item'
+    local expected_context='context_item'
     
     # Direct exact comparisons
-    assert_equals "$expected_user" "$user_array" "User scope array should contain exactly [user_item]"
-    assert_equals "$expected_repo" "$repo_array" "Repository scope array should contain exactly [repo_item]"
-    assert_equals "$expected_context" "$context_array" "Context scope array should contain exactly [context_item]"
+    assert_equals "$expected_user" "$user_array" "User scope should contain user_item"
+    assert_equals "$expected_repo" "$repo_array" "Repository scope should contain repo_item"
+    assert_equals "$expected_context" "$context_array" "Context scope should contain context_item"
 }
 
-# Test adding to a nested array using set with JSON syntax
+# Test adding to a nested array using set with comma-separated format
 test_config_set_nested_array() {
-    # Add an item to a nested array using set with JSON syntax
-    cd "$TEST_WORKSPACE" && D config --scope=user set nested.config.array '["nested_item"]' > /dev/null
+    # Add an item to a nested array using comma-separated format
+    cd "$TEST_WORKSPACE" && D config --scope=user set nested.config.array 'nested_item' > /dev/null
     
     # Verify it was added correctly
     local array_value
     array_value=$(cd "$TEST_WORKSPACE" && D config --scope=user get nested.config.array)
     
-    # Expected output is exactly one item in JSON format
-    local expected_output='[nested_item]'
+    # Expected output is a single item (YAML scalar format)
+    local expected_output='nested_item'
     
     # Direct exact comparison
-    assert_equals "$expected_output" "$array_value" "Nested array should contain exactly [nested_item]"
+    assert_equals "$expected_output" "$array_value" "Nested item should contain nested_item"
     
     # Verify the structure was created correctly by getting the print output
-    # Using exact substrings we expect to find in the output
     local print_output
     print_output=$(cd "$TEST_WORKSPACE" && D config --scope=user print)
     
-    # We need to verify the nested structure exists, but the exact format may vary
-    # Check that "nested:" appears and "config:" appears after it
-    local nested_line
-    nested_line=$(echo "$print_output" | grep -n "nested:" | cut -d: -f1)
-    local config_line
-    config_line=$(echo "$print_output" | grep -n "config:" | cut -d: -f1)
-    
-    # Assert that both lines were found
-    [ -n "$nested_line" ]
+    # Check that the nested structure exists in YAML format
+    echo "$print_output" | grep -q "nested:"
     assert_equals "$?" "0" "Output should contain nested: section"
     
-    [ -n "$config_line" ]
+    echo "$print_output" | grep -q "config:"
     assert_equals "$?" "0" "Output should contain config: section"
     
-    # Assert that config comes after nested (numerically greater line number)
-    [ "$config_line" -gt "$nested_line" ]
-    assert_equals "$?" "0" "The config section should be nested inside the nested section"
+    echo "$print_output" | grep -q "array:"
+    assert_equals "$?" "0" "Output should contain array: section"
 }

@@ -23,29 +23,16 @@ sdk_fac_con_get() {
     if [ -n "$specific_scope" ]; then
         sdk_fac_con_validate_scope "$specific_scope" || return 1
         local config_file="$(sdk_fac_con_get_config_file "$specific_scope")"
-        local raw_value="$(_yq -r ".${key_path}" "$config_file" 2>/dev/null)"
+        local value="$(_yq eval ".${key_path}" "$config_file" 2>/dev/null)"
         
         # Check if key was not found
-        if [ "$raw_value" = "null" ] || [ -z "$raw_value" ]; then
+        if [ "$value" = "null" ] || [ -z "$value" ]; then
             echo "Configuration key '$key_path' not found in $specific_scope scope"
             return 1
         fi
         
-        # Convert to JSON using _yq -c to preserve structure including duplicate array items
-        local json_value
-        json_value=$(_yq -c ".${key_path}" "$config_file" 2>/dev/null || echo "\"$raw_value\"")
-        
-        # If conversion fails or returns null, use raw value
-        if [ "$json_value" = "null" ] || [ -z "$json_value" ]; then
-            echo "Configuration key '$key_path' not found in $specific_scope scope"
-            return 1
-        fi
-
-        if echo "$json_value" | jq -e 'type == "array"' >/dev/null 2>&1; then
-            echo "[$(echo "$json_value" | jq -r 'join(",")')]"
-        else
-            echo "$json_value" | jq -r '.' 2>/dev/null || echo "$raw_value"
-        fi
+        # Return raw YAML value - no JSON conversion
+        echo "$value"
         return 0
     fi
     
@@ -58,24 +45,12 @@ sdk_fac_con_get() {
             continue
         fi
         
-        local raw_value="$(_yq -r ".${key_path}" "$config_file" 2>/dev/null)"
+        local value="$(_yq eval ".${key_path}" "$config_file" 2>/dev/null)"
         
         # Return the first non-null value found
-        if [ "$raw_value" != "null" ] && [ -n "$raw_value" ]; then
-            # Convert to JSON using _yq -c to preserve structure including duplicate array items
-            local json_value
-            json_value=$(_yq -c ".${key_path}" "$config_file" 2>/dev/null || echo "\"$raw_value\"")
-            
-            # If conversion fails or returns null, skip to next scope
-            if [ "$json_value" = "null" ] || [ -z "$json_value" ]; then
-                continue
-            fi
-
-            if echo "$json_value" | jq -e 'type == "array"' >/dev/null 2>&1; then
-                echo "[$(echo "$json_value" | jq -r 'join(",")')]"
-            else
-                echo "$json_value" | jq -r '.' 2>/dev/null || echo "$raw_value"
-            fi
+        if [ "$value" != "null" ] && [ -n "$value" ]; then
+            # Return raw YAML value - no JSON conversion
+            echo "$value"
             return 0
         fi
     done
@@ -206,26 +181,16 @@ sdk_fac_con_which() {
         local config_file="$(sdk_fac_con_get_config_file "$scope")"
         
         if [ -f "$config_file" ]; then
-            local raw_value="$(_yq -r ".${key_path}" "$config_file" 2>/dev/null)"
+            local value="$(_yq eval ".${key_path}" "$config_file" 2>/dev/null)"
             
-            if [ "$raw_value" != "null" ] && [ -n "$raw_value" ]; then
-                # Process the value the same way as get function
-                local json_value
-                json_value=$(echo "$raw_value" | _yq -c . 2>/dev/null || echo "\"$raw_value\"")
-                
-                local display_value
-                if echo "$json_value" | jq -e 'type == "array"' >/dev/null 2>&1; then
-                    display_value=$(echo "$json_value" | jq -r '.[]' | tr '\n' ' ' | sed 's/ $//')
-                else
-                    display_value=$(echo "$json_value" | jq -r '.' 2>/dev/null || echo "$raw_value")
-                fi
-                
+            if [ "$value" != "null" ] && [ -n "$value" ]; then
+                # Use the value as-is for display
                 if [ -z "$found_value" ]; then
-                    found_value="$display_value"
+                    found_value="$value"
                     found_scope="$scope"
-                    echo "  ✔ [$scope] $display_value (ACTIVE)"
+                    echo "  ✔ [$scope] $value (ACTIVE)"
                 else
-                    echo "  - [$scope] $display_value (overridden)"
+                    echo "  - [$scope] $value (overridden)"
                 fi
             else
                 echo "  - [$scope] (not set)"

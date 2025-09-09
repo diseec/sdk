@@ -69,7 +69,7 @@ c=$1; shift; case $c in
     "    ssu|select_submodule     " "Activate submodules for workspace" \
     "" "" "$(ansi 97 'Basic Commands')" "" \
     "    get <key.path>           " "Get configuration value with hierarchy resolution" \
-    "    set <key.path> <value>   " "Set configuration value (use JSON format for arrays and objects)" \
+    "    set <key.path> <value>   " "Set configuration value (use comma-separated format for arrays: item1,item2,item3)" \
     "    rem|remove <key.path> [value]" "Remove value from array or delete key (value optional)" \
     "    whi|which <key.path>     " "Show configuration value resolution path (no scope needed)" \
     "    pat|path                 " "Show configuration path (no scope needed)" \
@@ -86,8 +86,8 @@ c=$1; shift; case $c in
     "" "" "$(ansi 97 'Examples')" "" \
     "    config --scope=context get context.submodules" \
     "    config -s=user set defaults.shell zsh" \
-    "    config --scope context set context.submodules '[\"my-service\", \"another-service\"]'" \
-    "    config --scope user set user.preferences '{\"theme\": \"dark\", \"notifications\": true}'" \
+    "    config --scope context set context.submodules 'my-service,another-service'" \
+    "    config --scope user set user.theme dark" \
     "    config which organization.name" \
     "    config --scope=context print" \
     "    config --scope context remove \"some.key\"" \
