@@ -9,15 +9,27 @@ sdk_fac_ai_generate_commit_message() {
     local diff_summary="$1"
     local diff_preview="$2"
     
-    local prompt="Generate a concise, descriptive commit message for the following code changes.
+    # Load the commit prompt template
+    local prompt_template
+    prompt_template=$(sdk_fac_ai_prompt_load "commit")
+    
+    if [ $? -ne 0 ]; then
+        # Fallback to inline prompt if template not found
+        prompt_template="Generate a concise, descriptive commit message for the following code changes.
 
 Summary of changes:
-${diff_summary}
+{{DIFF_SUMMARY}}
 
 Preview of changes:
-${diff_preview}
+{{DIFF_PREVIEW}}
 
 Please format the response as a commit message with a short title (max 50 chars) on the first line, then a blank line, then bullet points with details if needed."
+    fi
+    
+    # Replace placeholders
+    local prompt=$(sdk_fac_ai_prompt_replace_placeholders "$prompt_template" \
+        "DIFF_SUMMARY=$diff_summary" \
+        "DIFF_PREVIEW=$diff_preview")
     
     sdk_fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_CREATIVE_TEMPERATURE" "Update files"
 }
@@ -35,9 +47,15 @@ sdk_fac_ai_generate_daily_insight() {
         analysis_data=$(sdk_fac_ai_truncate_to_token_limit "$analysis_data" "$FAC_AI_MAX_INPUT_TOKENS")
     fi
     
-    local prompt="Analyze the following development activity and create a concise daily insight report.
+    # Load the daily insight prompt template
+    local prompt_template
+    prompt_template=$(sdk_fac_ai_prompt_load "daily-insight")
+    
+    if [ $? -ne 0 ]; then
+        # Fallback to inline prompt if template not found
+        prompt_template="Analyze the following development activity and create a concise daily insight report.
 
-$analysis_data
+{{INPUT}}
 
 Please format the response as:
 1. A single descriptive title that captures the overall view of changes
@@ -54,8 +72,12 @@ Enhanced Authentication and Performance Optimizations
 - Added new user dashboard feature X in frontend/components/Dashboard.tsx
 - Refactored database connection pooling in api/database.js for 40% performance improvement
 - Updated security headers configuration in nginx.conf
-- Optimized API response caching in services/cache-service
-"
+- Optimized API response caching in services/cache-service"
+    fi
+    
+    # Replace placeholders
+    local prompt=$(sdk_fac_ai_prompt_replace_placeholders "$prompt_template" \
+        "INPUT=$analysis_data")
     
     sdk_fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_DEFAULT_TEMPERATURE" "No insights available" "$FAC_AI_MAX_INPUT_TOKENS"
 }

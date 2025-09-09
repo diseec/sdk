@@ -12,7 +12,7 @@ sdk_fac_ins_sdk() {
             logit -e "The 'patch' command works only on bench! (the sdk container)"; return 1; 
         fi
 
-        target_kit="$D_CONT_CTX_DIR/$D_SDK_NPM_PATH"
+        target_kit="$D_CONT_CTX_DIR/$D_SDK_OF_CTX"
 
         if [ -L "$target_kit" ]; then
             logit -w "$target_kit is a symlink, most probably to a global sdk installation. Aborting patch to avoid overwriting global sdk."
@@ -35,7 +35,7 @@ sdk_fac_ins_sdk() {
         logit -l "Patching $package_name to $D_CONT_CTX_DIR .."
         rm -rf "$target_kit" 2>/dev/null 
         mkdir -p "$target_kit" 2>/dev/null
-        cp -r "$TMPDIR/$D_SDK_NPM_PATH"/* "$target_kit"
+        cp -r "$TMPDIR/$D_SDK_OF_CTX"/* "$target_kit"
 
         if [ ! -f "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME" ]; then
             logit -l "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file..."
@@ -52,7 +52,7 @@ sdk_fac_ins_sdk() {
 sdk_fac_ins_ensure_patched() {
     mark_ctx_only
     local is_forced="${_D_SDK_PATCH_FORCE:-false}";
-    local sdk_dir="$D_CTX_DIR/$D_SDK_NPM_PATH";
+    local sdk_dir="$D_CTX_DIR/$D_SDK_OF_CTX";
 
     # Patch operation applied only either asked to or target project is missing the sdk
     if { [ _D_SDK_HAS_PATCHED != "true" ] && \

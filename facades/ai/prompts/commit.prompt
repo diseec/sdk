@@ -1,0 +1,10 @@
+# Generate a concise, descriptive commit message for code changes
+Generate a concise, descriptive commit message for the following code changes.
+
+Summary of changes:
+{{DIFF_SUMMARY}}
+
+Preview of changes:
+{{DIFF_PREVIEW}}
+
+Please format the response as a commit message with a short title (max 50 chars) on the first line, then a blank line, then bullet points with details if needed.

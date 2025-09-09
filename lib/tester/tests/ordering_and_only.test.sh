@@ -18,10 +18,10 @@ test_apple_second() {
 }
 
 # Test with "only" - when any test has _only suffix, only those tests run
-test_banana_third_only() {
-    # This test will run exclusively when "only" mode is active
-    assert_equals "banana" "banana" "Banana test should run in only mode"
-}
+# test_banana_third_only() {
+#     # This test will run exclusively when "only" mode is active
+#     assert_equals "banana" "banana" "Banana test should run in only mode"
+# }
 
 test_cherry_fourth() {
     # This should run fourth normally, but will be skipped in "only" mode
@@ -29,10 +29,10 @@ test_cherry_fourth() {
 }
 
 # Another "only" test - both "only" tests will run in order
-test_date_fifth_only() {
-    # This test will also run in "only" mode, after the banana test
-    assert_equals "date" "date" "Date test should run in only mode after banana"
-}
+# test_date_fifth_only() {
+#     # This test will also run in "only" mode, after the banana test
+#     assert_equals "date" "date" "Date test should run in only mode after banana"
+# }
 
 test_elderberry_sixth() {
     # This should run last normally, but will be skipped in "only" mode

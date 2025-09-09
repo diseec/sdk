@@ -229,3 +229,99 @@ fail_test() {
     _tester_assert_result "false" "$message"
     return 1
 }
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ EXTENDED ASSERTIONS FOR SECRETS TESTING                                ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+# Assert that a string is a valid hexadecimal key of specific length
+assert_valid_hex_key() {
+    local value="$1"
+    local expected_length="${2:-64}"
+    local message="${3:-"Value should be a valid $expected_length-character hex key"}"
+    
+    local actual_length=$(echo "$value" | wc -c | tr -d ' ')
+    # Account for newline character
+    local expected_with_newline=$((expected_length + 1))
+    
+    if [ "$actual_length" -eq "$expected_with_newline" ] && echo "$value" | grep -qE "^[0-9a-f]{$expected_length}$"; then
+        _tester_assert_result "true" "$message"
+    else
+        _tester_assert_result "false" "$message" "$expected_length-char hex key" "$actual_length-char: '$value'"
+    fi
+}
+
+# Assert that output contains error indicators
+assert_contains_error() {
+    local output="$1"
+    local message="${2:-"Output should contain error indicators"}"
+    
+    if echo "$output" | grep -qE "(error|ERROR|fail|FAIL|✖|⚠️|\[!\])"; then
+        _tester_assert_result "true" "$message"
+    else
+        _tester_assert_result "false" "$message" "error indicators" "'$output'"
+    fi
+}
+
+# Assert that output contains success indicators
+assert_contains_success() {
+    local output="$1"
+    local message="${2:-"Output should contain success indicators"}"
+    
+    if echo "$output" | grep -qE "(success|SUCCESS|✓|✔|added|configured|initialized|removed)"; then
+        _tester_assert_result "true" "$message"
+    else
+        _tester_assert_result "false" "$message" "success indicators" "'$output'"
+    fi
+}
+
+# Assert that a command times out (useful for interactive commands)
+assert_command_times_out() {
+    local timeout_seconds="$1"
+    local command="$2"
+    local message="${3:-"Command should timeout after $timeout_seconds seconds"}"
+    
+    if timeout "$timeout_seconds" bash -c "$command" >/dev/null 2>&1; then
+        # Command completed within timeout - this might be unexpected
+        _tester_assert_result "false" "$message" "timeout after $timeout_seconds seconds" "completed successfully"
+    else
+        local exit_code=$?
+        if [ "$exit_code" -eq 124 ]; then
+            # Command timed out (timeout exit code is 124)
+            _tester_assert_result "true" "$message"
+        else
+            # Command failed for other reasons
+            _tester_assert_result "false" "$message" "timeout (exit 124)" "exit code $exit_code"
+        fi
+    fi
+}
+
+# Assert that a string has minimum length
+assert_min_length() {
+    local value="$1"
+    local min_length="$2"
+    local message="${3:-"Value should have minimum length of $min_length"}"
+    
+    local actual_length=$(echo -n "$value" | wc -c | tr -d ' ')
+    
+    if [ "$actual_length" -ge "$min_length" ]; then
+        _tester_assert_result "true" "$message"
+    else
+        _tester_assert_result "false" "$message" ">= $min_length characters" "$actual_length characters"
+    fi
+}
+
+# Assert that a string has maximum length
+assert_max_length() {
+    local value="$1"
+    local max_length="$2"
+    local message="${3:-"Value should have maximum length of $max_length"}"
+    
+    local actual_length=$(echo -n "$value" | wc -c | tr -d ' ')
+    
+    if [ "$actual_length" -le "$max_length" ]; then
+        _tester_assert_result "true" "$message"
+    else
+        _tester_assert_result "false" "$message" "<= $max_length characters" "$actual_length characters"
+    fi
+}

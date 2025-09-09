@@ -118,6 +118,22 @@ create_test_workspace() {
     local workspace_dir="/tmp/$workspace_name"
     
     mkdir -p "$workspace_dir"
+    
+    # Copy CLI template file to workspace
+    if [ -f "$D_SDK_DIR/templates/cli" ]; then
+        cp "$D_SDK_DIR/templates/cli" "$workspace_dir/cli"
+        chmod +x "$workspace_dir/cli"
+    else
+        logit -w "CLI template not found at $D_SDK_DIR/templates/cli"
+    fi
+
+    mkdir -p "$workspace_dir/$D_SDK_OF_CTX"
+    ls "$workspace_dir/$D_SDK_OF_CTX"
+    cp -r "$D_SDK_DIR" "$workspace_dir/$D_SDK_OF_CTX"
+
+    # export D_CTX_DIR="$workspace_dir"
+    # cd "$workspace_dir" || return 1
+
     echo "$workspace_dir"
 }
 

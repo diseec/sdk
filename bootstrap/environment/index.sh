@@ -44,7 +44,7 @@ sdk_boo_env_setup_environment() {
     readonly D_REPOSITORY_URL="github.com/$D_ORG_NAME"
     readonly D_SDK_IMAGE="$D_REGISTRY_URL/$D_SDK_NAME"
     readonly D_SDK_NPM_PKG="@$D_ORG_NAME/$D_SDK_NAME"
-    readonly D_SDK_NPM_PATH="node_modules/$D_SDK_NPM_PKG"
+    readonly D_SDK_OF_CTX="node_modules/$D_SDK_NPM_PKG"
 
     # =============================================================================
     # CONTAINER & DOCKER CONFIGURATION
@@ -63,7 +63,7 @@ sdk_boo_env_setup_environment() {
     if [ -z "${D_CTX_DIR:-}" ]; then
         D_CTX_DIR="$(sdk_boo_env_uti_cli_auto_discovery)"
     fi
-    readonly D_CTX_DIR
+    # readonly D_CTX_DIR # Must not be readonly here for testing purposes
 
     readonly D_CLI_SDK="$D_SDK_DIR/$D_SDK_NAME"
     readonly D_CLI_CORE="$D_SDK_DIR/cli.sh"

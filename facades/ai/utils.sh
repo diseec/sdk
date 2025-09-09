@@ -125,3 +125,42 @@ sdk_fac_ai_truncate_to_token_limit() {
     
     echo "$truncated_text"
 }
+
+# Load a prompt from the prompts directory
+# Usage: sdk_fac_ai_prompt_load "prompt_name"
+# Output: Prompt content
+sdk_fac_ai_prompt_load() {
+    local prompt_name="$1"
+    local prompt_file="$D_SDK_DIR/facades/ai/prompts/${prompt_name}.prompt"
+    
+    if [ ! -f "$prompt_file" ]; then
+        logit -e "Prompt file not found: $prompt_file" >&2
+        return 1
+    fi
+    
+    # Skip the first line if it's a comment (description)
+    local content=$(tail -n +2 "$prompt_file")
+    
+    # If the content is empty after skipping the first line, include the first line
+    if [ -z "$content" ]; then
+        content=$(cat "$prompt_file")
+    fi
+    
+    echo "$content"
+}
+
+# Replace placeholders in prompt content
+# Usage: sdk_fac_ai_prompt_replace_placeholders "content" "key1=value1" "key2=value2"
+# Output: Content with replaced placeholders
+sdk_fac_ai_prompt_replace_placeholders() {
+    local content="$1"
+    shift
+    
+    for replacement in "$@"; do
+        local key="${replacement%%=*}"
+        local value="${replacement#*=}"
+        content=$(echo "$content" | sed "s/{{$key}}/$value/g")
+    done
+    
+    echo "$content"
+}

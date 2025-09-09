@@ -79,9 +79,23 @@ c=$1; shift; case $c in
             "    assert_equals <expected> <actual>                " "$(ansi "2;90" "Assert two values are equal")" \
             "    assert_not_equals <expected> <actual>            " "$(ansi "2;90" "Assert two values are not equal")" \
             "    assert_contains <haystack> <needle>              " "$(ansi "2;90" "Assert string contains substring")" \
+            "    assert_not_contains <haystack> <needle>          " "$(ansi "2;90" "Assert string does not contain substring")" \
             "    assert_file_exists <path>                        " "$(ansi "2;90" "Assert file exists")" \
+            "    assert_file_not_exists <path>                    " "$(ansi "2;90" "Assert file does not exist")" \
             "    assert_command_success <command>                 " "$(ansi "2;90" "Assert command exits with code 0")" \
             "    assert_command_fails <command>                   " "$(ansi "2;90" "Assert command exits with non-zero code")" \
+            "    assert_matches <value> <pattern>                 " "$(ansi "2;90" "Assert value matches regex pattern")" \
+            "    assert_greater_than <value> <threshold>          " "$(ansi "2;90" "Assert numeric value is greater than threshold")" \
+            "    assert_less_than <value> <threshold>             " "$(ansi "2;90" "Assert numeric value is less than threshold")" \
+            "    assert_empty <value>                             " "$(ansi "2;90" "Assert value is empty")" \
+            "    assert_not_empty <value>                         " "$(ansi "2;90" "Assert value is not empty")" \
+            "" "" \
+            "$(ansi "1;33" "$(capitalize 'EXTENDED ASSERTIONS FOR SECRETS')")" "" \
+            "    assert_valid_hex_key <value> [length]            " "$(ansi "2;90" "Assert value is valid hex key (default 64 chars)")" \
+            "    assert_contains_error <output>                   " "$(ansi "2;90" "Assert output contains error indicators")" \
+            "    assert_contains_success <output>                 " "$(ansi "2;90" "Assert output contains success indicators")" \
+            "    assert_min_length <value> <min>                  " "$(ansi "2;90" "Assert value has minimum length")" \
+            "    assert_max_length <value> <max>                  " "$(ansi "2;90" "Assert value has maximum length")" \
             "" "" \
             "$@"
         ;;
