@@ -9,9 +9,11 @@ source_once "$D_SDK_DIR/facades/config/index.sh"
 
 # Main configuration CLI handler
 
-# Extract scope option from arguments
+# Extract scope option from arguments and preserve remaining arguments
 SCOPE=""
-ARGS=""
+FILTERED_ARGS=()
+NEXT_IS_SCOPE=""
+
 for arg in "$@"; do
     case "$arg" in
         -s=*|--scope=*) SCOPE="${arg#*=}" ;;
@@ -29,34 +31,22 @@ for arg in "$@"; do
                 SCOPE="$arg"
                 NEXT_IS_SCOPE=""
             else
-                ARGS="$ARGS \"$arg\""
+                FILTERED_ARGS+=("$arg")
             fi
             ;;
     esac
 done
 
-# Reconstruct arguments without scope option
-eval set -- $(eval echo $ARGS)
+# Set arguments to filtered array
+set -- "${FILTERED_ARGS[@]}"
 
 c=$1; shift; case $c in
     # Basic operations
     ini|init) sdk_fac_con_opt_act_init "$@" ;;
     sum|summary) sdk_fac_con_opt_act_status "$@" ;;
     get) sdk_fac_con_get "$@" "$SCOPE" ;;
-    set)
-        if [[ "$2" =~ ^\[.*\]$ ]]; then
-            sdk_fac_con_array_add "$1" "$2" "$SCOPE"
-        else
-            sdk_fac_con_set "$1" "$2" "$SCOPE"
-        fi
-    ;;
-    rem|remove)
-        if [ -z "$2" ]; then
-            sdk_fac_con_delete "$1" "" "$SCOPE"
-        else
-            sdk_fac_con_array_remove "$1" "$2" "$SCOPE"
-        fi
-    ;;
+    set) sdk_fac_con_set "$1" "$2" "$SCOPE" ;;
+    rem|remove) sdk_fac_con_delete "$1" "" "$SCOPE" ;;
     pat|path) sdk_fac_con_get_config_file "$SCOPE" ;;
     whi|which) sdk_fac_con_which "$@" ;;
     pri|print) 
@@ -79,7 +69,7 @@ c=$1; shift; case $c in
     "    ssu|select_submodule     " "Activate submodules for workspace" \
     "" "" "$(ansi 97 'Basic Commands')" "" \
     "    get <key.path>           " "Get configuration value with hierarchy resolution" \
-    "    set <key.path> <value>   " "Set configuration value (use JSON array syntax for arrays)" \
+    "    set <key.path> <value>   " "Set configuration value (use JSON format for arrays and objects)" \
     "    rem|remove <key.path> [value]" "Remove value from array or delete key (value optional)" \
     "    whi|which <key.path>     " "Show configuration value resolution path (no scope needed)" \
     "    pat|path                 " "Show configuration path (no scope needed)" \
@@ -96,7 +86,8 @@ c=$1; shift; case $c in
     "" "" "$(ansi 97 'Examples')" "" \
     "    config --scope=context get context.submodules" \
     "    config -s=user set defaults.shell zsh" \
-    "    config --scope context set context.submodules '[\"my-service\"]'" \
+    "    config --scope context set context.submodules '[\"my-service\", \"another-service\"]'" \
+    "    config --scope user set user.preferences '{\"theme\": \"dark\", \"notifications\": true}'" \
     "    config which organization.name" \
     "    config --scope=context print" \
     "    config --scope context remove \"some.key\"" \

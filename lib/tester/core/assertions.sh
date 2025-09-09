@@ -31,10 +31,6 @@ _tester_assert_result() {
             printf "        \033[90mactual  :\033[0m \033[97m%s\033[0m" "$actual"
         fi
         
-        if [ "$TESTER_FAIL_FAST" = "true" ]; then
-            printf "\n      \033[31m[!]\033[0m \033[90mFail-fast mode enabled, stopping\033[0m\n"
-            return 1
-        fi
         return 1
     fi
 }

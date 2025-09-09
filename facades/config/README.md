@@ -126,22 +126,23 @@ Delete configuration key from specified scope
 sdk_fac_con_delete "old.setting" workspace
 ```
 
-### Array Operations
+### Array and Object Operations
 
-#### `sdk_fac_con_array_add <key.path> <value> [scope]`
-
-Add value to configuration array
+Arrays and objects should be set using JSON format with the `sdk_fac_con_set` function:
 
 ```bash
-sdk_fac_con_array_add "workspace.submodules" "new-service"
+# Set an array
+sdk_fac_con_set "workspace.submodules" '["service1", "service2"]'
+
+# Set an object
+sdk_fac_con_set "user.preferences" '{"theme": "dark", "notifications": true}'
 ```
 
-#### `sdk_fac_con_array_remove <key.path> <value> [scope]`
-
-Remove value from configuration array
+To remove array items or modify arrays, use the `set` command with a new JSON array:
 
 ```bash
-sdk_fac_con_array_remove "workspace.submodules" "old-service"
+# Remove an item by setting a new array without that item
+sdk_fac_con_set "workspace.submodules" '["service1"]'  # removes "service2"
 ```
 
 ### Introspection

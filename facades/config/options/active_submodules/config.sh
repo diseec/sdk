@@ -75,22 +75,27 @@ sdk_fac_con_opt_act_create_config() {
         done
     fi
     
-    # Clear existing submodules and set empty array
-    cli_ctx config function sdk_fac_con_delete submodules repository 2>/dev/null || true
-    
-    # Always create empty array first, then add modules
-    local config_file="$(cli_ctx config function sdk_fac_con_get_config_file repository)"
-    if command -v _yq >/dev/null 2>&1; then
-        _yq -i ".submodules = []" "$config_file"
+    # Create JSON array from selected modules
+    if [ -n "$selected_modules" ]; then
+        # Build JSON array from selected modules
+        local json_array="["
+        local first=true
+        for module in $selected_modules; do
+            if [ "$first" = "true" ]; then
+                json_array="${json_array}\"${module}\""
+                first=false
+            else
+                json_array="${json_array}, \"${module}\""
+            fi
+        done
+        json_array="${json_array}]"
+        
+        # Set the submodules array using the JSON format
+        cli_ctx config --scope repository set submodules "$json_array"
     else
-        # Fallback: ensure file exists and add empty array
-        echo "submodules: []" >> "$config_file"
+        # Set empty array if no modules selected
+        cli_ctx config --scope repository set submodules "[]"
     fi
-    
-    # Add selected modules to the array
-    for module in $selected_modules; do
-        cli_ctx config function sdk_fac_con_array_add submodules "$module" repository
-    done
 
     logit -l "Workspace configuration saved to $config_file"
     logit -i "Activated modules: $(echo $selected_modules | tr ' ' ', ')"

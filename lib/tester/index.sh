@@ -14,6 +14,8 @@
 
 # Source core testing components
 source_once "$D_SDK_DIR/lib/tester/core/assertions.sh"
+source_once "$D_SDK_DIR/lib/tester/core/registry.sh"
+source_once "$D_SDK_DIR/lib/tester/core/helpers.sh"
 source_once "$D_SDK_DIR/lib/tester/core/runner.sh"
 source_once "$D_SDK_DIR/lib/tester/core/discovery.sh"
 source_once "$D_SDK_DIR/lib/tester/core/reporter.sh"

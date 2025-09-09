@@ -5,6 +5,39 @@
 # ┃ Executes test files and manages test execution lifecycle                ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
+# Get test functions in the order they appear in the file, respecting "only" functionality
+_sdk_tester_get_functions_in_order() {
+    local test_file="$1"
+    
+    if [ ! -f "$test_file" ]; then
+        return 1
+    fi
+    
+    # Parse the file to find function definitions in order
+    local all_functions
+    all_functions=$(grep -n "^[[:space:]]*test_[a-zA-Z0-9_]*[[:space:]]*(" "$test_file" | sed 's/^[0-9]*:[[:space:]]*\(test_[a-zA-Z0-9_]*\)[[:space:]]*(.*/\1/')
+    
+    if [ -z "$all_functions" ]; then
+        return 1
+    fi
+    
+    # Check if any functions have the "_only" suffix
+    local only_functions
+    only_functions=$(echo "$all_functions" | grep "_only$")
+    
+    if [ -n "$only_functions" ]; then
+        # If there are "only" functions, return only those
+        echo "$only_functions"
+        # Set global flag for reporter (don't reset, accumulate)
+        export TESTER_HAS_ONLY_FUNCTIONS=true
+        echo "true" > "$TESTER_ONLY_FLAG_FILE" 2>/dev/null || true
+    else
+        # Return all functions in order
+        echo "$all_functions"
+        # Don't reset the flag, let it accumulate from other files
+    fi
+}
+
 # Execute a single test file
 _sdk_tester_run_test_file() {
     local test_file="$1"
@@ -41,13 +74,18 @@ _sdk_tester_run_test_file() {
         # Source the test file in current shell to preserve test state
         source "$test_file"
         
-        # Find and execute all test functions
+        # Get test functions in file order, not alphabetical order
         local test_functions
-        test_functions=$(declare -F | grep "declare -f test_" | sed 's/declare -f //')
+        test_functions=$(_sdk_tester_get_functions_in_order "$test_file")
         
         if [ -z "$test_functions" ]; then
-            printf " \033[33m[!]\033[0m \033[90mno test functions\033[0m\n"
-            return 0
+            # Fall back to the old alphabetical method if parsing fails
+            test_functions=$(declare -F | grep "declare -f test_" | sed 's/declare -f //')
+            
+            if [ -z "$test_functions" ]; then
+                printf " \033[33m[!]\033[0m \033[90mno test functions\033[0m\n"
+                return 0
+            fi
         fi
         
         # Run suite setup if defined
@@ -100,6 +138,7 @@ _sdk_tester_run_test_file() {
             
             # Check if we should fail fast
             if [ $test_exit_code -ne 0 ] && [ "$TESTER_FAIL_FAST" = "true" ]; then
+                printf "\n      \033[31m[!]\033[0m \033[90mFail-fast mode enabled, stopping\033[0m\n"
                 return 1
             fi
         done
@@ -155,6 +194,11 @@ sdk_tester_run_tests() {
     sdk_tester_initialize
     TESTER_START_TIME=$(date +%s)
     
+    # Initialize the "only" flag globally
+    export TESTER_HAS_ONLY_FUNCTIONS=false
+    export TESTER_ONLY_FLAG_FILE="/tmp/tester_only_$$"
+    echo "false" > "$TESTER_ONLY_FLAG_FILE"
+    
     # Get test files
     local test_files
     test_files=$(_sdk_tester_get_test_files "$@")
@@ -199,6 +243,11 @@ sdk_tester_run_tests() {
 
     # Show summary
     sdk_tester_show_summary
+
+    # Clean up temp files
+    if [ -n "$TESTER_ONLY_FLAG_FILE" ] && [ -f "$TESTER_ONLY_FLAG_FILE" ]; then
+        rm -f "$TESTER_ONLY_FLAG_FILE"
+    fi
 
     echo ""
 }

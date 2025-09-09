@@ -15,7 +15,7 @@ sdk_fac_con_get() {
     set -e
     local key_path="$1"
     local specific_scope="$2"  # Optional: if specified, only check this scope
-    
+
     # Validate key path
     sdk_fac_con_validate_key_path "$key_path" || return 1
     
@@ -23,20 +23,28 @@ sdk_fac_con_get() {
     if [ -n "$specific_scope" ]; then
         sdk_fac_con_validate_scope "$specific_scope" || return 1
         local config_file="$(sdk_fac_con_get_config_file "$specific_scope")"
-        local value="$(sdk_fac_con_yaml_get "$config_file" "$key_path")"
+        local raw_value="$(_yq -r ".${key_path}" "$config_file" 2>/dev/null)"
         
         # Check if key was not found
-        if [ "$value" = "null" ] || [ -z "$value" ]; then
+        if [ "$raw_value" = "null" ] || [ -z "$raw_value" ]; then
             echo "Configuration key '$key_path' not found in $specific_scope scope"
             return 1
         fi
         
-        # If it's an array (starts with "- "), format it for script usability
-        if [[ "$value" == "-"* ]]; then
-            # Convert YAML list format to space-separated values
-            echo "$value" | sed 's/^- //' | tr '\n' ' ' | sed 's/ $//'
+        # Convert to JSON using _yq -c to preserve structure including duplicate array items
+        local json_value
+        json_value=$(_yq -c ".${key_path}" "$config_file" 2>/dev/null || echo "\"$raw_value\"")
+        
+        # If conversion fails or returns null, use raw value
+        if [ "$json_value" = "null" ] || [ -z "$json_value" ]; then
+            echo "Configuration key '$key_path' not found in $specific_scope scope"
+            return 1
+        fi
+
+        if echo "$json_value" | jq -e 'type == "array"' >/dev/null 2>&1; then
+            echo "[$(echo "$json_value" | jq -r 'join(",")')]"
         else
-            echo "$value"
+            echo "$json_value" | jq -r '.' 2>/dev/null || echo "$raw_value"
         fi
         return 0
     fi
@@ -50,16 +58,23 @@ sdk_fac_con_get() {
             continue
         fi
         
-        local value="$(sdk_fac_con_yaml_get "$config_file" "$key_path")"
+        local raw_value="$(_yq -r ".${key_path}" "$config_file" 2>/dev/null)"
         
         # Return the first non-null value found
-        if [ "$value" != "null" ] && [ -n "$value" ]; then
-            # If it's an array (starts with "- "), format it for script usability
-            if [[ "$value" == "-"* ]]; then
-                # Convert YAML list format to space-separated values
-                echo "$value" | sed 's/^- //' | tr '\n' ' ' | sed 's/ $//'
+        if [ "$raw_value" != "null" ] && [ -n "$raw_value" ]; then
+            # Convert to JSON using _yq -c to preserve structure including duplicate array items
+            local json_value
+            json_value=$(_yq -c ".${key_path}" "$config_file" 2>/dev/null || echo "\"$raw_value\"")
+            
+            # If conversion fails or returns null, skip to next scope
+            if [ "$json_value" = "null" ] || [ -z "$json_value" ]; then
+                continue
+            fi
+
+            if echo "$json_value" | jq -e 'type == "array"' >/dev/null 2>&1; then
+                echo "[$(echo "$json_value" | jq -r 'join(",")')]"
             else
-                echo "$value"
+                echo "$json_value" | jq -r '.' 2>/dev/null || echo "$raw_value"
             fi
             return 0
         fi
@@ -139,58 +154,8 @@ sdk_fac_con_delete() {
 }
 
 # =============================================================================
-# ARRAY OPERATIONS
+# CONFIGURATION OPERATIONS
 # =============================================================================
-
-# Add value to configuration array
-sdk_fac_con_array_add() {
-    set -e
-    local key_path="$1"
-    local value="$2"
-    local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
-    
-    # Validate inputs
-    sdk_fac_con_validate_key_path "$key_path" || return 1
-    sdk_fac_con_validate_scope "$scope" || return 1
-    
-    if [ -z "$value" ]; then
-        logit -e "Array value cannot be empty"
-        return 1
-    fi
-    
-    # Ensure config file exists and add to array
-    local config_file="$(sdk_fac_con_get_config_file "$scope")"
-    sdk_fac_con_yaml_array_add "$config_file" "$key_path" "$value"
-
-    logit -l "Added '$value' to '$key_path' array in '$scope' scope"
-}
-
-# Remove value from configuration array
-sdk_fac_con_array_remove() {
-    set -e
-    local key_path="$1"
-    local value="$2"
-    local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
-    
-    # Validate inputs
-    sdk_fac_con_validate_key_path "$key_path" || return 1
-    sdk_fac_con_validate_scope "$scope" || return 1
-    
-    if [ -z "$value" ]; then
-        logit -e "Array value cannot be empty"
-        return 1
-    fi
-    
-    local config_file="$(sdk_fac_con_get_config_file "$scope")"
-    
-    if [ ! -f "$config_file" ]; then
-        logit -w "Configuration file does not exist for scope: $scope"
-        return 1
-    fi
-    
-    sdk_fac_con_yaml_array_remove "$config_file" "$key_path" "$value"
-    logit -l "Removed '$value' from '$key_path' array in '$scope' scope"
-}
 
 # =============================================================================
 # CONFIGURATION INTROSPECTION
@@ -241,15 +206,26 @@ sdk_fac_con_which() {
         local config_file="$(sdk_fac_con_get_config_file "$scope")"
         
         if [ -f "$config_file" ]; then
-            local value="$(sdk_fac_con_yaml_get "$config_file" "$key_path")"
+            local raw_value="$(_yq -r ".${key_path}" "$config_file" 2>/dev/null)"
             
-            if [ "$value" != "null" ] && [ -n "$value" ]; then
-                if [ -z "$found_value" ]; then
-                    found_value="$value"
-                    found_scope="$scope"
-                    echo "  ✔ [$scope] $value (ACTIVE)"
+            if [ "$raw_value" != "null" ] && [ -n "$raw_value" ]; then
+                # Process the value the same way as get function
+                local json_value
+                json_value=$(echo "$raw_value" | _yq -c . 2>/dev/null || echo "\"$raw_value\"")
+                
+                local display_value
+                if echo "$json_value" | jq -e 'type == "array"' >/dev/null 2>&1; then
+                    display_value=$(echo "$json_value" | jq -r '.[]' | tr '\n' ' ' | sed 's/ $//')
                 else
-                    echo "  - [$scope] $value (overridden)"
+                    display_value=$(echo "$json_value" | jq -r '.' 2>/dev/null || echo "$raw_value")
+                fi
+                
+                if [ -z "$found_value" ]; then
+                    found_value="$display_value"
+                    found_scope="$scope"
+                    echo "  ✔ [$scope] $display_value (ACTIVE)"
+                else
+                    echo "  - [$scope] $display_value (overridden)"
                 fi
             else
                 echo "  - [$scope] (not set)"

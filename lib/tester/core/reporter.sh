@@ -26,6 +26,15 @@ sdk_tester_show_summary() {
     # Compact results display - inspired by debug trace aesthetic
     printf "\033[1;90mRESULTS\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
     
+    # Show "only" mode indicator if active
+    local only_flag="false"
+    if [ -f "$TESTER_ONLY_FLAG_FILE" ]; then
+        only_flag=$(cat "$TESTER_ONLY_FLAG_FILE" 2>/dev/null || echo "false")
+    fi
+    if [ "$only_flag" = "true" ] || [ "$TESTER_HAS_ONLY_FUNCTIONS" = "true" ]; then
+        printf "\033[33m⚠\033[0m \033[90mRunning in \033[97mONLY\033[0m\033[90m mode (other tests skipped)\033[0m\n"
+    fi
+    
     if [ $TESTER_TOTAL_TESTS -gt 0 ]; then
         # Single line with all key metrics, color-coded by status
         if [ $TESTER_FAILED_TESTS -eq 0 ]; then

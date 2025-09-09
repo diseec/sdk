@@ -7,7 +7,9 @@ A simple, elegant, and modular testing framework for shell scripts that follows 
 - ✨ **Beautiful and easy assertions** - Simple, readable assertion functions
 - 🔍 **Auto-discovery** - Automatically finds `*.test.sh` files across your project
 - 🎯 **Easy filtering** - Filter tests by name or path with simple patterns
-- 🎨 **Consistent styling** - Follows SDK styling guidelines with colored output
+- � **"Only" mode** - Run only specific tests by marking them with `_only` suffix
+- 📋 **Preserved test order** - Tests run in the order they appear in files, not alphabetically
+- �🎨 **Consistent styling** - Follows SDK styling guidelines with colored output
 - 🔧 **Modular architecture** - Clean, extensible API design
 - 📊 **Rich reporting** - Detailed test results and statistics
 
@@ -99,6 +101,52 @@ Test files must:
 - Define functions starting with `test_`
 - Use assertion functions for validations
 
+### Test Execution Order
+
+Tests run in the order they appear in the file, **not alphabetically**:
+
+```bash
+#!/bin/bash
+
+test_zebra_first() {
+    # This runs first despite starting with 'z'
+    assert_equals "zebra" "zebra"
+}
+
+test_apple_second() {
+    # This runs second despite starting with 'a'
+    assert_equals "apple" "apple"
+}
+```
+
+### "Only" Mode
+
+Use the `_only` suffix to run only specific tests. When any test has `_only`, all other tests are skipped:
+
+```bash
+#!/bin/bash
+
+test_normal_test() {
+    # This will be skipped when "only" tests are present
+    assert_equals "normal" "normal"
+}
+
+test_important_test_only() {
+    # This will run in "only" mode
+    assert_equals "important" "important"
+}
+
+test_another_only_test_only() {
+    # This will also run in "only" mode, after the first "only" test
+    assert_equals "another" "another"
+}
+
+test_final_test() {
+    # This will be skipped when "only" tests are present
+    assert_equals "final" "final"
+}
+```
+
 ### Optional Lifecycle Hooks
 
 ```bash
@@ -160,6 +208,36 @@ d tester filter database
 d tester clean
 ```
 
+### "Only" Mode Examples
+
+When you have tests marked with `_only`, the output will show:
+
+```
+RESULTS ───────────────────────────────────────────────────────────────────
+⚠ Running in ONLY mode (other tests skipped)
+✓ 2 passed | 100% success | 1s
+```
+
+Normal mode (all tests run):
+
+```bash
+test_first() { assert_equals "1" "1"; }
+test_second_only() { assert_equals "2" "2"; }
+test_third() { assert_equals "3" "3"; }
+
+# Runs: test_first -> test_second_only -> test_third
+```
+
+Only mode (just the `_only` tests):
+
+```bash
+test_first() { assert_equals "1" "1"; }
+test_second_only() { assert_equals "2" "2"; }
+test_third() { assert_equals "3" "3"; }
+
+# Runs: test_second_only (others skipped)
+```
+
 ## Helper Functions
 
 ### Test Workspace Management
@@ -191,7 +269,25 @@ The tester is fully integrated with the SDK:
    test_user_can_login_with_valid_credentials()
    ```
 
-2. **One assertion per concept**: Keep tests focused
+2. **Use "only" for debugging**: Mark tests with `_only` when debugging specific issues
+
+   ```bash
+   test_broken_feature_only() {
+       # Focus on this failing test
+       assert_equals "expected" "actual"
+   }
+   ```
+
+3. **Tests run in file order**: Write tests in logical execution order
+
+   ```bash
+   test_setup_database()      # Runs first
+   test_create_user()         # Runs second
+   test_authenticate_user()   # Runs third
+   test_cleanup_database()    # Runs last
+   ```
+
+4. **One assertion per concept**: Keep tests focused
 
    ```bash
    test_password_validation() {
@@ -200,13 +296,13 @@ The tester is fully integrated with the SDK:
    }
    ```
 
-3. **Use meaningful assertion messages**: Help with debugging
+5. **Use meaningful assertion messages**: Help with debugging
 
    ```bash
    assert_equals "active" "$user_status" "User should be active after registration"
    ```
 
-4. **Clean up after tests**: Use teardown functions for cleanup
+6. **Clean up after tests**: Use teardown functions for cleanup
 
    ```bash
    test_teardown() {
@@ -214,7 +310,7 @@ The tester is fully integrated with the SDK:
    }
    ```
 
-5. **Group related tests**: Use descriptive file names
+7. **Group related tests**: Use descriptive file names
 
    ```bash
    auth.test.sh          # Authentication tests
@@ -222,7 +318,7 @@ The tester is fully integrated with the SDK:
    validation.test.sh    # Input validation tests
    ```
 
-6. **Try to keep it e2e**: Use 'D' command
+8. **Try to keep it e2e**: Use 'D' command
 
    ```bash
     version_output=$(D --version)
