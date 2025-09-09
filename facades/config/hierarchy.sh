@@ -25,6 +25,12 @@ sdk_fac_con_get() {
         local config_file="$(sdk_fac_con_get_config_file "$specific_scope")"
         local value="$(sdk_fac_con_yaml_get "$config_file" "$key_path")"
         
+        # Check if key was not found
+        if [ "$value" = "null" ] || [ -z "$value" ]; then
+            echo "Configuration key '$key_path' not found in $specific_scope scope"
+            return 1
+        fi
+        
         # If it's an array (starts with "- "), format it for script usability
         if [[ "$value" == "-"* ]]; then
             # Convert YAML list format to space-separated values
@@ -32,7 +38,7 @@ sdk_fac_con_get() {
         else
             echo "$value"
         fi
-        return $?
+        return 0
     fi
     
     # Search through scopes in order of precedence
@@ -60,7 +66,7 @@ sdk_fac_con_get() {
     done
     
     # No value found in any scope
-    echo "null"
+    echo "Configuration key '$key_path' not found"
     return 1
 }
 

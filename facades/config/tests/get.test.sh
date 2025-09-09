@@ -31,6 +31,11 @@ suite_teardown() {
 
 # Test basic get functionality with scope
 test_config_get_with_scope() {
+    # Set up fresh values for this test (in case other tests modified them)
+    cd "$TEST_WORKSPACE" && D config --scope=user set test.key "user_value" > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=repository set test.key "repo_value" > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=context set test.key "context_value" > /dev/null
+    
     # Get value from user scope
     local user_value
     user_value=$(cd "$TEST_WORKSPACE" && D config --scope=user get test.key)
@@ -76,12 +81,12 @@ test_config_get_hierarchy_resolution() {
     assert_equals "context_value" "$resolved_value" "Hierarchy resolution should return context value"
     
     # If we delete from context, it should fall back to repository
-    cd "$TEST_WORKSPACE" && D config --scope=context delete test.key > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=context remove test.key > /dev/null
     resolved_value=$(cd "$TEST_WORKSPACE" && D config get test.key)
     assert_equals "repo_value" "$resolved_value" "Hierarchy resolution should fall back to repository"
     
     # If we delete from repository, it should fall back to user
-    cd "$TEST_WORKSPACE" && D config --scope=repository delete test.key > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=repository remove test.key > /dev/null
     resolved_value=$(cd "$TEST_WORKSPACE" && D config get test.key)
     assert_equals "user_value" "$resolved_value" "Hierarchy resolution should fall back to user"
 }

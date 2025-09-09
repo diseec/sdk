@@ -43,10 +43,20 @@ c=$1; shift; case $c in
     ini|init) sdk_fac_con_opt_act_init "$@" ;;
     sum|summary) sdk_fac_con_opt_act_status "$@" ;;
     get) sdk_fac_con_get "$@" "$SCOPE" ;;
-    set) sdk_fac_con_set "$@" "$SCOPE" ;;
-    add) sdk_fac_con_set "$@" "$SCOPE" "true" ;;
-    rem|remove) sdk_fac_con_delete "$@" "$SCOPE" ;;
-    del|delete) sdk_fac_con_delete "$@" "$SCOPE" ;;
+    set)
+        if [[ "$2" =~ ^\[.*\]$ ]]; then
+            sdk_fac_con_array_add "$1" "$2" "$SCOPE"
+        else
+            sdk_fac_con_set "$1" "$2" "$SCOPE"
+        fi
+    ;;
+    rem|remove)
+        if [ -z "$2" ]; then
+            sdk_fac_con_delete "$1" "" "$SCOPE"
+        else
+            sdk_fac_con_array_remove "$1" "$2" "$SCOPE"
+        fi
+    ;;
     pat|path) sdk_fac_con_get_config_file "$SCOPE" ;;
     whi|which) sdk_fac_con_which "$@" ;;
     pri|print) 
@@ -59,40 +69,38 @@ c=$1; shift; case $c in
     ssu|select_submodule) sdk_fac_con_opt_act_select "$@" ;;
 
     hel|help|--help|-h) display_help "" "" \
-        "$(ansi 97 'Configuration Management System')" "" \
-        "" "" "$(ansi 97 'Usage:    config [SCOPE_OPTIONS] <command> [arguments]')" "" \
-        "$(ansi 97 'Scope Options (mandatory for most commands)')" "" \
-        "    -s=<scope>               " "Set scope (short form)" \
-        "    --scope=<scope>          " "Set scope (long form with equals)" \
-        "    --scope <scope>          " "Set scope (long form with space)" \
-        "" "" "$(ansi 97 'Available Settings')" "" \
-        "    ssu|select_submodule     " "Activate submodules for workspace" \
-        "" "" "$(ansi 97 'Basic Commands')" "" \
-        "    get <key.path>           " "Get configuration value with hierarchy resolution" \
-        "    set <key.path> <value>   " "Set configuration value in specified scope" \
-        "    add <key.path> <value>   " "Add value to configuration array" \
-        "    rem|remove <key.path> <val>" "Remove value from configuration array" \
-        "    del|delete <key.path>    " "Delete configuration key from specified scope" \
-        "    whi|which <key.path>     " "Show configuration value resolution path (no scope needed)" \
-        "    pat|path                 " "Show configuration path (no scope needed)" \
-        "    pri|print                " "Print configuration for scope (or all if no scope)" \
-        "    sta|status               " "Show configuration summary" \
-        "    hel|help                 " "Show this help message" \
-        "" "" "$(ansi 97 'Scopes')" "" \
-        "    context                  " "Project-specific shared configuration ($SCOPE_CTX_FILE)" \
-        "    repository               " "Project-specific local configuration ($SCOPE_REPO_FILE)" \
-        "    user                     " "User-specific configuration ($SCOPE_USER_FILE)" \
-        "" "" "$(ansi 97 'Hierarchy')" "" \
-        "    Configuration values are resolved in this order of precedence:" \
-        "    context > repository > user" \
-        "" "" "$(ansi 97 'Examples')" "" \
-        "    config --scope=context get context.submodules" \
-        "    config -s=user set defaults.shell zsh" \
-        "    config --scope context add context.submodules my-service" \
-        "    config which organization.name" \
-        "    config --scope=context list" \
-        "    config --scope context delete \"some.key\"" \
-        "$@"
+    "$(ansi 97 'Configuration Management System')" "" \
+    "" "" "$(ansi 97 'Usage:    config [SCOPE_OPTIONS] <command> [arguments]')" "" \
+    "$(ansi 97 'Scope Options (mandatory for most commands)')" "" \
+    "    -s=<scope>               " "Set scope (short form)" \
+    "    --scope=<scope>          " "Set scope (long form with equals)" \
+    "    --scope <scope>          " "Set scope (long form with space)" \
+    "" "" "$(ansi 97 'Available Settings')" "" \
+    "    ssu|select_submodule     " "Activate submodules for workspace" \
+    "" "" "$(ansi 97 'Basic Commands')" "" \
+    "    get <key.path>           " "Get configuration value with hierarchy resolution" \
+    "    set <key.path> <value>   " "Set configuration value (use JSON array syntax for arrays)" \
+    "    rem|remove <key.path> [value]" "Remove value from array or delete key (value optional)" \
+    "    whi|which <key.path>     " "Show configuration value resolution path (no scope needed)" \
+    "    pat|path                 " "Show configuration path (no scope needed)" \
+    "    pri|print                " "Print configuration for scope (or all if no scope)" \
+    "    sta|status               " "Show configuration summary" \
+    "    hel|help                 " "Show this help message" \
+    "" "" "$(ansi 97 'Scopes')" "" \
+    "    context                  " "Project-specific shared configuration ($SCOPE_CTX_FILE)" \
+    "    repository               " "Project-specific local configuration ($SCOPE_REPO_FILE)" \
+    "    user                     " "User-specific configuration ($SCOPE_USER_FILE)" \
+    "" "" "$(ansi 97 'Hierarchy')" "" \
+    "    Configuration values are resolved in this order of precedence:" \
+    "    context > repository > user" \
+    "" "" "$(ansi 97 'Examples')" "" \
+    "    config --scope=context get context.submodules" \
+    "    config -s=user set defaults.shell zsh" \
+    "    config --scope context set context.submodules '[\"my-service\"]'" \
+    "    config which organization.name" \
+    "    config --scope=context print" \
+    "    config --scope context remove \"some.key\"" \
+    "$@"
     ;;
     fun|function) "$@" ;;
     *)
