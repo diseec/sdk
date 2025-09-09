@@ -42,7 +42,7 @@ set -- "${FILTERED_ARGS[@]}"
 
 c=$1; shift; case $c in
     # Basic operations
-    ini|init) sdk_fac_con_opt_act_init "$@" ;;
+    ini|init) sdk_fac_con_init "$@" ;;
     sum|summary) sdk_fac_con_opt_act_status "$@" ;;
     get) sdk_fac_con_get "$@" "$SCOPE" ;;
     set) sdk_fac_con_set "$1" "$2" "$SCOPE" ;;

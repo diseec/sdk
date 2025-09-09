@@ -129,6 +129,37 @@ sdk_fac_con_delete() {
 }
 
 # =============================================================================
+# CONFIGURATION INITIALIZATION
+# =============================================================================
+
+# Initialize configuration system - create all config files
+sdk_fac_con_init() {
+    local initialized_files=()
+    
+    # Initialize config files for all scopes
+    for scope in $CONFIG_SCOPES; do
+        local config_file="$(sdk_fac_con_get_config_file "$scope")"
+        if [ -f "$config_file" ] && [ -s "$config_file" ]; then
+            # File exists and has content - skip
+            continue
+        else
+            # Create or initialize empty file
+            echo "{}" > "$config_file"
+            initialized_files+=("$scope")
+        fi
+    done
+    
+    if [ ${#initialized_files[@]} -gt 0 ]; then
+        local scopes_list=$(IFS=', '; echo "${initialized_files[*]}")
+        echo "Configuration initialized for scopes: $scopes_list"
+    else
+        echo "Configuration already initialized"
+    fi
+    
+    return 0
+}
+
+# =============================================================================
 # CONFIGURATION OPERATIONS
 # =============================================================================
 

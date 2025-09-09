@@ -39,9 +39,10 @@ test_config_which_shared_key() {
     assert_contains "$which_output" "repository" "Which output should mention repository scope"
     assert_contains "$which_output" "user" "Which output should mention user scope"
     
-    # Verify it shows the hierarchy
-    # This may depend on exact output format, so adapt as needed
-    assert_matches "$which_output" ".*context.*repository.*user.*" "Which output should show hierarchy"
+    # Verify it shows the hierarchy in the correct order
+    # Convert to single line and check order
+    local single_line_output=$(echo "$which_output" | tr '\n' ' ')
+    assert_matches "$single_line_output" ".*context.*repository.*user.*" "Which output should show hierarchy in correct order"
 }
 
 # Test which shows resolution for user-only key
@@ -87,5 +88,5 @@ test_config_which_nonexistent_key() {
     which_output=$(cd "$TEST_WORKSPACE" && D config which nonexistent.key)
     
     # Verify output indicates key not found in any scope
-    assert_contains "$which_output" "not found" "Which output should indicate key not found"
+    assert_contains "$which_output" "No value found" "Which output should indicate key not found"
 }

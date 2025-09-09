@@ -25,7 +25,7 @@ suite_setup() {
     cd "$TEST_WORKSPACE" && D config --scope=user set nested.config.key "nested_value" > /dev/null
     
     # Set up arrays
-    cd "$TEST_WORKSPACE" && D config --scope=user set array.test '["item1", "item2", "item3"]' > /dev/null
+    cd "$TEST_WORKSPACE" && D config --scope=user set array.test 'item1,item2,item3' > /dev/null
 }
 
 # Suite teardown - runs once after all tests in this file
@@ -41,16 +41,16 @@ test_config_print_specific_scope() {
     user_output=$(cd "$TEST_WORKSPACE" && D config --scope=user print)
     
     # Verify output contains user-specific keys
-    assert_contains "$user_output" "user.key" "Output should contain user.key"
+    assert_contains "$user_output" "user:" "Output should contain user section"
     assert_contains "$user_output" "user_value" "Output should contain user_value"
     
     # Verify it also contains shared keys in this scope
-    assert_contains "$user_output" "shared.key" "Output should contain shared.key"
+    assert_contains "$user_output" "shared:" "Output should contain shared section"
     assert_contains "$user_output" "user_shared" "Output should contain user_shared"
     
     # Verify it doesn't contain keys from other scopes
-    assert_not_contains "$user_output" "repo.key" "Output should not contain repo.key"
-    assert_not_contains "$user_output" "context.key" "Output should not contain context.key"
+    assert_not_contains "$user_output" "repo:" "Output should not contain repo section"
+    assert_not_contains "$user_output" "context:" "Output should not contain context section"
 }
 
 # Test printing all scopes (when no scope is specified)
@@ -60,9 +60,9 @@ test_config_print_all_scopes() {
     all_output=$(cd "$TEST_WORKSPACE" && D config print)
     
     # Verify output contains keys from all scopes
-    assert_contains "$all_output" "user.key" "Output should contain user.key"
-    assert_contains "$all_output" "repo.key" "Output should contain repo.key"
-    assert_contains "$all_output" "context.key" "Output should contain context.key"
+    assert_contains "$all_output" "user:" "Output should contain user section"
+    assert_contains "$all_output" "repo:" "Output should contain repo section"  
+    assert_contains "$all_output" "context:" "Output should contain context section"
     
     # Verify it contains the shared key values from each scope
     assert_contains "$all_output" "user_shared" "Output should contain user_shared"
@@ -70,15 +70,18 @@ test_config_print_all_scopes() {
     assert_contains "$all_output" "context_shared" "Output should contain context_shared"
 }
 
-# Test that print output is valid JSON
-test_config_print_valid_json() {
+# Test that print output is valid YAML
+test_config_print_valid_yaml() {
     # Print user scope
     local user_output
     user_output=$(cd "$TEST_WORKSPACE" && D config --scope=user print)
     
-    # Validate JSON by trying to parse it with jq
-    # Note: This assumes jq is available on the system
-    assert_command_success "echo '$user_output' | jq ." "Print output should be valid JSON"
+    # Extract just the YAML content (skip the header lines)
+    local yaml_content
+    yaml_content=$(echo "$user_output" | tail -n +4)  # Skip first 3 lines (header info)
+    
+    # Validate YAML by trying to parse it with yq
+    assert_command_success "echo '$yaml_content' | yq eval ." "Print output should be valid YAML"
 }
 
 # Test that print includes nested configurations

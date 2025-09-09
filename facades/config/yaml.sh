@@ -59,9 +59,12 @@ sdk_fac_con_yaml_set_yq() {
     local key_path="$2"
     local value="$3"
     
-    # Handle YAML arrays in the format: item1,item2,item3
-    if [[ "$value" == *,* ]] && [[ "$value" != *:* ]] && [[ "$value" != \{* ]]; then
-        # This looks like a comma-separated list, convert to YAML array
+    # Handle different array formats
+    if [[ "$value" == \[* ]] && [[ "$value" == *\] ]]; then
+        # JSON array format: ["item1", "item2", "item3"]
+        _yq eval -i ".${key_path} = $value" "$config_file"
+    elif [[ "$value" == *,* ]] && [[ "$value" != *:* ]] && [[ "$value" != \{* ]]; then
+        # Comma-separated format: item1,item2,item3
         # Split on commas and create proper YAML array
         local yaml_array="["
         IFS=',' read -ra ITEMS <<< "$value"
