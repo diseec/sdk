@@ -63,7 +63,7 @@ sdk_boo_env_setup_environment() {
     if [ -z "${D_CTX_DIR:-}" ]; then
         D_CTX_DIR="$(sdk_boo_env_uti_cli_auto_discovery)"
     fi
-    # readonly D_CTX_DIR # Must not be readonly here for testing purposes
+    readonly D_CTX_DIR # Im sure this must not be readonly but since at the time of writing this the structure is not fully shaped and target is the isolation we will leave it like this
 
     readonly D_CLI_SDK="$D_SDK_DIR/$D_SDK_NAME"
     readonly D_CLI_CORE="$D_SDK_DIR/cli.sh"

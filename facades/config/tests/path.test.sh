@@ -9,7 +9,7 @@ suite_setup() {
     TEST_WORKSPACE=$(create_test_workspace "config_path_tests")
     
     # Initialize config
-    cd "$TEST_WORKSPACE" && D config init > /dev/null
+    d config init > /dev/null
 }
 
 # Suite teardown - runs once after all tests in this file
@@ -22,9 +22,9 @@ suite_teardown() {
 test_config_path_each_scope() {
     # Get paths for each scope
     local user_path repo_path context_path
-    user_path=$(cd "$TEST_WORKSPACE" && D config --scope=user path)
-    repo_path=$(cd "$TEST_WORKSPACE" && D config --scope=repository path)
-    context_path=$(cd "$TEST_WORKSPACE" && D config --scope=context path)
+    user_path=$(d config --scope=user path)
+    repo_path=$(d config --scope=repository path)
+    context_path=$(d config --scope=context path)
     
     # Verify each path is returned and not empty
     assert_not_empty "$user_path" "User config path should not be empty"
@@ -41,9 +41,9 @@ test_config_path_each_scope() {
 test_config_path_uniqueness() {
     # Get paths for each scope
     local user_path repo_path context_path
-    user_path=$(cd "$TEST_WORKSPACE" && D config --scope=user path)
-    repo_path=$(cd "$TEST_WORKSPACE" && D config --scope=repository path)
-    context_path=$(cd "$TEST_WORKSPACE" && D config --scope=context path)
+    user_path=$(d config --scope=user path)
+    repo_path=$(d config --scope=repository path)
+    context_path=$(d config --scope=context path)
     
     # Verify paths are different
     assert_not_equals "$user_path" "$repo_path" "User and repository paths should be different"
@@ -55,9 +55,9 @@ test_config_path_uniqueness() {
 test_config_path_absolute() {
     # Get paths for each scope
     local user_path repo_path context_path
-    user_path=$(cd "$TEST_WORKSPACE" && D config --scope=user path)
-    repo_path=$(cd "$TEST_WORKSPACE" && D config --scope=repository path)
-    context_path=$(cd "$TEST_WORKSPACE" && D config --scope=context path)
+    user_path=$(d config --scope=user path)
+    repo_path=$(d config --scope=repository path)
+    context_path=$(d config --scope=context path)
     
     # Verify paths are absolute (start with /)
     assert_matches "$user_path" "^/" "User config path should be absolute"

@@ -18,7 +18,7 @@ suite_teardown() {
 # Test export command requires secret name
 test_secret_export_requires_name() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret export 2>&1)
+    output=$(d secret export 2>&1)
     local result=$?
     
     # Should fail without secret name
@@ -29,7 +29,7 @@ test_secret_export_requires_name() {
 # Test export command with non-existent secret
 test_secret_export_nonexistent_secret() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret export NONEXISTENT_SECRET 2>&1)
+    output=$(d secret export NONEXISTENT_SECRET 2>&1)
     local result=$?
     
     # Should fail with non-existent secret
@@ -41,13 +41,13 @@ test_secret_export_nonexistent_secret() {
 test_secret_export_requires_openssl() {
     # Skip if OpenSSL is not available (we can't easily test this scenario)
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
         # OpenSSL not available - export should fail
         local output
-        output=$(cd "$TEST_WORKSPACE" && D secret export ANY_SECRET 2>&1)
+        output=$(d secret export ANY_SECRET 2>&1)
         local export_result=$?
         
         assert_not_equals "0" "$export_result" "Export should fail without OpenSSL"
@@ -58,7 +58,7 @@ test_secret_export_requires_openssl() {
 test_secret_export_existing_secret() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -68,7 +68,7 @@ test_secret_export_existing_secret() {
     
     # First add a secret to export
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "EXPORT_TEST_SECRET\nexport_test_value_456" | D secret add 2>&1)
+    add_output=$(echo -e "EXPORT_TEST_SECRET\nexport_test_value_456" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -78,7 +78,7 @@ test_secret_export_existing_secret() {
     
     # Now try to export it
     local export_output
-    export_output=$(cd "$TEST_WORKSPACE" && D secret export EXPORT_TEST_SECRET 2>&1)
+    export_output=$(d secret export EXPORT_TEST_SECRET 2>&1)
     local export_result=$?
     
     if [ "$export_result" -eq 0 ]; then
@@ -94,7 +94,7 @@ test_secret_export_existing_secret() {
 test_secret_export_no_key_configured() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -109,7 +109,7 @@ test_secret_export_no_key_configured() {
     
     # Try to export without key
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret export MOCK_SECRET 2>&1)
+    output=$(d secret export MOCK_SECRET 2>&1)
     local result=$?
     
     # Should fail or prompt for key configuration
@@ -122,7 +122,7 @@ test_secret_export_no_key_configured() {
 test_secret_export_output_format() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -133,7 +133,7 @@ test_secret_export_output_format() {
     # First add a secret with known value
     local test_value="simple_export_value"
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "FORMAT_TEST_SECRET\n$test_value" | D secret add 2>&1)
+    add_output=$(echo -e "FORMAT_TEST_SECRET\n$test_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -143,7 +143,7 @@ test_secret_export_output_format() {
     
     # Export and check that output is just the value (no extra text)
     local export_output
-    export_output=$(cd "$TEST_WORKSPACE" && D secret export FORMAT_TEST_SECRET 2>&1)
+    export_output=$(d secret export FORMAT_TEST_SECRET 2>&1)
     local export_result=$?
     
     if [ "$export_result" -eq 0 ]; then
@@ -160,7 +160,7 @@ test_secret_export_output_format() {
 test_secret_export_special_characters() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -171,7 +171,7 @@ test_secret_export_special_characters() {
     # Test value with special characters
     local special_value="password!@#$%^&*()_+-={}[]|\\:;\"'<>,.?/"
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "SPECIAL_CHARS_SECRET\n$special_value" | D secret add 2>&1)
+    add_output=$(echo -e "SPECIAL_CHARS_SECRET\n$special_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -181,7 +181,7 @@ test_secret_export_special_characters() {
     
     # Export and verify special characters are preserved
     local export_output
-    export_output=$(cd "$TEST_WORKSPACE" && D secret export SPECIAL_CHARS_SECRET 2>&1)
+    export_output=$(d secret export SPECIAL_CHARS_SECRET 2>&1)
     local export_result=$?
     
     if [ "$export_result" -eq 0 ]; then

@@ -23,7 +23,7 @@ suite_teardown() {
 # Test prompt list command
 test_ai_prompt_list() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai prompt list 2>&1)
+    output=$(d ai prompt list 2>&1)
     
     # Command should succeed
     assert_equals "0" "$?" "Prompt list command should succeed"
@@ -35,7 +35,7 @@ test_ai_prompt_list() {
 # Test prompt list with verbose flag
 test_ai_prompt_list_verbose() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai prompt list --verbose 2>&1)
+    output=$(d ai prompt list --verbose 2>&1)
     
     # Command should succeed
     assert_equals "0" "$?" "Prompt list --verbose should succeed"
@@ -47,7 +47,7 @@ test_ai_prompt_list_verbose() {
 # Test prompt show for built-in prompts
 test_ai_prompt_show_builtin() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai prompt show commit 2>&1)
+    output=$(d ai prompt show commit 2>&1)
     
     # Should succeed if commit prompt exists
     local result=$?
@@ -62,7 +62,7 @@ test_ai_prompt_show_builtin() {
 # Test prompt show for non-existent prompt
 test_ai_prompt_show_nonexistent() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai prompt show nonexistent-prompt 2>&1)
+    output=$(d ai prompt show nonexistent-prompt 2>&1)
     result=$?
     
     # Should fail
@@ -75,7 +75,7 @@ test_ai_prompt_show_nonexistent() {
 # Test prompt add command
 test_ai_prompt_add() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai prompt add test-prompt "$TEST_PROMPT_FILE" 2>&1)
+    output=$(d ai prompt add test-prompt "$TEST_PROMPT_FILE" 2>&1)
     
     # Should succeed
     assert_equals "0" "$?" "Prompt add should succeed with valid file"
@@ -87,7 +87,7 @@ test_ai_prompt_add() {
 # Test prompt add with non-existent file
 test_ai_prompt_add_missing_file() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai prompt add test-prompt "/nonexistent/file" 2>&1)
+    output=$(d ai prompt add test-prompt "/nonexistent/file" 2>&1)
     result=$?
     
     # Should fail
@@ -100,7 +100,7 @@ test_ai_prompt_add_missing_file() {
 # Test prompt add with missing arguments
 test_ai_prompt_add_missing_args() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai prompt add 2>&1)
+    output=$(d ai prompt add 2>&1)
     result=$?
     
     # Should fail
@@ -114,7 +114,7 @@ test_ai_prompt_add_missing_args() {
 test_ai_prompt_command_structure() {
     # Test invalid subcommand
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai prompt invalid-command 2>&1)
+    output=$(d ai prompt invalid-command 2>&1)
     result=$?
     
     # Should fail

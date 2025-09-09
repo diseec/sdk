@@ -19,7 +19,7 @@ suite_teardown() {
 test_secret_print_no_secrets() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -28,7 +28,7 @@ test_secret_print_no_secrets() {
     fi
     
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret print 2>&1)
+    output=$(d secret print 2>&1)
     local print_result=$?
     
     # Should succeed but indicate no secrets found
@@ -41,13 +41,13 @@ test_secret_print_no_secrets() {
 test_secret_print_requires_openssl() {
     # Skip if OpenSSL is not available (we can't easily test this scenario)
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
         # OpenSSL not available - print should fail
         local output
-        output=$(cd "$TEST_WORKSPACE" && D secret print 2>&1)
+        output=$(d secret print 2>&1)
         local print_result=$?
         
         assert_not_equals "0" "$print_result" "Print should fail without OpenSSL"
@@ -58,7 +58,7 @@ test_secret_print_requires_openssl() {
 test_secret_print_single_secret() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -68,7 +68,7 @@ test_secret_print_single_secret() {
     
     # First add a secret
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "PRINT_TEST_SECRET\nprint_test_value" | D secret add 2>&1)
+    add_output=$(echo -e "PRINT_TEST_SECRET\nprint_test_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -78,7 +78,7 @@ test_secret_print_single_secret() {
     
     # Now print all secrets
     local print_output
-    print_output=$(cd "$TEST_WORKSPACE" && D secret print 2>&1)
+    print_output=$(d secret print 2>&1)
     local print_result=$?
     
     if [ "$print_result" -eq 0 ]; then
@@ -93,7 +93,7 @@ test_secret_print_single_secret() {
 test_secret_print_multiple_secrets() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -103,11 +103,11 @@ test_secret_print_multiple_secrets() {
     
     # Add multiple secrets
     local add_output1
-    add_output1=$(cd "$TEST_WORKSPACE" && echo -e "MULTI_SECRET_1\nvalue_one" | D secret add 2>&1)
+    add_output1=$(echo -e "MULTI_SECRET_1\nvalue_one" | D secret add 2>&1)
     local add_result1=$?
     
     local add_output2
-    add_output2=$(cd "$TEST_WORKSPACE" && echo -e "MULTI_SECRET_2\nvalue_two" | D secret add 2>&1)
+    add_output2=$(echo -e "MULTI_SECRET_2\nvalue_two" | D secret add 2>&1)
     local add_result2=$?
     
     if [ "$add_result1" -ne 0 ] || [ "$add_result2" -ne 0 ]; then
@@ -117,7 +117,7 @@ test_secret_print_multiple_secrets() {
     
     # Print all secrets
     local print_output
-    print_output=$(cd "$TEST_WORKSPACE" && D secret print 2>&1)
+    print_output=$(d secret print 2>&1)
     local print_result=$?
     
     if [ "$print_result" -eq 0 ]; then
@@ -136,7 +136,7 @@ test_secret_print_multiple_secrets() {
 test_secret_print_shows_usage_instructions() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -146,7 +146,7 @@ test_secret_print_shows_usage_instructions() {
     
     # Add at least one secret so we get the usage instructions
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "USAGE_TEST_SECRET\nusage_test_value" | D secret add 2>&1)
+    add_output=$(echo -e "USAGE_TEST_SECRET\nusage_test_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -156,7 +156,7 @@ test_secret_print_shows_usage_instructions() {
     
     # Print secrets and check for usage instructions
     local print_output
-    print_output=$(cd "$TEST_WORKSPACE" && D secret print 2>&1)
+    print_output=$(d secret print 2>&1)
     local print_result=$?
     
     if [ "$print_result" -eq 0 ]; then
@@ -170,7 +170,7 @@ test_secret_print_shows_usage_instructions() {
 test_secret_print_decryption_failure() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -184,7 +184,7 @@ test_secret_print_decryption_failure() {
     
     # Try to print secrets
     local print_output
-    print_output=$(cd "$TEST_WORKSPACE" && D secret print 2>&1)
+    print_output=$(d secret print 2>&1)
     local print_result=$?
     
     # Should handle decryption failures gracefully
@@ -199,7 +199,7 @@ test_secret_print_decryption_failure() {
 test_secret_print_output_format() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -209,7 +209,7 @@ test_secret_print_output_format() {
     
     # Add a secret with known formatting
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "FORMAT_SECRET\nformat_value" | D secret add 2>&1)
+    add_output=$(echo -e "FORMAT_SECRET\nformat_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -219,7 +219,7 @@ test_secret_print_output_format() {
     
     # Print and check format
     local print_output
-    print_output=$(cd "$TEST_WORKSPACE" && D secret print 2>&1)
+    print_output=$(d secret print 2>&1)
     local print_result=$?
     
     if [ "$print_result" -eq 0 ]; then

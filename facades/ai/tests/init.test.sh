@@ -24,7 +24,7 @@ suite_teardown() {
 # Test init command help functionality
 test_ai_init_help() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai init --help 2>&1)
+    output=$(d ai init --help 2>&1)
     
     # Should not fail
     assert_equals "0" "$?" "Help command should succeed"
@@ -52,7 +52,7 @@ test_ai_init_with_existing_key() {
 test_ai_init_command_structure() {
     # Test with invalid argument
     local result
-    cd "$TEST_WORKSPACE" && D ai init --invalid-arg > /dev/null 2>&1
+    d ai init --invalid-arg > /dev/null 2>&1
     result=$?
     
     # Should return error for invalid argument

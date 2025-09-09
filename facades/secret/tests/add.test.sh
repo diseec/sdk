@@ -4,10 +4,6 @@
 
 # Suite setup - runs once before all tests in this file
 suite_setup() {
-    # Create a test workspace and set up secrets directory
-    export TEST_WORKSPACE
-    TEST_WORKSPACE=$(create_test_workspace "secret_add_tests")
-    
     # Ensure we have a writable secrets directory
     export ORIGINAL_SECRETS_DIR="$SECRETS_DIR"
     export SECRETS_DIR="$TEST_WORKSPACE/secrets"
@@ -89,13 +85,13 @@ suite_teardown() {
 test_secret_add_requires_openssl() {
     # Skip if OpenSSL is not available (we can't test this scenario easily)
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
         # OpenSSL not available - command should fail
         local output
-        output=$(cd "$TEST_WORKSPACE" && echo -e "TEST_SECRET\ntest_value" | D secret add 2>&1)
+        output=$(echo -e "TEST_SECRET\ntest_value" | D secret add 2>&1)
         local add_result=$?
         
         assert_not_equals "0" "$add_result" "Add command should fail without OpenSSL"

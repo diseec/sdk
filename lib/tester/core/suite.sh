@@ -18,13 +18,29 @@ suite_teardown() {
     return 0
 }
 
-test_setup() {
+setup_test_workspace() {
+    export TEST_WORKSPACE=$(create_test_workspace "test_workspace_$(date +%s%N)")
+    
+    mkdir -p "$TEST_WORKSPACE/$D_SDK_OF_CTX"
+
+    if [ -d "$D_SDK_DIR" ] && [ -n "$(ls -A $D_SDK_DIR 2>/dev/null)" ]; then
+        cp -r $D_SDK_DIR/* "$TEST_WORKSPACE/$D_SDK_OF_CTX"
+    else
+        logit -e "No files to copy from $D_SDK_DIR/"
+    fi
+
+    cd "$TEST_WORKSPACE" || return 1
+
+    return 0
+}
+
+setup_test() {
     # Override this function in test files for per-test setup
     # This runs before each individual test function
     return 0
 }
 
-test_teardown() {
+teardown_test() {
     # Override this function in test files for per-test cleanup
     # This runs after each individual test function
     rm -fr "$D_ORG_DIR"
@@ -37,8 +53,8 @@ _sdk_tester_execute_test_with_hooks() {
     TESTER_CURRENT_TEST="$test_function"
     
     # Run test setup if defined
-    if declare -f test_setup >/dev/null 2>&1; then
-        if ! test_setup; then
+    if declare -f setup_test >/dev/null 2>&1; then
+        if ! setup_test; then
             logit -e "Test setup failed for $test_function"
             return 1
         fi
@@ -51,8 +67,8 @@ _sdk_tester_execute_test_with_hooks() {
     fi
     
     # Run test teardown if defined (always run, even if test failed)
-    if declare -f test_teardown >/dev/null 2>&1; then
-        if ! test_teardown; then
+    if declare -f teardown_test >/dev/null 2>&1; then
+        if ! teardown_test; then
             logit -w "Test teardown failed for $test_function"
         fi
     fi
@@ -61,7 +77,7 @@ _sdk_tester_execute_test_with_hooks() {
 }
 
 # Execute suite with proper setup and teardown
-_sdk_tester_execute_suite() {
+_sdk_tester_execute_suite() { # UNUSED
     local test_file="$1"
     
     # Source the test file
@@ -126,13 +142,6 @@ create_test_workspace() {
     else
         logit -w "CLI template not found at $D_SDK_DIR/templates/cli"
     fi
-
-    mkdir -p "$workspace_dir/$D_SDK_OF_CTX"
-    ls "$workspace_dir/$D_SDK_OF_CTX"
-    cp -r "$D_SDK_DIR" "$workspace_dir/$D_SDK_OF_CTX"
-
-    # export D_CTX_DIR="$workspace_dir"
-    # cd "$workspace_dir" || return 1
 
     echo "$workspace_dir"
 }

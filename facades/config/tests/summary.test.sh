@@ -9,12 +9,12 @@ suite_setup() {
     TEST_WORKSPACE=$(create_test_workspace "config_summary_tests")
     
     # Initialize config
-    cd "$TEST_WORKSPACE" && D config init > /dev/null
+    d config init > /dev/null
     
     # Set up some test configurations in different scopes
-    cd "$TEST_WORKSPACE" && D config --scope=user set user.key "user_value" > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=repository set repo.key "repo_value" > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=context set context.key "context_value" > /dev/null
+    d config --scope=user set user.key "user_value" > /dev/null
+    d config --scope=repository set repo.key "repo_value" > /dev/null
+    d config --scope=context set context.key "context_value" > /dev/null
 }
 
 # Suite teardown - runs once after all tests in this file
@@ -27,7 +27,7 @@ suite_teardown() {
 test_config_summary_shows_all_scopes() {
     # Get summary
     local summary_output
-    summary_output=$(cd "$TEST_WORKSPACE" && D config summary)
+    summary_output=$(d config summary)
     
     # Verify it mentions all scopes (case-insensitive)
     assert_contains "$summary_output" "USER" "Summary should mention user scope"
@@ -39,13 +39,13 @@ test_config_summary_shows_all_scopes() {
 test_config_summary_shows_paths() {
     # Get summary
     local summary_output
-    summary_output=$(cd "$TEST_WORKSPACE" && D config summary)
+    summary_output=$(d config summary)
     
     # Get the config paths to compare
     local user_path repo_path context_path
-    user_path=$(cd "$TEST_WORKSPACE" && D config --scope=user path)
-    repo_path=$(cd "$TEST_WORKSPACE" && D config --scope=repository path)
-    context_path=$(cd "$TEST_WORKSPACE" && D config --scope=context path)
+    user_path=$(d config --scope=user path)
+    repo_path=$(d config --scope=repository path)
+    context_path=$(d config --scope=context path)
     
     # Verify paths are mentioned in the summary
     # This may depend on how paths are formatted in the summary
@@ -58,7 +58,7 @@ test_config_summary_shows_paths() {
 test_config_summary_shows_key_counts() {
     # Get summary
     local summary_output
-    summary_output=$(cd "$TEST_WORKSPACE" && D config summary)
+    summary_output=$(d config summary)
     
     # Verify it mentions the number of keys
     # This may depend on how the counts are formatted

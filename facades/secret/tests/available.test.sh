@@ -59,7 +59,7 @@ test_secret_available_quiet() {
 # Test availability check invalid arguments
 test_secret_available_invalid_args() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret available --invalid-arg 2>&1)
+    output=$(d secret available --invalid-arg 2>&1)
     local result=$?
     
     # Should contain error message about unknown argument
@@ -67,14 +67,14 @@ test_secret_available_invalid_args() {
     
     # Test multiple invalid arguments
     local output2
-    output2=$(cd "$TEST_WORKSPACE" && D secret available --bad-flag --another-bad-flag 2>&1)
+    output2=$(d secret available --bad-flag --another-bad-flag 2>&1)
     assert_contains "$output2" "Unknown argument" "Should indicate unknown argument with multiple bad flags"
 }
 
 # Test that secrets directory information is shown
 test_secret_available_shows_directory_info() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret available 2>&1)
+    output=$(d secret available 2>&1)
     
     # Should show secrets directory path
     assert_contains "$output" "Secrets Directory\|secrets" "Should mention secrets directory"

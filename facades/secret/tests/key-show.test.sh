@@ -18,7 +18,7 @@ suite_teardown() {
 # Test key-show command with no key configured
 test_secret_key_show_no_key_configured() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+    output=$(d secret key-show 2>&1)
     local result=$?
     
     # Should fail when no key is configured
@@ -30,7 +30,7 @@ test_secret_key_show_no_key_configured() {
 test_secret_key_show_with_configured_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -41,7 +41,7 @@ test_secret_key_show_with_configured_key() {
     # First set a key
     local test_key="abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
     local set_output
-    set_output=$(cd "$TEST_WORKSPACE" && echo "$test_key" | D secret key-set 2>&1)
+    set_output=$(echo "$test_key" | D secret key-set 2>&1)
     local set_result=$?
     
     if [ "$set_result" -ne 0 ]; then
@@ -51,7 +51,7 @@ test_secret_key_show_with_configured_key() {
     
     # Now show the key
     local show_output
-    show_output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+    show_output=$(d secret key-show 2>&1)
     local show_result=$?
     
     if [ "$show_result" -eq 0 ]; then
@@ -65,7 +65,7 @@ test_secret_key_show_with_configured_key() {
 test_secret_key_show_output_format() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -76,7 +76,7 @@ test_secret_key_show_output_format() {
     # First set a key
     local test_key="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     local set_output
-    set_output=$(cd "$TEST_WORKSPACE" && echo "$test_key" | D secret key-set 2>&1)
+    set_output=$(echo "$test_key" | D secret key-set 2>&1)
     local set_result=$?
     
     if [ "$set_result" -ne 0 ]; then
@@ -86,7 +86,7 @@ test_secret_key_show_output_format() {
     
     # Show the key and check format
     local show_output
-    show_output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+    show_output=$(d secret key-show 2>&1)
     local show_result=$?
     
     if [ "$show_result" -eq 0 ]; then
@@ -108,7 +108,7 @@ test_secret_key_show_output_format() {
 test_secret_key_show_after_auto_generated_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -118,7 +118,7 @@ test_secret_key_show_after_auto_generated_key() {
     
     # Add a secret which should auto-generate a key
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "AUTO_KEY_SECRET\nauto_key_value" | D secret add 2>&1)
+    add_output=$(echo -e "AUTO_KEY_SECRET\nauto_key_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -128,7 +128,7 @@ test_secret_key_show_after_auto_generated_key() {
     
     # Now try to show the key
     local show_output
-    show_output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+    show_output=$(d secret key-show 2>&1)
     local show_result=$?
     
     if [ "$show_result" -eq 0 ]; then
@@ -147,7 +147,7 @@ test_secret_key_show_after_auto_generated_key() {
 test_secret_key_show_displays_complete_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -158,7 +158,7 @@ test_secret_key_show_displays_complete_key() {
     # Set a known key with specific pattern for verification
     local known_key="aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
     local set_output
-    set_output=$(cd "$TEST_WORKSPACE" && echo "$known_key" | D secret key-set 2>&1)
+    set_output=$(echo "$known_key" | D secret key-set 2>&1)
     local set_result=$?
     
     if [ "$set_result" -ne 0 ]; then
@@ -168,7 +168,7 @@ test_secret_key_show_displays_complete_key() {
     
     # Show the key
     local show_output
-    show_output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+    show_output=$(d secret key-show 2>&1)
     local show_result=$?
     
     if [ "$show_result" -eq 0 ]; then
@@ -189,7 +189,7 @@ test_secret_key_show_displays_complete_key() {
 test_secret_key_show_error_handling() {
     # Test the error message when no key is configured
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+    output=$(d secret key-show 2>&1)
     local result=$?
     
     # Should fail gracefully
@@ -204,7 +204,7 @@ test_secret_key_show_error_handling() {
 test_secret_key_show_different_key_lengths() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -215,13 +215,13 @@ test_secret_key_show_different_key_lengths() {
     # Set a short key (should be allowed with confirmation during set)
     local short_key="short_key"
     local set_output
-    set_output=$(cd "$TEST_WORKSPACE" && echo -e "$short_key\ny" | D secret key-set 2>&1)
+    set_output=$(echo -e "$short_key\ny" | D secret key-set 2>&1)
     local set_result=$?
     
     if [ "$set_result" -eq 0 ]; then
         # Show the short key
         local show_output
-        show_output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+        show_output=$(d secret key-show 2>&1)
         local show_result=$?
         
         if [ "$show_result" -eq 0 ]; then

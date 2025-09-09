@@ -32,7 +32,7 @@ test_ai_generate_commit_no_changes() {
     cd "$TEST_WORKSPACE" && git reset > /dev/null 2>&1
     
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai generate commit 2>&1)
+    output=$(d ai generate commit 2>&1)
     result=$?
     
     # Should fail when no staged changes
@@ -52,7 +52,7 @@ test_ai_generate_commit_no_api_key() {
     cd "$TEST_WORKSPACE" && git add test.txt
     
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai generate commit 2>&1)
+    output=$(d ai generate commit 2>&1)
     result=$?
     
     # Should fail when AI services not available
@@ -65,7 +65,7 @@ test_ai_generate_commit_no_api_key() {
 # Test generate commit help
 test_ai_generate_commit_help() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai help generate 2>&1)
+    output=$(d ai help generate 2>&1)
     
     # Should succeed
     assert_equals "0" "$?" "Generate help should succeed"
@@ -80,7 +80,7 @@ test_ai_generate_insight_no_input() {
     unset OPENAI_API_KEY
     
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai generate insight 2>&1)
+    output=$(d ai generate insight 2>&1)
     result=$?
     
     # Should fail when AI services not available
@@ -96,7 +96,7 @@ test_ai_generate_prompt_nonexistent() {
     export OPENAI_API_KEY="sk-test123"
     
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai generate prompt nonexistent-prompt 2>&1)
+    output=$(d ai generate prompt nonexistent-prompt 2>&1)
     result=$?
     
     # Should fail
@@ -109,7 +109,7 @@ test_ai_generate_prompt_nonexistent() {
 # Test generate prompt without prompt name
 test_ai_generate_prompt_missing_name() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai generate prompt 2>&1)
+    output=$(d ai generate prompt 2>&1)
     result=$?
     
     # Should fail
@@ -123,7 +123,7 @@ test_ai_generate_prompt_missing_name() {
 test_ai_generate_command_structure() {
     # Test invalid subcommand
     local output
-    output=$(cd "$TEST_WORKSPACE" && D ai generate invalid-command 2>&1)
+    output=$(d ai generate invalid-command 2>&1)
     result=$?
     
     # Should fail

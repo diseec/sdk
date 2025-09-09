@@ -29,7 +29,7 @@ suite_teardown() {
 # Test remove command requires secret name
 test_secret_remove_requires_name() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret remove 2>&1)
+    output=$(d secret remove 2>&1)
     local result=$?
     
     # Should fail without secret name
@@ -40,7 +40,7 @@ test_secret_remove_requires_name() {
 # Test remove command with non-existent secret
 test_secret_remove_nonexistent_secret() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret remove NONEXISTENT_SECRET 2>&1)
+    output=$(d secret remove NONEXISTENT_SECRET 2>&1)
     local result=$?
     
     # Should fail with non-existent secret

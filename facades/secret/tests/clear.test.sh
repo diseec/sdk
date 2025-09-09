@@ -18,7 +18,7 @@ suite_teardown() {
 # Test clear command with no secrets
 test_secret_clear_no_secrets() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret clear 2>&1)
+    output=$(d secret clear 2>&1)
     local result=$?
     
     # Should handle no secrets gracefully
@@ -31,7 +31,7 @@ test_secret_clear_no_secrets() {
 test_secret_clear_existing_secrets_confirm() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -41,11 +41,11 @@ test_secret_clear_existing_secrets_confirm() {
     
     # First add some secrets to clear
     local add_output1
-    add_output1=$(cd "$TEST_WORKSPACE" && echo -e "CLEAR_SECRET_1\nclear_value_1" | D secret add 2>&1)
+    add_output1=$(echo -e "CLEAR_SECRET_1\nclear_value_1" | D secret add 2>&1)
     local add_result1=$?
     
     local add_output2
-    add_output2=$(cd "$TEST_WORKSPACE" && echo -e "CLEAR_SECRET_2\nclear_value_2" | D secret add 2>&1)
+    add_output2=$(echo -e "CLEAR_SECRET_2\nclear_value_2" | D secret add 2>&1)
     local add_result2=$?
     
     if [ "$add_result1" -ne 0 ] || [ "$add_result2" -ne 0 ]; then
@@ -55,16 +55,16 @@ test_secret_clear_existing_secrets_confirm() {
     
     # Verify secrets exist before clearing
     local exists1_before
-    exists1_before=$(cd "$TEST_WORKSPACE" && D secret exists CLEAR_SECRET_1 --quiet 2>&1)
+    exists1_before=$(d secret exists CLEAR_SECRET_1 --quiet 2>&1)
     assert_equals "0" "$?" "First secret should exist before clearing"
     
     local exists2_before
-    exists2_before=$(cd "$TEST_WORKSPACE" && D secret exists CLEAR_SECRET_2 --quiet 2>&1)
+    exists2_before=$(d secret exists CLEAR_SECRET_2 --quiet 2>&1)
     assert_equals "0" "$?" "Second secret should exist before clearing"
     
     # Clear all secrets with confirmation (type 'DELETE' to confirm)
     local clear_output
-    clear_output=$(cd "$TEST_WORKSPACE" && echo "DELETE" | D secret clear 2>&1)
+    clear_output=$(echo "DELETE" | D secret clear 2>&1)
     local clear_result=$?
     
     if [ "$clear_result" -eq 0 ]; then
@@ -72,11 +72,11 @@ test_secret_clear_existing_secrets_confirm() {
         
         # Verify secrets no longer exist
         local exists1_after
-        exists1_after=$(cd "$TEST_WORKSPACE" && D secret exists CLEAR_SECRET_1 --quiet 2>&1)
+        exists1_after=$(d secret exists CLEAR_SECRET_1 --quiet 2>&1)
         assert_not_equals "0" "$?" "First secret should not exist after clearing"
         
         local exists2_after
-        exists2_after=$(cd "$TEST_WORKSPACE" && D secret exists CLEAR_SECRET_2 --quiet 2>&1)
+        exists2_after=$(d secret exists CLEAR_SECRET_2 --quiet 2>&1)
         assert_not_equals "0" "$?" "Second secret should not exist after clearing"
     fi
 }
@@ -85,7 +85,7 @@ test_secret_clear_existing_secrets_confirm() {
 test_secret_clear_existing_secrets_cancel() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -95,7 +95,7 @@ test_secret_clear_existing_secrets_cancel() {
     
     # First add a secret to clear
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "CANCEL_CLEAR_SECRET\ncancel_clear_value" | D secret add 2>&1)
+    add_output=$(echo -e "CANCEL_CLEAR_SECRET\ncancel_clear_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -105,12 +105,12 @@ test_secret_clear_existing_secrets_cancel() {
     
     # Verify secret exists before attempted clearing
     local exists_before
-    exists_before=$(cd "$TEST_WORKSPACE" && D secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
+    exists_before=$(d secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should exist before clear attempt"
     
     # Try to clear but cancel (provide anything other than 'DELETE')
     local clear_output
-    clear_output=$(cd "$TEST_WORKSPACE" && echo "CANCEL" | D secret clear 2>&1)
+    clear_output=$(echo "CANCEL" | D secret clear 2>&1)
     local clear_result=$?
     
     # Should indicate operation was cancelled
@@ -118,7 +118,7 @@ test_secret_clear_existing_secrets_cancel() {
     
     # Verify secret still exists
     local exists_after
-    exists_after=$(cd "$TEST_WORKSPACE" && D secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
+    exists_after=$(d secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should still exist after cancelled clear"
 }
 
@@ -126,7 +126,7 @@ test_secret_clear_existing_secrets_cancel() {
 test_secret_clear_confirmation_prompt() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -136,7 +136,7 @@ test_secret_clear_confirmation_prompt() {
     
     # First add a secret so we have something to clear
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "PROMPT_CLEAR_SECRET\nprompt_clear_value" | D secret add 2>&1)
+    add_output=$(echo -e "PROMPT_CLEAR_SECRET\nprompt_clear_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -146,7 +146,7 @@ test_secret_clear_confirmation_prompt() {
     
     # Try to clear and check the confirmation prompt
     local clear_output
-    clear_output=$(cd "$TEST_WORKSPACE" && echo "CANCEL" | D secret clear 2>&1)
+    clear_output=$(echo "CANCEL" | D secret clear 2>&1)
     
     # Should show warning and ask for confirmation
     assert_contains "$clear_output" "WARNING\|permanently delete\|ALL secrets" "Should show warning about permanent deletion"
@@ -157,7 +157,7 @@ test_secret_clear_confirmation_prompt() {
 test_secret_clear_requires_exact_confirmation() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -167,7 +167,7 @@ test_secret_clear_requires_exact_confirmation() {
     
     # First add a secret so we have something to clear
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "EXACT_CONFIRM_SECRET\nexact_confirm_value" | D secret add 2>&1)
+    add_output=$(echo -e "EXACT_CONFIRM_SECRET\nexact_confirm_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -181,14 +181,14 @@ test_secret_clear_requires_exact_confirmation() {
     for confirmation in "${incorrect_confirmations[@]}"; do
         # Try to clear with incorrect confirmation
         local clear_output
-        clear_output=$(cd "$TEST_WORKSPACE" && echo "$confirmation" | D secret clear 2>&1)
+        clear_output=$(echo "$confirmation" | D secret clear 2>&1)
         
         # Should be cancelled with any incorrect confirmation
         assert_contains "$clear_output" "cancelled\|Operation cancelled" "Should cancel with incorrect confirmation: $confirmation"
         
         # Verify secret still exists
         local exists_check
-        exists_check=$(cd "$TEST_WORKSPACE" && D secret exists EXACT_CONFIRM_SECRET --quiet 2>&1)
+        exists_check=$(d secret exists EXACT_CONFIRM_SECRET --quiet 2>&1)
         assert_equals "0" "$?" "Secret should still exist after incorrect confirmation: $confirmation"
     done
 }
@@ -197,7 +197,7 @@ test_secret_clear_requires_exact_confirmation() {
 test_secret_clear_deletes_files() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -207,11 +207,11 @@ test_secret_clear_deletes_files() {
     
     # First add multiple secrets to clear
     local add_output1
-    add_output1=$(cd "$TEST_WORKSPACE" && echo -e "FILE_CLEAR_SECRET_1\nfile_clear_value_1" | D secret add 2>&1)
+    add_output1=$(echo -e "FILE_CLEAR_SECRET_1\nfile_clear_value_1" | D secret add 2>&1)
     local add_result1=$?
     
     local add_output2
-    add_output2=$(cd "$TEST_WORKSPACE" && echo -e "FILE_CLEAR_SECRET_2\nfile_clear_value_2" | D secret add 2>&1)
+    add_output2=$(echo -e "FILE_CLEAR_SECRET_2\nfile_clear_value_2" | D secret add 2>&1)
     local add_result2=$?
     
     if [ "$add_result1" -ne 0 ] || [ "$add_result2" -ne 0 ]; then
@@ -226,7 +226,7 @@ test_secret_clear_deletes_files() {
     if [ -f "$secret_file1" ] && [ -f "$secret_file2" ]; then
         # Clear all secrets with confirmation
         local clear_output
-        clear_output=$(cd "$TEST_WORKSPACE" && echo "DELETE" | D secret clear 2>&1)
+        clear_output=$(echo "DELETE" | D secret clear 2>&1)
         local clear_result=$?
         
         if [ "$clear_result" -eq 0 ]; then
@@ -245,7 +245,7 @@ test_secret_clear_deletes_files() {
 test_secret_clear_case_sensitive_confirmation() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -255,7 +255,7 @@ test_secret_clear_case_sensitive_confirmation() {
     
     # First add a secret so we have something to clear
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "CASE_SENSITIVE_SECRET\ncase_sensitive_value" | D secret add 2>&1)
+    add_output=$(echo -e "CASE_SENSITIVE_SECRET\ncase_sensitive_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -265,17 +265,17 @@ test_secret_clear_case_sensitive_confirmation() {
     
     # Test that only exact 'DELETE' (uppercase) works
     local clear_output_lower
-    clear_output_lower=$(cd "$TEST_WORKSPACE" && echo "delete" | D secret clear 2>&1)
+    clear_output_lower=$(echo "delete" | D secret clear 2>&1)
     assert_contains "$clear_output_lower" "cancelled\|Operation cancelled" "Should cancel with lowercase 'delete'"
     
     # Verify secret still exists after lowercase attempt
     local exists_after_lower
-    exists_after_lower=$(cd "$TEST_WORKSPACE" && D secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
+    exists_after_lower=$(d secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should still exist after lowercase confirmation"
     
     # Now test that uppercase 'DELETE' works
     local clear_output_upper
-    clear_output_upper=$(cd "$TEST_WORKSPACE" && echo "DELETE" | D secret clear 2>&1)
+    clear_output_upper=$(echo "DELETE" | D secret clear 2>&1)
     local clear_result_upper=$?
     
     if [ "$clear_result_upper" -eq 0 ]; then
@@ -283,7 +283,7 @@ test_secret_clear_case_sensitive_confirmation() {
         
         # Verify secret was actually deleted
         local exists_after_upper
-        exists_after_upper=$(cd "$TEST_WORKSPACE" && D secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
+        exists_after_upper=$(d secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
         assert_not_equals "0" "$?" "Secret should not exist after uppercase confirmation"
     fi
 }

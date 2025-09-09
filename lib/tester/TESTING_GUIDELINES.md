@@ -30,7 +30,7 @@ suite_setup() {
     TEST_WORKSPACE=$(create_test_workspace "feature_name_tests")
 
     # Initialize any required state
-    cd "$TEST_WORKSPACE" && D some-command init > /dev/null
+    d some-command init > /dev/null
 }
 
 # Suite teardown - runs once after all tests in this file
@@ -42,11 +42,11 @@ suite_teardown() {
 # Individual test function
 test_specific_feature() {
     # Setup
-    cd "$TEST_WORKSPACE" && D some-command setup-action > /dev/null
+    d some-command setup-action > /dev/null
 
     # Execute the code under test
     local result
-    result=$(cd "$TEST_WORKSPACE" && D some-command action-to-test)
+    result=$(d some-command action-to-test)
 
     # Assertions
     assert_equals "expected" "$result" "Message describing the expectation"

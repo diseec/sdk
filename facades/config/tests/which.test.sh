@@ -9,17 +9,17 @@ suite_setup() {
     TEST_WORKSPACE=$(create_test_workspace "config_which_tests")
     
     # Initialize config
-    cd "$TEST_WORKSPACE" && D config init > /dev/null
+    d config init > /dev/null
     
     # Set up some test configurations in different scopes
-    cd "$TEST_WORKSPACE" && D config --scope=user set test.key "user_value" > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=repository set test.key "repo_value" > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=context set test.key "context_value" > /dev/null
+    d config --scope=user set test.key "user_value" > /dev/null
+    d config --scope=repository set test.key "repo_value" > /dev/null
+    d config --scope=context set test.key "context_value" > /dev/null
     
     # Set up unique keys in each scope
-    cd "$TEST_WORKSPACE" && D config --scope=user set user.only "user_only_value" > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=repository set repo.only "repo_only_value" > /dev/null
-    cd "$TEST_WORKSPACE" && D config --scope=context set context.only "context_only_value" > /dev/null
+    d config --scope=user set user.only "user_only_value" > /dev/null
+    d config --scope=repository set repo.only "repo_only_value" > /dev/null
+    d config --scope=context set context.only "context_only_value" > /dev/null
 }
 
 # Suite teardown - runs once after all tests in this file
@@ -32,7 +32,7 @@ suite_teardown() {
 test_config_which_shared_key() {
     # Get which info for test.key
     local which_output
-    which_output=$(cd "$TEST_WORKSPACE" && D config which test.key)
+    which_output=$(d config which test.key)
     
     # Verify output contains all scopes with the key
     assert_contains "$which_output" "context" "Which output should mention context scope"
@@ -49,7 +49,7 @@ test_config_which_shared_key() {
 test_config_which_user_only_key() {
     # Get which info for user.only
     local which_output
-    which_output=$(cd "$TEST_WORKSPACE" && D config which user.only)
+    which_output=$(d config which user.only)
     
     # Verify output mentions user scope but not others
     assert_contains "$which_output" "user" "Which output should mention user scope"
@@ -61,7 +61,7 @@ test_config_which_user_only_key() {
 test_config_which_repo_only_key() {
     # Get which info for repo.only
     local which_output
-    which_output=$(cd "$TEST_WORKSPACE" && D config which repo.only)
+    which_output=$(d config which repo.only)
     
     # Verify output mentions repository scope but not others
     assert_contains "$which_output" "repository" "Which output should mention repository scope"
@@ -73,7 +73,7 @@ test_config_which_repo_only_key() {
 test_config_which_context_only_key() {
     # Get which info for context.only
     local which_output
-    which_output=$(cd "$TEST_WORKSPACE" && D config which context.only)
+    which_output=$(d config which context.only)
     
     # Verify output mentions context scope but not others
     assert_contains "$which_output" "context" "Which output should mention context scope"
@@ -85,7 +85,7 @@ test_config_which_context_only_key() {
 test_config_which_nonexistent_key() {
     # Get which info for a non-existent key
     local which_output
-    which_output=$(cd "$TEST_WORKSPACE" && D config which nonexistent.key)
+    which_output=$(d config which nonexistent.key)
     
     # Verify output indicates key not found in any scope
     assert_contains "$which_output" "No value found" "Which output should indicate key not found"

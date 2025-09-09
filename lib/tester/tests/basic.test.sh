@@ -24,13 +24,13 @@ suite_teardown() {
 }
 
 # Optional: Test setup - runs before each individual test
-test_setup() {
+setup_test() {
     # Set up any per-test state
     export TEST_VAR="initialized"
 }
 
 # Optional: Test teardown - runs after each individual test  
-test_teardown() {
+teardown_test() {
     # Clean up any per-test state
     unset TEST_VAR
 }

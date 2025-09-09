@@ -18,7 +18,7 @@ suite_teardown() {
 # Test key-reset command with no key configured
 test_secret_key_reset_no_key_configured() {
     local output
-    output=$(cd "$TEST_WORKSPACE" && D secret key-reset 2>&1)
+    output=$(d secret key-reset 2>&1)
     local result=$?
     
     # Should fail when no key is configured
@@ -30,13 +30,13 @@ test_secret_key_reset_no_key_configured() {
 test_secret_key_reset_requires_openssl() {
     # Skip if OpenSSL is not available (we can't easily test this scenario)
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
         # OpenSSL not available - key-reset should fail
         local output
-        output=$(cd "$TEST_WORKSPACE" && echo "y" | D secret key-reset 2>&1)
+        output=$(echo "y" | D secret key-reset 2>&1)
         local key_reset_result=$?
         
         assert_not_equals "0" "$key_reset_result" "Key-reset should fail without OpenSSL"
@@ -47,7 +47,7 @@ test_secret_key_reset_requires_openssl() {
 test_secret_key_reset_no_secrets() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -58,7 +58,7 @@ test_secret_key_reset_no_secrets() {
     # First set a key so we can reset it
     local initial_key="1111111111111111111111111111111111111111111111111111111111111111"
     local set_output
-    set_output=$(cd "$TEST_WORKSPACE" && echo "$initial_key" | D secret key-set 2>&1)
+    set_output=$(echo "$initial_key" | D secret key-set 2>&1)
     local set_result=$?
     
     if [ "$set_result" -ne 0 ]; then
@@ -68,7 +68,7 @@ test_secret_key_reset_no_secrets() {
     
     # Reset the key (no secrets exist, so should generate new key)
     local reset_output
-    reset_output=$(cd "$TEST_WORKSPACE" && D secret key-reset 2>&1)
+    reset_output=$(d secret key-reset 2>&1)
     local reset_result=$?
     
     if [ "$reset_result" -eq 0 ]; then
@@ -78,7 +78,7 @@ test_secret_key_reset_no_secrets() {
         
         # Verify the key changed
         local new_key_output
-        new_key_output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+        new_key_output=$(d secret key-show 2>&1)
         local new_key_result=$?
         
         if [ "$new_key_result" -eq 0 ]; then
@@ -92,7 +92,7 @@ test_secret_key_reset_no_secrets() {
 test_secret_key_reset_with_secrets_confirm() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -102,7 +102,7 @@ test_secret_key_reset_with_secrets_confirm() {
     
     # First add a secret (this will create a key automatically)
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "RESET_TEST_SECRET\nreset_test_value" | D secret add 2>&1)
+    add_output=$(echo -e "RESET_TEST_SECRET\nreset_test_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -112,7 +112,7 @@ test_secret_key_reset_with_secrets_confirm() {
     
     # Get the original key for comparison
     local original_key_output
-    original_key_output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+    original_key_output=$(d secret key-show 2>&1)
     local original_key_result=$?
     
     if [ "$original_key_result" -ne 0 ]; then
@@ -124,7 +124,7 @@ test_secret_key_reset_with_secrets_confirm() {
     
     # Reset the key with confirmation (answer 'y' to prompt)
     local reset_output
-    reset_output=$(cd "$TEST_WORKSPACE" && echo "y" | D secret key-reset 2>&1)
+    reset_output=$(echo "y" | D secret key-reset 2>&1)
     local reset_result=$?
     
     if [ "$reset_result" -eq 0 ]; then
@@ -134,7 +134,7 @@ test_secret_key_reset_with_secrets_confirm() {
         
         # Verify the key changed
         local new_key_output
-        new_key_output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+        new_key_output=$(d secret key-show 2>&1)
         local new_key_result=$?
         
         if [ "$new_key_result" -eq 0 ]; then
@@ -143,7 +143,7 @@ test_secret_key_reset_with_secrets_confirm() {
             
             # Verify secrets still exist and can be decrypted with new key
             local export_output
-            export_output=$(cd "$TEST_WORKSPACE" && D secret export RESET_TEST_SECRET 2>&1)
+            export_output=$(d secret export RESET_TEST_SECRET 2>&1)
             local export_result=$?
             
             if [ "$export_result" -eq 0 ]; then
@@ -157,7 +157,7 @@ test_secret_key_reset_with_secrets_confirm() {
 test_secret_key_reset_with_secrets_cancel() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -167,7 +167,7 @@ test_secret_key_reset_with_secrets_cancel() {
     
     # First add a secret
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "CANCEL_RESET_SECRET\ncancel_reset_value" | D secret add 2>&1)
+    add_output=$(echo -e "CANCEL_RESET_SECRET\ncancel_reset_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -177,7 +177,7 @@ test_secret_key_reset_with_secrets_cancel() {
     
     # Get the original key for comparison
     local original_key_output
-    original_key_output=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+    original_key_output=$(d secret key-show 2>&1)
     local original_key_result=$?
     
     if [ "$original_key_result" -ne 0 ]; then
@@ -189,14 +189,14 @@ test_secret_key_reset_with_secrets_cancel() {
     
     # Try to reset but cancel (answer 'n' to prompt)
     local reset_output
-    reset_output=$(cd "$TEST_WORKSPACE" && echo "n" | D secret key-reset 2>&1)
+    reset_output=$(echo "n" | D secret key-reset 2>&1)
     local reset_result=$?
     
     # Should cancel the operation
     if [ "$reset_result" -eq 0 ]; then
         # Operation might succeed but do nothing, or might be cancelled
         local key_after_cancel
-        key_after_cancel=$(cd "$TEST_WORKSPACE" && D secret key-show 2>&1)
+        key_after_cancel=$(d secret key-show 2>&1)
         local key_after_result=$?
         
         if [ "$key_after_result" -eq 0 ]; then
@@ -210,7 +210,7 @@ test_secret_key_reset_with_secrets_cancel() {
 test_secret_key_reset_confirmation_prompt() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -220,7 +220,7 @@ test_secret_key_reset_confirmation_prompt() {
     
     # First add a secret to trigger the confirmation prompt
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && echo -e "PROMPT_RESET_SECRET\nprompt_reset_value" | D secret add 2>&1)
+    add_output=$(echo -e "PROMPT_RESET_SECRET\nprompt_reset_value" | D secret add 2>&1)
     local add_result=$?
     
     if [ "$add_result" -ne 0 ]; then
@@ -230,7 +230,7 @@ test_secret_key_reset_confirmation_prompt() {
     
     # Try to reset and check the confirmation prompt
     local reset_output
-    reset_output=$(cd "$TEST_WORKSPACE" && echo "n" | D secret key-reset 2>&1)
+    reset_output=$(echo "n" | D secret key-reset 2>&1)
     
     # Should show warning and ask for confirmation
     assert_contains "$reset_output" "re-encrypt all existing secrets\|new key" "Should warn about re-encrypting"
@@ -242,7 +242,7 @@ test_secret_key_reset_confirmation_prompt() {
 test_secret_key_reset_generates_valid_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -253,7 +253,7 @@ test_secret_key_reset_generates_valid_key() {
     # First set an initial key
     local initial_key="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     local set_output
-    set_output=$(cd "$TEST_WORKSPACE" && echo "$initial_key" | D secret key-set 2>&1)
+    set_output=$(echo "$initial_key" | D secret key-set 2>&1)
     local set_result=$?
     
     if [ "$set_result" -ne 0 ]; then
@@ -263,7 +263,7 @@ test_secret_key_reset_generates_valid_key() {
     
     # Reset to generate a new key
     local reset_output
-    reset_output=$(cd "$TEST_WORKSPACE" && D secret key-reset 2>&1)
+    reset_output=$(d secret key-reset 2>&1)
     local reset_result=$?
     
     if [ "$reset_result" -eq 0 ]; then
@@ -284,7 +284,7 @@ test_secret_key_reset_generates_valid_key() {
 test_secret_key_reset_output_format() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -295,7 +295,7 @@ test_secret_key_reset_output_format() {
     # First set a key
     local initial_key="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
     local set_output
-    set_output=$(cd "$TEST_WORKSPACE" && echo "$initial_key" | D secret key-set 2>&1)
+    set_output=$(echo "$initial_key" | D secret key-set 2>&1)
     local set_result=$?
     
     if [ "$set_result" -ne 0 ]; then
@@ -305,7 +305,7 @@ test_secret_key_reset_output_format() {
     
     # Reset the key (no secrets, so should be simpler output)
     local reset_output
-    reset_output=$(cd "$TEST_WORKSPACE" && D secret key-reset 2>&1)
+    reset_output=$(d secret key-reset 2>&1)
     local reset_result=$?
     
     if [ "$reset_result" -eq 0 ]; then

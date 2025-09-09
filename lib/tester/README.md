@@ -163,12 +163,12 @@ suite_teardown() {
 }
 
 # Runs before each individual test
-test_setup() {
+setup_test() {
     export TEST_VAR="initialized"
 }
 
 # Runs after each individual test
-test_teardown() {
+teardown_test() {
     unset TEST_VAR
 }
 
@@ -305,7 +305,7 @@ The tester is fully integrated with the SDK:
 6. **Clean up after tests**: Use teardown functions for cleanup
 
    ```bash
-   test_teardown() {
+   teardown_test() {
        rm -f /tmp/test_file_*
    }
    ```

@@ -117,9 +117,11 @@ _sdk_tester_run_test_file() {
                 printf "    \033[90m→\033[0m \033[97m%s\033[0m" "$test_function"
             fi
             
+            setup_test_workspace
+
             # Run test setup if defined
-            if declare -f test_setup >/dev/null 2>&1; then
-                test_setup
+            if declare -f setup_test >/dev/null 2>&1; then
+                setup_test
             fi
             
             # Execute the test function
@@ -127,8 +129,8 @@ _sdk_tester_run_test_file() {
             local test_exit_code=$?
             
             # Run test teardown if defined
-            if declare -f test_teardown >/dev/null 2>&1; then
-                test_teardown
+            if declare -f teardown_test >/dev/null 2>&1; then
+                teardown_test
             fi
             
             # Show test function completion in verbose mode
@@ -155,13 +157,13 @@ _sdk_tester_run_test_file() {
             unset -f suite_teardown 2>/dev/null || true
         fi
         
-        # Also unset test_setup and test_teardown functions
-        if declare -f test_setup >/dev/null 2>&1; then
-            unset -f test_setup 2>/dev/null || true
+        # Also unset setup_test and teardown_test functions
+        if declare -f setup_test >/dev/null 2>&1; then
+            unset -f setup_test 2>/dev/null || true
         fi
         
-        if declare -f test_teardown >/dev/null 2>&1; then
-            unset -f test_teardown 2>/dev/null || true
+        if declare -f teardown_test >/dev/null 2>&1; then
+            unset -f teardown_test 2>/dev/null || true
         fi
         
         local exit_code=$?

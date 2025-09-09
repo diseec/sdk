@@ -136,7 +136,7 @@ EOF
 test_secret_key_set_empty_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -146,7 +146,7 @@ test_secret_key_set_empty_key() {
     
     # Try to set empty key
     local output
-    output=$(cd "$TEST_WORKSPACE" && echo "" | D secret key-set 2>&1)
+    output=$(echo "" | D secret key-set 2>&1)
     local key_set_result=$?
     
     # Should fail with empty key
@@ -158,7 +158,7 @@ test_secret_key_set_empty_key() {
 test_secret_key_set_invalid_key_format() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -340,7 +340,7 @@ EOF
 test_secret_key_set_interactive_prompt() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && D secret available --quiet 2>&1)
+    openssl_check=$(d secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -351,7 +351,7 @@ test_secret_key_set_interactive_prompt() {
     # Test that the command prompts for input
     local test_key="fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210"
     local output
-    output=$(cd "$TEST_WORKSPACE" && echo "$test_key" | D secret key-set 2>&1)
+    output=$(echo "$test_key" | D secret key-set 2>&1)
     
     # Should contain input prompt
     assert_contains "$output" "Enter encryption key\|encryption key" "Should prompt for encryption key input"
