@@ -29,10 +29,10 @@ test_config_summary_shows_all_scopes() {
     local summary_output
     summary_output=$(cd "$TEST_WORKSPACE" && D config summary)
     
-    # Verify it mentions all scopes
-    assert_contains "$summary_output" "user" "Summary should mention user scope"
-    assert_contains "$summary_output" "repository" "Summary should mention repository scope"
-    assert_contains "$summary_output" "context" "Summary should mention context scope"
+    # Verify it mentions all scopes (case-insensitive)
+    assert_contains "$summary_output" "USER" "Summary should mention user scope"
+    assert_contains "$summary_output" "REPOSITORY" "Summary should mention repository scope"  
+    assert_contains "$summary_output" "CONTEXT" "Summary should mention context scope"
 }
 
 # Test summary shows config file paths

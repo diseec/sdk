@@ -10,6 +10,33 @@ suite_setup() {
     
     # Initialize config
     cd "$TEST_WORKSPACE" && D config init > /dev/null
+    
+    # Create a mock .gitmodules file for testing
+    cat > "$TEST_WORKSPACE/.gitmodules" << EOF
+[submodule "packages/test-submodule"]
+	path = packages/test-submodule
+	url = https://github.com/test/test-submodule.git
+
+[submodule "services/submodule1"]
+	path = services/submodule1
+	url = https://github.com/test/submodule1.git
+
+[submodule "packages/submodule2"]
+	path = packages/submodule2
+	url = https://github.com/test/submodule2.git
+
+[submodule "services/submodule3"]
+	path = services/submodule3
+	url = https://github.com/test/submodule3.git
+
+[submodule "packages/duplicate-submodule"]
+	path = packages/duplicate-submodule
+	url = https://github.com/test/duplicate-submodule.git
+
+[submodule "services/scope-test-submodule"]
+	path = services/scope-test-submodule
+	url = https://github.com/test/scope-test-submodule.git
+EOF
 }
 
 # Suite teardown - runs once after all tests in this file

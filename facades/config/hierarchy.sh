@@ -129,6 +129,32 @@ sdk_fac_con_delete() {
 }
 
 # =============================================================================
+# CONFIGURATION SUMMARY AND STATUS
+# =============================================================================
+
+# Show configuration summary across all scopes
+sdk_fac_con_summary() {
+    echo "Configuration Summary:"
+    echo ""
+    
+    for scope in $CONFIG_SCOPES; do
+        local config_file="$(sdk_fac_con_get_config_file "$scope")"
+        local scope_display=$(echo "$scope" | tr '[:lower:]' '[:upper:]')
+        
+        echo "[$scope_display SCOPE]"
+        echo "  File: $config_file"
+        
+        if [ -f "$config_file" ] && [ -s "$config_file" ]; then
+            local key_count=$(sdk_fac_con_yaml_keys "$config_file" | wc -l | xargs)
+            echo "  Status: Configured ($key_count keys)"
+        else
+            echo "  Status: Empty or not configured"
+        fi
+        echo ""
+    done
+}
+
+# =============================================================================
 # CONFIGURATION INITIALIZATION
 # =============================================================================
 
