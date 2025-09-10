@@ -4,9 +4,6 @@
 
 # Suite setup - runs once before all tests in this file
 setup_test() {
-    # Initialize config
-    D config init > /dev/null
-    
     # Set up some test arrays using comma-separated format
     D config --scope=user set simple.array 'item1,item2,item3' > /dev/null
     D config --scope=user set nested.array 'item1,item2,item3' > /dev/null

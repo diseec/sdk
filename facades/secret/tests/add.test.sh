@@ -7,20 +7,17 @@ setup_test() {
     # Ensure we have a writable secrets directory
     export ORIGINAL_SECRETS_DIR="$SECRETS_DIR"
     export SECRETS_DIR="$TEST_WORKSPACE/secrets"
-
-    mkdir -p "$SECRETS_DIR" 2>/dev/null || {
-        # If we can't create secrets directory, skip tests
-        export SKIP_TESTS="Cannot create secrets directory - read-only filesystem"
-        return 0
-    }
 }
 
 # Test add command with existing secret - decline overwrite
-test_secret_add_decline_overwrite() {
+test_secret_add_decline_overwrite_only() {
     # Skip if we couldn't set up secrets directory
     if [ -n "$SKIP_TESTS" ]; then
         return 0
     fi
+    
+    # Make sure the secrets directory exists
+    # mkdir -p "$SECRETS_DIR" 2>/dev/null
     
     # Check if OpenSSL is available first
     local openssl_check
@@ -32,39 +29,32 @@ test_secret_add_decline_overwrite() {
         return 0
     fi
     
-    # Create a script for running the test to avoid TTY issues
-    local test_script="$TEST_WORKSPACE/test_script.sh"
-    cat > "$test_script" << 'TESTSCRIPT'
-#!/bin/bash
-# Add initial secret
-echo -e "DECLINE_OVERWRITE_SECRET\noriginal_value" | D secret add
-
-# Try to add same secret again but decline overwrite
-echo -e "DECLINE_OVERWRITE_SECRET\nnew_value\nn" | D secret add
-
-# Export to verify value
-D secret export DECLINE_OVERWRITE_SECRET
-TESTSCRIPT
-    chmod +x "$test_script"
-    
-    # Run the test script
+    # Change to the test workspace directory
     cd "$TEST_WORKSPACE"
-    local output1
-    output1=$(SECRETS_DIR="$SECRETS_DIR" ./test_script.sh 2>&1)
-    local test_result=$?
     
-    # Extract the export result which should be the last line
-    local export_output
-    export_output=$(echo "$output1" | tail -n 1)
+    # Generate a consistent key for testing
+    echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" | SECRETS_DIR="$SECRETS_DIR" D secret key-set > /dev/null 2>&1
+    
+    # Add initial secret
+    echo -e "DECLINE_OVERWRITE_SECRET\noriginal_value" | SECRETS_DIR="$SECRETS_DIR" D secret add > /dev/null 2>&1
+    
+    # Verify initial value
+    local original_value
+    original_value=$(SECRETS_DIR="$SECRETS_DIR" D secret export DECLINE_OVERWRITE_SECRET 2>/dev/null)
+    assert_equals "original_value" "$original_value" "Initial secret value should be set correctly"
+    
+    # Try to add same secret again but decline overwrite
+    local overwrite_output
+    overwrite_output=$(echo -e "DECLINE_OVERWRITE_SECRET\nnew_value\nn" | SECRETS_DIR="$SECRETS_DIR" D secret add 2>&1)
     
     # Check if the output contains the overwrite prompt
-    assert_contains "$output1" "already exists\|Overwrite" "Should ask about overwriting"
+    assert_contains "$overwrite_output" "already exists\|Overwrite" "Should ask about overwriting"
     
-    # Verify the original value is preserved
-    assert_equals "original_value" "$export_output" "Should preserve original value when overwrite declined"
+    # Verify the value remains unchanged
+    local final_value
+    final_value=$(SECRETS_DIR="$SECRETS_DIR" D secret export DECLINE_OVERWRITE_SECRET 2>/dev/null)
+    assert_equals "original_value" "$final_value" "Should preserve original value when overwrite declined"
 }
-
-
 
 # Suite teardown - runs once after all tests in this file
 suite_teardown() {

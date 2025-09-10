@@ -2,13 +2,6 @@
 
 # Test for the 'config path' command
 
-# Suite setup - runs once before all tests in this file
-setup_test() {
-    
-    # Initialize config
-    D config init > /dev/null
-}
-
 # Test getting path for each scope
 test_config_path_each_scope() {
     # Get paths for each scope

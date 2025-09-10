@@ -19,6 +19,7 @@ sdk_fac_sec_add_secret() {
     if sdk_fac_sec_secret_exists "$secret_name"; then
         logit -w "Secret '$secret_name' already exists."
         if ! sdk_fac_sec_get_user_confirmation "Overwrite?"; then
+            logit -o "Secret '$secret_name' unchanged"
             return 0
         fi
     fi

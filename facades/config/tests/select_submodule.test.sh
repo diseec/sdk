@@ -4,9 +4,6 @@
 
 # Suite setup - runs once before all tests in this file
 setup_test() {
-    # Initialize config
-    D config init > /dev/null
-    
     # Create a mock .gitmodules file for testing
     cat > "$TEST_WORKSPACE/.gitmodules" << EOF
 [submodule "packages/test-submodule"]

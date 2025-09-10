@@ -9,11 +9,19 @@ sdk_fac_sec_get_user_confirmation() {
     local prompt="$1"
     local default="${2:-N}"
     printf "$(logit --ansi="35" --icon="?" "$prompt \033[35m[Y/N]\033[0m")"
-    # Turn off echo and set input to raw mode
-    stty -echo -icanon time 0 min 1
-    confirm=$(dd bs=1 count=1 2>/dev/null)
-    # Restore terminal settings
-    stty echo icanon    
+    
+    # Check if stdin is a TTY
+    if [ -t 0 ]; then
+        # Interactive mode: Turn off echo and set input to raw mode
+        stty -echo -icanon time 0 min 1 2>/dev/null || true
+        confirm=$(dd bs=1 count=1 2>/dev/null)
+        # Restore terminal settings
+        stty echo icanon 2>/dev/null || true
+    else
+        # Non-interactive mode: Read a line from stdin
+        read -n 1 confirm
+    fi
+    
     printf "\n"
     case "$confirm" in
         [yY][eE][sS]|[yY]) return 0 ;;
@@ -36,9 +44,18 @@ sdk_fac_sec_get_secret_input() {
     local var_name="$2"
 
     logit --ansi="35" --icon="?" "$prompt: "
-    stty -echo
-    read "$var_name"
-    stty echo
+    
+    # Check if stdin is a TTY
+    if [ -t 0 ]; then
+        # Interactive mode: Hide input
+        stty -echo 2>/dev/null || true
+        read "$var_name"
+        stty echo 2>/dev/null || true
+    else
+        # Non-interactive mode: Read normally
+        read "$var_name"
+    fi
+    
     printf "\n"
 }
 

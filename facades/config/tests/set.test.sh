@@ -2,13 +2,6 @@
 
 # Test for the 'config set' command
 
-# Suite setup - runs once before all tests in this file
-setup_test() {
-    # Initialize config
-    D config init > /dev/null
-}
-
-
 # Test basic set functionality
 test_config_set_basic() {
     # Set a simple string value
