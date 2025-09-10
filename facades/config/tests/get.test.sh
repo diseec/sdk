@@ -3,10 +3,10 @@
 # Test for the 'config get' command
 
 # Suite setup - runs once before all tests in this file
-suite_setup() {
+setup_test() {
     # Initialize config
     D config init > /dev/null
-    
+
     # Set up some test configurations in different scopes
     D config --scope=user set test.key "user_value" > /dev/null
     D config --scope=repository set test.key "repo_value" > /dev/null

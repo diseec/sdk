@@ -3,14 +3,14 @@
 # Test for the 'config summary' command
 
 # Suite setup - runs once before all tests in this file
-suite_setup() {
+setup_test() {
     # Initialize config
-    d config init > /dev/null
+    D config init > /dev/null
     
     # Set up some test configurations in different scopes
-    d config --scope=user set user.key "user_value" > /dev/null
-    d config --scope=repository set repo.key "repo_value" > /dev/null
-    d config --scope=context set context.key "context_value" > /dev/null
+    D config --scope=user set user.key "user_value" > /dev/null
+    D config --scope=repository set repo.key "repo_value" > /dev/null
+    D config --scope=context set context.key "context_value" > /dev/null
 }
 
 
@@ -18,7 +18,7 @@ suite_setup() {
 test_config_summary_shows_all_scopes() {
     # Get summary
     local summary_output
-    summary_output=$(d config summary)
+    summary_output=$(D config summary)
     
     # Verify it mentions all scopes (case-insensitive)
     assert_contains "$summary_output" "USER" "Summary should mention user scope"
@@ -30,13 +30,13 @@ test_config_summary_shows_all_scopes() {
 test_config_summary_shows_paths() {
     # Get summary
     local summary_output
-    summary_output=$(d config summary)
+    summary_output=$(D config summary)
     
     # Get the config paths to compare
     local user_path repo_path context_path
-    user_path=$(d config --scope=user path)
-    repo_path=$(d config --scope=repository path)
-    context_path=$(d config --scope=context path)
+    user_path=$(D config --scope=user path)
+    repo_path=$(D config --scope=repository path)
+    context_path=$(D config --scope=context path)
     
     # Verify paths are mentioned in the summary
     # This may depend on how paths are formatted in the summary
@@ -49,7 +49,7 @@ test_config_summary_shows_paths() {
 test_config_summary_shows_key_counts() {
     # Get summary
     local summary_output
-    summary_output=$(d config summary)
+    summary_output=$(D config summary)
     
     # Verify it mentions the number of keys
     # This may depend on how the counts are formatted
@@ -58,17 +58,13 @@ test_config_summary_shows_key_counts() {
 
 # Test summary with no configs
 test_config_summary_with_no_configs() {
-    # Create a new empty workspace
-    local empty_workspace
-    empty_workspace=$(create_test_workspace "empty_config_test")
-    
     # Get summary before initializing configs
     local summary_output
-    summary_output=$(cd "$empty_workspace" && D config summary)
+    summary_output=$(cd "$TEST_WORKSPACE" && D config summary)
     
     # Verify it handles the case with no configs
     assert_not_empty "$summary_output" "Summary should provide output even with no configs"
     
     # Clean up
-    cleanup_test_workspace "$empty_workspace"
+    cleanup_test_workspace "$TEST_WORKSPACE"
 }

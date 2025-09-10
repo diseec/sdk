@@ -3,7 +3,7 @@
 # Test for the 'ai prompt' commands
 
 # Suite setup - runs once before all tests in this file
-suite_setup() {
+setup_test() {
     
     # Create a test prompt file for testing
     export TEST_PROMPT_FILE="$TEST_WORKSPACE/test.prompt"

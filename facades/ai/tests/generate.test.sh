@@ -3,7 +3,7 @@
 # Test for the 'ai generate' commands
 
 # Suite setup - runs once before all tests in this file
-suite_setup() {
+setup_test() {
     # Store original OPENAI_API_KEY for restoration
     export ORIGINAL_OPENAI_API_KEY="$OPENAI_API_KEY"
     

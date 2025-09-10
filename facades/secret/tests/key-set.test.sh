@@ -47,7 +47,7 @@ EOF
 
 EOF
 )file
-suite_setup() {
+setup_test() {
     # Set up secrets directory
     export SECRETS_DIR="$TEST_WORKSPACE/secrets"
     mkdir -p "$SECRETS_DIR" 2>/dev/null || {

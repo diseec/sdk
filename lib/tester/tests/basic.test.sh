@@ -6,7 +6,7 @@
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 # Optional: Suite setup - runs once before all tests in this file
-suite_setup() {
+setup_test() {
     # Create some test files
     create_test_file "$TEST_WORKSPACE/sample.txt" "Hello, World!"
     create_test_file "$TEST_WORKSPACE/empty.txt"

@@ -3,32 +3,32 @@
 # Test for the 'config print' command
 
 # Suite setup - runs once before all tests in this file
-suite_setup() {
+setup_test() {
     # Initialize config
-    d config init > /dev/null
+    D config init > /dev/null
     
     # Set up some test configurations in different scopes
-    d config --scope=user set user.key "user_value" > /dev/null
-    d config --scope=user set shared.key "user_shared" > /dev/null
+    D config --scope=user set user.key "user_value" > /dev/null
+    D config --scope=user set shared.key "user_shared" > /dev/null
     
-    d config --scope=repository set repo.key "repo_value" > /dev/null
-    d config --scope=repository set shared.key "repo_shared" > /dev/null
+    D config --scope=repository set repo.key "repo_value" > /dev/null
+    D config --scope=repository set shared.key "repo_shared" > /dev/null
     
-    d config --scope=context set context.key "context_value" > /dev/null
-    d config --scope=context set shared.key "context_shared" > /dev/null
+    D config --scope=context set context.key "context_value" > /dev/null
+    D config --scope=context set shared.key "context_shared" > /dev/null
     
     # Set up nested configurations
-    d config --scope=user set nested.config.key "nested_value" > /dev/null
+    D config --scope=user set nested.config.key "nested_value" > /dev/null
     
     # Set up arrays
-    d config --scope=user set array.test 'item1,item2,item3' > /dev/null
+    D config --scope=user set array.test 'item1,item2,item3' > /dev/null
 }
 
 # Test printing a specific scope
 test_config_print_specific_scope() {
     # Print user scope
     local user_output
-    user_output=$(d config --scope=user print)
+    user_output=$(D config --scope=user print)
     
     # Verify output contains user-specific keys
     assert_contains "$user_output" "user:" "Output should contain user section"
@@ -47,7 +47,7 @@ test_config_print_specific_scope() {
 test_config_print_all_scopes() {
     # Print all scopes
     local all_output
-    all_output=$(d config print)
+    all_output=$(D config print)
     
     # Verify output contains keys from all scopes
     assert_contains "$all_output" "user:" "Output should contain user section"
@@ -64,7 +64,7 @@ test_config_print_all_scopes() {
 test_config_print_valid_yaml() {
     # Print user scope
     local user_output
-    user_output=$(d config --scope=user print)
+    user_output=$(D config --scope=user print)
     
     # Extract just the YAML content (skip the header lines)
     local yaml_content
@@ -78,7 +78,7 @@ test_config_print_valid_yaml() {
 test_config_print_nested_configs() {
     # Print user scope
     local user_output
-    user_output=$(d config --scope=user print)
+    user_output=$(D config --scope=user print)
     
     # Verify output contains nested configuration
     assert_contains "$user_output" "nested" "Output should contain nested object"
@@ -90,7 +90,7 @@ test_config_print_nested_configs() {
 test_config_print_arrays() {
     # Print user scope
     local user_output
-    user_output=$(d config --scope=user print)
+    user_output=$(D config --scope=user print)
     
     # Verify output contains array
     assert_contains "$user_output" "array" "Output should contain array object"

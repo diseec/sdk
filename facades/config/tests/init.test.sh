@@ -6,7 +6,7 @@
 test_config_init_creates_files() {
     # Run the init command
     local output
-    output=$(d config init)
+    output=$(D config init)
     
     # Check that the command succeeds
     assert_command_success "cd \"$TEST_WORKSPACE\" && D config init" "Config init should succeed"
@@ -16,11 +16,11 @@ test_config_init_creates_files() {
     
     # Get the config file paths
     local context_file
-    context_file=$(d config --scope=context path)
+    context_file=$(D config --scope=context path)
     local repo_file
-    repo_file=$(d config --scope=repository path)
+    repo_file=$(D config --scope=repository path)
     local user_file
-    user_file=$(d config --scope=user path)
+    user_file=$(D config --scope=user path)
     
     # Verify that config files exist
     assert_file_exists "$context_file" "Context config file should exist"
@@ -32,14 +32,14 @@ test_config_init_creates_files() {
 test_config_init_preserves_existing() {
     # First get the config file paths
     local context_file
-    context_file=$(d config --scope=context path)
+    context_file=$(D config --scope=context path)
     
     # Add some custom content to the context file
     echo '{"test": "custom_value"}' > "$context_file"
     
     # Run init again
     local output
-    output=$(d config init)
+    output=$(D config init)
     
     # Check the file still has our custom content
     local file_content

@@ -3,7 +3,7 @@
 # Test for the 'secret add' command
 
 # Suite setup - runs once before all tests in this file
-suite_setup() {
+setup_test() {
     # Ensure we have a writable secrets directory
     export ORIGINAL_SECRETS_DIR="$SECRETS_DIR"
     export SECRETS_DIR="$TEST_WORKSPACE/secrets"
