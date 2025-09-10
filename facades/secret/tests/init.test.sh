@@ -5,7 +5,7 @@
 # Test init command requires secret name
 test_secret_init_requires_name() {
     local output
-    output=$(d secret init 2>&1)
+    output=$(D secret init 2>&1)
     local result=$?
     
     # Should fail without secret name
@@ -17,7 +17,7 @@ test_secret_init_requires_name() {
 test_secret_init_quiet_flag() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -27,7 +27,7 @@ test_secret_init_quiet_flag() {
     
     # Test with invalid argument first
     local invalid_output
-    invalid_output=$(d secret init TEST_SECRET --invalid-arg 2>&1)
+    invalid_output=$(D secret init TEST_SECRET --invalid-arg 2>&1)
     local invalid_result=$?
     
     assert_not_equals "0" "$invalid_result" "Should fail with invalid argument"
@@ -35,7 +35,7 @@ test_secret_init_quiet_flag() {
     
     # Test with quiet flag (may require interactive input, so might not fully succeed)
     local quiet_output
-    quiet_output=$(d secret init TEST_SECRET --quiet 2>&1)
+    quiet_output=$(D secret init TEST_SECRET --quiet 2>&1)
     local quiet_result=$?
     
     # If it succeeds with quiet flag, output should be minimal
@@ -50,7 +50,7 @@ test_secret_init_quiet_flag() {
 test_secret_init_nonexistent_secret() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -72,7 +72,7 @@ test_secret_init_nonexistent_secret() {
 test_secret_init_existing_valid_secret() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -92,7 +92,7 @@ test_secret_init_existing_valid_secret() {
     
     # Now init the existing secret
     local init_output
-    init_output=$(d secret init EXISTING_INIT_SECRET 2>&1)
+    init_output=$(D secret init EXISTING_INIT_SECRET 2>&1)
     local init_result=$?
     
     if [ "$init_result" -eq 0 ]; then
@@ -105,7 +105,7 @@ test_secret_init_existing_valid_secret() {
 test_secret_init_initializes_system() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -129,7 +129,7 @@ test_secret_init_initializes_system() {
 test_secret_init_invalid_secret_name() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -143,7 +143,7 @@ test_secret_init_invalid_secret_name() {
     for invalid_name in "${invalid_names[@]}"; do
         if [ -n "$invalid_name" ]; then
             local output
-            output=$(d secret init "$invalid_name" 2>&1)
+            output=$(D secret init "$invalid_name" 2>&1)
             local result=$?
             
             # Should handle invalid names gracefully
@@ -158,7 +158,7 @@ test_secret_init_invalid_secret_name() {
 test_secret_init_ensures_encryption_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -168,7 +168,7 @@ test_secret_init_ensures_encryption_key() {
     
     # Verify no key exists initially
     local key_check_before
-    key_check_before=$(d secret key-show 2>&1)
+    key_check_before=$(D secret key-show 2>&1)
     local key_result_before=$?
     assert_not_equals "0" "$key_result_before" "No key should exist initially"
     
@@ -181,7 +181,7 @@ test_secret_init_ensures_encryption_key() {
     # This depends on the implementation details
     if [ "$result" -eq 0 ]; then
         local key_check_after
-        key_check_after=$(d secret key-show 2>&1)
+        key_check_after=$(D secret key-show 2>&1)
         local key_result_after=$?
         
         if [ "$key_result_after" -eq 0 ]; then
@@ -194,13 +194,13 @@ test_secret_init_ensures_encryption_key() {
 test_secret_init_handles_missing_openssl() {
     # Skip if OpenSSL is not available (we can't easily test this scenario)
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
         # OpenSSL not available - init should fail appropriately
         local output
-        output=$(d secret init TEST_SECRET 2>&1)
+        output=$(D secret init TEST_SECRET 2>&1)
         local init_result=$?
         
         assert_not_equals "0" "$init_result" "Init should fail without OpenSSL"
@@ -212,7 +212,7 @@ test_secret_init_handles_missing_openssl() {
 test_secret_init_output_messages() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -237,7 +237,7 @@ test_secret_init_output_messages() {
 test_secret_init_quiet_existing_secret() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -257,7 +257,7 @@ test_secret_init_quiet_existing_secret() {
     
     # Now init the existing secret with quiet flag
     local init_output
-    init_output=$(d secret init QUIET_EXISTING_SECRET --quiet 2>&1)
+    init_output=$(D secret init QUIET_EXISTING_SECRET --quiet 2>&1)
     local init_result=$?
     
     if [ "$init_result" -eq 0 ]; then

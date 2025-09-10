@@ -5,7 +5,7 @@
 # Test exists command with missing argument
 test_secret_exists_missing_argument() {
     local output
-    output=$(d secret exists 2>&1)
+    output=$(D secret exists 2>&1)
     local result=$?
     
     # Should fail without secret name
@@ -16,7 +16,7 @@ test_secret_exists_missing_argument() {
 # Test exists command with non-existent secret
 test_secret_exists_nonexistent_secret() {
     local output
-    output=$(d secret exists nonexistent-secret 2>&1)
+    output=$(D secret exists nonexistent-secret 2>&1)
     local result=$?
     
     # Should return non-zero (false) for non-existent secret
@@ -27,7 +27,7 @@ test_secret_exists_nonexistent_secret() {
 # Test exists command with quiet flag
 test_secret_exists_quiet_nonexistent() {
     local output
-    output=$(d secret exists nonexistent-secret --quiet 2>&1)
+    output=$(D secret exists nonexistent-secret --quiet 2>&1)
     local result=$?
     
     # Should return non-zero with minimal output
@@ -38,7 +38,7 @@ test_secret_exists_quiet_nonexistent() {
 # Test exists command with invalid arguments
 test_secret_exists_invalid_args() {
     local output
-    output=$(d secret exists test-secret --invalid-arg 2>&1)
+    output=$(D secret exists test-secret --invalid-arg 2>&1)
     local result=$?
     
     # Should fail with invalid argument
@@ -49,7 +49,7 @@ test_secret_exists_invalid_args() {
 # Test command structure - should be recognized
 test_secret_exists_command_recognized() {
     local output
-    output=$(d secret exists 2>&1)
+    output=$(D secret exists 2>&1)
     
     # Should not contain "Unknown command"
     echo "$output" | grep -v "Unknown command" > /dev/null

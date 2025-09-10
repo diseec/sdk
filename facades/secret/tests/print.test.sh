@@ -6,7 +6,7 @@
 test_secret_print_no_secrets() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -15,7 +15,7 @@ test_secret_print_no_secrets() {
     fi
     
     local output
-    output=$(d secret print 2>&1)
+    output=$(D secret print 2>&1)
     local print_result=$?
     
     # Should succeed but indicate no secrets found
@@ -28,13 +28,13 @@ test_secret_print_no_secrets() {
 test_secret_print_requires_openssl() {
     # Skip if OpenSSL is not available (we can't easily test this scenario)
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
         # OpenSSL not available - print should fail
         local output
-        output=$(d secret print 2>&1)
+        output=$(D secret print 2>&1)
         local print_result=$?
         
         assert_not_equals "0" "$print_result" "Print should fail without OpenSSL"
@@ -45,7 +45,7 @@ test_secret_print_requires_openssl() {
 test_secret_print_single_secret() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -65,7 +65,7 @@ test_secret_print_single_secret() {
     
     # Now print all secrets
     local print_output
-    print_output=$(d secret print 2>&1)
+    print_output=$(D secret print 2>&1)
     local print_result=$?
     
     if [ "$print_result" -eq 0 ]; then
@@ -80,7 +80,7 @@ test_secret_print_single_secret() {
 test_secret_print_multiple_secrets() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -104,7 +104,7 @@ test_secret_print_multiple_secrets() {
     
     # Print all secrets
     local print_output
-    print_output=$(d secret print 2>&1)
+    print_output=$(D secret print 2>&1)
     local print_result=$?
     
     if [ "$print_result" -eq 0 ]; then
@@ -123,7 +123,7 @@ test_secret_print_multiple_secrets() {
 test_secret_print_shows_usage_instructions() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -143,7 +143,7 @@ test_secret_print_shows_usage_instructions() {
     
     # Print secrets and check for usage instructions
     local print_output
-    print_output=$(d secret print 2>&1)
+    print_output=$(D secret print 2>&1)
     local print_result=$?
     
     if [ "$print_result" -eq 0 ]; then
@@ -157,7 +157,7 @@ test_secret_print_shows_usage_instructions() {
 test_secret_print_decryption_failure() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -171,7 +171,7 @@ test_secret_print_decryption_failure() {
     
     # Try to print secrets
     local print_output
-    print_output=$(d secret print 2>&1)
+    print_output=$(D secret print 2>&1)
     local print_result=$?
     
     # Should handle decryption failures gracefully
@@ -186,7 +186,7 @@ test_secret_print_decryption_failure() {
 test_secret_print_output_format() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -206,7 +206,7 @@ test_secret_print_output_format() {
     
     # Print and check format
     local print_output
-    print_output=$(d secret print 2>&1)
+    print_output=$(D secret print 2>&1)
     local print_result=$?
     
     if [ "$print_result" -eq 0 ]; then

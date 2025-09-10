@@ -5,7 +5,7 @@
 # Test key-show command with no key configured
 test_secret_key_show_no_key_configured() {
     local output
-    output=$(d secret key-show 2>&1)
+    output=$(D secret key-show 2>&1)
     local result=$?
     
     # Should fail when no key is configured
@@ -17,7 +17,7 @@ test_secret_key_show_no_key_configured() {
 test_secret_key_show_with_configured_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -38,7 +38,7 @@ test_secret_key_show_with_configured_key() {
     
     # Now show the key
     local show_output
-    show_output=$(d secret key-show 2>&1)
+    show_output=$(D secret key-show 2>&1)
     local show_result=$?
     
     if [ "$show_result" -eq 0 ]; then
@@ -52,7 +52,7 @@ test_secret_key_show_with_configured_key() {
 test_secret_key_show_output_format() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -73,7 +73,7 @@ test_secret_key_show_output_format() {
     
     # Show the key and check format
     local show_output
-    show_output=$(d secret key-show 2>&1)
+    show_output=$(D secret key-show 2>&1)
     local show_result=$?
     
     if [ "$show_result" -eq 0 ]; then
@@ -95,7 +95,7 @@ test_secret_key_show_output_format() {
 test_secret_key_show_after_auto_generated_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -115,7 +115,7 @@ test_secret_key_show_after_auto_generated_key() {
     
     # Now try to show the key
     local show_output
-    show_output=$(d secret key-show 2>&1)
+    show_output=$(D secret key-show 2>&1)
     local show_result=$?
     
     if [ "$show_result" -eq 0 ]; then
@@ -134,7 +134,7 @@ test_secret_key_show_after_auto_generated_key() {
 test_secret_key_show_displays_complete_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -155,7 +155,7 @@ test_secret_key_show_displays_complete_key() {
     
     # Show the key
     local show_output
-    show_output=$(d secret key-show 2>&1)
+    show_output=$(D secret key-show 2>&1)
     local show_result=$?
     
     if [ "$show_result" -eq 0 ]; then
@@ -176,7 +176,7 @@ test_secret_key_show_displays_complete_key() {
 test_secret_key_show_error_handling() {
     # Test the error message when no key is configured
     local output
-    output=$(d secret key-show 2>&1)
+    output=$(D secret key-show 2>&1)
     local result=$?
     
     # Should fail gracefully
@@ -191,7 +191,7 @@ test_secret_key_show_error_handling() {
 test_secret_key_show_different_key_lengths() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -208,7 +208,7 @@ test_secret_key_show_different_key_lengths() {
     if [ "$set_result" -eq 0 ]; then
         # Show the short key
         local show_output
-        show_output=$(d secret key-show 2>&1)
+        show_output=$(D secret key-show 2>&1)
         local show_result=$?
         
         if [ "$show_result" -eq 0 ]; then

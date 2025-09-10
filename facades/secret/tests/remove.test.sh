@@ -2,27 +2,10 @@
 
 # Test for the 'secret remove' command
 
-# Suite setup - runs once before all tests in this file
-setup_test() {
-    # Ensure we have a writable secrets directory
-    export ORIGINAL_SECRETS_DIR="$SECRETS_DIR"
-    export SECRETS_DIR="$TEST_WORKSPACE/secrets"
-    mkdir -p "$SECRETS_DIR" 2>/dev/null || {
-        export SKIP_TESTS="Cannot create secrets directory - read-only filesystem"
-        return 0
-    }
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Restore original secrets directory
-    export SECRETS_DIR="$ORIGINAL_SECRETS_DIR"
-}
-
 # Test remove command requires secret name
 test_secret_remove_requires_name() {
     local output
-    output=$(d secret remove 2>&1)
+    output=$(D secret remove 2>&1)
     local result=$?
     
     # Should fail without secret name
@@ -33,7 +16,7 @@ test_secret_remove_requires_name() {
 # Test remove command with non-existent secret
 test_secret_remove_nonexistent_secret() {
     local output
-    output=$(d secret remove NONEXISTENT_SECRET 2>&1)
+    output=$(D secret remove NONEXISTENT_SECRET 2>&1)
     local result=$?
     
     # Should fail with non-existent secret

@@ -5,7 +5,7 @@
 # Test clear command with no secrets
 test_secret_clear_no_secrets() {
     local output
-    output=$(d secret clear 2>&1)
+    output=$(D secret clear 2>&1)
     local result=$?
     
     # Should handle no secrets gracefully
@@ -18,7 +18,7 @@ test_secret_clear_no_secrets() {
 test_secret_clear_existing_secrets_confirm() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -42,11 +42,11 @@ test_secret_clear_existing_secrets_confirm() {
     
     # Verify secrets exist before clearing
     local exists1_before
-    exists1_before=$(d secret exists CLEAR_SECRET_1 --quiet 2>&1)
+    exists1_before=$(D secret exists CLEAR_SECRET_1 --quiet 2>&1)
     assert_equals "0" "$?" "First secret should exist before clearing"
     
     local exists2_before
-    exists2_before=$(d secret exists CLEAR_SECRET_2 --quiet 2>&1)
+    exists2_before=$(D secret exists CLEAR_SECRET_2 --quiet 2>&1)
     assert_equals "0" "$?" "Second secret should exist before clearing"
     
     # Clear all secrets with confirmation (type 'DELETE' to confirm)
@@ -59,11 +59,11 @@ test_secret_clear_existing_secrets_confirm() {
         
         # Verify secrets no longer exist
         local exists1_after
-        exists1_after=$(d secret exists CLEAR_SECRET_1 --quiet 2>&1)
+        exists1_after=$(D secret exists CLEAR_SECRET_1 --quiet 2>&1)
         assert_not_equals "0" "$?" "First secret should not exist after clearing"
         
         local exists2_after
-        exists2_after=$(d secret exists CLEAR_SECRET_2 --quiet 2>&1)
+        exists2_after=$(D secret exists CLEAR_SECRET_2 --quiet 2>&1)
         assert_not_equals "0" "$?" "Second secret should not exist after clearing"
     fi
 }
@@ -72,7 +72,7 @@ test_secret_clear_existing_secrets_confirm() {
 test_secret_clear_existing_secrets_cancel() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -92,7 +92,7 @@ test_secret_clear_existing_secrets_cancel() {
     
     # Verify secret exists before attempted clearing
     local exists_before
-    exists_before=$(d secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
+    exists_before=$(D secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should exist before clear attempt"
     
     # Try to clear but cancel (provide anything other than 'DELETE')
@@ -105,7 +105,7 @@ test_secret_clear_existing_secrets_cancel() {
     
     # Verify secret still exists
     local exists_after
-    exists_after=$(d secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
+    exists_after=$(D secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should still exist after cancelled clear"
 }
 
@@ -113,7 +113,7 @@ test_secret_clear_existing_secrets_cancel() {
 test_secret_clear_confirmation_prompt() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -144,7 +144,7 @@ test_secret_clear_confirmation_prompt() {
 test_secret_clear_requires_exact_confirmation() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -175,7 +175,7 @@ test_secret_clear_requires_exact_confirmation() {
         
         # Verify secret still exists
         local exists_check
-        exists_check=$(d secret exists EXACT_CONFIRM_SECRET --quiet 2>&1)
+        exists_check=$(D secret exists EXACT_CONFIRM_SECRET --quiet 2>&1)
         assert_equals "0" "$?" "Secret should still exist after incorrect confirmation: $confirmation"
     done
 }
@@ -184,7 +184,7 @@ test_secret_clear_requires_exact_confirmation() {
 test_secret_clear_deletes_files() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -222,7 +222,7 @@ test_secret_clear_deletes_files() {
             assert_file_not_exists "$secret_file2" "Second secret file should be deleted"
             
             # Check that secrets directory might be empty (but may still exist)
-            local secrets_count=$(ls -1 "$TEST_WORKSPACE/secrets" 2>/dev/null | wc -l | tr -d ' ')
+            local secrets_count=$(ls -1 "$TEST_WORKSPACE/secrets" 2>/dev/null | wc -l | tr -D ' ')
             assert_equals "0" "$secrets_count" "Secrets directory should be empty after clear"
         fi
     fi
@@ -232,7 +232,7 @@ test_secret_clear_deletes_files() {
 test_secret_clear_case_sensitive_confirmation() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -257,7 +257,7 @@ test_secret_clear_case_sensitive_confirmation() {
     
     # Verify secret still exists after lowercase attempt
     local exists_after_lower
-    exists_after_lower=$(d secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
+    exists_after_lower=$(D secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should still exist after lowercase confirmation"
     
     # Now test that uppercase 'DELETE' works
@@ -270,7 +270,7 @@ test_secret_clear_case_sensitive_confirmation() {
         
         # Verify secret was actually deleted
         local exists_after_upper
-        exists_after_upper=$(d secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
+        exists_after_upper=$(D secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
         assert_not_equals "0" "$?" "Secret should not exist after uppercase confirmation"
     fi
 }

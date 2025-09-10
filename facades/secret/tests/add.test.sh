@@ -2,20 +2,8 @@
 
 # Test for the 'secret add' command
 
-# Suite setup - runs once before all tests in this file
-setup_test() {
-    # Ensure we have a writable secrets directory
-    export ORIGINAL_SECRETS_DIR="$SECRETS_DIR"
-    export SECRETS_DIR="$TEST_WORKSPACE/secrets"
-}
-
 # Test add command with existing secret - decline overwrite
 test_secret_add_decline_overwrite_only() {
-    # Skip if we couldn't set up secrets directory
-    if [ -n "$SKIP_TESTS" ]; then
-        return 0
-    fi
-    
     # Make sure the secrets directory exists
     # mkdir -p "$SECRETS_DIR" 2>/dev/null
     
@@ -56,12 +44,6 @@ test_secret_add_decline_overwrite_only() {
     assert_equals "original_value" "$final_value" "Should preserve original value when overwrite declined"
 }
 
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Restore original secrets directory
-    export SECRETS_DIR="$ORIGINAL_SECRETS_DIR"
-}
-
 # Test add command requires OpenSSL
 test_secret_add_requires_openssl() {
     # Mock the OpenSSL availability check to force failure
@@ -86,11 +68,6 @@ test_secret_add_requires_openssl() {
 
 # Test add command basic functionality with simulated input
 test_secret_add_basic_functionality() {
-    # Skip if we couldn't set up secrets directory
-    if [ -n "$SKIP_TESTS" ]; then
-        return 0
-    fi
-    
     # Check if OpenSSL is available first
     local openssl_check
     openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)

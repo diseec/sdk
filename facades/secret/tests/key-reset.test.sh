@@ -5,7 +5,7 @@
 # Test key-reset command with no key configured
 test_secret_key_reset_no_key_configured() {
     local output
-    output=$(d secret key-reset 2>&1)
+    output=$(D secret key-reset 2>&1)
     local result=$?
     
     # Should fail when no key is configured
@@ -17,7 +17,7 @@ test_secret_key_reset_no_key_configured() {
 test_secret_key_reset_requires_openssl() {
     # Skip if OpenSSL is not available (we can't easily test this scenario)
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -34,7 +34,7 @@ test_secret_key_reset_requires_openssl() {
 test_secret_key_reset_no_secrets() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -55,7 +55,7 @@ test_secret_key_reset_no_secrets() {
     
     # Reset the key (no secrets exist, so should generate new key)
     local reset_output
-    reset_output=$(d secret key-reset 2>&1)
+    reset_output=$(D secret key-reset 2>&1)
     local reset_result=$?
     
     if [ "$reset_result" -eq 0 ]; then
@@ -65,7 +65,7 @@ test_secret_key_reset_no_secrets() {
         
         # Verify the key changed
         local new_key_output
-        new_key_output=$(d secret key-show 2>&1)
+        new_key_output=$(D secret key-show 2>&1)
         local new_key_result=$?
         
         if [ "$new_key_result" -eq 0 ]; then
@@ -79,7 +79,7 @@ test_secret_key_reset_no_secrets() {
 test_secret_key_reset_with_secrets_confirm() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -99,7 +99,7 @@ test_secret_key_reset_with_secrets_confirm() {
     
     # Get the original key for comparison
     local original_key_output
-    original_key_output=$(d secret key-show 2>&1)
+    original_key_output=$(D secret key-show 2>&1)
     local original_key_result=$?
     
     if [ "$original_key_result" -ne 0 ]; then
@@ -121,7 +121,7 @@ test_secret_key_reset_with_secrets_confirm() {
         
         # Verify the key changed
         local new_key_output
-        new_key_output=$(d secret key-show 2>&1)
+        new_key_output=$(D secret key-show 2>&1)
         local new_key_result=$?
         
         if [ "$new_key_result" -eq 0 ]; then
@@ -130,7 +130,7 @@ test_secret_key_reset_with_secrets_confirm() {
             
             # Verify secrets still exist and can be decrypted with new key
             local export_output
-            export_output=$(d secret export RESET_TEST_SECRET 2>&1)
+            export_output=$(D secret export RESET_TEST_SECRET 2>&1)
             local export_result=$?
             
             if [ "$export_result" -eq 0 ]; then
@@ -144,7 +144,7 @@ test_secret_key_reset_with_secrets_confirm() {
 test_secret_key_reset_with_secrets_cancel() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -164,7 +164,7 @@ test_secret_key_reset_with_secrets_cancel() {
     
     # Get the original key for comparison
     local original_key_output
-    original_key_output=$(d secret key-show 2>&1)
+    original_key_output=$(D secret key-show 2>&1)
     local original_key_result=$?
     
     if [ "$original_key_result" -ne 0 ]; then
@@ -183,7 +183,7 @@ test_secret_key_reset_with_secrets_cancel() {
     if [ "$reset_result" -eq 0 ]; then
         # Operation might succeed but do nothing, or might be cancelled
         local key_after_cancel
-        key_after_cancel=$(d secret key-show 2>&1)
+        key_after_cancel=$(D secret key-show 2>&1)
         local key_after_result=$?
         
         if [ "$key_after_result" -eq 0 ]; then
@@ -197,7 +197,7 @@ test_secret_key_reset_with_secrets_cancel() {
 test_secret_key_reset_confirmation_prompt() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -229,7 +229,7 @@ test_secret_key_reset_confirmation_prompt() {
 test_secret_key_reset_generates_valid_key() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -250,7 +250,7 @@ test_secret_key_reset_generates_valid_key() {
     
     # Reset to generate a new key
     local reset_output
-    reset_output=$(d secret key-reset 2>&1)
+    reset_output=$(D secret key-reset 2>&1)
     local reset_result=$?
     
     if [ "$reset_result" -eq 0 ]; then
@@ -271,7 +271,7 @@ test_secret_key_reset_generates_valid_key() {
 test_secret_key_reset_output_format() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -292,7 +292,7 @@ test_secret_key_reset_output_format() {
     
     # Reset the key (no secrets, so should be simpler output)
     local reset_output
-    reset_output=$(d secret key-reset 2>&1)
+    reset_output=$(D secret key-reset 2>&1)
     local reset_result=$?
     
     if [ "$reset_result" -eq 0 ]; then

@@ -4,6 +4,16 @@
 
 This document provides comprehensive guidelines, best practices, and lessons learned for writing effective tests in the tester framework. It aims to help developers quickly understand the testing approach, common pitfalls, and techniques that work well in this specific environment.
 
+## Core Principles
+
+1. **End-to-End Testing**: Tests should emulate real user behavior. Always prefer end-to-end tests that exercise commands exactly as a user would.
+
+2. **Don't Mask Command Responsibilities**: Tests must challenge commands properly and should not "prepare" things that are the command's responsibility. Let the command handle its own prerequisites.
+
+3. **Report Framework Issues**: If you encounter limitations in the testing framework itself, don't work around them in your tests. Report the issue so we can improve the framework. Tests should not contain workarounds for framework limitations.
+
+4. **Separation of Concerns**: Never use internal variables or implementation details of the testing framework in your tests. Tests should only interact with the public API of the tool being tested.
+
 ## Table of Contents
 
 1. [Test Structure](#test-structure)
@@ -12,7 +22,8 @@ This document provides comprehensive guidelines, best practices, and lessons lea
 4. [Testing Configuration Values](#testing-configuration-values)
 5. [Handling Different Environments](#handling-different-environments)
 6. [Common Pitfalls and Solutions](#common-pitfalls-and-solutions)
-7. [Quick Reference](#quick-reference)
+7. [Test Design Principles](#test-design-principles)
+8. [Quick Reference](#quick-reference)
 
 ## Test Structure
 
@@ -125,6 +136,102 @@ Tests must work in different environments:
 2. **Command Output Redirection**: Redirect command output to `/dev/null` when not testing the output directly.
 3. **Tool Availability**: Be aware that different environments may have different tools available.
 
+## Test Design Principles
+
+### End-to-End Testing
+
+Tests should mimic real user behavior as closely as possible:
+
+```bash
+# GOOD: Testing the command as a user would
+test_config_set_command() {
+    # Run the command exactly as a user would
+    local output=$(D config set my.setting "my value" 2>&1)
+
+    # Verify the result
+    assert_command_success "D config get my.setting" "Should be able to retrieve the setting"
+    assert_equals "my value" "$(D config get my.setting)" "Config value should be set correctly"
+}
+
+# BAD: Bypassing the command's normal operation
+test_config_set_command_bad() {
+    # Don't directly manipulate config files - this bypasses the command's logic
+    echo "my value" > "$CONFIG_DIR/my.setting"
+
+    # This doesn't test the actual command!
+    assert_equals "my value" "$(cat "$CONFIG_DIR/my.setting")" "Config should be set"
+}
+```
+
+### Command Responsibility
+
+Tests should challenge the command properly and let it handle its own responsibilities:
+
+```bash
+# GOOD: Let the command handle its prerequisites
+test_secret_add_command() {
+    # Run the command directly, let it create its directory structure
+    local output=$(echo -e "SECRET_NAME\nsecret_value" | D secret add 2>&1)
+
+    # Verify the command succeeded and did its job
+    assert_contains "$output" "added successfully" "Should indicate success"
+    assert_equals "secret_value" "$(D secret export SECRET_NAME)" "Secret should be stored correctly"
+}
+
+# BAD: Preparing things that are the command's job
+test_secret_add_command_bad() {
+    # Don't pre-create directories or set up infrastructure for the command
+    mkdir -p "/path/to/secrets"
+    touch "/path/to/encryption_key"
+
+    # This doesn't test whether the command can set up its prerequisites
+    D secret add ...
+}
+```
+
+### Framework Limitations
+
+When encountering limitations in the testing framework:
+
+```bash
+# GOOD: Report framework limitations, don't work around them
+# If you find that the framework doesn't support a certain testing scenario,
+# open an issue and request enhancement instead of creating brittle workarounds.
+
+# BAD: Creating workarounds for framework limitations
+test_with_workaround() {
+    # Don't do this - modifying framework internals or creating workarounds
+    _INTERNAL_TESTER_VARIABLE="modified"
+
+    # Special handling for framework limitation XYZ...
+    # Complex workaround code...
+}
+```
+
+### No Framework Implementation Details
+
+Tests should not depend on internal variables or implementation details:
+
+```bash
+# GOOD: Use only public interfaces
+test_command_execution() {
+    # Use only the public command interface
+    local result=$(D my-command --option)
+    assert_equals "expected output" "$result" "Command should produce expected output"
+}
+
+# BAD: Using framework implementation details
+test_command_with_internals() {
+    # Don't use or modify internal variables of the testing framework
+    _INTERNAL_TEST_FLAG=true
+
+    # Don't directly invoke internal functions
+    _run_test_internal_function
+}
+```
+
+Remember: If you're writing complex workarounds in your tests, you're likely masking issues that should be fixed in either the command implementation or the testing framework.
+
 ## Quick Reference
 
 ### Most Reliable Assertion Patterns
@@ -155,4 +262,14 @@ echo "test content" > "$TEST_WORKSPACE/test-file.txt"
 assert_file_exists "$TEST_WORKSPACE/test-file.txt" "Test file should exist"
 ```
 
-Remember that well-written tests serve as documentation and safeguard against regressions. Take the time to write clear, thorough, and reliable tests.
+### Key Principles Checklist
+
+When writing a test, ensure it follows these principles:
+
+1. **End-to-End Focus**: Does the test use the command exactly as a user would?
+2. **Command Responsibility**: Does the test allow the command to handle its own prerequisites?
+3. **Framework Independence**: Does the test avoid using internal testing framework details?
+4. **Real-world Behavior**: Does the test validate behavior a real user would care about?
+5. **Reliability**: Is the test deterministic and not flaky?
+
+Remember that well-written tests serve as documentation and safeguard against regressions. Take the time to write clear, thorough, and reliable tests that properly challenge the functionality being tested.

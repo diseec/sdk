@@ -5,7 +5,7 @@
 # Test validate command with missing argument
 test_secret_validate_missing_argument() {
     local output
-    output=$(d secret validate 2>&1)
+    output=$(D secret validate 2>&1)
     local result=$?
     
     # Should fail without secret name
@@ -28,7 +28,7 @@ test_secret_validate_nonexistent_secret() {
 # Test validate command structure and help
 test_secret_validate_command_structure() {
     local output
-    output=$(d secret validate 2>&1)
+    output=$(D secret validate 2>&1)
     
     # Should show usage information
     assert_contains "$output" "Usage\|required" "Should show usage information"
@@ -37,7 +37,7 @@ test_secret_validate_command_structure() {
 # Test validate command with invalid arguments
 test_secret_validate_invalid_args() {
     local output
-    output=$(d secret validate test-secret --invalid-arg 2>&1)
+    output=$(D secret validate test-secret --invalid-arg 2>&1)
     local result=$?
     
     # Should fail with invalid argument
@@ -48,7 +48,7 @@ test_secret_validate_invalid_args() {
 # Test that validate command is recognized
 test_secret_validate_command_recognized() {
     local output
-    output=$(d secret validate 2>&1)
+    output=$(D secret validate 2>&1)
     
     # Should not contain "Unknown command"
     echo "$output" | grep -v "Unknown command" > /dev/null

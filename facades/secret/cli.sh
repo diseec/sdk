@@ -5,6 +5,7 @@ source_once "$D_SDK_DIR/facades/secret/index.sh"
 mkdir -p "$SECRETS_DIR"
 
 c=$1; shift; case "$c" in
+    ini|init) sdk_fac_sec_cmd_init_secret "$@" ;; # no need for manual call automatically called on first add/validate
     kse|key-set) sdk_fac_sec_set_key "$@" ;;
     kre|key-reset) sdk_fac_sec_reset_key "$@" ;;
     ksh|key-show) sdk_fac_sec_show_key "$@" ;;
@@ -15,7 +16,6 @@ c=$1; shift; case "$c" in
     rem|remove|rm|del|delete) sdk_fac_sec_remove_secret "$@" ;;
     ava|available) sdk_fac_sec_cmd_check_availability "$@" ;;
     val|validate) sdk_fac_sec_cmd_validate_secret "$@" ;;
-    ini|init) sdk_fac_sec_cmd_init_secret "$@" ;;
     exi|exists) sdk_fac_sec_cmd_secret_exists "$@" ;;
     fun|function) "$@" ;;
     *) display_help "" "" \
@@ -35,6 +35,8 @@ c=$1; shift; case "$c" in
         "    ava|available          " "Check if secrets system is available" \
         "    val|validate <name>    " "Validate and prepare a secret (interactive)" \
         "    ini|init <name>        " "Initialize and ensure a secret exists (interactive)" \
+        "                           " "$(ansi "2;90" "No need for manual call,")" \
+        "                           " "$(ansi "2;90" "init happens automatically")" \
         "    exi|exists <name>      " "Check if a secret exists" \
         "" "" "$(ansi 34 'Info: ')" "Secrets are encrypted with AES-256-CBC using auto-generated keys" \
         "" "" "$(ansi 97 'Important: ')" "If secrets exist but no key is configured, you must:" \

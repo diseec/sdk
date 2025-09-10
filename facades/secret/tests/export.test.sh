@@ -5,7 +5,7 @@
 # Test export command requires secret name
 test_secret_export_requires_name() {
     local output
-    output=$(d secret export 2>&1)
+    output=$(D secret export 2>&1)
     local result=$?
     
     # Should fail without secret name
@@ -16,7 +16,7 @@ test_secret_export_requires_name() {
 # Test export command with non-existent secret
 test_secret_export_nonexistent_secret() {
     local output
-    output=$(d secret export NONEXISTENT_SECRET 2>&1)
+    output=$(D secret export NONEXISTENT_SECRET 2>&1)
     local result=$?
     
     # Should fail with non-existent secret
@@ -28,13 +28,13 @@ test_secret_export_nonexistent_secret() {
 test_secret_export_requires_openssl() {
     # Skip if OpenSSL is not available (we can't easily test this scenario)
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
         # OpenSSL not available - export should fail
         local output
-        output=$(d secret export ANY_SECRET 2>&1)
+        output=$(D secret export ANY_SECRET 2>&1)
         local export_result=$?
         
         assert_not_equals "0" "$export_result" "Export should fail without OpenSSL"
@@ -45,7 +45,7 @@ test_secret_export_requires_openssl() {
 test_secret_export_existing_secret() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -65,7 +65,7 @@ test_secret_export_existing_secret() {
     
     # Now try to export it
     local export_output
-    export_output=$(d secret export EXPORT_TEST_SECRET 2>&1)
+    export_output=$(D secret export EXPORT_TEST_SECRET 2>&1)
     local export_result=$?
     
     if [ "$export_result" -eq 0 ]; then
@@ -81,7 +81,7 @@ test_secret_export_existing_secret() {
 test_secret_export_no_key_configured() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -96,7 +96,7 @@ test_secret_export_no_key_configured() {
     
     # Try to export without key
     local output
-    output=$(d secret export MOCK_SECRET 2>&1)
+    output=$(D secret export MOCK_SECRET 2>&1)
     local result=$?
     
     # Should fail or prompt for key configuration
@@ -109,7 +109,7 @@ test_secret_export_no_key_configured() {
 test_secret_export_output_format() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -130,7 +130,7 @@ test_secret_export_output_format() {
     
     # Export and check that output is just the value (no extra text)
     local export_output
-    export_output=$(d secret export FORMAT_TEST_SECRET 2>&1)
+    export_output=$(D secret export FORMAT_TEST_SECRET 2>&1)
     local export_result=$?
     
     if [ "$export_result" -eq 0 ]; then
@@ -138,7 +138,7 @@ test_secret_export_output_format() {
         assert_equals "$test_value" "$export_output" "Export should return only the secret value"
         
         # Should not contain any log messages or formatting
-        local line_count=$(echo "$export_output" | wc -l | tr -d ' ')
+        local line_count=$(echo "$export_output" | wc -l | tr -D ' ')
         assert_equals "1" "$line_count" "Export should return single line"
     fi
 }
@@ -147,7 +147,7 @@ test_secret_export_output_format() {
 test_secret_export_special_characters() {
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(d secret available --quiet 2>&1)
+    openssl_check=$(D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -168,7 +168,7 @@ test_secret_export_special_characters() {
     
     # Export and verify special characters are preserved
     local export_output
-    export_output=$(d secret export SPECIAL_CHARS_SECRET 2>&1)
+    export_output=$(D secret export SPECIAL_CHARS_SECRET 2>&1)
     local export_result=$?
     
     if [ "$export_result" -eq 0 ]; then

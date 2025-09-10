@@ -2,23 +2,6 @@
 
 # Test for the 'secret available' command
 
-# Suite setup - runs once before all tests in this file
-setup_test() {
-    # Ensure we have a writable secrets directory for testing
-    export ORIGINAL_SECRETS_DIR="$SECRETS_DIR"
-    export SECRETS_DIR="$TEST_WORKSPACE/secrets"
-    mkdir -p "$SECRETS_DIR" 2>/dev/null || {
-        # If we can't create secrets directory, note it but continue
-        export SKIP_DIRECTORY_TESTS="Cannot create secrets directory - read-only filesystem"
-    }
-}
-
-# Suite teardown - runs once after all tests in this file
-suite_teardown() {
-    # Restore original secrets directory
-    export SECRETS_DIR="$ORIGINAL_SECRETS_DIR"
-}
-
 # Test availability check basic functionality
 test_secret_available_basic() {
     local output
@@ -52,7 +35,7 @@ test_secret_available_quiet() {
 # Test availability check invalid arguments
 test_secret_available_invalid_args() {
     local output
-    output=$(d secret available --invalid-arg 2>&1)
+    output=$(D secret available --invalid-arg 2>&1)
     local result=$?
     
     # Should contain error message about unknown argument
@@ -60,14 +43,14 @@ test_secret_available_invalid_args() {
     
     # Test multiple invalid arguments
     local output2
-    output2=$(d secret available --bad-flag --another-bad-flag 2>&1)
+    output2=$(D secret available --bad-flag --another-bad-flag 2>&1)
     assert_contains "$output2" "Unknown argument" "Should indicate unknown argument with multiple bad flags"
 }
 
 # Test that secrets directory information is shown
 test_secret_available_shows_directory_info() {
     local output
-    output=$(d secret available 2>&1)
+    output=$(D secret available 2>&1)
     
     # Should show secrets directory path
     assert_contains "$output" "Secrets Directory\|secrets" "Should mention secrets directory"
