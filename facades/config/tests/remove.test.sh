@@ -13,6 +13,7 @@ setup_test() {
     D config --scope=repository set scope.array 'repo_item' > /dev/null
     D config --scope=context set scope.array 'context_item' > /dev/null
 }
+
 # Test removing an item from an array
 test_config_remove_item() {
     # Remove an item from the array

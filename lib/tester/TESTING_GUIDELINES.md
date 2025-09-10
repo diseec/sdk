@@ -14,6 +14,14 @@ This document provides comprehensive guidelines, best practices, and lessons lea
 
 4. **Separation of Concerns**: Never use internal variables or implementation details of the testing framework in your tests. Tests should only interact with the public API of the tool being tested.
 
+5. **No Conditional Assertions**: Conditional assertions (if/then assertions) are strongly forbidden. All scenarios must be clearly prepared and tested individually.
+
+6. **Let Assertions Determine Test Outcome**: Never use `return` or `exit` to control test outcomes. Let assertions determine success or failure. Early returns create false positives.
+
+7. **Avoid False Positives**: Design tests to avoid false positives and unstable behavior. Tests should definitively pass or fail based on actual functionality.
+
+8. **Explicit Verification Beyond Exit Status**: Assertions must verify actual outcomes, not just exit status. Never rely solely on success exit codes - validate that the command's purpose was fully accomplished through observable results.
+
 ## Table of Contents
 
 1. [Test Structure](#test-structure)
@@ -232,6 +240,171 @@ test_command_with_internals() {
 
 Remember: If you're writing complex workarounds in your tests, you're likely masking issues that should be fixed in either the command implementation or the testing framework.
 
+### No Conditional Assertions
+
+All test scenarios must be explicitly prepared and tested independently. Conditional assertions create ambiguity and can hide failures:
+
+```bash
+# BAD: Conditional assertions make test outcomes unclear
+test_conditional_assertions_bad() {
+    local result=$(D some-command)
+
+    # DON'T DO THIS: Test logic is obfuscated
+    if echo "$result" | grep -q "success"; then
+        assert_equals "expected output" "$result" "Success path"
+    else
+        assert_contains "$result" "error message" "Error path"
+    fi
+
+    # This test can "pass" in different ways, making it unclear what was tested
+}
+
+# GOOD: Clear, separate tests for each scenario
+test_command_success_case() {
+    # Set up success scenario
+    local result=$(D some-command --success-param)
+
+    # Always assert the expected outcome
+    assert_equals "expected output" "$result" "Command should succeed with expected output"
+}
+
+test_command_error_case() {
+    # Set up error scenario explicitly
+    local result=$(D some-command --error-param)
+
+    # Assert the error condition
+    assert_contains "$result" "error message" "Command should show appropriate error"
+}
+```
+
+### Let Assertions Control Test Outcomes
+
+Tests should never manually control their pass/fail status. Let assertions determine the test outcome:
+
+```bash
+# BAD: Manual returns create false positives
+test_with_early_returns_bad() {
+    # DON'T DO THIS: Early returns bypass assertions
+    if [ ! -f "$TEST_WORKSPACE/some-file" ]; then
+        return 0  # DANGEROUS! Test "passes" without asserting anything
+    fi
+
+    # This assertion might never run:
+    assert_equals "expected" "$(cat "$TEST_WORKSPACE/some-file")" "File content check"
+}
+
+# GOOD: Assertions control outcome
+test_file_content_good() {
+    # Create the test file if testing its existence is not the main purpose
+    touch "$TEST_WORKSPACE/some-file"
+    echo "content" > "$TEST_WORKSPACE/some-file"
+
+    # Always make assertions - let them determine pass/fail
+    assert_file_exists "$TEST_WORKSPACE/some-file" "File should exist"
+    assert_equals "content" "$(cat "$TEST_WORKSPACE/some-file")" "File content check"
+}
+```
+
+### Avoid False Positives and Unstable Tests
+
+Design tests to be deterministic and definitively validate functionality:
+
+```bash
+# BAD: Unstable test that might pass incorrectly
+test_unstable_test_bad() {
+    # DON'T DO THIS: Race condition with timing
+    D start-background-service
+    sleep 1  # Arbitrary sleep, might be too short or too long
+
+    # May pass or fail depending on timing
+    local result=$(D check-service-status)
+    assert_contains "$result" "running" "Service should be running"
+}
+
+# GOOD: More deterministic approach
+test_service_startup_good() {
+    # Start service and poll with timeout for deterministic result
+    D start-background-service
+
+    local timeout=10
+    local counter=0
+    local status=""
+
+    while [ $counter -lt $timeout ]; do
+        status=$(D check-service-status)
+        if echo "$status" | grep -q "running"; then
+            break
+        fi
+        counter=$((counter + 1))
+        sleep 1
+    done
+
+    # Clear assertion of the expected state
+    assert_contains "$status" "running" "Service should be running within $timeout seconds"
+    assert_less_than $counter $timeout "Service should start before timeout"
+}
+```
+
+### Verify Beyond Exit Status
+
+Tests must validate actual outcomes, not just whether a command exited successfully:
+
+```bash
+# BAD: Only checking exit status
+test_command_exit_status_only_bad() {
+    # DON'T DO THIS: Only checking if command runs without error
+    assert_command_success "D create-user john" "User creation should succeed"
+
+    # Missing: Verification that the user was actually created correctly
+}
+
+# GOOD: Verifying actual outcomes
+test_user_creation_good() {
+    # Run the command
+    local output=$(D create-user john 2>&1)
+
+    # Verify exit status
+    assert_equals "0" "$?" "User creation should succeed"
+
+    # IMPORTANT: Verify the actual outcome through observable results
+    assert_contains "$output" "User created successfully" "Command should report success"
+    assert_command_success "D list-users | grep -F 'john'" "User should appear in user list"
+    assert_equals "john" "$(D get-user-property john username)" "Username should be set correctly"
+}
+```
+
+Even for commands that don't produce obvious output, find ways to verify their effects:
+
+```bash
+# BAD: Only checking if a setup command runs
+test_environment_setup_bad() {
+    assert_command_success "D setup-environment" "Environment setup should succeed"
+    # Missing verification that the setup actually did something
+}
+
+# GOOD: Verifying the effects of the command
+test_environment_setup_good() {
+    # Run the setup command
+    local output=$(D setup-environment 2>&1)
+
+    # Verify exit status
+    assert_equals "0" "$?" "Environment setup should succeed"
+
+    # Verify actual effects
+    assert_file_exists "/expected/config/path" "Setup should create config file"
+    assert_contains "$(cat /expected/config/path)" "expected_setting" "Config should have correct content"
+    assert_command_success "D environment-check" "Environment validation should pass"
+
+    # For cleanup commands, verify things were actually cleaned up
+    D cleanup-temp-files
+    assert_file_not_exists "/tmp/should-be-gone" "Temp files should be removed"
+}
+```
+
+Remember: A command can exit with status 0 but still fail to accomplish its purpose. Always verify the actual, observable outcomes.
+
+````
+
 ## Quick Reference
 
 ### Most Reliable Assertion Patterns
@@ -260,7 +433,7 @@ assert_equals "3" "$count" "Array should have 3 items"
 # 5. Working with files in the test workspace
 echo "test content" > "$TEST_WORKSPACE/test-file.txt"
 assert_file_exists "$TEST_WORKSPACE/test-file.txt" "Test file should exist"
-```
+````
 
 ### Key Principles Checklist
 
@@ -271,5 +444,10 @@ When writing a test, ensure it follows these principles:
 3. **Framework Independence**: Does the test avoid using internal testing framework details?
 4. **Real-world Behavior**: Does the test validate behavior a real user would care about?
 5. **Reliability**: Is the test deterministic and not flaky?
+6. **No Conditional Assertions**: Does each test have clear, unconditional assertions?
+7. **Assertion-Driven**: Does the test let assertions control pass/fail status without manual returns?
+8. **Scenario Isolation**: Is each scenario tested in isolation without conditionals?
+9. **False-Positive Protection**: Is the test designed to fail if the functionality is broken?
+10. **Complete Verification**: Does the test verify actual outcomes beyond just exit status?
 
 Remember that well-written tests serve as documentation and safeguard against regressions. Take the time to write clear, thorough, and reliable tests that properly challenge the functionality being tested.

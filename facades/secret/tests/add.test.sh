@@ -4,20 +4,6 @@
 
 # Test add command with existing secret - decline overwrite
 test_secret_add_decline_overwrite_only() {
-    # Make sure the secrets directory exists
-    # mkdir -p "$SECRETS_DIR" 2>/dev/null
-    
-    # Check if OpenSSL is available first
-    local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
-    local result=$?
-    
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
-    
-    # Change to the test workspace directory
     cd "$TEST_WORKSPACE"
     
     # Generate a consistent key for testing
@@ -68,16 +54,6 @@ test_secret_add_requires_openssl() {
 
 # Test add command basic functionality with simulated input
 test_secret_add_basic_functionality() {
-    # Check if OpenSSL is available first
-    local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
-    local result=$?
-    
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
-    
     # Test interactive input by providing input through heredoc
     local output
     output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
