@@ -29,9 +29,19 @@ suite_setup() {
     D some-command init > /dev/null
 }
 
+# Suite teardown - runs once after all tests in this file
+suite_teardown() {
+    # Clean up any global resources created during testing
+    # Note: You don't need to clean up the test workspace
+    return 0
+}
+
 # Individual test function
 test_specific_feature() {
-    # Setup
+    # Each test function gets a fresh $TEST_WORKSPACE automatically
+    # and the current directory is already set to it
+
+    # Setup specific to this test (if needed)
     D some-command setup-action > /dev/null
 
     # Execute the code under test
@@ -40,6 +50,8 @@ test_specific_feature() {
 
     # Assertions
     assert_equals "expected" "$result" "Message describing the expectation"
+
+    # No need to clean up the workspace - it's handled automatically
 }
 ```
 
@@ -47,7 +59,7 @@ test_specific_feature() {
 
 1. **Suite Setup/Teardown**: These run once for the entire test file.
 2. **Test Functions**: Must be prefixed with `test_` to be discovered by the test runner.
-3. **Workspaces**: Most tests should use `create_test_workspace` to create an isolated environment.
+3. **Workspaces**: The framework automatically creates a fresh `$TEST_WORKSPACE` for each test function. You don't need to create or clean up workspaces manually.
 
 ## Assertion Best Practices
 
@@ -126,7 +138,10 @@ echo "$haystack" | grep -F "$needle" > /dev/null
 assert_equals "$?" "0" "String should contain substring"
 
 # 3. Command success check
-assert_command_success "cd \"$TEST_WORKSPACE\" && D some-command" "Command should succeed"
+D some-command > /dev/null
+assert_equals "$?" "0" "Command should succeed"
+# Or using the dedicated helper:
+assert_command_success "D some-command" "Command should succeed"
 
 # 4. Checking array content and iteration
 local count=0
@@ -134,6 +149,10 @@ for item in $array_value; do
     count=$((count + 1))
 done
 assert_equals "3" "$count" "Array should have 3 items"
+
+# 5. Working with files in the test workspace
+echo "test content" > "$TEST_WORKSPACE/test-file.txt"
+assert_file_exists "$TEST_WORKSPACE/test-file.txt" "Test file should exist"
 ```
 
 Remember that well-written tests serve as documentation and safeguard against regressions. Take the time to write clear, thorough, and reliable tests.

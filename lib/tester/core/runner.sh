@@ -132,6 +132,9 @@ _sdk_tester_run_test_file() {
             if declare -f teardown_test >/dev/null 2>&1; then
                 teardown_test
             fi
+
+            # Clean up
+            cleanup_test_workspace "$TEST_WORKSPACE"
             
             # Show test function completion in verbose mode
             if [ "$TESTER_VERBOSE" = "true" ]; then

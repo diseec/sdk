@@ -64,7 +64,4 @@ test_config_summary_with_no_configs() {
     
     # Verify it handles the case with no configs
     assert_not_empty "$summary_output" "Summary should provide output even with no configs"
-    
-    # Clean up
-    cleanup_test_workspace "$TEST_WORKSPACE"
 }
