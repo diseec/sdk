@@ -187,6 +187,7 @@ export TESTER_COMMAND_LOGS=""
 D() {
     # Use the existing capture function to handle command execution and logging
     (capture env D_SDK_DIR="$D_SDK_DIR" "$D_SDK_DIR/$D_CLI_GLOBAL_NAME" "$@")
+    return $?
 }
 
 # Capture command output and add it to the logs
@@ -222,17 +223,21 @@ capture() {
     # If TESTER_LOG_FILE is set, write to the log file with styled format
     if [ -n "$TESTER_LOG_FILE" ]; then
         {
-            echo -e "\033[90m[$timestamp]\033[0m\033[97m[CMD]\033[0m $cmd"
-            echo -e "\033[90m[$timestamp]\033[0m\033[34m[OUT]\033[0m"
-            echo "$command_output"
-            
-            # Use appropriate icon based on exit code
-            if [ $exit_code -eq 0 ]; then
-                echo -e "\033[90m[$timestamp]\033[0m\033[32m[EXT]\033[0m $exit_code"
-            else
-                echo -e "\033[90m[$timestamp]\033[0m\033[31m[EXT]\033[0m $exit_code"
+            # Color selection based on exit code
+            local color_code="90"  # Green for success
+            if [ $exit_code -ne 0 ]; then
+                color_code="31"    # Red for failure
             fi
-            printf "\033[2;90m-------------------------------------------------------------------------------\033[0m\n"
+            
+            # Command line with timestamp and exit status
+            echo -e "\033[90m[$timestamp]\033[97m[$]\033[90m[EXT:\033[${color_code}m$exit_code\033[90m]\033[97m $cmd\033[0m"
+            
+            # Output with proper indentation (if there is any output)
+            if [ -n "$command_output" ]; then
+                echo "$command_output"
+            fi
+            
+            echo -e "\033[2;90m-------------------------------------------------------------------------------\033[0m"
         } >> "$TESTER_LOG_FILE"
     fi
     

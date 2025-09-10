@@ -51,7 +51,7 @@ test_config_get_nested_values() {
 test_config_get_nonexistent_key() {
     # Try to get a non-existent key
     local result
-    result=$(D config --scope=user get nonexistent.key 2>&1)
+    result=$(D config --scope=user get nonexistent.key)
     
     # Check that the command indicates key not found
     assert_not_equals "0" "$?" "Command should indicate failure for non-existent key"
