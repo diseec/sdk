@@ -125,7 +125,7 @@ sdk_tester_show_file_results() {
         local filename="$(basename "$relative_path")"
 
         # Show timestamp with counts, then path with filename styled
-        printf "\033[90m[%s][\033[97m%d\033[0m\033[90m/%d]\033[0m " "$timestamp" "$file_passed" "$file_total"
+        printf "\033[90m[%s][\033[90m%d\033[0m\033[2;90m/%d\033[0;90m]\033[0m " "$timestamp" "$file_passed" "$file_total"
         
         # Show path in gray, filename in white
         if [ "$dir_path" = "." ]; then

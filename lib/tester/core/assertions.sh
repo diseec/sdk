@@ -31,8 +31,8 @@ _tester_assert_result() {
         
         # Show details only if verbose
         if [ "$TESTER_VERBOSE" = "true" ] && [ -n "$expected" ] && [ -n "$actual" ]; then
-            printf "\n        \033[90m[EXPECT]\033[0m \033[90m%s\033[0m" "$expected"
-            printf "\n        \033[31m[ACTUAL]\033[0m \033[97m%s\033[0m" "$actual"
+            printf "\n          \033[90m[EXPECT]\033[0m \033[90m%s\033[0m" "$expected"
+            printf "\n          \033[31m[ACTUAL]\033[0m \033[97m%s\033[0m" "$actual"
         fi
         
         return 1
