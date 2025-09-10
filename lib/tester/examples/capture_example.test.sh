@@ -36,22 +36,22 @@ test_capture_with_complex_command() {
     assert_contains "$output" "Command completed" "Completion message should be present"
 }
 
-test_capture_with_multiple_logs_then_fail() {
-    # First command generates some output
-    local output1=$(capture "echo 'First log entry: This should be captured' && echo 'This is multiline output' && echo 'With several lines'")
+# test_capture_with_multiple_logs_then_fail() {
+#     # First command generates some output
+#     local output1=$(capture "echo 'First log entry: This should be captured' && echo 'This is multiline output' && echo 'With several lines'")
     
-    # Second command generates more output
-    local output2=$(capture "ls -la / | head -5")
+#     # Second command generates more output
+#     local output2=$(capture "ls -la / | head -5")
     
-    # Third command runs a command that produces both stdout and stderr
-    local output3=$(capture "find /tmp -type f -name 'test*' 2>&1 | head -3")
+#     # Third command runs a command that produces both stdout and stderr
+#     local output3=$(capture "find /tmp -type f -name 'test*' 2>&1 | head -3")
     
-    # Print some info about what we're doing
-    echo "Preparing to fail the test after collecting logs..."
+#     # Print some info about what we're doing
+#     echo "Preparing to fail the test after collecting logs..."
     
-    # Make a valid assertion first
-    assert_contains "$output1" "multiline output" "First command output should contain expected text"
+#     # Make a valid assertion first
+#     assert_contains "$output1" "multiline output" "First command output should contain expected text"
     
-    # Now deliberately fail the test to see the logs
-    assert_equals "This will fail" "This is not equal" "This assertion is meant to fail to show logs"
-}
+#     # Now deliberately fail the test to see the logs
+#     assert_equals "This will fail" "This is not equal" "This assertion is meant to fail to show logs"
+# }

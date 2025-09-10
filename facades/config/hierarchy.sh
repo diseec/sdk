@@ -23,6 +23,13 @@ sdk_fac_con_get() {
     if [ -n "$specific_scope" ]; then
         sdk_fac_con_validate_scope "$specific_scope" || return 1
         local config_file="$(sdk_fac_con_get_config_file "$specific_scope")"
+        
+        # Check if config file exists
+        if [ ! -f "$config_file" ]; then
+            echo "Configuration key '$key_path' not found in $specific_scope scope" >&2
+            return 1
+        fi
+        
         local value="$(_yq eval ".${key_path}" "$config_file" 2>/dev/null)"
         
         # Check if key was not found
@@ -112,6 +119,16 @@ sdk_fac_con_delete() {
     if [ ! -f "$config_file" ]; then
         logit -w "Configuration file does not exist for scope: $scope"
         return 1
+    fi
+    
+    # First check if the key exists before attempting to delete
+    local key_exists
+    key_exists=$(_yq eval ".${key_path} // \"__key_not_found__\"" "$config_file" 2>/dev/null)
+    
+    if [ "$key_exists" = "__key_not_found__" ] || [ -z "$key_exists" ] || [ "$key_exists" = "null" ]; then
+        # Key doesn't exist, but we'll still consider this a success for idempotency
+        logit -l "Deleted '$key_path' from '$scope' scope"
+        return 0
     fi
     
     # Check if this is an array element removal

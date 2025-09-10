@@ -114,7 +114,7 @@ _sdk_tester_run_test_file() {
             
             # Show test function start in verbose mode
             if [ "$TESTER_VERBOSE" = "true" ]; then
-                printf "    \033[90m→\033[0m \033[97m%s\033[0m" "$test_function"
+                printf "    \033[2;90m→\033[0m \033[90m%s\033[0m" "$test_function"
             fi
             
             setup_test_workspace

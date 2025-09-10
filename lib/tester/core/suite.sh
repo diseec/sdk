@@ -187,6 +187,7 @@ export TESTER_COMMAND_LOGS=""
 D() {
     # Use the existing capture function to handle command execution and logging
     (capture env D_SDK_DIR="$D_SDK_DIR" "$D_SDK_DIR/$D_CLI_GLOBAL_NAME" "$@")
+    # Important: preserve the original exit code from the D command
     return $?
 }
 
@@ -203,22 +204,22 @@ capture() {
     local command_output
     local cmd
     local timestamp=$(date "+%H:%M:%S")
+    local exit_code
     
     # Handle command as string or as arguments
     if [ $# -eq 1 ] && [[ "$1" == *" "* ]]; then
         # Command is passed as a single string
         cmd="$1"
         # Use eval to execute the command string directly
-        command_output=$(set -o pipefail; eval "$cmd" 2>&1 || true)
+        command_output=$(set -o pipefail; eval "$cmd" 2>&1)
+        exit_code=$?
     else
         # Command is passed as arguments
         cmd="$*"
         # For single commands without spaces, execute directly
-        command_output=$("$@" 2>&1 || true)
+        command_output=$("$@" 2>&1)
+        exit_code=$?
     fi
-    
-    # Capture exit code
-    local exit_code=$?
     
     # If TESTER_LOG_FILE is set, write to the log file with styled format
     if [ -n "$TESTER_LOG_FILE" ]; then
@@ -230,7 +231,7 @@ capture() {
             fi
             
             # Command line with timestamp and exit status
-            echo -e "\033[90m[$timestamp]\033[97m[$]\033[90m[EXT:\033[${color_code}m$exit_code\033[90m]\033[97m $cmd\033[0m"
+            echo -e "\033[90m[$timestamp]\033[32m[$]\033[90m\033[${color_code}m[EXT:$exit_code]\033[97m $cmd\033[0m"
             
             # Output with proper indentation (if there is any output)
             if [ -n "$command_output" ]; then

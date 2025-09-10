@@ -12,23 +12,27 @@ _tester_assert_result() {
     local expected="${3:-}"
     local actual="${4:-}"
     local test_name="${TESTER_CURRENT_TEST:-unknown}"
+    local assert_func="${5:-UNDEFINED}"
     
     TESTER_TOTAL_TESTS=$((TESTER_TOTAL_TESTS + 1))
+    
+    # Prefix message with assertion function name for clarity
+    local prefixed_message="ASSERT: $assert_func: $message"
     
     if [ "$success" = "true" ]; then
         TESTER_PASSED_TESTS=$((TESTER_PASSED_TESTS + 1))
         # Always call the reporter function for consistent handling
-        sdk_tester_show_assertion_result "true" "$message" "$test_name"
+        sdk_tester_show_assertion_result "true" "$prefixed_message" "$test_name"
         return 0
     else
         TESTER_FAILED_TESTS=$((TESTER_FAILED_TESTS + 1))
         # Always call the reporter function for consistent handling
-        sdk_tester_show_assertion_result "false" "$message" "$test_name"
+        sdk_tester_show_assertion_result "false" "$prefixed_message" "$test_name"
         
         # Show details only if verbose
         if [ "$TESTER_VERBOSE" = "true" ] && [ -n "$expected" ] && [ -n "$actual" ]; then
-            printf "\n        \033[90m[EXP]\033[0m \033[97m%s\033[0m" "$expected"
-            printf "\n        \033[31m[ACT]\033[0m \033[97m%s\033[0m" "$actual"
+            printf "\n        \033[90m[EXPECT]\033[0m \033[90m%s\033[0m" "$expected"
+            printf "\n        \033[31m[ACTUAL]\033[0m \033[97m%s\033[0m" "$actual"
         fi
         
         return 1
@@ -42,9 +46,9 @@ assert_equals() {
     local message="${3:-"Values should be equal"}"
     
     if [ "$expected" = "$actual" ]; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "EQUALS"
     else
-        _tester_assert_result "false" "$message" "$expected" "$actual"
+        _tester_assert_result "false" "$message" "$expected" "$actual" "EQUALS"
     fi
 }
 
@@ -55,9 +59,9 @@ assert_not_equals() {
     local message="${3:-"Values should not be equal"}"
     
     if [ "$expected" != "$actual" ]; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "NOT_EQUALS"
     else
-        _tester_assert_result "false" "$message" "not $expected" "$actual"
+        _tester_assert_result "false" "$message" "not $expected" "$actual" "NOT_EQUALS"
     fi
 }
 
@@ -68,9 +72,9 @@ assert_contains() {
     local message="${3:-"String should contain substring"}"
     
     if echo "$haystack" | grep -q "$needle"; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "CONTAINS"
     else
-        _tester_assert_result "false" "$message" "contains '$needle'" "'$haystack'"
+        _tester_assert_result "false" "$message" "contains '$needle'" "'$haystack'" "CONTAINS"
     fi
 }
 
@@ -81,9 +85,9 @@ assert_not_contains() {
     local message="${3:-"String should not contain substring"}"
     
     if ! echo "$haystack" | grep -q "$needle"; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "NOT_CONTAINS"
     else
-        _tester_assert_result "false" "$message" "not contains '$needle'" "'$haystack'"
+        _tester_assert_result "false" "$message" "not contains '$needle'" "'$haystack'" "NOT_CONTAINS"
     fi
 }
 
@@ -93,9 +97,9 @@ assert_file_exists() {
     local message="${2:-"File should exist: $file_path"}"
     
     if [ -f "$file_path" ]; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "FILE_EXISTS"
     else
-        _tester_assert_result "false" "$message" "file exists" "file not found"
+        _tester_assert_result "false" "$message" "file exists" "file not found" "FILE_EXISTS"
     fi
 }
 
@@ -105,9 +109,9 @@ assert_file_not_exists() {
     local message="${2:-"File should not exist: $file_path"}"
     
     if [ ! -f "$file_path" ]; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "FILE_NOT_EXISTS"
     else
-        _tester_assert_result "false" "$message" "file not exists" "file exists"
+        _tester_assert_result "false" "$message" "file not exists" "file exists" "FILE_NOT_EXISTS"
     fi
 }
 
@@ -117,9 +121,9 @@ assert_dir_exists() {
     local message="${2:-"Directory should exist: $dir_path"}"
     
     if [ -d "$dir_path" ]; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "DIR_EXISTS"
     else
-        _tester_assert_result "false" "$message" "directory exists" "directory not found"
+        _tester_assert_result "false" "$message" "directory exists" "directory not found" "DIR_EXISTS"
     fi
 }
 
@@ -129,10 +133,10 @@ assert_command_success() {
     local message="${2:-"Command should succeed: $command"}"
     
     if eval "$command" >/dev/null 2>&1; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "CMD_SUCCESS"
     else
         local exit_code=$?
-        _tester_assert_result "false" "$message" "exit code 0" "exit code $exit_code"
+        _tester_assert_result "false" "$message" "exit code 0" "exit code $exit_code" "CMD_SUCCESS"
     fi
 }
 
@@ -142,9 +146,9 @@ assert_command_fails() {
     local message="${2:-"Command should fail: $command"}"
     
     if ! eval "$command" >/dev/null 2>&1; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "CMD_FAILS"
     else
-        _tester_assert_result "false" "$message" "non-zero exit code" "exit code 0"
+        _tester_assert_result "false" "$message" "non-zero exit code" "exit code 0" "CMD_FAILS"
     fi
 }
 
@@ -154,9 +158,9 @@ assert_empty() {
     local message="${2:-"Value should be empty"}"
     
     if [ -z "$value" ]; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "EMPTY"
     else
-        _tester_assert_result "false" "$message" "empty value" "'$value'"
+        _tester_assert_result "false" "$message" "empty value" "'$value'" "EMPTY"
     fi
 }
 
@@ -166,9 +170,9 @@ assert_not_empty() {
     local message="${2:-"Value should not be empty"}"
     
     if [ -n "$value" ]; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "NOT_EMPTY"
     else
-        _tester_assert_result "false" "$message" "non-empty value" "empty value"
+        _tester_assert_result "false" "$message" "non-empty value" "empty value" "NOT_EMPTY"
     fi
 }
 
@@ -179,9 +183,9 @@ assert_matches() {
     local message="${3:-"Value should match pattern: $pattern"}"
     
     if echo "$value" | grep -qE "$pattern"; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "MATCHES"
     else
-        _tester_assert_result "false" "$message" "matches '$pattern'" "'$value'"
+        _tester_assert_result "false" "$message" "matches '$pattern'" "'$value'" "MATCHES"
     fi
 }
 
@@ -192,9 +196,9 @@ assert_greater_than() {
     local message="${3:-"Value should be greater than $threshold"}"
     
     if [ "$value" -gt "$threshold" ] 2>/dev/null; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "GREATER_THAN"
     else
-        _tester_assert_result "false" "$message" "> $threshold" "$value"
+        _tester_assert_result "false" "$message" "> $threshold" "$value" "GREATER_THAN"
     fi
 }
 
@@ -205,9 +209,9 @@ assert_less_than() {
     local message="${3:-"Value should be less than $threshold"}"
     
     if [ "$value" -lt "$threshold" ] 2>/dev/null; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "LESS_THAN"
     else
-        _tester_assert_result "false" "$message" "< $threshold" "$value"
+        _tester_assert_result "false" "$message" "< $threshold" "$value" "LESS_THAN"
     fi
 }
 
@@ -216,6 +220,9 @@ skip_test() {
     local reason="${1:-"Test skipped"}"
     TESTER_SKIPPED_TESTS=$((TESTER_SKIPPED_TESTS + 1))
     TESTER_TOTAL_TESTS=$((TESTER_TOTAL_TESTS + 1))
+    
+    # Add the SKIP prefix to the reason
+    local prefixed_reason="[SKIP] $reason"
     
     if [ "$TESTER_VERBOSE" = "true" ]; then
         printf "  \033[33m⊘\033[0m"
@@ -226,7 +233,7 @@ skip_test() {
 # Fail a test immediately with a custom message
 fail_test() {
     local message="${1:-"Test failed"}"
-    _tester_assert_result "false" "$message"
+    _tester_assert_result "false" "$message" "" "" "FAIL"
     return 1
 }
 
@@ -245,9 +252,9 @@ assert_valid_hex_key() {
     local expected_with_newline=$((expected_length + 1))
     
     if [ "$actual_length" -eq "$expected_with_newline" ] && echo "$value" | grep -qE "^[0-9a-f]{$expected_length}$"; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "VALID_HEX"
     else
-        _tester_assert_result "false" "$message" "$expected_length-char hex key" "$actual_length-char: '$value'"
+        _tester_assert_result "false" "$message" "$expected_length-char hex key" "$actual_length-char: '$value'" "VALID_HEX"
     fi
 }
 
@@ -257,9 +264,9 @@ assert_contains_error() {
     local message="${2:-"Output should contain error indicators"}"
     
     if echo "$output" | grep -qE "(error|ERROR|fail|FAIL|✖|⚠️|\[!\])"; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "CONTAINS_ERROR"
     else
-        _tester_assert_result "false" "$message" "error indicators" "'$output'"
+        _tester_assert_result "false" "$message" "error indicators" "'$output'" "CONTAINS_ERROR"
     fi
 }
 
@@ -269,9 +276,9 @@ assert_contains_success() {
     local message="${2:-"Output should contain success indicators"}"
     
     if echo "$output" | grep -qE "(success|SUCCESS|✓|✔|added|configured|initialized|removed)"; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "CONTAINS_SUCCESS"
     else
-        _tester_assert_result "false" "$message" "success indicators" "'$output'"
+        _tester_assert_result "false" "$message" "success indicators" "'$output'" "CONTAINS_SUCCESS"
     fi
 }
 
@@ -283,15 +290,15 @@ assert_command_times_out() {
     
     if timeout "$timeout_seconds" bash -c "$command" >/dev/null 2>&1; then
         # Command completed within timeout - this might be unexpected
-        _tester_assert_result "false" "$message" "timeout after $timeout_seconds seconds" "completed successfully"
+        _tester_assert_result "false" "$message" "timeout after $timeout_seconds seconds" "completed successfully" "CMD_TIMEOUT"
     else
         local exit_code=$?
         if [ "$exit_code" -eq 124 ]; then
             # Command timed out (timeout exit code is 124)
-            _tester_assert_result "true" "$message"
+            _tester_assert_result "true" "$message" "" "" "CMD_TIMEOUT"
         else
             # Command failed for other reasons
-            _tester_assert_result "false" "$message" "timeout (exit 124)" "exit code $exit_code"
+            _tester_assert_result "false" "$message" "timeout (exit 124)" "exit code $exit_code" "CMD_TIMEOUT"
         fi
     fi
 }
@@ -305,9 +312,9 @@ assert_min_length() {
     local actual_length=$(echo -n "$value" | wc -c | tr -d ' ')
     
     if [ "$actual_length" -ge "$min_length" ]; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "MIN_LENGTH"
     else
-        _tester_assert_result "false" "$message" ">= $min_length characters" "$actual_length characters"
+        _tester_assert_result "false" "$message" ">= $min_length characters" "$actual_length characters" "MIN_LENGTH"
     fi
 }
 
@@ -320,8 +327,8 @@ assert_max_length() {
     local actual_length=$(echo -n "$value" | wc -c | tr -d ' ')
     
     if [ "$actual_length" -le "$max_length" ]; then
-        _tester_assert_result "true" "$message"
+        _tester_assert_result "true" "$message" "" "" "MAX_LENGTH"
     else
-        _tester_assert_result "false" "$message" "<= $max_length characters" "$actual_length characters"
+        _tester_assert_result "false" "$message" "<= $max_length characters" "$actual_length characters" "MAX_LENGTH"
     fi
 }
