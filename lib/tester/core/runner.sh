@@ -126,6 +126,9 @@ _sdk_tester_run_test_file() {
                 setup_test
             fi
             
+            # Create a fresh log file for this test
+            export TESTER_LOG_FILE=$(mktemp /tmp/tester_logs_XXXXXX)
+            
             # Execute the test function
             "$test_function"
             local test_exit_code=$?
@@ -140,6 +143,9 @@ _sdk_tester_run_test_file() {
                 else
                     printf "\033[33m[!]\033[0m \033[90mNo command logs captured\033[0m\n"
                 fi
+                
+                # Clean up the log file
+                rm -f "$TESTER_LOG_FILE"
             fi
             
             # Run test teardown if defined
@@ -148,6 +154,11 @@ _sdk_tester_run_test_file() {
             fi
 
             set -e
+
+            # Clean up the log file if test passed
+            if [ $test_exit_code -eq 0 ] && [ -f "$TESTER_LOG_FILE" ]; then
+                rm -f "$TESTER_LOG_FILE"
+            fi
 
             # Clean up
             cleanup_test_workspace "$TEST_WORKSPACE"
@@ -164,6 +175,7 @@ _sdk_tester_run_test_file() {
             fi
         done
 
+        echo ""
 
         # Run suite teardown if defined (always run)
         if declare -f suite_teardown >/dev/null 2>&1; then

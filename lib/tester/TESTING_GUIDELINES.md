@@ -45,7 +45,8 @@ Tests in the tester framework follow a specific structure:
 # Suite setup (optional) - runs once before all tests in this file
 suite_setup() {
     # Initialize any required state
-    D some-command init > /dev/null
+    D some-command init
+    return 0
 }
 
 # Suite teardown (optional) - runs once after all tests in this file
@@ -61,7 +62,7 @@ test_specific_feature() {
     # and the current directory is already set to it
 
     # Setup specific to this test (if needed)
-    D some-command setup-action > /dev/null
+    D some-command setup-action
 
     # Execute the code under test
     local result
@@ -138,60 +139,64 @@ assert_equals "$?" "0" "Message"
 
 ## Capturing and Inspecting Command Output
 
-The testing framework provides a `capture` function to easily run commands, capture their output, and log execution details for debugging:
+The testing framework automatically captures output for all `D` commands, recording execution details for debugging without any additional effort from the test writer:
 
-### Using the Capture Function
+### Automatic Command Logging
 
 ```bash
-# Capture output from a command
-test_command_with_output_capture() {
-    # Run command and capture its output directly
-    local result=$(capture D some-command --option)
+# Command output is automatically captured without any special syntax
+test_command_with_automatic_logging() {
+    # Run command and capture its output directly - no special syntax needed
+    local result=$(D some-command --option)
 
     # Now you can make assertions on the command output
     assert_contains "$result" "expected message" "Command should produce expected output"
 }
 ```
 
-### Benefits of Using Capture
+### Benefits of Automatic Logging
 
 1. **Debug Information**: When tests fail, the full command output is displayed automatically.
 2. **No Silent Failures**: Avoids hiding useful debug information.
 3. **Simplicity**: No need for temporary files or complex redirections.
 4. **Complete Logging**: Captures command, output, and exit code for easier debugging.
+5. **Zero Effort**: Test writers don't need to remember special syntax or wrappers.
 
-### Capture Function Syntax Options
+### The `capture` Function for Non-D Commands
 
-The capture function can be used in multiple ways:
+For commands other than `D` (like system commands or complex operations), you can use the `capture` function:
 
 ```bash
-# For simple commands with arguments
-result=$(capture D some-command --option)
+# For system commands or complex operations
+result=$(capture ls -la)
 
 # For commands with pipes, redirections, or complex syntax
-result=$(capture "D some-command | grep 'pattern' || echo 'not found'")
+result=$(capture "grep 'pattern' file.txt | wc -l")
 ```
 
-### Best Practices for Output Capture
+### Best Practices for Command Execution
 
-1. **Use for Important Commands**: Use capture for commands whose output needs inspection or that might fail.
-2. **Avoid Nesting**: Don't nest capture calls; use separate variables for each command's output.
+1. **Use D Commands Directly**: Simply use `D` commands as normal.
+2. **Use `capture` for Non-D Commands**: For system commands or complex operations, use the `capture` function.
 3. **Keep Original Output**: Avoid unnecessary transformations that might hide relevant information.
 4. **Selective Assertions**: Don't assert on the entire output; focus on specific parts that matter.
 
 ```bash
 # Good usage pattern:
-test_example_capture() {
-    # Capture command output directly
-    local output=$(capture D complex-command --with-options)
+test_example_command_execution() {
+    # D commands capture output automatically
+    local output=$(D complex-command --with-options)
 
     # Make targeted assertions
     assert_contains "$output" "Operation succeeded" "Success message should be present"
-    assert_command_success "echo $?" "Command should exit successfully"
+    assert_equals "0" "$?" "Command should exit successfully"
 
-    # Run a follow-up command to verify effects
-    local verification=$(capture D verify-operation)
-    assert_contains "$verification" "Verified" "Operation should be verified"
+    # For non-D commands, use capture
+    local system_output=$(capture grep "pattern" /etc/hosts)
+    assert_contains "$system_output" "localhost" "Pattern should be found"
+
+    # Run more D commands
+    D cleanup-after-test
 }
 ```
 
@@ -213,11 +218,11 @@ Tests should mimic real user behavior as closely as possible:
 # GOOD: Testing the command as a user would
 test_config_set_command() {
     # Run the command exactly as a user would
-    local output=$(D config set my.setting "my value" 2>&1)
+    local output=$(D config set my.setting "my value")
 
     # Verify the result
-    assert_command_success "D config get my.setting" "Should be able to retrieve the setting"
-    assert_equals "my value" "$(D config get my.setting)" "Config value should be set correctly"
+    local get_result=$(D config get my.setting)
+    assert_equals "my value" "$get_result" "Config value should be set correctly"
 }
 
 # BAD: Bypassing the command's normal operation
@@ -226,7 +231,7 @@ test_config_set_command_bad() {
     echo "my value" > "$CONFIG_DIR/my.setting"
 
     # This doesn't test the actual command!
-    assert_equals "my value" "$(cat "$CONFIG_DIR/my.setting")" "Config should be set"
+    assert_equals "my value" "$(capture cat "$CONFIG_DIR/my.setting")" "Config should be set"
 }
 ```
 
@@ -238,11 +243,14 @@ Tests should challenge the command properly and let it handle its own responsibi
 # GOOD: Let the command handle its prerequisites
 test_secret_add_command() {
     # Run the command directly, let it create its directory structure
-    local output=$(echo -e "SECRET_NAME\nsecret_value" | D secret add 2>&1)
+    # Use capture for the echo pipe since it's not a D command
+    local output=$(capture echo -e "SECRET_NAME\nsecret_value" | D secret add)
 
     # Verify the command succeeded and did its job
     assert_contains "$output" "added successfully" "Should indicate success"
-    assert_equals "secret_value" "$(D secret export SECRET_NAME)" "Secret should be stored correctly"
+
+    local secret_value=$(D secret export SECRET_NAME)
+    assert_equals "secret_value" "$secret_value" "Secret should be stored correctly"
 }
 
 # BAD: Preparing things that are the command's job
@@ -420,15 +428,19 @@ test_command_exit_status_only_bad() {
 # GOOD: Verifying actual outcomes
 test_user_creation_good() {
     # Run the command
-    local output=$(D create-user john 2>&1)
+    local output=$(D create-user john)
 
     # Verify exit status
     assert_equals "0" "$?" "User creation should succeed"
 
     # IMPORTANT: Verify the actual outcome through observable results
     assert_contains "$output" "User created successfully" "Command should report success"
-    assert_command_success "D list-users | grep -F 'john'" "User should appear in user list"
-    assert_equals "john" "$(D get-user-property john username)" "Username should be set correctly"
+
+    local list_output=$(D list-users)
+    assert_contains "$list_output" "john" "User should appear in user list"
+
+    local username=$(D get-user-property john username)
+    assert_equals "john" "$username" "Username should be set correctly"
 }
 ```
 
@@ -444,15 +456,20 @@ test_environment_setup_bad() {
 # GOOD: Verifying the effects of the command
 test_environment_setup_good() {
     # Run the setup command
-    local output=$(D setup-environment 2>&1)
+    local output=$(D setup-environment)
 
     # Verify exit status
     assert_equals "0" "$?" "Environment setup should succeed"
 
     # Verify actual effects
     assert_file_exists "/expected/config/path" "Setup should create config file"
-    assert_contains "$(cat /expected/config/path)" "expected_setting" "Config should have correct content"
-    assert_command_success "D environment-check" "Environment validation should pass"
+
+    # Use capture for file reading since it's not a D command
+    local config_content=$(capture cat /expected/config/path)
+    assert_contains "$config_content" "expected_setting" "Config should have correct content"
+
+    local check_result=$(D environment-check)
+    assert_equals "0" "$?" "Environment validation should pass"
 
     # For cleanup commands, verify things were actually cleaned up
     D cleanup-temp-files
@@ -473,14 +490,16 @@ Remember: A command can exit with status 0 but still fail to accomplish its purp
 assert_equals "expected value" "$actual_value" "Message"
 
 # 2. Simple string presence check
-echo "$haystack" | grep -F "$needle" > /dev/null
+local output=$(D command_to_check)
+echo "$output" | grep -F "$needle" > /dev/null
 assert_equals "$?" "0" "String should contain substring"
 
 # 3. Command success check
-D some-command > /dev/null
-assert_equals "$?" "0" "Command should succeed"
-# Or using the dedicated helper:
-assert_command_success "D some-command" "Command should succeed"
+local result=$(D some-command)
+assert_equals "0" "$?" "Command should succeed"
+# Or using the dedicated helper with result:
+local result=$(D some-command)
+assert_command_success "echo $?" "Command should succeed"
 
 # 4. Checking array content and iteration
 local count=0
@@ -489,17 +508,21 @@ for item in $array_value; do
 done
 assert_equals "3" "$count" "Array should have 3 items"
 
-# 5. Working with files in the test workspace
-echo "test content" > "$TEST_WORKSPACE/test-file.txt"
+# 5. Working with files in the test workspace (use capture for file operations)
+$(capture "echo 'test content' > $TEST_WORKSPACE/test-file.txt")
 assert_file_exists "$TEST_WORKSPACE/test-file.txt" "Test file should exist"
 
 # 6. Capturing and inspecting command output
-local result=$(capture D some-command --option)
+local result=$(D some-command --option)
 assert_contains "$result" "expected output" "Command should output expected text"
 
-# 7. Capturing complex commands
-local result=$(capture "D some-command | grep pattern")
+# 7. Capturing complex commands that aren't D commands
+local result=$(capture "grep pattern file.txt | wc -l")
 assert_equals "0" "$?" "Complex command should succeed"
+
+# 8. Using D commands directly
+D setup-environment
+# Test continues...
 ````
 
 ### Key Principles Checklist

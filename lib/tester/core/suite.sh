@@ -180,12 +180,16 @@ create_test_dir() {
 # Global variable to store test logs
 export TESTER_COMMAND_LOGS=""
 
-# Initialize global command log variable if not already set
-# Create a unique log file for this test session
-export TESTER_LOG_FILE="/tmp/tester_logs_$$"
-> "$TESTER_LOG_FILE" # Initialize empty file
+# Note: The TESTER_LOG_FILE is now created per test in runner.sh
 
-# Capture command output and add it to the global logs
+# Ensure D command called in tests points to the local D since it's global,
+# and automatically captures output for better logging
+D() {
+    # Use the existing capture function to handle command execution and logging
+    (capture env D_SDK_DIR="$D_SDK_DIR" "$D_SDK_DIR/$D_CLI_GLOBAL_NAME" "$@")
+}
+
+# Capture command output and add it to the logs
 # Usage: 
 #   result=$(capture command args)     # Runs command and returns its output
 #   result=$(capture "command args")   # Alternative syntax for complex commands
@@ -215,25 +219,26 @@ capture() {
     # Capture exit code
     local exit_code=$?
     
-    # Write to the log file with styled format
-    {
-        echo -e "\033[90m[$timestamp]\033[0m\033[97m[CMD]\033[0m $cmd"
-        echo -e "\033[90m[$timestamp]\033[0m\033[34m[OUT]\033[0m"
-        echo "$command_output"
-        
-        # Use appropriate icon based on exit code
-        if [ $exit_code -eq 0 ]; then
-            echo -e "\033[90m[$timestamp]\033[0m\033[32m[EXT]\033[0m $exit_code"
-        else
-            echo -e "\033[90m[$timestamp]\033[0m\033[31m[EXT]\033[0m $exit_code"
-        fi
-        printf "\033[2;90m-------------------------------------------------------------------------------\033[0m\n"
-    } >> "$TESTER_LOG_FILE"
+    # If TESTER_LOG_FILE is set, write to the log file with styled format
+    if [ -n "$TESTER_LOG_FILE" ]; then
+        {
+            echo -e "\033[90m[$timestamp]\033[0m\033[97m[CMD]\033[0m $cmd"
+            echo -e "\033[90m[$timestamp]\033[0m\033[34m[OUT]\033[0m"
+            echo "$command_output"
+            
+            # Use appropriate icon based on exit code
+            if [ $exit_code -eq 0 ]; then
+                echo -e "\033[90m[$timestamp]\033[0m\033[32m[EXT]\033[0m $exit_code"
+            else
+                echo -e "\033[90m[$timestamp]\033[0m\033[31m[EXT]\033[0m $exit_code"
+            fi
+            printf "\033[2;90m-------------------------------------------------------------------------------\033[0m\n"
+        } >> "$TESTER_LOG_FILE"
+    fi
     
     # Return the command output
     echo "$command_output"
     return $exit_code
-    
 }
 
 # Set up a mock command (for testing CLI tools)
