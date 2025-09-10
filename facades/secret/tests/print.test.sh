@@ -7,38 +7,54 @@ test_secret_print_no_secrets() {
     # Check if OpenSSL is available first
     local openssl_check
     openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Skip test if OpenSSL not available
+    assert_equals "0" "$?" "OpenSSL should be available for this test"
+    
+    # Ensure no secrets exist
+    D secret key-reset --force > /dev/null 2>&1 || true
     
     local output
     output=$(D secret print 2>&1)
-    local print_result=$?
     
     # Should succeed but indicate no secrets found
-    if [ "$print_result" -eq 0 ]; then
-        assert_contains "$output" "No secrets found\|No secrets\|0 secrets" "Should indicate no secrets found"
-    fi
+    assert_equals "0" "$?" "Print command should succeed with no secrets"
+    assert_contains "$output" "No secrets found\|No secrets\|0 secrets" "Should indicate no secrets found"
 }
 
 # Test print command requires OpenSSL
 test_secret_print_requires_openssl() {
-    # Skip if OpenSSL is not available (we can't easily test this scenario)
-    local openssl_check
-    openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
+    # Create a mock function to simulate missing OpenSSL
+    local original_path="$PATH"
     
-    if [ "$result" -ne 0 ]; then
-        # OpenSSL not available - print should fail
-        local output
-        output=$(D secret print 2>&1)
-        local print_result=$?
-        
-        assert_not_equals "0" "$print_result" "Print should fail without OpenSSL"
-    fi
+    # Create a directory for our mock commands
+    local mock_dir="$TEST_WORKSPACE/mock_bin"
+    mkdir -p "$mock_dir"
+    
+    # Create a mock openssl that fails
+    cat > "$mock_dir/openssl" << 'EOF'
+#!/bin/bash
+echo "openssl: command not found" >&2
+exit 127
+EOF
+    chmod +x "$mock_dir/openssl"
+    
+    # Use the mock openssl by putting it first in PATH
+    export PATH="$mock_dir:$original_path"
+    
+    # Try to print with missing OpenSSL
+    local output
+    output=$(D secret print 2>&1)
+    
+    # Restore original PATH
+    export PATH="$original_path"
+    
+    # OpenSSL not available - print should fail
+    assert_not_equals "0" "$?" "Print should fail without OpenSSL"
+    assert_contains "$output" "OpenSSL\|required\|not available\|not found" "Should indicate OpenSSL requirement"
+    
+    # Clean up
+    rm -rf "$mock_dir"
 }
 
 # Test print command with single secret
@@ -46,34 +62,25 @@ test_secret_print_single_secret() {
     # Check if OpenSSL is available first
     local openssl_check
     openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Skip test if OpenSSL not available
+    assert_equals "0" "$?" "OpenSSL should be available for this test"
     
     # First add a secret
-    local add_output
-    add_output=$(echo -e "PRINT_TEST_SECRET\nprint_test_value" | D secret add 2>&1)
-    local add_result=$?
+    D secret add <<< $'PRINT_TEST_SECRET\nprint_test_value' 2>&1
     
-    if [ "$add_result" -ne 0 ]; then
-        # Skip if we couldn't add the secret
-        return 0
-    fi
+    # Verify secret was added successfully
+    assert_equals "0" "$?" "Should be able to add a secret for testing"
     
     # Now print all secrets
     local print_output
     print_output=$(D secret print 2>&1)
-    local print_result=$?
     
-    if [ "$print_result" -eq 0 ]; then
-        # Should contain the secret name and value
-        assert_contains "$print_output" "PRINT_TEST_SECRET" "Should show secret name"
-        assert_contains "$print_output" "print_test_value" "Should show secret value"
-        assert_contains "$print_output" "Total.*1.*secret" "Should show total count"
-    fi
+    # Should succeed and contain the secret
+    assert_equals "0" "$?" "Print command should succeed with single secret"
+    assert_contains "$print_output" "PRINT_TEST_SECRET" "Should show secret name"
+    assert_contains "$print_output" "print_test_value" "Should show secret value"
+    assert_contains "$print_output" "Total.*1.*secret" "Should show total count"
 }
 
 # Test print command with multiple secrets
@@ -81,42 +88,30 @@ test_secret_print_multiple_secrets() {
     # Check if OpenSSL is available first
     local openssl_check
     openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Skip test if OpenSSL not available
+    assert_equals "0" "$?" "OpenSSL should be available for this test"
     
     # Add multiple secrets
-    local add_output1
-    add_output1=$(echo -e "MULTI_SECRET_1\nvalue_one" | D secret add 2>&1)
-    local add_result1=$?
+    D secret add <<< $'MULTI_SECRET_1\nvalue_one' 2>&1
+    assert_equals "0" "$?" "Should be able to add first secret"
     
-    local add_output2
-    add_output2=$(echo -e "MULTI_SECRET_2\nvalue_two" | D secret add 2>&1)
-    local add_result2=$?
-    
-    if [ "$add_result1" -ne 0 ] || [ "$add_result2" -ne 0 ]; then
-        # Skip if we couldn't add the secrets
-        return 0
-    fi
+    D secret add <<< $'MULTI_SECRET_2\nvalue_two' 2>&1
+    assert_equals "0" "$?" "Should be able to add second secret"
     
     # Print all secrets
     local print_output
     print_output=$(D secret print 2>&1)
-    local print_result=$?
     
-    if [ "$print_result" -eq 0 ]; then
-        # Should contain both secrets
-        assert_contains "$print_output" "MULTI_SECRET_1" "Should show first secret name"
-        assert_contains "$print_output" "MULTI_SECRET_2" "Should show second secret name"
-        assert_contains "$print_output" "value_one" "Should show first secret value"
-        assert_contains "$print_output" "value_two" "Should show second secret value"
-        
-        # Should show total count
-        assert_contains "$print_output" "Total.*2.*secret" "Should show total count of 2"
-    fi
+    # Should succeed and contain both secrets
+    assert_equals "0" "$?" "Print command should succeed with multiple secrets"
+    assert_contains "$print_output" "MULTI_SECRET_1" "Should show first secret name"
+    assert_contains "$print_output" "MULTI_SECRET_2" "Should show second secret name"
+    assert_contains "$print_output" "value_one" "Should show first secret value"
+    assert_contains "$print_output" "value_two" "Should show second secret value"
+    
+    # Should show total count
+    assert_contains "$print_output" "Total.*2.*secret" "Should show total count of 2"
 }
 
 # Test print command shows usage instructions
@@ -124,33 +119,22 @@ test_secret_print_shows_usage_instructions() {
     # Check if OpenSSL is available first
     local openssl_check
     openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Skip test if OpenSSL not available
+    assert_equals "0" "$?" "OpenSSL should be available for this test"
     
-    # Add at least one secret so we get the usage instructions
-    local add_output
-    add_output=$(echo -e "USAGE_TEST_SECRET\nusage_test_value" | D secret add 2>&1)
-    local add_result=$?
-    
-    if [ "$add_result" -ne 0 ]; then
-        # Skip if we couldn't add the secret
-        return 0
-    fi
+    # Add a secret to trigger usage instructions
+    D secret add <<< $'USAGE_TEST_SECRET\nusage_test_value' 2>&1
+    assert_equals "0" "$?" "Should be able to add a secret for testing"
     
     # Print secrets and check for usage instructions
     local print_output
     print_output=$(D secret print 2>&1)
-    local print_result=$?
     
-    if [ "$print_result" -eq 0 ]; then
-        # Should contain usage instructions
-        assert_contains "$print_output" "export.*SECRET_NAME\|To export" "Should show export usage instructions"
-        assert_contains "$print_output" "secret export" "Should mention secret export command"
-    fi
+    # Should succeed and show usage instructions
+    assert_equals "0" "$?" "Print command should succeed"
+    assert_contains "$print_output" "export.*SECRET_NAME\|To export" "Should show export usage instructions"
+    assert_contains "$print_output" "secret export" "Should mention secret export command"
 }
 
 # Test print command with decryption failure
@@ -158,28 +142,32 @@ test_secret_print_decryption_failure() {
     # Check if OpenSSL is available first
     local openssl_check
     openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Skip test if OpenSSL not available
+    assert_equals "0" "$?" "OpenSSL should be available for this test"
     
-    # Create a mock secret file with invalid encrypted data
-    mkdir -p "$TEST_WORKSPACE/secrets"
-    echo "invalid_encrypted_data_that_cannot_be_decrypted" > "$TEST_WORKSPACE/secrets/CORRUPT_SECRET"
+    # Create a test key first to ensure encryption is set up
+    D secret key-set <<< "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890" > /dev/null 2>&1
     
-    # Try to print secrets
+    # Add a normal secret
+    D secret add <<< $'NORMAL_SECRET\nnormal_value' 2>&1
+    
+    # Then intentionally invalidate the key but keep a secret file by setting a different key
+    D secret key-reset --force > /dev/null 2>&1
+    D secret key-set <<< "different1234567890different1234567890different1234567890different1234" > /dev/null 2>&1
+    
+    # Add another secret with the new key
+    D secret add <<< $'NEW_KEY_SECRET\nnew_key_value' 2>&1
+    
+    # Try to print secrets - should show one decryption failure and one success
     local print_output
     print_output=$(D secret print 2>&1)
-    local print_result=$?
     
-    # Should handle decryption failures gracefully
-    if [ "$print_result" -eq 0 ]; then
-        # Should show failure indicator for corrupt secret
-        assert_contains "$print_output" "FAILED TO DECRYPT\|DECRYPT\|⚠️" "Should indicate decryption failure"
-        assert_contains "$print_output" "CORRUPT_SECRET" "Should show the secret name even if decryption failed"
-    fi
+    # Should indicate decryption failure for the first secret
+    assert_equals "0" "$?" "Print command should complete even with decryption failures"
+    assert_contains "$print_output" "FAILED TO DECRYPT\|DECRYPT\|⚠️\|Error" "Should indicate decryption failure"
+    assert_contains "$print_output" "NEW_KEY_SECRET" "Should show the valid secret name"
+    assert_contains "$print_output" "new_key_value" "Should show the valid secret value"
 }
 
 # Test print command output format
@@ -187,35 +175,26 @@ test_secret_print_output_format() {
     # Check if OpenSSL is available first
     local openssl_check
     openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Skip test if OpenSSL not available
+    assert_equals "0" "$?" "OpenSSL should be available for this test"
     
     # Add a secret with known formatting
-    local add_output
-    add_output=$(echo -e "FORMAT_SECRET\nformat_value" | D secret add 2>&1)
-    local add_result=$?
-    
-    if [ "$add_result" -ne 0 ]; then
-        # Skip if we couldn't add the secret
-        return 0
-    fi
+    D secret add <<< $'FORMAT_SECRET\nformat_value' 2>&1
+    assert_equals "0" "$?" "Should be able to add a secret for format testing"
     
     # Print and check format
     local print_output
     print_output=$(D secret print 2>&1)
-    local print_result=$?
     
-    if [ "$print_result" -eq 0 ]; then
-        # Should have readable format with proper spacing/structure
-        local line_count=$(echo "$print_output" | wc -l | tr -d ' ')
-        assert_not_equals "1" "$line_count" "Should have multiple lines for formatting"
-        
-        # Should contain empty lines for readability
-        echo "$print_output" | grep -q "^$"
-        assert_equals "0" "$?" "Should contain empty lines for readability"
-    fi
+    # Should succeed with proper formatting
+    assert_equals "0" "$?" "Print command should succeed"
+    
+    # Should have readable format with proper spacing/structure
+    local line_count=$(echo "$print_output" | wc -l | tr -d ' ')
+    assert_not_equals "1" "$line_count" "Should have multiple lines for formatting"
+    
+    # Should contain empty lines for readability
+    echo "$print_output" | grep -q "^$"
+    assert_equals "0" "$?" "Should contain empty lines for readability"
 }

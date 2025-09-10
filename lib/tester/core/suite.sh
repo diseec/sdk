@@ -177,6 +177,65 @@ create_test_dir() {
     mkdir -p "$dir_path"
 }
 
+# Global variable to store test logs
+export TESTER_COMMAND_LOGS=""
+
+# Initialize global command log variable if not already set
+# Create a unique log file for this test session
+export TESTER_LOG_FILE="/tmp/tester_logs_$$"
+> "$TESTER_LOG_FILE" # Initialize empty file
+
+# Capture command output and add it to the global logs
+# Usage: 
+#   result=$(capture command args)     # Runs command and returns its output
+#   result=$(capture "command args")   # Alternative syntax for complex commands
+capture() {
+    # If no command provided, return empty
+    if [ $# -eq 0 ]; then
+        return 0
+    fi
+    
+    local command_output
+    local cmd
+    local timestamp=$(date "+%H:%M:%S")
+    
+    # Handle command as string or as arguments
+    if [ $# -eq 1 ] && [[ "$1" == *" "* ]]; then
+        # Command is passed as a single string
+        cmd="$1"
+        # Use eval to execute the command string directly
+        command_output=$(set -o pipefail; eval "$cmd" 2>&1 || true)
+    else
+        # Command is passed as arguments
+        cmd="$*"
+        # For single commands without spaces, execute directly
+        command_output=$("$@" 2>&1 || true)
+    fi
+    
+    # Capture exit code
+    local exit_code=$?
+    
+    # Write to the log file with styled format
+    {
+        echo -e "\033[90m[$timestamp]\033[0m\033[97m[CMD]\033[0m $cmd"
+        echo -e "\033[90m[$timestamp]\033[0m\033[34m[OUT]\033[0m"
+        echo "$command_output"
+        
+        # Use appropriate icon based on exit code
+        if [ $exit_code -eq 0 ]; then
+            echo -e "\033[90m[$timestamp]\033[0m\033[32m[EXT]\033[0m $exit_code"
+        else
+            echo -e "\033[90m[$timestamp]\033[0m\033[31m[EXT]\033[0m $exit_code"
+        fi
+        printf "\033[2;90m-------------------------------------------------------------------------------\033[0m\n"
+    } >> "$TESTER_LOG_FILE"
+    
+    # Return the command output
+    echo "$command_output"
+    return $exit_code
+    
+}
+
 # Set up a mock command (for testing CLI tools)
 mock_command() {
     local command_name="$1"

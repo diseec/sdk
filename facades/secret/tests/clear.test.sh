@@ -4,273 +4,251 @@
 
 # Test clear command with no secrets
 test_secret_clear_no_secrets() {
+    # Ensure no secrets exist
+    rm -rf "$SECRETS_DIR"
+    mkdir -p "$SECRETS_DIR"
+    
+    # Run clear command
     local output
-    output=$(D secret clear 2>&1)
+    output=$(D secret clear <<< "DELETE" 2>&1)
     local result=$?
     
-    # Should handle no secrets gracefully
-    if [ "$result" -eq 0 ]; then
-        assert_contains "$output" "No secrets found\|No secrets" "Should indicate no secrets to clear"
-    fi
+    # Verify command succeeds with appropriate message
+    assert_equals "0" "$result" "Clear command should succeed even with no secrets"
+    assert_contains "$output" "No secrets found\|No secrets to clear\|Nothing to clear" "Should indicate no secrets to clear"
+    
+    # Verify secrets directory still exists but is empty
+    assert_file_exists "$SECRETS_DIR" "Secrets directory should still exist after clear"
+    assert_directory_empty "$SECRETS_DIR" "Secrets directory should be empty after clear"
 }
 
 # Test clear command with existing secrets - confirm deletion
 test_secret_clear_existing_secrets_confirm() {
-    # Check if OpenSSL is available first
-    local openssl_check
-    openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
+    # Clean up environment
+    rm -rf "$SECRETS_DIR"
+    mkdir -p "$SECRETS_DIR"
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
-    
-    # First add some secrets to clear
-    local add_output1
-    add_output1=$(echo -e "CLEAR_SECRET_1\nclear_value_1" | D secret add 2>&1)
-    local add_result1=$?
-    
-    local add_output2
-    add_output2=$(echo -e "CLEAR_SECRET_2\nclear_value_2" | D secret add 2>&1)
-    local add_result2=$?
-    
-    if [ "$add_result1" -ne 0 ] || [ "$add_result2" -ne 0 ]; then
-        # Skip if we couldn't add the secrets
-        return 0
-    fi
+    # Add two test secrets
+    echo "clear_value_1" > "$SECRETS_DIR/CLEAR_SECRET_1"
+    echo "clear_value_2" > "$SECRETS_DIR/CLEAR_SECRET_2"
     
     # Verify secrets exist before clearing
-    local exists1_before
-    exists1_before=$(D secret exists CLEAR_SECRET_1 --quiet 2>&1)
-    assert_equals "0" "$?" "First secret should exist before clearing"
+    assert_file_exists "$SECRETS_DIR/CLEAR_SECRET_1" "First secret file should exist before clearing"
+    assert_file_exists "$SECRETS_DIR/CLEAR_SECRET_2" "Second secret file should exist before clearing"
     
-    local exists2_before
-    exists2_before=$(D secret exists CLEAR_SECRET_2 --quiet 2>&1)
-    assert_equals "0" "$?" "Second secret should exist before clearing"
-    
-    # Clear all secrets with confirmation (type 'DELETE' to confirm)
+    # Clear all secrets with confirmation
     local clear_output
-    clear_output=$(echo "DELETE" | D secret clear 2>&1)
+    clear_output=$(D secret clear <<< "DELETE" 2>&1)
     local clear_result=$?
     
-    if [ "$clear_result" -eq 0 ]; then
-        assert_contains "$clear_output" "cleared\|deleted" "Should indicate successful clearing"
-        
-        # Verify secrets no longer exist
-        local exists1_after
-        exists1_after=$(D secret exists CLEAR_SECRET_1 --quiet 2>&1)
-        assert_not_equals "0" "$?" "First secret should not exist after clearing"
-        
-        local exists2_after
-        exists2_after=$(D secret exists CLEAR_SECRET_2 --quiet 2>&1)
-        assert_not_equals "0" "$?" "Second secret should not exist after clearing"
-    fi
+    # Verify clear command succeeded
+    assert_equals "0" "$clear_result" "Clear command should succeed with confirmation"
+    assert_contains "$clear_output" "cleared\|deleted\|removed" "Should indicate successful clearing"
+    
+    # Verify secrets directory is empty after clearing
+    assert_file_exists "$SECRETS_DIR" "Secrets directory should still exist after clearing"
+    assert_directory_empty "$SECRETS_DIR" "Secrets directory should be empty after clearing"
+    
+    # Verify specific secret files no longer exist
+    assert_not_file_exists "$SECRETS_DIR/CLEAR_SECRET_1" "First secret file should be deleted"
+    assert_not_file_exists "$SECRETS_DIR/CLEAR_SECRET_2" "Second secret file should be deleted"
 }
 
 # Test clear command with existing secrets - cancel deletion
 test_secret_clear_existing_secrets_cancel() {
-    # Check if OpenSSL is available first
-    local openssl_check
-    openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
+    # Clean up environment
+    rm -rf "$SECRETS_DIR"
+    mkdir -p "$SECRETS_DIR"
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
-    
-    # First add a secret to clear
-    local add_output
-    add_output=$(echo -e "CANCEL_CLEAR_SECRET\ncancel_clear_value" | D secret add 2>&1)
-    local add_result=$?
-    
-    if [ "$add_result" -ne 0 ]; then
-        # Skip if we couldn't add the secret
-        return 0
-    fi
+    # Add a test secret
+    echo "cancel_clear_value" > "$SECRETS_DIR/CANCEL_CLEAR_SECRET"
     
     # Verify secret exists before attempted clearing
-    local exists_before
-    exists_before=$(D secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
-    assert_equals "0" "$?" "Secret should exist before clear attempt"
+    assert_file_exists "$SECRETS_DIR/CANCEL_CLEAR_SECRET" "Secret file should exist before clear attempt"
     
     # Try to clear but cancel (provide anything other than 'DELETE')
     local clear_output
-    clear_output=$(echo "CANCEL" | D secret clear 2>&1)
+    clear_output=$(D secret clear <<< "CANCEL" 2>&1)
     local clear_result=$?
     
-    # Should indicate operation was cancelled
-    assert_contains "$clear_output" "cancelled\|Operation cancelled" "Should indicate operation was cancelled"
+    # Verify operation was cancelled
+    assert_not_equals "0" "$clear_result" "Clear command should fail when cancelled"
+    assert_contains "$clear_output" "cancelled\|aborted\|Operation cancelled" "Should indicate operation was cancelled"
     
-    # Verify secret still exists
-    local exists_after
-    exists_after=$(D secret exists CANCEL_CLEAR_SECRET --quiet 2>&1)
-    assert_equals "0" "$?" "Secret should still exist after cancelled clear"
+    # Verify secret still exists after cancelled operation
+    assert_file_exists "$SECRETS_DIR/CANCEL_CLEAR_SECRET" "Secret file should still exist after cancelled clear"
+    
+    # Verify secret content is unchanged
+    local secret_content
+    secret_content=$(cat "$SECRETS_DIR/CANCEL_CLEAR_SECRET")
+    assert_equals "cancel_clear_value" "$secret_content" "Secret content should be unchanged after cancelled clear"
 }
 
 # Test clear command confirmation prompt
 test_secret_clear_confirmation_prompt() {
-    # Check if OpenSSL is available first
-    local openssl_check
-    openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
+    # Clean up environment
+    rm -rf "$SECRETS_DIR"
+    mkdir -p "$SECRETS_DIR"
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Add a test secret
+    echo "prompt_clear_value" > "$SECRETS_DIR/PROMPT_CLEAR_SECRET"
     
-    # First add a secret so we have something to clear
-    local add_output
-    add_output=$(echo -e "PROMPT_CLEAR_SECRET\nprompt_clear_value" | D secret add 2>&1)
-    local add_result=$?
-    
-    if [ "$add_result" -ne 0 ]; then
-        # Skip if we couldn't add the secret
-        return 0
-    fi
-    
-    # Try to clear and check the confirmation prompt
+    # Capture output to check the confirmation prompt
     local clear_output
-    clear_output=$(echo "CANCEL" | D secret clear 2>&1)
+    clear_output=$(D secret clear <<< "CANCEL" 2>&1)
     
-    # Should show warning and ask for confirmation
-    assert_contains "$clear_output" "WARNING\|permanently delete\|ALL secrets" "Should show warning about permanent deletion"
-    assert_contains "$clear_output" "DELETE.*to confirm\|Type.*DELETE" "Should ask for 'DELETE' confirmation"
+    # Verify appropriate warnings and confirmation request
+    assert_contains "$clear_output" "WARNING\|warning\|caution" "Should show warning message"
+    assert_contains "$clear_output" "permanently delete\|will be deleted\|cannot be undone" "Should warn about permanent deletion"
+    assert_contains "$clear_output" "ALL secrets\|all secret" "Should indicate all secrets will be affected"
+    assert_contains "$clear_output" "DELETE.*to confirm\|Type.*DELETE" "Should request specific confirmation text"
+    
+    # Verify secret still exists after cancelled operation
+    assert_file_exists "$SECRETS_DIR/PROMPT_CLEAR_SECRET" "Secret file should still exist after cancelled clear"
 }
 
 # Test clear command requires exact confirmation text
 test_secret_clear_requires_exact_confirmation() {
-    # Check if OpenSSL is available first
-    local openssl_check
-    openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
+    # Clean up environment
+    rm -rf "$SECRETS_DIR"
+    mkdir -p "$SECRETS_DIR"
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Add a test secret
+    echo "exact_confirm_value" > "$SECRETS_DIR/EXACT_CONFIRM_SECRET"
     
-    # First add a secret so we have something to clear
-    local add_output
-    add_output=$(echo -e "EXACT_CONFIRM_SECRET\nexact_confirm_value" | D secret add 2>&1)
-    local add_result=$?
+    # Define array of incorrect confirmations to test
+    local incorrect_confirmations=("delete" "Delete" "YES" "yes" "confirm" "ok" "CONFIRM" "REMOVE" "ERASE")
     
-    if [ "$add_result" -ne 0 ]; then
-        # Skip if we couldn't add the secret
-        return 0
-    fi
-    
-    # Test various incorrect confirmations
-    local incorrect_confirmations=("delete" "Delete" "YES" "yes" "confirm" "ok")
-    
+    # Test each incorrect confirmation
     for confirmation in "${incorrect_confirmations[@]}"; do
         # Try to clear with incorrect confirmation
         local clear_output
-        clear_output=$(echo "$confirmation" | D secret clear 2>&1)
+        clear_output=$(D secret clear <<< "$confirmation" 2>&1)
+        local clear_result=$?
         
-        # Should be cancelled with any incorrect confirmation
-        assert_contains "$clear_output" "cancelled\|Operation cancelled" "Should cancel with incorrect confirmation: $confirmation"
+        # Verify operation was cancelled
+        assert_not_equals "0" "$clear_result" "Clear should fail with incorrect confirmation: '$confirmation'"
+        assert_contains "$clear_output" "cancelled\|aborted\|Operation cancelled" "Should cancel with incorrect confirmation: '$confirmation'"
         
         # Verify secret still exists
-        local exists_check
-        exists_check=$(D secret exists EXACT_CONFIRM_SECRET --quiet 2>&1)
-        assert_equals "0" "$?" "Secret should still exist after incorrect confirmation: $confirmation"
+        assert_file_exists "$SECRETS_DIR/EXACT_CONFIRM_SECRET" "Secret should still exist after incorrect confirmation: '$confirmation'"
     done
+    
+    # Verify that the correct confirmation works
+    local correct_output
+    correct_output=$(D secret clear <<< "DELETE" 2>&1)
+    local correct_result=$?
+    
+    # Verify clear succeeded with correct confirmation
+    assert_equals "0" "$correct_result" "Clear should succeed with correct 'DELETE' confirmation"
+    assert_contains "$correct_output" "cleared\|deleted\|removed" "Should indicate successful clearing with correct confirmation"
+    
+    # Verify secret was deleted
+    assert_not_file_exists "$SECRETS_DIR/EXACT_CONFIRM_SECRET" "Secret should be deleted after correct confirmation"
 }
 
 # Test clear command actually deletes all secret files
 test_secret_clear_deletes_files() {
-    # Check if OpenSSL is available first
-    local openssl_check
-    openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
+    # Clean up environment
+    rm -rf "$SECRETS_DIR"
+    mkdir -p "$SECRETS_DIR"
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Add multiple test secrets
+    echo "file_clear_value_1" > "$SECRETS_DIR/FILE_CLEAR_SECRET_1"
+    echo "file_clear_value_2" > "$SECRETS_DIR/FILE_CLEAR_SECRET_2"
+    echo "file_clear_value_3" > "$SECRETS_DIR/FILE_CLEAR_SECRET_3"
     
-    # First add multiple secrets to clear
-    local add_output1
-    add_output1=$(echo -e "FILE_CLEAR_SECRET_1\nfile_clear_value_1" | D secret add 2>&1)
-    local add_result1=$?
+    # Also add some non-secret files to ensure they're preserved
+    mkdir -p "$SECRETS_DIR/config"
+    echo "config data" > "$SECRETS_DIR/.config"
+    echo "key data" > "$SECRETS_DIR/.key"
     
-    local add_output2
-    add_output2=$(echo -e "FILE_CLEAR_SECRET_2\nfile_clear_value_2" | D secret add 2>&1)
-    local add_result2=$?
+    # Count initial files
+    local initial_file_count
+    initial_file_count=$(find "$SECRETS_DIR" -type f | wc -l | tr -d ' ')
+    assert_not_equals "0" "$initial_file_count" "Should have files before clearing"
     
-    if [ "$add_result1" -ne 0 ] || [ "$add_result2" -ne 0 ]; then
-        # Skip if we couldn't add the secrets
-        return 0
-    fi
+    # Count initial secrets
+    local initial_secret_count
+    initial_secret_count=$(find "$SECRETS_DIR" -type f -name "FILE_CLEAR_SECRET_*" | wc -l | tr -d ' ')
+    assert_equals "3" "$initial_secret_count" "Should have exactly 3 test secrets before clearing"
     
-    # Check that secret files exist
-    local secret_file1="$TEST_WORKSPACE/secrets/FILE_CLEAR_SECRET_1"
-    local secret_file2="$TEST_WORKSPACE/secrets/FILE_CLEAR_SECRET_2"
+    # Clear all secrets with confirmation
+    local clear_output
+    clear_output=$(D secret clear <<< "DELETE" 2>&1)
+    local clear_result=$?
     
-    if [ -f "$secret_file1" ] && [ -f "$secret_file2" ]; then
-        # Clear all secrets with confirmation
-        local clear_output
-        clear_output=$(echo "DELETE" | D secret clear 2>&1)
-        local clear_result=$?
-        
-        if [ "$clear_result" -eq 0 ]; then
-            # Verify the actual files were deleted
-            assert_file_not_exists "$secret_file1" "First secret file should be deleted"
-            assert_file_not_exists "$secret_file2" "Second secret file should be deleted"
-            
-            # Check that secrets directory might be empty (but may still exist)
-            local secrets_count=$(ls -1 "$TEST_WORKSPACE/secrets" 2>/dev/null | wc -l | tr -D ' ')
-            assert_equals "0" "$secrets_count" "Secrets directory should be empty after clear"
-        fi
-    fi
+    # Verify clear succeeded
+    assert_equals "0" "$clear_result" "Clear command should succeed with confirmation"
+    
+    # Verify all secret files were deleted
+    assert_not_file_exists "$SECRETS_DIR/FILE_CLEAR_SECRET_1" "First secret file should be deleted"
+    assert_not_file_exists "$SECRETS_DIR/FILE_CLEAR_SECRET_2" "Second secret file should be deleted"
+    assert_not_file_exists "$SECRETS_DIR/FILE_CLEAR_SECRET_3" "Third secret file should be deleted"
+    
+    # Count remaining secrets
+    local remaining_secret_count
+    remaining_secret_count=$(find "$SECRETS_DIR" -type f -name "FILE_CLEAR_SECRET_*" | wc -l | tr -d ' ')
+    assert_equals "0" "$remaining_secret_count" "Should have no test secrets after clearing"
 }
 
 # Test clear command with case-sensitive confirmation
 test_secret_clear_case_sensitive_confirmation() {
-    # Check if OpenSSL is available first
-    local openssl_check
-    openssl_check=$(D secret available --quiet 2>&1)
-    local result=$?
+    # Clean up environment
+    rm -rf "$SECRETS_DIR"
+    mkdir -p "$SECRETS_DIR"
     
-    if [ "$result" -ne 0 ]; then
-        # Skip test if OpenSSL not available
-        return 0
-    fi
+    # Add a test secret
+    echo "case_sensitive_value" > "$SECRETS_DIR/CASE_SENSITIVE_SECRET"
     
-    # First add a secret so we have something to clear
-    local add_output
-    add_output=$(echo -e "CASE_SENSITIVE_SECRET\ncase_sensitive_value" | D secret add 2>&1)
-    local add_result=$?
+    # Test lowercase 'delete' (should fail)
+    local lower_output
+    lower_output=$(D secret clear <<< "delete" 2>&1)
+    local lower_result=$?
     
-    if [ "$add_result" -ne 0 ]; then
-        # Skip if we couldn't add the secret
-        return 0
-    fi
-    
-    # Test that only exact 'DELETE' (uppercase) works
-    local clear_output_lower
-    clear_output_lower=$(echo "delete" | D secret clear 2>&1)
-    assert_contains "$clear_output_lower" "cancelled\|Operation cancelled" "Should cancel with lowercase 'delete'"
+    # Verify lowercase confirmation fails
+    assert_not_equals "0" "$lower_result" "Clear should fail with lowercase 'delete'"
+    assert_contains "$lower_output" "cancelled\|aborted\|Operation cancelled" "Should cancel with lowercase 'delete'"
     
     # Verify secret still exists after lowercase attempt
-    local exists_after_lower
-    exists_after_lower=$(D secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
-    assert_equals "0" "$?" "Secret should still exist after lowercase confirmation"
+    assert_file_exists "$SECRETS_DIR/CASE_SENSITIVE_SECRET" "Secret should still exist after lowercase confirmation"
     
-    # Now test that uppercase 'DELETE' works
-    local clear_output_upper
-    clear_output_upper=$(echo "DELETE" | D secret clear 2>&1)
-    local clear_result_upper=$?
+    # Test uppercase 'DELETE' (should succeed)
+    local upper_output
+    upper_output=$(D secret clear <<< "DELETE" 2>&1)
+    local upper_result=$?
     
-    if [ "$clear_result_upper" -eq 0 ]; then
-        assert_contains "$clear_output_upper" "cleared\|deleted" "Should succeed with uppercase 'DELETE'"
-        
-        # Verify secret was actually deleted
-        local exists_after_upper
-        exists_after_upper=$(D secret exists CASE_SENSITIVE_SECRET --quiet 2>&1)
-        assert_not_equals "0" "$?" "Secret should not exist after uppercase confirmation"
-    fi
+    # Verify uppercase confirmation succeeds
+    assert_equals "0" "$upper_result" "Clear should succeed with uppercase 'DELETE'"
+    assert_contains "$upper_output" "cleared\|deleted\|removed" "Should indicate successful clearing with uppercase 'DELETE'"
+    
+    # Verify secret was deleted after uppercase confirmation
+    assert_not_file_exists "$SECRETS_DIR/CASE_SENSITIVE_SECRET" "Secret should be deleted after uppercase confirmation"
+}
+
+# Test clear command preserves secrets directory
+test_secret_clear_preserves_directory() {
+    # Clean up environment
+    rm -rf "$SECRETS_DIR"
+    mkdir -p "$SECRETS_DIR"
+    
+    # Add a test secret
+    echo "preserve_dir_value" > "$SECRETS_DIR/PRESERVE_DIR_SECRET"
+    
+    # Verify directory and secret exist initially
+    assert_file_exists "$SECRETS_DIR" "Secrets directory should exist initially"
+    assert_file_exists "$SECRETS_DIR/PRESERVE_DIR_SECRET" "Secret file should exist initially"
+    
+    # Clear secrets
+    local clear_output
+    clear_output=$(D secret clear <<< "DELETE" 2>&1)
+    local clear_result=$?
+    
+    # Verify clear succeeded
+    assert_equals "0" "$clear_result" "Clear command should succeed"
+    
+    # Verify directory still exists but secret is gone
+    assert_file_exists "$SECRETS_DIR" "Secrets directory should still exist after clearing"
+    assert_not_file_exists "$SECRETS_DIR/PRESERVE_DIR_SECRET" "Secret file should be deleted"
+    assert_directory_empty "$SECRETS_DIR" "Secrets directory should be empty after clearing"
 }

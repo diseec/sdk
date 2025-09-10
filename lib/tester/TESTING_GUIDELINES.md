@@ -27,7 +27,7 @@ This document provides comprehensive guidelines, best practices, and lessons lea
 1. [Test Structure](#test-structure)
 2. [Assertion Best Practices](#assertion-best-practices)
 3. [Working with BusyBox Constraints](#working-with-busybox-constraints)
-4. [Testing Configuration Values](#testing-configuration-values)
+4. [Capturing and Inspecting Command Output](#capturing-and-inspecting-command-output)
 5. [Handling Different Environments](#handling-different-environments)
 6. [Common Pitfalls and Solutions](#common-pitfalls-and-solutions)
 7. [Test Design Principles](#test-design-principles)
@@ -42,13 +42,13 @@ Tests in the tester framework follow a specific structure:
 
 # Test for the 'command or feature'
 
-# Suite setup - runs once before all tests in this file
+# Suite setup (optional) - runs once before all tests in this file
 suite_setup() {
     # Initialize any required state
     D some-command init > /dev/null
 }
 
-# Suite teardown - runs once after all tests in this file
+# Suite teardown (optional) - runs once after all tests in this file
 suite_teardown() {
     # Clean up any global resources created during testing
     # Note: You don't need to clean up the test workspace
@@ -135,6 +135,65 @@ assert_equals "$?" "0" "Message"
 1. **Prefer Basic Tools**: Stick to the most basic Unix utilities where possible.
 2. **Text Processing**: For text processing, use `tr`, `sed`, and `awk` with basic options only.
 3. **Explicit Comparisons**: Be explicit in your comparisons rather than relying on pattern matching.
+
+## Capturing and Inspecting Command Output
+
+The testing framework provides a `capture` function to easily run commands, capture their output, and log execution details for debugging:
+
+### Using the Capture Function
+
+```bash
+# Capture output from a command
+test_command_with_output_capture() {
+    # Run command and capture its output directly
+    local result=$(capture D some-command --option)
+
+    # Now you can make assertions on the command output
+    assert_contains "$result" "expected message" "Command should produce expected output"
+}
+```
+
+### Benefits of Using Capture
+
+1. **Debug Information**: When tests fail, the full command output is displayed automatically.
+2. **No Silent Failures**: Avoids hiding useful debug information.
+3. **Simplicity**: No need for temporary files or complex redirections.
+4. **Complete Logging**: Captures command, output, and exit code for easier debugging.
+
+### Capture Function Syntax Options
+
+The capture function can be used in multiple ways:
+
+```bash
+# For simple commands with arguments
+result=$(capture D some-command --option)
+
+# For commands with pipes, redirections, or complex syntax
+result=$(capture "D some-command | grep 'pattern' || echo 'not found'")
+```
+
+### Best Practices for Output Capture
+
+1. **Use for Important Commands**: Use capture for commands whose output needs inspection or that might fail.
+2. **Avoid Nesting**: Don't nest capture calls; use separate variables for each command's output.
+3. **Keep Original Output**: Avoid unnecessary transformations that might hide relevant information.
+4. **Selective Assertions**: Don't assert on the entire output; focus on specific parts that matter.
+
+```bash
+# Good usage pattern:
+test_example_capture() {
+    # Capture command output directly
+    local output=$(capture D complex-command --with-options)
+
+    # Make targeted assertions
+    assert_contains "$output" "Operation succeeded" "Success message should be present"
+    assert_command_success "echo $?" "Command should exit successfully"
+
+    # Run a follow-up command to verify effects
+    local verification=$(capture D verify-operation)
+    assert_contains "$verification" "Verified" "Operation should be verified"
+}
+```
 
 ## Handling Different Environments
 
@@ -433,6 +492,14 @@ assert_equals "3" "$count" "Array should have 3 items"
 # 5. Working with files in the test workspace
 echo "test content" > "$TEST_WORKSPACE/test-file.txt"
 assert_file_exists "$TEST_WORKSPACE/test-file.txt" "Test file should exist"
+
+# 6. Capturing and inspecting command output
+local result=$(capture D some-command --option)
+assert_contains "$result" "expected output" "Command should output expected text"
+
+# 7. Capturing complex commands
+local result=$(capture "D some-command | grep pattern")
+assert_equals "0" "$?" "Complex command should succeed"
 ````
 
 ### Key Principles Checklist

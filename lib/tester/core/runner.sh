@@ -49,7 +49,7 @@ _sdk_tester_run_test_file() {
     # Show file header (without newline, results will be on same line)
     sdk_tester_show_file_header "$test_file"
     if [ "$TESTER_DRY_RUN" = "true" ]; then
-        printf " \033[90m(dry run)\033[0m\n"
+        printf "\033[90m(dry run)\033[0m"
         return 0
     fi
     
@@ -83,7 +83,7 @@ _sdk_tester_run_test_file() {
             test_functions=$(declare -F | grep "declare -f test_" | sed 's/declare -f //')
             
             if [ -z "$test_functions" ]; then
-                printf " \033[33m[!]\033[0m \033[90mno test functions\033[0m\n"
+                printf "\033[33m[!]\033[0m \033[90mno test functions\033[0m\n"
                 return 0
             fi
         fi
@@ -91,7 +91,7 @@ _sdk_tester_run_test_file() {
         # Run suite setup if defined
         if declare -f suite_setup >/dev/null 2>&1; then
             if ! suite_setup; then
-                printf " \033[31m✖\033[0m \033[90msetup failed\033[0m\n"
+                printf "\033[31m✖\033[0m \033[90msetup failed\033[0m\n"
                 return 1
             fi
         fi
@@ -119,6 +119,8 @@ _sdk_tester_run_test_file() {
             
             setup_test_workspace
 
+            set +e
+
             # Run test setup if defined
             if declare -f setup_test >/dev/null 2>&1; then
                 setup_test
@@ -128,29 +130,40 @@ _sdk_tester_run_test_file() {
             "$test_function"
             local test_exit_code=$?
             
+            # If the test failed, display the logs
+            if [ $test_exit_code -ne 0 ]; then
+                local timestamp=$(date "+%H:%M:%S")
+                printf "\n\n\033[1;90mTEST LOGS\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
+                # Display the captured logs from the file
+                if [ -f "$TESTER_LOG_FILE" ] && [ -s "$TESTER_LOG_FILE" ]; then
+                    cat "$TESTER_LOG_FILE"
+                else
+                    printf "\033[33m[!]\033[0m \033[90mNo command logs captured\033[0m\n"
+                fi
+            fi
+            
             # Run test teardown if defined
             if declare -f teardown_test >/dev/null 2>&1; then
                 teardown_test
             fi
+
+            set -e
 
             # Clean up
             cleanup_test_workspace "$TEST_WORKSPACE"
             
             # Show test function completion in verbose mode
             if [ "$TESTER_VERBOSE" = "true" ]; then
-                printf "\n"
+                echo ""
             fi
             
             # Check if we should fail fast
             if [ $test_exit_code -ne 0 ] && [ "$TESTER_FAIL_FAST" = "true" ]; then
-                printf "\n      \033[31m[!]\033[0m \033[90mFail-fast mode enabled, stopping\033[0m\n"
+                printf "      \033[31m[!]\033[0m \033[90mFail-fast mode enabled, stopping\033[0m\n"
                 return 1
             fi
         done
 
-        if [ "$TESTER_VERBOSE" = "true" ]; then
-            echo ""
-        fi
 
         # Run suite teardown if defined (always run)
         if declare -f suite_teardown >/dev/null 2>&1; then
@@ -174,7 +187,7 @@ _sdk_tester_run_test_file() {
             return $exit_code
         fi
     else
-        printf " \033[31m✖\033[0m \033[90mnot found\033[0m\n"
+        printf "\033[31m✖\033[0m \033[90mnot found\033[0m\n"
         return 1
     fi
     
@@ -192,8 +205,6 @@ _sdk_tester_run_test_file() {
 
 # Main test runner function
 sdk_tester_run_tests() {
-    
-    echo ""
 
     # Initialize test state
     sdk_tester_initialize
@@ -245,7 +256,7 @@ sdk_tester_run_tests() {
     done
 
     echo ""
-
+    
     # Show summary
     sdk_tester_show_summary
 
@@ -253,7 +264,11 @@ sdk_tester_run_tests() {
     if [ -n "$TESTER_ONLY_FLAG_FILE" ] && [ -f "$TESTER_ONLY_FLAG_FILE" ]; then
         rm -f "$TESTER_ONLY_FLAG_FILE"
     fi
-
+    
+    # Clean up the log file
+    if [ -n "$TESTER_LOG_FILE" ] && [ -f "$TESTER_LOG_FILE" ]; then
+        rm -f "$TESTER_LOG_FILE"
+    fi
     echo ""
 }
 
