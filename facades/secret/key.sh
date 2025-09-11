@@ -92,7 +92,11 @@ sdk_fac_sec_show_key() {
 
 # Clear all secrets
 sdk_fac_sec_clear_secrets() {
-    if ! sdk_fac_sec_secrets_exist; then
+    # Ensure the secrets directory exists
+    mkdir -p "$SECRETS_DIR"
+    
+    # Check if secrets directory has any files
+    if [ ! -n "$(ls -A "$SECRETS_DIR" 2>/dev/null)" ]; then
         logit -w "No secrets found"
         return 0
     fi
@@ -102,9 +106,13 @@ sdk_fac_sec_clear_secrets() {
     read confirmation
     
     if [ "$confirmation" = "DELETE" ]; then
+        # Remove all files but keep the directory
         rm -f "$SECRETS_DIR"/*
         echo "All secrets cleared"
+        return 0
     else
         echo "Operation cancelled"
+        # Explicitly exit with non-zero to ensure it's propagated properly
+        return 1
     fi
 }

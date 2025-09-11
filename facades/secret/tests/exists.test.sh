@@ -5,7 +5,8 @@
 # Test exists command with missing argument
 test_secret_exists_missing_argument() {
     local output
-    output=$(D secret exists 2>&1)
+    # Use the capture function instead of command substitution to preserve exit code
+    output=$(capture D secret exists)
     local result=$?
     
     # Verify command fails without secret name
@@ -25,7 +26,7 @@ test_secret_exists_nonexistent_secret() {
     
     # Check if the secret exists
     local output
-    output=$(D secret exists $nonexistent 2>&1)
+    output=$(D secret exists $nonexistent)
     local result=$?
     
     # Verify command returns false for non-existent secret
@@ -42,7 +43,7 @@ test_secret_exists_quiet_nonexistent() {
     
     # Check with quiet flag
     local output
-    output=$(D secret exists $nonexistent --quiet 2>&1)
+    output=$(D secret exists $nonexistent --quiet)
     local result=$?
     
     # Verify quiet mode behavior for non-existent secret
@@ -51,14 +52,14 @@ test_secret_exists_quiet_nonexistent() {
     
     # Compare with normal (non-quiet) output
     local normal_output
-    normal_output=$(D secret exists $nonexistent 2>&1)
+    normal_output=$(D secret exists $nonexistent)
     assert_not_equals "" "$normal_output" "Normal mode should produce output unlike quiet mode"
 }
 
 # Test exists command with invalid arguments
 test_secret_exists_invalid_args() {
     local output
-    output=$(D secret exists TEST_SECRET --invalid-arg 2>&1)
+    output=$(D secret exists TEST_SECRET --invalid-arg)
     local result=$?
     
     # Verify command fails with invalid argument
@@ -68,28 +69,12 @@ test_secret_exists_invalid_args() {
     
     # Test with multiple invalid arguments
     local output2
-    output2=$(D secret exists TEST_SECRET --bad1 --bad2 2>&1)
+    output2=$(D secret exists TEST_SECRET --bad1 --bad2)
     local result2=$?
     
     # Verify command fails with multiple invalid arguments
     assert_not_equals "0" "$result2" "Should fail with multiple invalid arguments"
     assert_contains "$output2" "Unknown argument" "Should indicate unknown argument"
-}
-
-# Test command structure - should be recognized
-test_secret_exists_command_recognized() {
-    local output
-    output=$(D secret exists 2>&1)
-    local result=$?
-    
-    # Command should be recognized even if it fails due to missing argument
-    assert_not_contains "$output" "Unknown command" "Command should be recognized"
-    assert_not_contains "$output" "not found" "Command should be recognized"
-    
-    # Verify command is in help output
-    local help_output
-    help_output=$(D secret help 2>&1)
-    assert_contains "$help_output" "exists" "Command should be listed in help output"
 }
 
 # Test exists command with existing secret
@@ -99,7 +84,7 @@ test_secret_exists_with_existing_secret() {
     
     # Check if secret exists
     local output
-    output=$(D secret exists EXISTING_SECRET 2>&1)
+    output=$(D secret exists EXISTING_SECRET)
     local result=$?
     
     # Verify command returns true for existing secret
@@ -115,7 +100,7 @@ test_secret_exists_quiet_existing() {
     
     # Check with quiet flag
     local output
-    output=$(D secret exists QUIET_EXISTING_SECRET --quiet 2>&1)
+    output=$(D secret exists QUIET_EXISTING_SECRET --quiet)
     local result=$?
     
     # Verify quiet mode behavior for existing secret

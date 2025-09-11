@@ -11,4 +11,3 @@ if [ -n "$D_CTX_DIR" ]; then
 else
     ("$D_CLI_SDK" "$@")
 fi
-

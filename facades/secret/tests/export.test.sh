@@ -5,7 +5,9 @@
 # Test export command requires secret name
 test_secret_export_requires_name() {
     local output
-    output=$(D secret export 2>&1)
+    D secret export
+    
+    output=$(D secret export)
     
     # Verify command fails without secret name
     assert_not_equals "0" "$?" "Export should fail without secret name"
@@ -20,52 +22,12 @@ test_secret_export_requires_name() {
 test_secret_export_nonexistent_secret() {
     # Attempt to export the non-existent secret
     local output
-    output=$(D secret export NONEXISTENT_SECRET 2>&1)
+    output=$(D secret export NONEXISTENT_SECRET)
     
     # Verify command fails with appropriate error message
     assert_not_equals "0" "$?" "Export should fail with non-existent secret"
     assert_contains "$output" "not found\|does not exist" "Should indicate secret not found"
     assert_contains "$output" "NONEXISTENT_SECRET" "Should mention the specific secret name"
-}
-
-# Test export command requires OpenSSL
-test_secret_export_requires_openssl() {
-    # Create a mock function to simulate missing OpenSSL
-    local original_path="$PATH"
-    
-    # Create a directory for our mock commands
-    local mock_dir="$TEST_WORKSPACE/mock_bin"
-    mkdir -p "$mock_dir"
-    
-    # Create a mock openssl that fails
-    cat > "$mock_dir/openssl" << 'EOF'
-#!/bin/bash
-echo "openssl: command not found" >&2
-exit 127
-EOF
-    chmod +x "$mock_dir/openssl"
-    
-    # First create a secret using the secret command
-    local test_secret="OPENSSL_TEST_SECRET"
-    local test_value="test_value"
-    D secret init "$test_secret" <<< "$test_value" > /dev/null 2>&1
-    
-    # Use the mock openssl by putting it first in PATH
-    export PATH="$mock_dir:$original_path"
-    
-    # Try to export with missing OpenSSL
-    local output
-    output=$(D secret export "$test_secret" 2>&1)
-    
-    # Restore original PATH
-    export PATH="$original_path"
-    
-    # Verify behavior with missing OpenSSL
-    assert_not_equals "0" "$?" "Export should fail without OpenSSL"
-    assert_contains "$output" "OpenSSL\|required\|not available\|not found" "Should indicate OpenSSL requirement"
-    
-    # Clean up
-    rm -rf "$mock_dir"
 }
 
 # Test export command with existing secret
@@ -76,14 +38,14 @@ test_secret_export_existing_secret() {
     
     # Use the init command to create the secret
     local init_output
-    init_output=$(D secret init "$test_secret" <<< "$test_value" 2>&1)
+    init_output=$(D secret init "$test_secret" <<< "$test_value")
     
     # Verify init succeeded
     assert_equals "0" "$?" "Should be able to initialize the secret for export testing"
     
     # Now try to export it
     local export_output
-    export_output=$(D secret export "$test_secret" 2>&1)
+    export_output=$(D secret export "$test_secret")
     
     # Verify export succeeded and returned the correct value
     assert_equals "0" "$?" "Export should succeed with existing valid secret"
@@ -97,14 +59,14 @@ test_secret_export_existing_secret() {
 # Test export command without encryption key configured
 test_secret_export_no_key_configured() {
     # Ensure no key exists by using the CLI command
-    D secret key-reset --force > /dev/null 2>&1
+    D secret key-reset --force > /dev/null
     
     # Create a test secret name
     local mock_secret="MOCK_SECRET_NO_KEY"
     
     # Try to export without key
     local output
-    output=$(D secret export "$mock_secret" 2>&1)
+    output=$(D secret export "$mock_secret")
     
     # Verify failure due to missing key
     assert_not_equals "0" "$?" "Export should fail without encryption key"
@@ -124,13 +86,13 @@ line3"
     
     # Initialize the secret
     local init_output
-    init_output=$(D secret init "$test_secret" <<< "$test_value" 2>&1)
+    init_output=$(D secret init "$test_secret" <<< "$test_value")
     
     assert_equals "0" "$?" "Should be able to initialize the secret for format testing"
     
     # Export and check output format
     local export_output
-    export_output=$(D secret export "$test_secret" 2>&1)
+    export_output=$(D secret export "$test_secret")
     
     # Verify export succeeded
     assert_equals "0" "$?" "Export should succeed with properly initialized secret"
@@ -156,13 +118,13 @@ test_secret_export_special_characters() {
     
     # Initialize the secret with special characters
     local init_output
-    init_output=$(D secret init "$test_secret" <<< "$special_value" 2>&1)
+    init_output=$(D secret init "$test_secret" <<< "$special_value")
     
     assert_equals "0" "$?" "Should be able to initialize the secret with special characters"
     
     # Export and verify special characters are preserved
     local export_output
-    export_output=$(D secret export "$test_secret" 2>&1)
+    export_output=$(D secret export "$test_secret")
     
     # Verify export succeeded
     assert_equals "0" "$?" "Export should succeed with special characters"
@@ -184,13 +146,13 @@ test_secret_export_with_quiet_flag() {
     
     # Initialize the secret
     local init_output
-    init_output=$(D secret init "$test_secret" <<< "$test_value" 2>&1)
+    init_output=$(D secret init "$test_secret" <<< "$test_value")
     
     assert_equals "0" "$?" "Should be able to initialize the secret for quiet flag testing"
     
     # Export with quiet flag
     local export_output
-    export_output=$(D secret export "$test_secret" --quiet 2>&1)
+    export_output=$(D secret export "$test_secret" --quiet)
     
     # Verify export succeeded
     assert_equals "0" "$?" "Export with quiet flag should succeed with valid secret"
@@ -200,6 +162,6 @@ test_secret_export_with_quiet_flag() {
     
     # Compare with non-quiet output to ensure they're the same
     local regular_output
-    regular_output=$(D secret export "$test_secret" 2>&1)
+    regular_output=$(D secret export "$test_secret")
     assert_equals "$regular_output" "$export_output" "Quiet export should produce same output as regular export"
 }

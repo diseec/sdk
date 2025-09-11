@@ -46,7 +46,7 @@ sdk_fac_ins_sdk() {
         logit -l "$D_SDK_NAME patched for: $package_name"
     }
 
-    safely && sdk_fac_ins_sdk_process
+    safely sdk_fac_ins_sdk_process 
 }
 
 sdk_fac_ins_ensure_patched() {

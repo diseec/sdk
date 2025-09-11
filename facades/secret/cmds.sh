@@ -72,7 +72,7 @@ sdk_fac_sec_export() {
     local key=$(sdk_fac_sec_get_encryption_key)
     local encrypted_value=$(sdk_fac_sec_read_secret_file "$secret_name")
     local decrypted_value=$(sdk_fac_sec_decrypt_data "$encrypted_value" "$key")
-    
+
     if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
         echo "$decrypted_value"
         return 0
