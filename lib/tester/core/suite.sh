@@ -235,11 +235,11 @@ capture() {
             fi
             
             # Command line with timestamp and exit status
-            echo -e "\033[90m[$timestamp][\033[97m$\033[90m][EXT:\033[${color_code}m$exit_code\033[90m] $cmd\033[0m"
+            echo -e "\033[90m[$timestamp][\033[90m$\033[90m][EXT:\033[${color_code}m$exit_code\033[90m] $cmd\033[0m"
             
             # Output with proper indentation (if there is any output)
             if [ -n "$command_output_clean" ]; then
-                echo "$command_output_clean"
+                echo -e "\033[2;90m$command_output_clean\033[0m"
             fi
             
             echo -e "\033[2;90m-------------------------------------------------------------------------------\033[0m"
