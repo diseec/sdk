@@ -2,6 +2,13 @@
 
 # Test for the 'secret export' command
 
+# Setup function - runs before each test
+setup_test() {
+    # Set up secrets directory in the test workspace
+    export SECRETS_DIR="$TEST_WORKSPACE/secrets"
+    mkdir -p "$SECRETS_DIR" 2>/dev/null
+}
+
 # Test export command requires secret name
 test_secret_export_requires_name() {
     local output

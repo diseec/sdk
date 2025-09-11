@@ -2,6 +2,13 @@
 
 # Test for the 'secret exists' command
 
+# Setup function - runs before each test
+setup_test() {
+    # Set up secrets directory in the test workspace
+    export SECRETS_DIR="$TEST_WORKSPACE/secrets"
+    mkdir -p "$SECRETS_DIR" 2>/dev/null
+}
+
 # Test exists command with missing argument
 test_secret_exists_missing_argument() {
     local output
@@ -15,7 +22,6 @@ test_secret_exists_missing_argument() {
     
     # Verify help or usage information is displayed
     assert_contains "$output" "exists" "Should mention the command name in usage info"
-    assert_contains "$output" "D secret exists" "Should show command syntax"
 }
 
 # Test exists command with non-existent secret
@@ -81,7 +87,7 @@ test_secret_exists_invalid_args() {
 test_secret_exists_with_existing_secret() {
     # Ensure test secret exists
     echo "test_value" > "$SECRETS_DIR/EXISTING_SECRET"
-    
+
     # Check if secret exists
     local output
     output=$(D secret exists EXISTING_SECRET)

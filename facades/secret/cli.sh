@@ -10,7 +10,6 @@ c=$1; shift; case "$c" in
     kre|key-reset) sdk_fac_sec_reset_key "$@" ;;
     ksh|key-show) sdk_fac_sec_show_key "$@" ;;
     add) sdk_fac_sec_add_secret "$@" ;;
-    x) logit -e "xxx";return 1 ;;
     exp|export) sdk_fac_sec_export "$@" ;;
     pri|print) sdk_fac_sec_show_secrets "$@" ;;
     cle|clear) sdk_fac_sec_clear_secrets "$@" ;;
