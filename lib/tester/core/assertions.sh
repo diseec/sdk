@@ -17,7 +17,7 @@ _tester_assert_result() {
     TESTER_TOTAL_TESTS=$((TESTER_TOTAL_TESTS + 1))
     
     # Prefix message with assertion function name for clarity
-    local prefixed_message="ASSERT: $assert_func: $message"
+    local prefixed_message="[ASSERT][$assert_func] $message"
     
     if [ "$success" = "true" ]; then
         TESTER_PASSED_TESTS=$((TESTER_PASSED_TESTS + 1))
@@ -31,8 +31,21 @@ _tester_assert_result() {
         
         # Show details only if verbose
         if [ "$TESTER_VERBOSE" = "true" ] && [ -n "$expected" ] && [ -n "$actual" ]; then
-            printf "\n          \033[34m[EXPECT]\033[0m \033[90m%s\033[0m" "$expected"
-            printf "\n          \033[31m[ACTUAL]\033[0m \033[97m%s\033[0m" "$actual"
+            # Strip ANSI color codes from expected and actual values
+            local expected_clean=$(echo "$expected" | sed 's/\x1b\[[0-9;]*m//g')
+            local actual_clean=$(echo "$actual" | sed 's/\x1b\[[0-9;]*m//g')
+            
+            # Format in a diff-like style with + and - prefixes
+            printf "\n"
+            # Handle each line of expected output with + prefix (green)
+            echo "$expected_clean" | while IFS= read -r line || [ -n "$line" ]; do
+                printf "      \033[32m+\033[0m %s\n" "$line"
+            done
+            
+            # Handle each line of actual output with - prefix (red)
+            echo "$actual_clean" | while IFS= read -r line || [ -n "$line" ]; do
+                printf "      \033[31m-\033[0m %s\n" "$line"
+            done
         fi
         
         return 1
@@ -61,7 +74,7 @@ assert_not_equals() {
     if [ "$expected" != "$actual" ]; then
         _tester_assert_result "true" "$message" "" "" "NOT_EQUALS"
     else
-        _tester_assert_result "false" "$message" "not $expected" "$actual" "NOT_EQUALS"
+        _tester_assert_result "false" "$message" "any value except: $expected" "$actual" "NOT_EQUALS"
     fi
 }
 
@@ -74,7 +87,7 @@ assert_contains() {
     if echo "$haystack" | grep -q "$needle"; then
         _tester_assert_result "true" "$message" "" "" "CONTAINS"
     else
-        _tester_assert_result "false" "$message" "contains '$needle'" "'$haystack'" "CONTAINS"
+        _tester_assert_result "false" "$message" "$needle" "$haystack" "CONTAINS"
     fi
 }
 
@@ -87,7 +100,7 @@ assert_not_contains() {
     if ! echo "$haystack" | grep -q "$needle"; then
         _tester_assert_result "true" "$message" "" "" "NOT_CONTAINS"
     else
-        _tester_assert_result "false" "$message" "not contains '$needle'" "'$haystack'" "NOT_CONTAINS"
+        _tester_assert_result "false" "$message" "should not contain: $needle" "$haystack" "NOT_CONTAINS"
     fi
 }
 
@@ -99,7 +112,7 @@ assert_file_exists() {
     if [ -f "$file_path" ]; then
         _tester_assert_result "true" "$message" "" "" "FILE_EXISTS"
     else
-        _tester_assert_result "false" "$message" "file exists" "file not found" "FILE_EXISTS"
+        _tester_assert_result "false" "$message" "file should exist" "file not found" "FILE_EXISTS"
     fi
 }
 
@@ -111,7 +124,7 @@ assert_file_not_exists() {
     if [ ! -f "$file_path" ]; then
         _tester_assert_result "true" "$message" "" "" "FILE_NOT_EXISTS"
     else
-        _tester_assert_result "false" "$message" "file not exists" "file exists" "FILE_NOT_EXISTS"
+        _tester_assert_result "false" "$message" "file should not exist" "file exists" "FILE_NOT_EXISTS"
     fi
 }
 
@@ -123,7 +136,7 @@ assert_dir_exists() {
     if [ -d "$dir_path" ]; then
         _tester_assert_result "true" "$message" "" "" "DIR_EXISTS"
     else
-        _tester_assert_result "false" "$message" "directory exists" "directory not found" "DIR_EXISTS"
+        _tester_assert_result "false" "$message" "directory should exist" "directory not found" "DIR_EXISTS"
     fi
 }
 
@@ -160,7 +173,7 @@ assert_empty() {
     if [ -z "$value" ]; then
         _tester_assert_result "true" "$message" "" "" "EMPTY"
     else
-        _tester_assert_result "false" "$message" "empty value" "'$value'" "EMPTY"
+        _tester_assert_result "false" "$message" "empty string" "$value" "EMPTY"
     fi
 }
 
@@ -172,7 +185,7 @@ assert_not_empty() {
     if [ -n "$value" ]; then
         _tester_assert_result "true" "$message" "" "" "NOT_EMPTY"
     else
-        _tester_assert_result "false" "$message" "non-empty value" "empty value" "NOT_EMPTY"
+        _tester_assert_result "false" "$message" "non-empty string" "empty string" "NOT_EMPTY"
     fi
 }
 
@@ -185,7 +198,7 @@ assert_matches() {
     if echo "$value" | grep -qE "$pattern"; then
         _tester_assert_result "true" "$message" "" "" "MATCHES"
     else
-        _tester_assert_result "false" "$message" "matches '$pattern'" "'$value'" "MATCHES"
+        _tester_assert_result "false" "$message" "pattern: $pattern" "$value" "MATCHES"
     fi
 }
 
@@ -266,7 +279,7 @@ assert_contains_error() {
     if echo "$output" | grep -qE "(error|ERROR|fail|FAIL|✖|⚠️|\[!\])"; then
         _tester_assert_result "true" "$message" "" "" "CONTAINS_ERROR"
     else
-        _tester_assert_result "false" "$message" "error indicators" "'$output'" "CONTAINS_ERROR"
+        _tester_assert_result "false" "$message" "should contain error indicators" "$output" "CONTAINS_ERROR"
     fi
 }
 
@@ -278,7 +291,7 @@ assert_contains_success() {
     if echo "$output" | grep -qE "(success|SUCCESS|✓|✔|added|configured|initialized|removed)"; then
         _tester_assert_result "true" "$message" "" "" "CONTAINS_SUCCESS"
     else
-        _tester_assert_result "false" "$message" "success indicators" "'$output'" "CONTAINS_SUCCESS"
+        _tester_assert_result "false" "$message" "should contain success indicators" "$output" "CONTAINS_SUCCESS"
     fi
 }
 

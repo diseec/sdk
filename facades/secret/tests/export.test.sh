@@ -5,8 +5,7 @@
 # Test export command requires secret name
 test_secret_export_requires_name() {
     local output
-    D secret export
-    
+
     output=$(D secret export)
     
     # Verify command fails without secret name

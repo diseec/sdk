@@ -221,6 +221,10 @@ capture() {
         exit_code=$?
     fi
     
+    # Strip ANSI color codes from command output
+    local command_output_clean
+    command_output_clean=$(echo "$command_output" | sed 's/\x1b\[[0-9;]*m//g')
+    
     # If TESTER_LOG_FILE is set, write to the log file with styled format
     if [ -n "$TESTER_LOG_FILE" ]; then
         {
@@ -231,18 +235,18 @@ capture() {
             fi
             
             # Command line with timestamp and exit status
-            echo -e "\033[90m[$timestamp]\033[32m[$]\033[90m\033[${color_code}m[EXT:$exit_code]\033[97m $cmd\033[0m"
+            echo -e "\033[90m[$timestamp][\033[97m$\033[90m][EXT:\033[${color_code}m$exit_code\033[90m] $cmd\033[0m"
             
             # Output with proper indentation (if there is any output)
-            if [ -n "$command_output" ]; then
-                echo "$command_output"
+            if [ -n "$command_output_clean" ]; then
+                echo "$command_output_clean"
             fi
             
             echo -e "\033[2;90m-------------------------------------------------------------------------------\033[0m"
         } >> "$TESTER_LOG_FILE"
     fi
     
-    # Return the command output
+    # Return the original command output (with colors)
     echo "$command_output"
     return $exit_code
 }

@@ -114,7 +114,7 @@ _sdk_tester_run_test_file() {
             
             # Show test function start in verbose mode
             if [ "$TESTER_VERBOSE" = "true" ]; then
-                printf "    \033[2;90m→\033[0m \033[90m%s\033[0m" "$test_function"
+                printf "  \033[2;90m→\033[0m \033[90m%s\033[0m" "$test_function"
             fi
             
             setup_test_workspace
@@ -136,9 +136,10 @@ _sdk_tester_run_test_file() {
             # If the test failed, display the logs
             if [ $test_exit_code -ne 0 ]; then
                 local timestamp=$(date "+%H:%M:%S")
-                printf "\n\n\033[1;90mTEST LOGS\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
+                printf "\n\n\033[1;90mCAPTURES\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
                 # Display the captured logs from the file
                 if [ -f "$TESTER_LOG_FILE" ] && [ -s "$TESTER_LOG_FILE" ]; then
+                    # Strip ANSI color codes when displaying logs
                     cat "$TESTER_LOG_FILE"
                 else
                     printf "\033[33m[!]\033[0m \033[90mNo command logs captured\033[0m\n"
@@ -170,7 +171,7 @@ _sdk_tester_run_test_file() {
             
             # Check if we should fail fast
             if [ $test_exit_code -ne 0 ] && [ "$TESTER_FAIL_FAST" = "true" ]; then
-                printf "      \033[31m[!]\033[0m \033[90mFail-fast mode enabled, stopping\033[0m\n"
+                printf "\033[33m[!]\033[0m \033[90mFail-fast mode enabled, stopping\033[0m\n"
                 return 1
             fi
         done

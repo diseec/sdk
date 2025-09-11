@@ -177,7 +177,7 @@ sdk_tester_show_assertion_result() {
         if [ "$success" = "true" ]; then
             printf " \033[32m·\033[0m"
         else
-            printf "\n      \033[31m✖\033[0m \033[90m%s\033[0m" "$message"
+            printf "\n    \033[31m✖\033[0m \033[97m%s\033[0m" "$message"
         fi
     fi
 }
