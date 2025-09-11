@@ -136,7 +136,7 @@ _sdk_tester_run_test_file() {
             # If the test failed, display the logs
             if [ $test_exit_code -ne 0 ]; then
                 local timestamp=$(date "+%H:%M:%S")
-                printf "\n\n\033[1;90mCAPTURES\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
+                printf "\n\n\033[1;97mCAPTURES\033[0m\033[97m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
                 # Display the captured logs from the file
                 if [ -f "$TESTER_LOG_FILE" ] && [ -s "$TESTER_LOG_FILE" ]; then
                     # Strip ANSI color codes when displaying logs
@@ -175,8 +175,6 @@ _sdk_tester_run_test_file() {
                 return 1
             fi
         done
-
-        echo ""
 
         # Run suite teardown if defined (always run)
         if declare -f suite_teardown >/dev/null 2>&1; then

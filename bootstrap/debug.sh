@@ -54,7 +54,7 @@ get_stack_trace() {
 
 # Function to get and display system information
 get_system_info() {
-    printf "\n\033[1;90mSYSTEM INFO\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 60 | tr ' ' '-')"
+    printf "\n\033[1;97mSYSTEM INFO\033[0m\033[97m %s\033[0m\n" "$(printf '%*s' 60 | tr ' ' '-')"
 
     # OS info (works on macOS, Linux, and many Unix variants)
     if command -v uname &> /dev/null; then
@@ -107,7 +107,7 @@ get_system_info() {
 
 # Function to display environment variables
 get_env_variables() {
-    printf "\n\033[1;90mENV VARIABLES\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 58 | tr ' ' '-')"
+    printf "\n\033[1;97mENV VARIABLES\033[0m\033[97m %s\033[0m\n" "$(printf '%*s' 58 | tr ' ' '-')"
     printf "\033[90mPWD            \033[0m \033[90m%s\033[0m\n" "${PWD:-unknown}"
     printf "\033[90mD_INI_PWD      \033[0m \033[90m%s\033[0m\n" "${D_INI_PWD:-unknown}"
     printf "\033[90mD_INI_ARGS     \033[0m \033[90m%s\033[0m\n" "${D_INI_ARGS:-unknown}"
@@ -145,7 +145,7 @@ trace_error_handler() {
     printf "\033[31m%s\033[0m\n" "$cmd"
     
     # Print stack trace with better formatting
-    printf "\n\033[1;90mSTACK TRACE\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 60 | tr ' ' '-')"
+    printf "\n\033[1;97mSTACK TRACE\033[0m\033[97m %s\033[0m\n" "$(printf '%*s' 60 | tr ' ' '-')"
     # Call get_stack_trace and immediately echo its output (avoid storing in variable)
     get_stack_trace
     

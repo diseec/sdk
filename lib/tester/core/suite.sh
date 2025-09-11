@@ -235,7 +235,9 @@ capture() {
             fi
             
             # Command line with timestamp and exit status
-            echo -e "\033[90m[$timestamp][\033[90m$\033[90m][EXT:\033[${color_code}m$exit_code\033[90m] $cmd\033[0m"
+            # Clean the command by removing the SDK dir prefix pattern
+            local cleaned_cmd=$(echo "$cmd" | sed 's/env D_SDK_DIR=\/ctx \/ctx\///')
+            echo -e "\033[90m[$timestamp][\033[90m$\033[90m][EXT:\033[${color_code}m$exit_code\033[90m] $cleaned_cmd\033[0m"
             
             # Output with proper indentation (if there is any output)
             if [ -n "$command_output_clean" ]; then

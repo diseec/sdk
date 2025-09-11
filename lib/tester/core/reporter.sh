@@ -24,7 +24,7 @@ sdk_tester_show_summary() {
     local duration=$(_sdk_tester_format_duration $((end_time - TESTER_START_TIME)))
     
     # Compact results display - inspired by debug trace aesthetic
-    printf "\033[1;90mRESULTS\033[0m\033[90m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
+    printf "\033[1;97mRESULTS\033[0m\033[97m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
     
     # Show "only" mode indicator if active
     if sdk_tester_registry_has_only; then

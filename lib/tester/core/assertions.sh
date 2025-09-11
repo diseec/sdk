@@ -112,7 +112,7 @@ assert_file_exists() {
     if [ -f "$file_path" ]; then
         _tester_assert_result "true" "$message" "" "" "FILE_EXISTS"
     else
-        _tester_assert_result "false" "$message" "file should exist" "file not found" "FILE_EXISTS"
+        _tester_assert_result "false" "$message" "file should exist: $file_path" "file not found" "FILE_EXISTS"
     fi
 }
 
@@ -124,7 +124,7 @@ assert_file_not_exists() {
     if [ ! -f "$file_path" ]; then
         _tester_assert_result "true" "$message" "" "" "FILE_NOT_EXISTS"
     else
-        _tester_assert_result "false" "$message" "file should not exist" "file exists" "FILE_NOT_EXISTS"
+        _tester_assert_result "false" "$message" "file should not exist: $file_path" "file exists" "FILE_NOT_EXISTS"
     fi
 }
 
@@ -136,7 +136,7 @@ assert_dir_exists() {
     if [ -d "$dir_path" ]; then
         _tester_assert_result "true" "$message" "" "" "DIR_EXISTS"
     else
-        _tester_assert_result "false" "$message" "directory should exist" "directory not found" "DIR_EXISTS"
+        _tester_assert_result "false" "$message" "directory should exist: $dir_path" "directory not found" "DIR_EXISTS"
     fi
 }
 
@@ -149,7 +149,7 @@ assert_command_success() {
         _tester_assert_result "true" "$message" "" "" "CMD_SUCCESS"
     else
         local exit_code=$?
-        _tester_assert_result "false" "$message" "exit code 0" "exit code $exit_code" "CMD_SUCCESS"
+        _tester_assert_result "false" "$message" "command should succeed: '$command'" "exit code $exit_code" "CMD_SUCCESS"
     fi
 }
 
@@ -161,7 +161,7 @@ assert_command_fails() {
     if ! eval "$command" >/dev/null 2>&1; then
         _tester_assert_result "true" "$message" "" "" "CMD_FAILS"
     else
-        _tester_assert_result "false" "$message" "non-zero exit code" "exit code 0" "CMD_FAILS"
+        _tester_assert_result "false" "$message" "command should fail: '$command'" "exit code 0" "CMD_FAILS"
     fi
 }
 
@@ -303,7 +303,7 @@ assert_command_times_out() {
     
     if timeout "$timeout_seconds" bash -c "$command" >/dev/null 2>&1; then
         # Command completed within timeout - this might be unexpected
-        _tester_assert_result "false" "$message" "timeout after $timeout_seconds seconds" "completed successfully" "CMD_TIMEOUT"
+        _tester_assert_result "false" "$message" "command should timeout: '$command'" "completed successfully" "CMD_TIMEOUT"
     else
         local exit_code=$?
         if [ "$exit_code" -eq 124 ]; then
@@ -311,7 +311,7 @@ assert_command_times_out() {
             _tester_assert_result "true" "$message" "" "" "CMD_TIMEOUT"
         else
             # Command failed for other reasons
-            _tester_assert_result "false" "$message" "timeout (exit 124)" "exit code $exit_code" "CMD_TIMEOUT"
+            _tester_assert_result "false" "$message" "command should timeout: '$command'" "exit code $exit_code" "CMD_TIMEOUT"
         fi
     fi
 }
