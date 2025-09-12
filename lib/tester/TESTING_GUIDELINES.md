@@ -31,7 +31,8 @@ This document provides comprehensive guidelines, best practices, and lessons lea
 5. [Handling Different Environments](#handling-different-environments)
 6. [Common Pitfalls and Solutions](#common-pitfalls-and-solutions)
 7. [Test Design Principles](#test-design-principles)
-8. [Quick Reference](#quick-reference)
+8. [Testing Interactive Commands](#testing-interactive-commands)
+9. [Quick Reference](#quick-reference)
 
 ## Test Structure
 
@@ -478,6 +479,47 @@ test_environment_setup_good() {
 ```
 
 Remember: A command can exit with status 0 but still fail to accomplish its purpose. Always verify the actual, observable outcomes.
+
+### Testing Interactive Commands
+
+Interactive commands that require user input present special challenges for testing. The framework provides several ways to handle these scenarios while maintaining the end-to-end testing approach:
+
+#### Using Here Strings and Here Documents
+
+The most reliable way to test interactive commands is using Bash's here strings (`<<<`) and here documents (`<<EOF ... EOF`):
+
+```bash
+# Using here string for a single input
+local output=$(D interactive-command <<< "y")
+
+# Using here string for multiple inputs (for simple cases require less than 2 simple inputs)
+local output=$(D config submodule_select <<< $'y\n1,2')
+
+# Using here document for multiple lines of input
+local output=$(D interactive-sequence << EOF
+username
+password
+y
+option1
+EOF
+)
+```
+
+#### Best Practices for Interactive Command Testing
+
+1. **Use Clear Inputs**: Make inputs clear and explicit in the test. Prefer `<<` syntax for inputs that require newlines.
+
+2. **Test All Input Paths**: Create separate test functions for different input scenarios (valid, invalid, empty, etc.).
+
+3. **Avoid External Input Files**: Define input directly in the test using here strings/documents rather than reading from external files.
+
+4. **Verify Complete Processing**: Verify not just that the command accepted the input, but that it fully processed it correctly.
+
+5. **Document Input Format**: Add comments explaining the expected input format, especially for complex interactive sequences.
+
+6. **Test Edge Cases**: Include tests for boundary conditions like empty input, maximum length input, or special characters.
+
+Remember that automated tests for interactive commands should be as reliable and deterministic as any other test, despite the complexity of handling user input. Treat interactive commands just like how a real user would use.
 
 ````
 
