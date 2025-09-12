@@ -84,28 +84,12 @@ sdk_fac_con_set_act_select() {
             i=$((i+1))
         done
     fi
-    
+
     # Create YAML array from selected modules
     if [ -n "$selected_modules" ]; then
-        # Create a temporary file for yq processing
-        temp_yaml=$(mktemp)
-        
-        # Initialize YAML file with empty submodules array
-        echo "submodules: []" > "$temp_yaml"
-        
-        # Add each module to the YAML array using yq
-        for module in $selected_modules; do
-            _yq -i ".submodules += [\"$module\"]" "$temp_yaml"
-        done
-        
-        # Extract the submodules array as YAML
-        yaml_array=$(_yq '.submodules' "$temp_yaml")
-        
         # Set the submodules array using the YAML format
-        cli_ctx config --scope=repository set submodules "$yaml_array"
-        
-        # Clean up temporary file
-        rm "$temp_yaml"
+        cli_ctx config --scope=repository set submodules "$selected_modules"
+        D config --scope=repository get submodules
 
         logit -i "Activated modules: $(echo $selected_modules | tr ' ' ', ')"
     else

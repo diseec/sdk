@@ -39,7 +39,6 @@ test_config_submodule_select_interactive_only() {
     # This handles both cases with a single multi-line input
     local output
     output=$(D config submodule_select <<< $'1,2')
-    D config --scope=repository set submodules "adfs,afsd"
     D config pri
     # Verify the submodules were added to the configuration
     local submodules

@@ -71,13 +71,16 @@ sdk_fac_con_get() {
 }
 
 # Set configuration value in specified scope (defaults to $DEFAULT_SCOPE)
-# Enhanced to handle both scalar values and arrays
+# Enhanced to auto-detect and handle arrays using standard YAML syntax
+# Usage:
+#   sdk_fac_con_set "key" "value"                # Set scalar value
+#   sdk_fac_con_set "key" "[item1,item2,item3]"  # Set array value (standard YAML array format)
+#   sdk_fac_con_set "key" "value" "scope"        # Set in specific scope
 sdk_fac_con_set() {
     set -e
     local key_path="$1"
     local value="$2"
     local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
-    local is_array="${4:-false}"        # Optional: specify if value should be treated as array element
     
     # Ensure config is initialized
     sdk_fac_con_init >/dev/null 2>&1
@@ -94,16 +97,9 @@ sdk_fac_con_set() {
     # Ensure config file exists
     local config_file="$(sdk_fac_con_get_config_file "$scope")"
     
-    # Check if this is an array operation
-    if [ "$is_array" = "true" ]; then
-        # Handle as array operation - add value to array
-        sdk_fac_con_yaml_array_add "$config_file" "$key_path" "$value"
-        logit -l "Added '$value' to '$key_path' array in '$scope' scope"
-    else
-        # Handle as scalar operation - set value
-        sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
-        logit -l "Set '$key_path' = '$value' in '$scope' scope"
-    fi
+    sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
+
+    logit -l "Set '$key_path' in '$scope' scope with value: $value"
     
     return 0
 }

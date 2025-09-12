@@ -111,7 +111,7 @@ test_config_set_new_array() {
 # Test adding multiple items to an array using set with comma-separated format
 test_config_set_multiple_items_array() {
     # Add multiple items to an array using comma-separated format
-    D config --scope=repository set multiple.array 'item1,item2,item3' > /dev/null
+    D config --scope=repository set multiple.array '[item1,item2,item3]' > /dev/null
     
     # Get the full array output for verification
     local array_value
@@ -138,7 +138,7 @@ test_config_set_multiple_items_array() {
 # Test adding duplicate items using set with comma-separated format
 test_config_set_duplicate_items_array() {
     # Add an item twice using comma-separated format
-    D config --scope=repository set duplicate.array 'item1,item1' > /dev/null
+    D config --scope=repository set duplicate.array '[item1,item1]' > /dev/null
     
     # Get the array value for verification
     local array_value
@@ -201,4 +201,32 @@ test_config_set_nested_array() {
     
     echo "$print_output" | grep -q "array:"
     assert_equals "$?" "0" "Output should contain array: section"
+}
+
+# Test adding multiple items to an array using set with comma-separated format
+test_config_set_array_from_comma_separated() {
+    # Add multiple items to an array using standard YAML array syntax
+    # Note: Double quotes are needed to prevent the shell from interpreting brackets
+    D config --scope=repository set submodules "[item1,item2,item3]" > /dev/null
+    
+    # Get the full array output for verification
+    local array_value
+    array_value=$(D config --scope=repository get submodules)
+
+    # Expected output is YAML array format (each item on new line)
+    local expected_lines=3
+    local actual_lines=$(echo "$array_value" | wc -l | tr -d ' ')
+    
+    # Check that we got the right number of lines
+    assert_equals "$expected_lines" "$actual_lines" "Array should have 3 items (3 lines)"
+    
+    # Check that all items are present
+    echo "$array_value" | grep -q "item1"
+    assert_equals "0" "$?" "Array should contain item1"
+    
+    echo "$array_value" | grep -q "item2"
+    assert_equals "0" "$?" "Array should contain item2"
+    
+    echo "$array_value" | grep -q "item3"
+    assert_equals "0" "$?" "Array should contain item3"
 }

@@ -72,8 +72,9 @@ c=$1; shift; case $c in
     "" "" "$(ansi "1;90" "$(capitalize 'Basic Commands')")" "" \
     "    get                      " "Get configuration value with hierarchy resolution" \
     "                             " "$(ansi "2;90" "Example: get <key.path>")" \
-    "    set                      " "Set configuration value (use comma-separated format for arrays: item1,item2,item3)" \
+    "    set                      " "Set configuration value" \
     "                             " "$(ansi "2;90" "Example: set <key.path> <value>")" \
+    "                             " "$(ansi "2;90" "For arrays: set <key.path> \"[item1,item2,item3]\" (standard YAML array format)")" \
     "    rem|remove               " "Remove value from array or delete key (value optional)" \
     "                             " "$(ansi "2;90" "Example: remove <key.path> [value]")" \
     "    whi|which                " "Show configuration value resolution path (no scope needed)" \
@@ -96,7 +97,7 @@ c=$1; shift; case $c in
     "" "" "    $(ansi "1;2;90" "$(capitalize 'Examples')")" "" \
     "    $(ansi "2;90" "config --scope=context get context.submodules")" \
     "    $(ansi "2;90" "config -s=user set defaults.shell zsh")" \
-    "    $(ansi "2;90" "config --scope context set context.submodules 'my-service,another-service'")" \
+    "    $(ansi "2;90" "config --scope context set context.submodules '[service1,service2,service3]'")" \
     "    $(ansi "2;90" "config --scope user set user.theme dark")" \
     "    $(ansi "2;90" "config which organization.name")" \
     "    $(ansi "2;90" "config --scope=context print")" \

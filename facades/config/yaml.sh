@@ -22,11 +22,6 @@ sdk_fac_con_yaml_init() {
 }
 
 # =============================================================================
-# JSON VALIDATION UTILITIES - REMOVED
-# =============================================================================
-# Removed JSON operations to work purely with YAML
-
-# =============================================================================
 # YAML OPERATIONS WITH YQ
 # =============================================================================
 
@@ -59,28 +54,29 @@ sdk_fac_con_yaml_set_yq() {
     local key_path="$2"
     local value="$3"
     
-    # Handle different array formats
+    # Handle YAML array in standard format [item1,item2,item3]
     if [[ "$value" == \[* ]] && [[ "$value" == *\] ]]; then
-        # JSON array format: ["item1", "item2", "item3"]
-        _yq eval -i ".${key_path} = $value" "$config_file"
-    elif [[ "$value" == *,* ]] && [[ "$value" != *:* ]] && [[ "$value" != \{* ]]; then
-        # Comma-separated format: item1,item2,item3
-        # Split on commas and create proper YAML array
-        local yaml_array="["
-        IFS=',' read -ra ITEMS <<< "$value"
+        # Extract items and create properly quoted array for yq
+        # Remove brackets
+        local items=${value:1:${#value}-2}
+        
+        # Create a properly quoted array for yq
+        local quoted_array="["
+        IFS=',' read -ra array_items <<< "$items"
         local first=true
-        for item in "${ITEMS[@]}"; do
+        for item in "${array_items[@]}"; do
             item=$(echo "$item" | xargs)  # trim whitespace
             if [ "$first" = true ]; then
-                yaml_array="$yaml_array\"$item\""
+                quoted_array="${quoted_array}\"${item}\""
                 first=false
             else
-                yaml_array="$yaml_array, \"$item\""
+                quoted_array="${quoted_array}, \"${item}\""
             fi
         done
-        yaml_array="$yaml_array]"
+        quoted_array="${quoted_array}]"
         
-        _yq eval -i ".${key_path} = $yaml_array" "$config_file"
+        # Now use the properly quoted array with yq
+        _yq eval -i ".${key_path} = ${quoted_array}" "$config_file"
     else
         # Regular scalar value or object
         _yq eval -i ".${key_path} = \"${value}\"" "$config_file"
@@ -93,71 +89,6 @@ sdk_fac_con_yaml_delete_yq() {
     local key_path="$2"
     
     _yq eval -i "del(.${key_path})" "$config_file"
-}
-
-# Add to array using yq
-sdk_fac_con_yaml_array_add_yq() {
-    local config_file="$1"
-    local key_path="$2"
-    local value="$3"
-    
-    # First check if the array exists - if not, just create it with the value
-    local array_exists
-    array_exists=$(_yq eval ".${key_path} // \"null\"" "$config_file")
-    
-    if [ "$array_exists" = "null" ]; then
-        # Array doesn't exist, create it with the new value
-        _yq eval -i ".${key_path} = [\"${value}\"]" "$config_file"
-        return 0
-    fi
-    
-    # Check if the key exists but is not an array, convert it to an array containing the old value and the new one
-    local type
-    type=$(_yq eval "type" <(echo "$array_exists") 2>/dev/null)
-    
-    if [ "$type" != "seq" ]; then
-        # Convert to an array with both the old and new values
-        if [ "$array_exists" != "null" ] && [ -n "$array_exists" ]; then
-            _yq eval -i ".${key_path} = [.${key_path}, \"${value}\"]" "$config_file"
-        else
-            _yq eval -i ".${key_path} = [\"${value}\"]" "$config_file"
-        fi
-        return 0
-    fi
-    
-    # Check if value already exists in the array
-    # Simplify the approach - use a direct iteration pattern that's more reliable
-    local exists=false
-    local values
-    values=$(_yq eval ".${key_path}[]" "$config_file" 2>/dev/null || echo "")
-    
-    if echo "$values" | grep -q "^${value}$"; then
-        exists=true
-    fi
-    
-    # Only add if it doesn't exist
-    if [ "$exists" = "false" ]; then
-        _yq eval -i ".${key_path} += [\"${value}\"]" "$config_file"
-    fi
-}
-
-# Remove from array using yq
-sdk_fac_con_yaml_array_remove_yq() {
-    local config_file="$1"
-    local key_path="$2"
-    local value="$3"
-    
-    # First check if the target is a scalar value that matches what we want to remove
-    local current_value
-    current_value=$(_yq eval ".${key_path}" "$config_file" 2>/dev/null)
-    
-    if [ "$current_value" = "$value" ]; then
-        # It's a scalar value that matches - replace with empty array
-        _yq eval -i ".${key_path} = []" "$config_file"
-    else
-        # It's an array - use the map/select approach
-        _yq eval -i ".${key_path} |= map(select(. != \"${value}\"))" "$config_file"
-    fi
 }
 
 # List all keys using yq
@@ -277,21 +208,6 @@ sdk_fac_con_yaml_delete() {
     fi
 }
 
-# Add to array in YAML file
-sdk_fac_con_yaml_array_add() {
-    local config_file="$1"
-    local key_path="$2"
-    local value="$3"
-    sdk_fac_con_yaml_init
-
-    if [ "$YAML_USE_YQ" = "true" ]; then
-        sdk_fac_con_yaml_array_add_yq "$config_file" "$key_path" "$value"
-    else
-        logit -e "Array operations require yq. Please install yq."
-        return 1
-    fi
-}
-
 # Remove from array in YAML file
 sdk_fac_con_yaml_array_remove() {
     local config_file="$1"
@@ -300,7 +216,17 @@ sdk_fac_con_yaml_array_remove() {
     sdk_fac_con_yaml_init
 
     if [ "$YAML_USE_YQ" = "true" ]; then
-        sdk_fac_con_yaml_array_remove_yq "$config_file" "$key_path" "$value"
+        # First check if the target is a scalar value that matches what we want to remove
+        local current_value
+        current_value=$(_yq eval ".${key_path}" "$config_file" 2>/dev/null)
+        
+        if [ "$current_value" = "$value" ]; then
+            # It's a scalar value that matches - replace with empty array
+            _yq eval -i ".${key_path} = []" "$config_file"
+        else
+            # It's an array - use the map/select approach
+            _yq eval -i ".${key_path} |= map(select(. != \"${value}\"))" "$config_file"
+        fi
     else
         logit -e "Array operations require yq. Please install yq."
         return 1

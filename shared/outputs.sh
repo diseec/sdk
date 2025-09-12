@@ -353,6 +353,8 @@ input() {
         fi
     fi
     
+    printf "\n"
+    
     # Use default if input is empty and default exists
     if [ -z "$user_input" ] && [ -n "$default_value" ]; then
         user_input="$default_value"
