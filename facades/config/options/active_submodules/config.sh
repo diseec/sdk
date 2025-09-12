@@ -13,19 +13,13 @@
 
 # Create configuration with new structure
 sdk_fac_con_opt_act_create_config() {
-    local config_file="$(cli_ctx config function sdk_fac_con_get_config_file repository)"
+    local config_file="$(sdk_fac_con_get_config_file repository)"
 
     # Check if config already exists and has content
     if [ -f "$config_file" ] && [ -s "$config_file" ]; then
-        local submodules="$(cli_ctx config function sdk_fac_con_get submodules repository 2>/dev/null)"
+        local submodules="$(sdk_fac_con_get submodules repository 2>/dev/null)"
         if [ "$submodules" != "null" ] && [ -n "$submodules" ]; then
-            printf "$(logit -q "Config already exists. Overwrite? \033[35m[Y/N]\033[0m")"
-            stty -echo -icanon time 0 min 1
-            response=$(dd bs=1 count=1 2>/dev/null)
-            stty echo icanon
-            printf "\n"
-            
-            if [ "$response" != "y" ] && [ "$response" != "Y" ]; then
+            if ! confirm "Config already exists. Overwrite?"; then
                 logit -i "Keeping existing configuration"
                 return 0
             fi
@@ -37,7 +31,7 @@ sdk_fac_con_opt_act_create_config() {
     available_modules=$(sdk_fac_con_opt_act_get_available_modules)
     
     if [ -z "$available_modules" ]; then
-        # logit -w "No submodules found in .gitmodules"
+        logit -w "No submodules found in .gitmodules"
         return 1
     fi
     
@@ -49,9 +43,8 @@ sdk_fac_con_opt_act_create_config() {
         i=$((i+1))
     done
     
-    echo ""
-    logit --ansi="35" --icon="SELECT" "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all submodules, press enter to skip:"
-    read selection
+    # Use the input function for better UX
+    selection=$(input "Enter module numbers to include (comma-separated, e.g., 1,3), or 'all' for all submodules:" --optional)
     
     selected_modules=""
     
@@ -75,26 +68,30 @@ sdk_fac_con_opt_act_create_config() {
         done
     fi
     
-    # Create JSON array from selected modules
+    # Create YAML array from selected modules
     if [ -n "$selected_modules" ]; then
-        # Build JSON array from selected modules
-        local json_array="["
-        local first=true
-        for module in $selected_modules; do
-            if [ "$first" = "true" ]; then
-                json_array="${json_array}\"${module}\""
-                first=false
-            else
-                json_array="${json_array}, \"${module}\""
-            fi
-        done
-        json_array="${json_array}]"
+        # Create a temporary file for yq processing
+        temp_yaml=$(mktemp)
         
-        # Set the submodules array using the JSON format
-        cli_ctx config --scope repository set submodules "$json_array"
+        # Initialize YAML file with empty submodules array
+        echo "submodules: []" > "$temp_yaml"
+        
+        # Add each module to the YAML array using yq
+        for module in $selected_modules; do
+            _yq -i ".submodules += [\"$module\"]" "$temp_yaml"
+        done
+        
+        # Extract the submodules array as YAML
+        yaml_array=$(_yq '.submodules' "$temp_yaml")
+        
+        # Set the submodules array using the YAML format
+        cli_ctx config --scope=repository set submodules "$yaml_array"
+        
+        # Clean up temporary file
+        rm "$temp_yaml"
     else
         # Set empty array if no modules selected
-        cli_ctx config --scope repository set submodules "[]"
+        cli_ctx config --scope=repository set submodules "[]"
     fi
 
     logit -l "Workspace configuration saved to $config_file"

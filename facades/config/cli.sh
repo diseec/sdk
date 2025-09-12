@@ -59,41 +59,48 @@ c=$1; shift; case $c in
     ;;
 
     # Available settings
-    ssu|select_submodule) sdk_fac_con_opt_act_select "$@" ;;
+    sse|submodule_select) sdk_fac_con_opt_act_select "$@" ;;
+    sst|submodule_status) sdk_fac_con_opt_act_status "$@" ;;
 
     hel|help|--help|-h) display_help "" "" \
-    "$(ansi 97 'Configuration Management System')" "" \
-    "" "" "$(ansi 97 'Usage:    config [SCOPE_OPTIONS] <command> [arguments]')" "" \
-    "$(ansi 97 'Scope Options (mandatory for most commands)')" "" \
-    "    -s=<scope>               " "Set scope (short form)" \
-    "    --scope=<scope>          " "Set scope (long form with equals)" \
-    "    --scope <scope>          " "Set scope (long form with space)" \
-    "" "" "$(ansi 97 'Available Settings')" "" \
-    "    ssu|select_submodule     " "Activate submodules for workspace" \
-    "" "" "$(ansi 97 'Basic Commands')" "" \
-    "    get <key.path>           " "Get configuration value with hierarchy resolution" \
-    "    set <key.path> <value>   " "Set configuration value (use comma-separated format for arrays: item1,item2,item3)" \
-    "    rem|remove <key.path> [value]" "Remove value from array or delete key (value optional)" \
-    "    whi|which <key.path>     " "Show configuration value resolution path (no scope needed)" \
+    "$(ansi "1;90" "$(capitalize 'Configuration Management System')")" "" \
+    "" "" "$(ansi "1;90" "$(capitalize 'Usage')")" "    config <command> [SCOPE_OPTIONS] [arguments]" \
+    "" "" "$(ansi "1;90" "$(capitalize 'Available Settings')")" "" \
+    "    $(ansi "1;2;90" "$(capitalize 'Submodule')")" "" \
+    "    sse|submodule_select     " "Activate submodules for workspace" \
+    "    sst|submodule_status     " "Show active submodules in workspace" \
+    "" "" "$(ansi "1;90" "$(capitalize 'Basic Commands')")" "" \
+    "    get                      " "Get configuration value with hierarchy resolution" \
+    "                             " "$(ansi "2;90" "Example: get <key.path>")" \
+    "    set                      " "Set configuration value (use comma-separated format for arrays: item1,item2,item3)" \
+    "                             " "$(ansi "2;90" "Example: set <key.path> <value>")" \
+    "    rem|remove               " "Remove value from array or delete key (value optional)" \
+    "                             " "$(ansi "2;90" "Example: remove <key.path> [value]")" \
+    "    whi|which                " "Show configuration value resolution path (no scope needed)" \
+    "                             " "$(ansi "2;90" "Example: which <key.path>")" \
     "    pat|path                 " "Show configuration path (no scope needed)" \
     "    pri|print                " "Print configuration for scope (or all if no scope)" \
     "    sta|status               " "Show configuration summary" \
     "    hel|help                 " "Show this help message" \
-    "" "" "$(ansi 97 'Scopes')" "" \
+    "" "" "$(ansi "1;90" "$(capitalize 'Scope Options')")                " "$(ansi "2;90" "Mandatory for most commands")" \
+    "    -s=<scope>               " "Set scope (short form)" \
+    "    --scope=<scope>          " "Set scope (long form with equals)" \
+    "    --scope <scope>          " "Set scope (long form with space)" \
+    "" "" "    $(ansi "1;2;90" "$(capitalize 'Scopes')")" "" \
     "    context                  " "Project-specific shared configuration ($SCOPE_CTX_FILE)" \
     "    repository               " "Project-specific local configuration ($SCOPE_REPO_FILE)" \
     "    user                     " "User-specific configuration ($SCOPE_USER_FILE)" \
-    "" "" "$(ansi 97 'Hierarchy')" "" \
-    "    Configuration values are resolved in this order of precedence:" \
-    "    context > repository > user" \
-    "" "" "$(ansi 97 'Examples')" "" \
-    "    config --scope=context get context.submodules" \
-    "    config -s=user set defaults.shell zsh" \
-    "    config --scope context set context.submodules 'my-service,another-service'" \
-    "    config --scope user set user.theme dark" \
-    "    config which organization.name" \
-    "    config --scope=context print" \
-    "    config --scope context remove \"some.key\"" \
+    "" "" "    $(ansi "1;2;90" "$(capitalize 'Hierarchy')")" "" \
+    "    $(ansi "2;90" "Configuration values are resolved in this order of precedence:")" \
+    "    $(ansi "2;90" "context > repository > user")" \
+    "" "" "    $(ansi "1;2;90" "$(capitalize 'Examples')")" "" \
+    "    $(ansi "2;90" "config --scope=context get context.submodules")" \
+    "    $(ansi "2;90" "config -s=user set defaults.shell zsh")" \
+    "    $(ansi "2;90" "config --scope context set context.submodules 'my-service,another-service'")" \
+    "    $(ansi "2;90" "config --scope user set user.theme dark")" \
+    "    $(ansi "2;90" "config which organization.name")" \
+    "    $(ansi "2;90" "config --scope=context print")" \
+    "    $(ansi "2;90" "config --scope context remove \"some.key\"")" \
     "$@"
     ;;
     fun|function) "$@" ;;
