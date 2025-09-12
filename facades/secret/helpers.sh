@@ -22,7 +22,7 @@ sdk_fac_sec_validate_and_prepare_secret_interactive() {
     # Validate key configuration and prompt to set if missing
     if ! sdk_fac_sec_is_key_configured; then
         logit -e "No encryption key configured" >&2
-        if sdk_fac_sec_get_user_confirmation "Would you like to set the encryption key now?"; then
+        if confirm "Would you like to set the encryption key now?"; then
             sdk_fac_sec_set_key
             if [ $? -ne 0 ]; then
                 return 1
@@ -53,8 +53,8 @@ sdk_fac_sec_prompt_add_missing_secret() {
 
     logit -w "Secret '$secret_name' not found" >&2
 
-    if sdk_fac_sec_get_user_confirmation "Would you like to add this secret now?"; then
-        sdk_fac_sec_get_secret_input "Enter secret value for '$secret_name'" secret_value >&2
+    if confirm "Would you like to add this secret now?"; then
+        input secret_value "Enter secret value for '$secret_name'" --hidden >&2
         
         if [ -z "$secret_value" ]; then
             logit -e "Secret value cannot be empty" >&2
@@ -89,11 +89,11 @@ sdk_fac_sec_handle_decryption_failure() {
     echo "2. Remove this secret and add a new one" >&2
     echo "3. Cancel operation" >&2
     
-    sdk_fac_sec_get_user_input "Choose option (1-3)" choice >&2
+    input choice "Choose option (1-3)" >&2
     
     case "$choice" in
         "1")
-            if sdk_fac_sec_get_user_confirmation "Would you like to re-enter the encryption key?"; then
+            if confirm "Would you like to re-enter the encryption key?"; then
                 sdk_fac_sec_set_key
                 if [ $? -eq 0 ]; then
                     local new_key=$(sdk_fac_sec_get_encryption_key)
@@ -109,7 +109,7 @@ sdk_fac_sec_handle_decryption_failure() {
             fi
             ;;
         "2")
-            if sdk_fac_sec_get_user_confirmation "Remove '$secret_name' and add a new value?"; then
+            if confirm "Remove '$secret_name' and add a new value?"; then
                 rm "$(sdk_fac_sec_secret_file_path "$secret_name")" 2>/dev/null
                 sdk_fac_sec_prompt_add_missing_secret "$secret_name"
                 return $?

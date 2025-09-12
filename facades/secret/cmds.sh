@@ -8,26 +8,30 @@
 # ========================================
 
 # Add a new secret
-sdk_fac_sec_add_secret() {
+sdk_fac_sec_add_secret() {    
     sdk_fac_sec_check_openssl || return 1
-    sdk_fac_sec_validate_key_for_operation || return 1
-    sdk_fac_sec_ensure_encryption_key
-    
+    sdk_fac_sec_ensure_encryption_key || return 1
+
     local key=$(sdk_fac_sec_get_encryption_key)
+    if [ -z "$key" ]; then
+        logit -e "Failed to retrieve encryption key"
+        return 1
+    fi
+
     local secret_name secret_value
     
-    sdk_fac_sec_get_user_input "Enter secret name (will be used as environment variable)" secret_name
+    input secret_name "Enter secret name (will be used as environment variable)" --optional
     sdk_fac_sec_validate_secret_name "$secret_name" || return 1
     
     if sdk_fac_sec_secret_exists "$secret_name"; then
         logit -w "Secret '$secret_name' already exists."
-        if ! sdk_fac_sec_get_user_confirmation "Overwrite?"; then
+        if ! confirm "Overwrite?"; then
             logit -o "Secret '$secret_name' unchanged"
             return 0
         fi
     fi
     
-    sdk_fac_sec_get_secret_input "Enter secret value" secret_value
+    input secret_value "Enter secret value" --hidden
     
     if [ -z "$secret_value" ]; then
         logit -e "Secret value cannot be empty"
@@ -41,6 +45,9 @@ sdk_fac_sec_add_secret() {
 # Export a single secret by name (returns just the value)
 # This function is non-interactive and expects all validations to be done beforehand
 sdk_fac_sec_export() {
+    sdk_fac_sec_check_openssl || return 1
+    sdk_fac_sec_validate_key_for_operation || return 1
+
     if [ -z "$1" ]; then
         logit -e "Secret name required" >&2
         logit -i "Usage: D secret export <secret_name>" >&2
@@ -51,6 +58,7 @@ sdk_fac_sec_export() {
     
     # Simple checks without interaction
     if ! sdk_fac_sec_check_openssl; then
+        logit -e "OpenSSL not available - required for secret encryption" >&2
         return 1
     fi
     
@@ -61,7 +69,7 @@ sdk_fac_sec_export() {
     
     if ! sdk_fac_sec_is_key_configured; then
         logit -e "No encryption key configured" >&2
-        if sdk_fac_sec_get_user_confirmation "Would you like to set the encryption key now?"; then
+        if confirm "Would you like to set the encryption key now?"; then
             sdk_fac_sec_set_key
             if [ $? -ne 0 ]; then
                 return 1
@@ -73,6 +81,7 @@ sdk_fac_sec_export() {
     
     # Attempt to decrypt and return the value
     local key=$(sdk_fac_sec_get_encryption_key)
+
     local encrypted_value=$(sdk_fac_sec_read_secret_file "$secret_name")
     local decrypted_value=$(sdk_fac_sec_decrypt_data "$encrypted_value" "$key")
 
@@ -89,8 +98,7 @@ sdk_fac_sec_export() {
 sdk_fac_sec_show_secrets() {
     sdk_fac_sec_check_openssl || return 1
     sdk_fac_sec_validate_key_for_operation || return 1
-    sdk_fac_sec_ensure_encryption_key
-    
+
     if ! sdk_fac_sec_secrets_exist; then
         logit -w "No secrets found"
         return 0
@@ -102,8 +110,9 @@ sdk_fac_sec_show_secrets() {
     for secret_file in "$SECRETS_DIR"/*; do
         if [ -f "$secret_file" ]; then
             local secret_name=$(basename "$secret_file")
-            local decrypted_value=$(sdk_fac_sec_decrypt_secret "$secret_name" "$key")
-            
+            local encrypted_value=$(sdk_fac_sec_read_secret_file "$secret_name")
+            local decrypted_value=$(sdk_fac_sec_decrypt_data "$encrypted_value" "$key")
+
             echo ""
             if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
                 logit --ansi="34" --icon="$secret_name" "$decrypted_value"
@@ -140,7 +149,7 @@ sdk_fac_sec_remove_secret() {
         return 1
     fi
     
-    if sdk_fac_sec_get_user_confirmation "Are you sure you want to remove secret '$secret_name'?"; then
+    if confirm "Are you sure you want to remove secret '$secret_name'?"; then
         local secret_file=$(sdk_fac_sec_secret_file_path "$secret_name")
         rm "$secret_file"
         logit -o "Secret '$secret_name' removed"
@@ -235,58 +244,6 @@ sdk_fac_sec_cmd_validate_secret() {
     else
         if [ "$quiet_flag" != "true" ]; then
             logit -e "Failed to validate secret '$secret_name'"
-        fi
-        return 1
-    fi
-}
-
-# Initialize and ensure a secret exists (interactive)
-# Usage: sdk_fac_sec_cmd_init_secret <secret_name> [--quiet]
-sdk_fac_sec_cmd_init_secret() {
-    local secret_name="$1"
-    local quiet_flag=false
-    
-    if [ -z "$secret_name" ]; then
-        logit -e "Secret name required"
-        logit -i "Usage: secret init <secret_name>"
-        return 1
-    fi
-    shift
-    
-    # Parse remaining arguments
-    for arg in "$@"; do
-        case $arg in
-            --quiet|-q)
-                quiet_flag=true
-                ;;
-            *)
-                logit -e "Unknown argument: $arg"
-                return 1
-                ;;
-        esac
-    done
-    
-    if [ "$quiet_flag" != "true" ]; then
-        logit -i "Initializing secret '$secret_name'..."
-    fi
-    
-    # Check if secret already exists and is valid
-    if sdk_fac_sec_secret_exists "$secret_name" && sdk_fac_sec_validate_and_prepare_secret_interactive "$secret_name" >/dev/null 2>&1; then
-        if [ "$quiet_flag" != "true" ]; then
-            logit -s "Secret '$secret_name' already exists and is valid"
-        fi
-        return 0
-    fi
-    
-    # Initialize the secret system and add the secret
-    if sdk_fac_sec_validate_and_prepare_secret_interactive "$secret_name"; then
-        if [ "$quiet_flag" != "true" ]; then
-            logit -s "Secret '$secret_name' initialized successfully"
-        fi
-        return 0
-    else
-        if [ "$quiet_flag" != "true" ]; then
-            logit -e "Failed to initialize secret '$secret_name'"
         fi
         return 1
     fi

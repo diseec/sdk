@@ -38,16 +38,6 @@ sdk_fac_sec_write_secret_file() {
     echo "$encrypted_value" > "$secret_file"
 }
 
-# Decrypt a secret by name
-sdk_fac_sec_decrypt_secret() {
-    local secret_name="$1"
-    local key="$2"
-    local encrypted_value
-    
-    encrypted_value=$(sdk_fac_sec_read_secret_file "$secret_name") || return 1
-    sdk_fac_sec_decrypt_data "$encrypted_value" "$key"
-}
-
 # Encrypt and store a secret
 sdk_fac_sec_encrypt_and_store_secret() {
     local secret_name="$1"

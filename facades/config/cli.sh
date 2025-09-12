@@ -13,8 +13,8 @@ sdk_fac_con_init >/dev/null 2>&1
 # Main configuration CLI handler
 
 # Extract scope option from arguments and preserve remaining arguments
-SCOPE="$DEFAULT_SCOPE"
-FILTERED_ARGS=()
+SCOPE=""
+_CONFIG_FILTERED_ARGS=()
 NEXT_IS_SCOPE=""
 
 for arg in "$@"; do
@@ -34,25 +34,28 @@ for arg in "$@"; do
                 SCOPE="$arg"
                 NEXT_IS_SCOPE=""
             else
-                FILTERED_ARGS+=("$arg")
+                _CONFIG_FILTERED_ARGS+=("$arg")
             fi
             ;;
     esac
 done
 
 # Set arguments to filtered array
-set -- "${FILTERED_ARGS[@]}"
+set -- "${_CONFIG_FILTERED_ARGS[@]}"
 
 c=$1; shift; case $c in
     # Basic operations
-    ini|init) echo "Configuration already initialized" ;; # Initialization now happens automatically
     sum|summary) sdk_fac_con_summary "$@" ;;
-    get) sdk_fac_con_get "$@" "$SCOPE" ;;
+    get) sdk_fac_con_get "$1" "$SCOPE" ;;
     set) sdk_fac_con_set "$1" "$2" "$SCOPE" ;;
     rem|remove) sdk_fac_con_delete "$1" "$2" "$SCOPE" ;;
     pat|path) sdk_fac_con_get_config_file "$SCOPE" ;;
     whi|which) sdk_fac_con_which "$@" ;;
-    pri|print) sdk_fac_con_print "$@" ;;
+    pri|print) 
+        # Print can work without scope (prints all scopes) or with scope
+        if [ -n "$SCOPE" ]; then sdk_fac_con_print "$@" "$SCOPE"
+        else sdk_fac_con_print "$@"; fi
+    ;;
 
     # Available settings
     sse|submodule_select) sdk_fac_con_set_act_select "$@" ;;

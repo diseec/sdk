@@ -25,26 +25,26 @@ sdk_fac_sec_decrypt_data() {
 
 # Get stored encryption key
 sdk_fac_sec_get_encryption_key() {
-    cli_ctx config get "secrets.key"
+    cli_ctx config --scope=repository get "secrets.key"
 }
 
 # Store encryption key
 sdk_fac_sec_store_encryption_key() {
     local key="$1"
-    cli_ctx config set "secrets.key" "$key"
-    echo "Encryption key stored in configuration"
+    cli_ctx config --scope=repository set "secrets.key" "$key"
+    logit -l "Encryption key stored in configuration"
 }
 
 # Check if encryption key is configured
 sdk_fac_sec_is_key_configured() {
-    local key=$(cli_ctx config get "secrets.key")
+    local key=$(sdk_fac_sec_get_encryption_key)
     [ -n "$key" ] && [ "$key" != "null" ]
 }
 
 # Initialize encryption key if not exists
 sdk_fac_sec_ensure_encryption_key() {
     if ! sdk_fac_sec_is_key_configured; then
-        echo "Generating new encryption key..."
+        logit -l "Generating new encryption key..."
         local new_key=$(sdk_fac_sec_generate_encryption_key)
         sdk_fac_sec_store_encryption_key "$new_key"
         logit --ansi="34" --icon="KEY" "$new_key"

@@ -15,7 +15,7 @@ sdk_fac_sec_set_key() {
     fi
     
     local encryption_key
-    sdk_fac_sec_get_user_input "Enter encryption key" encryption_key
+    input encryption_key "Enter encryption key" --hidden
     
     if [ -z "$encryption_key" ]; then
         logit -e "Encryption key cannot be empty"
@@ -25,7 +25,7 @@ sdk_fac_sec_set_key() {
     # Validate key format
     if ! sdk_fac_sec_validate_encryption_key "$encryption_key"; then
         logit -w "Key should be 64 hexadecimal characters"
-        if ! sdk_fac_sec_get_user_confirmation "Continue anyway?"; then
+        if ! confirm "Continue anyway?"; then
             return 0
         fi
     fi
@@ -54,7 +54,7 @@ sdk_fac_sec_reset_key() {
         logit -w "This will re-encrypt all existing secrets with a new key"
         logit -w "Make sure you have the current key before proceeding"
         
-        if ! sdk_fac_sec_get_user_confirmation "Continue?"; then
+        if ! confirm "Continue?"; then
             return 0
         fi
         
@@ -63,8 +63,8 @@ sdk_fac_sec_reset_key() {
         
         if sdk_fac_sec_reencrypt_all_secrets "$current_key" "$new_key"; then
             sdk_fac_sec_store_encryption_key "$new_key"
-            echo "All secrets re-encrypted with new key"
-            echo "New key: $new_key"
+            logit -l "All secrets re-encrypted with new key"
+            logit -l "New key: $new_key"
             logit -w "Store this key safely!"
         else
             return 1
@@ -72,8 +72,8 @@ sdk_fac_sec_reset_key() {
     else
         local new_key=$(sdk_fac_sec_generate_encryption_key)
         sdk_fac_sec_store_encryption_key "$new_key"
-        echo "New encryption key generated"
-        echo "Key: $new_key"
+        logit -l "New encryption key generated"
+        logit -l "Key: $new_key"
         logit -w "Store this key safely!"
     fi
 }
@@ -86,7 +86,7 @@ sdk_fac_sec_show_key() {
     fi
     
     local key=$(sdk_fac_sec_get_encryption_key)
-    echo "Current encryption key:"
+    logit -l "Current encryption key:"
     echo "$key"
 }
 
@@ -108,10 +108,10 @@ sdk_fac_sec_clear_secrets() {
     if [ "$confirmation" = "DELETE" ]; then
         # Remove all files but keep the directory
         rm -f "$SECRETS_DIR"/*
-        echo "All secrets cleared"
+        logit -l "All secrets cleared"
         return 0
     else
-        echo "Operation cancelled"
+        logit -l "Operation cancelled"
         # Explicitly exit with non-zero to ensure it's propagated properly
         return 1
     fi

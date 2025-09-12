@@ -25,6 +25,10 @@ source_once() {
         else
             logit -e "Error: Script not found: $script_path"
         fi
+    else
+        if [ "$#" -gt 0 ]; then
+            logit -w "Script already sourced, but arguments were provided and will be ignored: $script_path"
+        fi
     fi
 }
 
@@ -56,7 +60,7 @@ source_safely() {
             logit -e "Script path must end with .sh: $script_path"
             return 1
         fi
-        source_once "$script_path" "$@"
+        source "$script_path" "$@" # DO NOT use source_once here, the clean state variables need constant sourcing
     }
 
     safely process_source_safely "$@"

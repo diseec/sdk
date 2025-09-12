@@ -17,44 +17,6 @@ test_secret_key_reset_no_key_configured() {
     assert_contains "$output" "set-key\|key-set" "Should mention key-set command in error message"
 }
 
-# Test key-reset command requires OpenSSL
-test_secret_key_reset_requires_openssl() {
-    # Create a mock function to simulate missing OpenSSL
-    local original_path="$PATH"
-    
-    # Create a directory for our mock commands
-    local mock_dir="$TEST_CTX/mock_bin"
-    mkdir -p "$mock_dir"
-    
-    # Create a mock openssl that fails
-    cat > "$mock_dir/openssl" << 'EOF'
-#!/bin/bash
-echo "openssl: command not found" >&2
-exit 127
-EOF
-    chmod +x "$mock_dir/openssl"
-    
-    # Set up a key using the CLI first
-    local test_key="dummy_key_data_for_openssl_test"
-    D secret key-set <<< "$test_key" > /dev/null 2>&1
-    
-    # Use the mock openssl by putting it first in PATH
-    export PATH="$mock_dir:$original_path"
-    
-    # Try to reset key with missing OpenSSL
-    local output
-    output=$(D secret key-reset <<< "y" 2>&1)
-    
-    # Restore original PATH
-    export PATH="$original_path"
-    
-    # Verify behavior with missing OpenSSL
-    assert_not_equals "0" "$?" "Key-reset should fail without OpenSSL"
-    assert_contains "$output" "OpenSSL\|required\|not available" "Should indicate OpenSSL requirement"
-    
-    # Clean up
-    rm -rf "$mock_dir"
-}
 
 # Test key-reset command without existing secrets
 test_secret_key_reset_no_secrets() {

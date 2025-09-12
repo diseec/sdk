@@ -5,7 +5,6 @@ source_once "$D_SDK_DIR/facades/secret/index.sh"
 mkdir -p "$SECRETS_DIR"
 
 c=$1; shift; case "$c" in
-    ini|init) sdk_fac_sec_cmd_init_secret "$@" ;; # no need for manual call automatically called on first add/validate
     kse|key-set) sdk_fac_sec_set_key "$@" ;;
     kre|key-reset) sdk_fac_sec_reset_key "$@" ;;
     ksh|key-show) sdk_fac_sec_show_key "$@" ;;

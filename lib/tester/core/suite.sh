@@ -211,13 +211,24 @@ export TESTER_COMMAND_LOGS=""
 
 # Note: The TESTER_LOG_FILE is now created per test in runner.sh
 
+# Store the path of the actual D command before we define our function
+if [ -z "$_GLOBAL_D_CMD" ]; then
+    # We need to find the path to the D command
+    # This must be run before the D() function is defined
+    export _GLOBAL_D_CMD=$(which D 2>/dev/null || echo "/usr/local/bin/D")
+fi
+
 # Ensure D command called in tests points to the local D since it's global,
 # and automatically captures output for better logging
 D() {
-    # Use the existing capture function to handle command execution and logging
-    (capture env D_SDK_DIR="$D_SDK_DIR" "$D_SDK_DIR/$D_CLI_GLOBAL_NAME" "$@")
-    # Important: preserve the original exit code from the D command
-    return $?
+    # In this case, we want to access the global D command
+    if [ -x "$_GLOBAL_D_CMD" ]; then
+        (cd $TEST_CTX && capture "$_GLOBAL_D_CMD" "$@")
+        return $?
+    else
+        logit -e "Global D command not found at $_GLOBAL_D_CMD"
+        return 1
+    fi
 }
 
 # Capture command output and add it to the logs
@@ -264,8 +275,8 @@ capture() {
             fi
             
             # Command line with timestamp and exit status
-            # Clean the command by removing the SDK dir prefix pattern
-            local cleaned_cmd=$(echo "$cmd" | sed 's/env D_SDK_DIR=\/ctx \/ctx\///')
+            # Clean the command by removing the dir prefix pattern
+            local cleaned_cmd=$(echo "$cmd" | sed 's/\/usr\/local\/bin\///')
             echo -e "\033[90m[$timestamp][\033[90m$\033[90m][\033[${color_code}m$exit_code\033[90m] $cleaned_cmd\033[0m"
             
             # Output with proper indentation (if there is any output)
