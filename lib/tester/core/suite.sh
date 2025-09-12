@@ -25,6 +25,9 @@ setup_test_workspace() {
         logit -e "Failed to create test workspace"
         return 1
     fi
+    
+    # Create and initialize the test result file
+    echo "PASSED" > "$TEST_WORKSPACE/.test_result"
 
     cd "$TEST_WORKSPACE" || return 1
 
@@ -253,7 +256,7 @@ capture() {
     if [ -n "$TESTER_LOG_FILE" ]; then
         {
             # Color selection based on exit code
-            local color_code="90"  # Green for success
+            local color_code="90"  # Gray for success
             if [ $exit_code -ne 0 ]; then
                 color_code="31"    # Red for failure
             fi

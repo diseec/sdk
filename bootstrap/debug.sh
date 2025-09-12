@@ -14,7 +14,7 @@ x() {
     
     if [[ "${D_LOG_LEVEL}" == "DEBUG" || "${DEBUG}" == "true" ]]; then
         # Log entry to function with more context
-        logit -e --icon="¤][$file:$line:$func" "$*"
+        logit -e --icon="¤][$file:$line:$func" "${*:-Sunshine, rainbows and sh*t!}"
     fi
 }
 

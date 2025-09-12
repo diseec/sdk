@@ -127,16 +127,28 @@ _sdk_tester_run_test_file() {
             fi
             
             # Create a fresh log file for this test
-            export TESTER_LOG_FILE=$(mktemp /tmp/tester_logs_XXXXXX)
-            
+            export TESTER_LOG_FILE=$(mktemp $TEST_WORKSPACE/$TESTER_LOG_FILE_NAME)
+            export TESTER_RESULT_FILE="$TEST_WORKSPACE/$TESTER_RESULT_FILE_NAME"
+
             # Execute the test function
             "$test_function"
-            local test_exit_code=$?
+            local cmd_exit_code=$?
+            
+            # Check the test result file to determine actual test status
+            # even if the command exit code is 0 (passed), the test might have failed assertions
+            local test_exit_code=$cmd_exit_code
+            if [ -f "$TESTER_RESULT_FILE" ]; then
+                if grep -q "$TESTER_FAILURE_KEY" "$TESTER_RESULT_FILE"; then
+                    # At least one assertion failed during the test
+                    test_exit_code=1
+                fi
+            fi
             
             # If the test failed, display the logs
             if [ $test_exit_code -ne 0 ]; then
                 local timestamp=$(date "+%H:%M:%S")
                 printf "\n\n\033[1;97mCAPTURES\033[0m\033[97m %s\033[0m\n" "$(printf '%*s' 67 | tr ' ' '-')"
+                
                 # Display the captured logs from the file
                 if [ -f "$TESTER_LOG_FILE" ] && [ -s "$TESTER_LOG_FILE" ]; then
                     # Strip ANSI color codes when displaying logs
@@ -144,9 +156,6 @@ _sdk_tester_run_test_file() {
                 else
                     printf "\033[33m[!]\033[0m \033[90mNo command logs captured\033[0m\n"
                 fi
-                
-                # Clean up the log file
-                rm -f "$TESTER_LOG_FILE"
             fi
             
             # Run test teardown if defined
@@ -156,12 +165,10 @@ _sdk_tester_run_test_file() {
 
             set -e
 
-            # Clean up the log file if test passed
-            if [ $test_exit_code -eq 0 ] && [ -f "$TESTER_LOG_FILE" ]; then
-                rm -f "$TESTER_LOG_FILE"
+            # Clean up test workspace and result file
+            if [ -f "$TESTER_RESULT_FILE" ]; then
+                rm -f "$TESTER_RESULT_FILE"
             fi
-
-            # Clean up
             cleanup_test_workspace "$TEST_WORKSPACE"
             
             # Show test function completion in verbose mode
@@ -275,11 +282,7 @@ sdk_tester_run_tests() {
     if [ -n "$TESTER_ONLY_FLAG_FILE" ] && [ -f "$TESTER_ONLY_FLAG_FILE" ]; then
         rm -f "$TESTER_ONLY_FLAG_FILE"
     fi
-    
-    # Clean up the log file
-    if [ -n "$TESTER_LOG_FILE" ] && [ -f "$TESTER_LOG_FILE" ]; then
-        rm -f "$TESTER_LOG_FILE"
-    fi
+
     echo ""
 }
 

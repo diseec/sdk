@@ -24,6 +24,13 @@ source_once "$D_SDK_DIR/lib/tester/core/suite.sh"
 # Initialize tester framework
 sdk_tester_initialize() {
     export D_ENV="TESTING"; 
+    
+    # Disable TTY functionality during tests
+    export D_TTY_AVAILABLE="false"
+
+    export TESTER_RESULT_FILE_NAME=".test_result"
+    export TESTER_LOG_FILE_NAME=".test_logs_XXXXXX"
+    export TESTER_FAILURE_KEY="FAILED:"
 
     # Set up global test state variables
     export TESTER_TOTAL_TESTS=0

@@ -108,8 +108,6 @@ logit() {
     # Only colorize content if it's not empty
     if [ -n "$content" ]; then
         content="$(ansi 90 "$content")"
-    else
-        content="Sunshine, rainbows and sh*t!";
     fi
 
     # Handle logging levels
@@ -137,21 +135,34 @@ confirm() {
 
     local question=$1; shift
     
+    # First output the question so in non-tty environments it's still shown
+    printf "$(logit --ansi="35" --icon="Y/N" "$question ")"
+    
+    # Check if TTY is available
+    if [ "$D_TTY_AVAILABLE" = "true" ]; then
         # Store original terminal settings to restore later
         local old_settings=$(stty -g)
     
         # Enable proper signal handling (especially Ctrl+C)
         trap 'stty "$old_settings"; echo ""; return 1' INT TERM
     
-    printf "$(logit --ansi="35" --icon="?" "$question \033[35m[Y/N]\033[0m")"
-    
-    # Read a single character, but allow signal handling
-    stty -echo -icanon
-    local response=$(head -c1)
+        # Read a single character, but allow signal handling
+        stty -echo -icanon
+        local response=$(head -c1)
     
         # Restore terminal settings
         stty "$old_settings"
         trap - INT TERM
+    else
+        # Non-TTY mode: Try to use redirected input if available
+        if [ -t 0 ] || [ -p /dev/stdin ]; then
+            # Use redirection if available (< file, <<< string, or pipe)
+            local response=$(head -c1)
+        else
+            # Default to no in fully automated environments with no input
+            local response="n"
+        fi
+    fi
 
     printf "\n"
     
@@ -178,11 +189,12 @@ confirm() {
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 input() {
     # BASIC USAGE:
-    #   result=$(input "Prompt text:")
-    #   Returns user input as a string
+    #   input variable "Prompt text:"
+    #   Sets the variable with the user's input
     #
     # PARAMETERS:
-    #   $1              Required prompt text to display to user
+    #   $1              Variable name to store the input
+    #   $2              Required prompt text to display to user
     #   --default=VAL   Default value (shown in gray, used if user presses enter)
     #   --validate=REG  Regex pattern for input validation
     #   --error=MSG     Custom error message for validation failures
@@ -191,29 +203,29 @@ input() {
     #
     # EXAMPLES:
     #   # Basic required input
-    #   name=$(input "Enter your name:")
+    #   input name "Enter your name:"
     #
     #   # Input with default value
-    #   port=$(input "Enter port:" --default="3000")
-    #   email=$(input "Enter email:" --default="user@example.com")
+    #   input port "Enter port:" --default="3000"
+    #   input email "Enter email:" --default="user@example.com"
     #
     #   # Input with validation
-    #   age=$(input "Enter age:" --validate="^[0-9]+$" --error="Age must be a number")
-    #   ip=$(input "IP address:" --validate="^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$")
+    #   input age "Enter age:" --validate="^[0-9]+$" --error="Age must be a number"
+    #   input ip "IP address:" --validate="^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$"
     #
     #   # Secure password input (hidden)
-    #   password=$(input "Enter password:" --hidden)
-    #   token=$(input "API token:" --hidden --validate="^[a-zA-Z0-9]{20,}$")
+    #   input password "Enter password:" --hidden
+    #   input token "API token:" --hidden --validate="^[a-zA-Z0-9]{20,}$"
     #
     #   # Optional input (can be empty)
-    #   comment=$(input "Any comments:" --optional)
-    #   description=$(input "Description:" --optional --default="No description")
+    #   input comment "Any comments:" --optional
+    #   input description "Description:" --optional --default="No description"
     #
     #   # Complex validation examples
-    #   username=$(input "Username:" --validate="^[a-zA-Z0-9_]{3,20}$" \
-    #              --error="Username: 3-20 chars, letters/numbers/underscore only")
-    #   url=$(input "Website URL:" --validate="^https?://.*" \
-    #         --error="URL must start with http:// or https://")
+    #   input username "Username:" --validate="^[a-zA-Z0-9_]{3,20}$" \
+    #          --error="Username: 3-20 chars, letters/numbers/underscore only"
+    #   input url "Website URL:" --validate="^https?://.*" \
+    #         --error="URL must start with http:// or https://"
     #
     # FEATURES:
     #   - Consistent styling using logit() and ansi() functions
@@ -225,6 +237,7 @@ input() {
     #   - Optional vs required input modes
     #   - Terminal state preservation and restoration
     
+    local var_name="$1"; shift
     local prompt="$1"; shift
     local default_value=""
     local validate_pattern=""
@@ -262,61 +275,125 @@ input() {
         esac
     done
     
-    # Store original terminal settings
-    local old_settings=$(stty -g)
-    trap 'stty "$old_settings"; echo ""; return 1' INT TERM
-    
-    while true; do
-        # Display prompt
-        local display_prompt="$prompt"
-        if [ -n "$default_value" ]; then
-            display_prompt="$prompt [$(ansi 90 "$default_value")]"
+    # Display prompt first so in non-tty environments it's still shown
+    local display_prompt=""
+    if [ -n "$prompt" ]; then
+        display_prompt="$prompt"
+    fi
+    if [ -n "$default_value" ]; then
+        local default_prompt="$(ansi "2;90" "(default: $default_value)")"
+        if [ -n "$display_prompt" ]; then
+            display_prompt="$display_prompt $default_prompt"
+        else
+            display_prompt="$default_prompt"
         fi
-        
-        printf "$(logit --ansi="35" --icon=">" "$display_prompt") "
-        
-        # Read input
-        local user_input=""
+    fi
+    printf "$(logit --ansi="35" --icon=">" "$display_prompt") "
+    
+    # Check if input is available from redirection (<, <<, <<<, pipe)
+    if [ ! -t 0 ] && [ "$D_TTY_AVAILABLE" = "false" ]; then
+        # Non-TTY mode with redirection available
         if [ "$hidden" = true ]; then
-            # Hidden input (like password)
-            stty -echo
+            # For hidden input, just read once
+            IFS= read -r user_input
+        else
+            # For normal input, read as usual
             read user_input
-            stty echo
-            printf "\n"
+        fi
+    elif [ "$D_TTY_AVAILABLE" = "true" ]; then
+        # TTY mode
+        # Store original terminal settings
+        local old_settings=$(stty -g)
+        trap 'stty "$old_settings"; echo ""; return 1' INT TERM
+        
+        # Read input with appropriate method
+        if [ "$hidden" = true ]; then
+            # Hidden input (like password) with asterisk feedback
+            user_input=""
+            while true; do
+                # Read a single character
+                IFS= read -r -s -n 1 char
+                
+                # Exit on EOF or interrupt (ctrl+d or ctrl+c)
+                if [[ -z "$char" ]]; then
+                    echo
+                    break
+                fi
+                
+                # Break on Enter key (newline or carriage return)
+                if [[ "$char" == $'\n' || "$char" == $'\r' ]]; then
+                    echo
+                    break
+                # Handle backspace (ASCII 127) or delete
+                elif [[ "$char" == $'\177' || "$char" == $'\b' ]]; then
+                    if [ ${#user_input} -gt 0 ]; then
+                        user_input="${user_input%?}"
+                        printf "\b \b"
+                    fi
+                else
+                    user_input+="$char"
+                    printf "*"
+                fi
+            done
         else
             # Normal input
             read user_input
         fi
         
-        # Use default if input is empty and default exists
-        if [ -z "$user_input" ] && [ -n "$default_value" ]; then
+        # Restore terminal settings
+        stty "$old_settings"
+        trap - INT TERM
+    else
+        # No TTY available and no redirection - use default value if available
+        if [ -n "$default_value" ]; then
             user_input="$default_value"
+        else
+            # For testing environments with no input
+            user_input=""
         fi
-        
-        # Check if input is required
-        if [ "$required" = true ] && [ -z "$user_input" ]; then
+    fi
+    
+    # Use default if input is empty and default exists
+    if [ -z "$user_input" ] && [ -n "$default_value" ]; then
+        user_input="$default_value"
+    fi
+    
+    # Check if input is required
+    if [ "$required" = true ] && [ -z "$user_input" ]; then
+        if [ "$D_TTY_AVAILABLE" = "true" ]; then
             logit -e "Input is required."
-            continue
+            # Retry input in TTY mode
+            input "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
+            return $?
+        else
+            # In non-TTY mode, fail or use a sensible fallback
+            logit -e "Required input missing and no TTY available."
+            user_input="__MISSING_REQUIRED_INPUT__"
         fi
-        
-        # Validate input if pattern provided
-        if [ -n "$validate_pattern" ] && [ -n "$user_input" ]; then
-            if ! echo "$user_input" | grep -qE "$validate_pattern"; then
+    fi
+    
+    # Validate input if pattern provided
+    if [ -n "$validate_pattern" ] && [ -n "$user_input" ]; then
+        if ! echo "$user_input" | grep -qE "$validate_pattern"; then
+            if [ "$D_TTY_AVAILABLE" = "true" ]; then
                 logit -e "$error_message"
-                continue
+                # Retry input in TTY mode
+                input "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
+                return $?
+            else
+                # In non-TTY mode, use default or fail
+                logit -e "Input validation failed and no TTY available."
+                if [ -n "$default_value" ]; then
+                    user_input="$default_value"
+                else
+                    user_input="__INVALID_INPUT__"
+                fi
             fi
         fi
-        
-        # Input is valid, break the loop
-        break
-    done
+    fi
     
-    # Restore terminal settings
-    stty "$old_settings"
-    trap - INT TERM
-    
-    # Return the input
-    echo "$user_input"
+    # Set the value to the provided variable name
+    eval "$var_name=\"$user_input\""
 }
 
 display_help() {

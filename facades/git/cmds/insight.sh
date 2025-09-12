@@ -424,10 +424,10 @@ sdk_fac_git_cmd_daily_insight() {
     local next_steps=""
     
     # Collect developer input
-    work_focus=$(input "What was your main focus?")
-    # deliverables=$(input "What did you deliver/complete?" --optional)
-    # challenges=$(input "Any challenges or blockers encountered?" --optional)
-    # next_steps=$(input "What are your next steps/plans?" --optional)
+    input work_focus "What was your main focus?"
+    # input deliverables "What did you deliver/complete?" --optional
+    # input challenges "Any challenges or blockers encountered?" --optional
+    # input next_steps "What are your next steps/plans?" --optional
     
     # Combine all developer input
     if [ -n "$work_focus" ] || [ -n "$deliverables" ] || [ -n "$challenges" ] || [ -n "$next_steps" ]; then

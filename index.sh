@@ -6,6 +6,7 @@
 
 export D_LOG_LEVEL="${D_LOG_LEVEL:-DEBUG}" # change this to info when app stable
 _D_SDK_PATCH_FORCE="${_D_SDK_PATCH_FORCE:-false}"
+export D_TTY_AVAILABLE="${D_TTY_AVAILABLE:-true}"  # TTY availability flag, true by default
 
 _ARGS_ENVS_PROCESS=""; for arg in "$@"; do case "$arg" in
     --patch) _D_SDK_PATCH_FORCE="true" ;;

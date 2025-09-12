@@ -204,10 +204,12 @@ if confirm "Delete all temporary files?"; then
 fi
 
 # Input with validation
-email=$(input "Enter email address:" --validate="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" --error="Please enter a valid email address")
+input email "Enter email address:" --validate="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" --error="Please enter a valid email address"
+echo $email
 
 # Password input with hidden characters
-password=$(input "Enter password:" --hidden --validate=".{8,}" --error="Password must be at least 8 characters")
+input password "Enter password:" --hidden --validate=".{8,}" --error="Password must be at least 8 characters"
+echo $password
 ```
 
 ## Best Practices

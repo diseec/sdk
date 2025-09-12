@@ -29,6 +29,17 @@ _tester_assert_result() {
         # Always call the reporter function for consistent handling
         sdk_tester_show_assertion_result "false" "$prefixed_message" "$test_name"
         
+        # Record the assertion failure in the test result file
+        if [ -n "$TEST_WORKSPACE" ] && [ -d "$TEST_WORKSPACE" ]; then
+            echo "$TESTER_FAILURE_KEY $prefixed_message" >> "$TESTER_RESULT_FILE"
+            
+            # Include details if available
+            if [ -n "$expected" ] && [ -n "$actual" ]; then
+                echo "  Expected: $expected" >> "$TESTER_RESULT_FILE"
+                echo "  Actual:   $actual" >> "$TESTER_RESULT_FILE"
+            fi
+        fi
+        
         # Show details only if verbose
         if [ "$TESTER_VERBOSE" = "true" ] && [ -n "$expected" ] && [ -n "$actual" ]; then
             # Strip ANSI color codes from expected and actual values
