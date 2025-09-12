@@ -6,8 +6,15 @@
 # Usage: sdk_fac_ai_generate_commit_message "diff_summary" "diff_preview"
 # Output: AI-generated commit message
 sdk_fac_ai_generate_commit_message() {
-    local diff_summary="$1"
-    local diff_preview="$2"
+    local diff_summary_file="$1"
+    local diff_preview_file="$2"
+    if [ ! -f "$diff_summary_file" ] || [ ! -f "$diff_preview_file" ]; then
+        logit -e "Diff summary or preview file does not exist"
+        return 1
+    fi
+    # Read contents from files using cat
+    local diff_summary=$(cat "$diff_summary_file")
+    local diff_preview=$(cat "$diff_preview_file")
 
     # Check token count and truncate if necessary
     local token_count=$(sdk_fac_ai_count_tokens "$diff_summary")
@@ -27,21 +34,16 @@ sdk_fac_ai_generate_commit_message() {
         return 1
     fi
     
-    local prompt_template="Generate a concise, descriptive commit message for the following code changes.
+    local prompt="Generate a concise, descriptive commit message for the following code changes.
 
 Summary of changes:
-{{DIFF_SUMMARY}}
+$diff_summary
 
 Preview of changes:
-{{DIFF_PREVIEW}}
+$diff_preview
 
 Please format the response as a commit message with a short title (max 50 chars) on the first line, then a blank line, then bullet points with details if needed."
-    
-    x $diff_summary
-    # Replace placeholders
-    local prompt=$(sdk_fac_ai_prompt_replace_placeholders "$prompt_template" \
-        "DIFF_SUMMARY=$diff_summary" \
-        "DIFF_PREVIEW=$diff_preview")
+
     sdk_fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_CREATIVE_TEMPERATURE" "Update files"
 }
 
@@ -49,7 +51,13 @@ Please format the response as a commit message with a short title (max 50 chars)
 # Usage: sdk_fac_ai_generate_daily_insight "analysis_data"
 # Output: AI-generated insight report
 sdk_fac_ai_generate_daily_insight() {
-    local analysis_data="$1"
+    local analysis_data_file="$1"
+    if [ ! -f "$analysis_data_file" ]; then
+        logit -e "Analysis data file does not exist"
+        return 1
+    fi
+    # Read contents from file using cat
+    local analysis_data=$(cat "$analysis_data_file")
 
     if [ -z "$analysis_data" ]; then
         logit -e "Missing analysis data for daily insight generation"
@@ -63,9 +71,9 @@ sdk_fac_ai_generate_daily_insight() {
         analysis_data=$(sdk_fac_ai_truncate_to_token_limit "$analysis_data" "$FAC_AI_MAX_INPUT_TOKENS")
     fi
     
-    local prompt_template="Analyze the following development activity and create a concise daily insight report.
+    local prompt="Analyze the following development activity and create a concise daily insight report.
 
-{{INPUT}}
+$analysis_data
 
 Please format the response as:
 1. A single descriptive title that captures the overall view of changes
@@ -83,10 +91,6 @@ Enhanced Authentication and Performance Optimizations
 - Refactored database connection pooling in api/database.js for 40% performance improvement
 - Updated security headers configuration in nginx.conf
 - Optimized API response caching in services/cache-service"
-    
-    # Replace placeholders
-    local prompt=$(sdk_fac_ai_prompt_replace_placeholders "$prompt_template" \
-        "INPUT=$analysis_data")
     
     sdk_fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_DEFAULT_TEMPERATURE" "No insights available" "$FAC_AI_MAX_INPUT_TOKENS"
 }

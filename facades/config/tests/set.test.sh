@@ -205,7 +205,7 @@ test_config_set_nested_array() {
 }
 
 # Test adding multiple items to an array using set with comma-separated format
-test_config_set_array_from_comma_separated_only() {
+test_config_set_array_from_comma_separated() {
     # Add multiple items to an array using standard YAML array syntax
     # Note: Double quotes are needed to prevent the shell from interpreting brackets
     D config --scope=repository set submodules "[item1,item2,item3]" > /dev/null

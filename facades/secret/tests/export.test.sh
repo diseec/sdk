@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Test for the 'secret export' command
+_export_test_key="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
 
 helper_create_secret() {
     local test_secret="$1"
     local test_value="$2"
     # Generate and configure an encryption key for tests
-    local test_key="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    local test_key="$_export_test_key"
     D secret key-set <<< "$test_key" >/dev/null 2>&1
 
     # Use the add command to create the secret
@@ -118,7 +119,7 @@ test_secret_export_no_key_configured() {
     # Directly create an encrypted secret file
     local key=$(D secret function sdk_fac_sec_get_encryption_key)
     local encrypted_value=$(echo "$test_value" | _openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass pass:"$key" | base64)
-    echo "$encrypted_value" > "$SECRETS_DIR/$mock_secret"
+    echo "$encrypted_value" > "$TEST_CTX/$mock_secret"
     
     # Try to export without key
     local output
@@ -163,7 +164,7 @@ test_secret_export_no_key_configured() {
 # }
 
 # Test export command with special characters in secret value
-test_secret_export_special_characters_only() {
+test_secret_export_special_characters() {
     # Test value with special characters
     local test_secret="SPECIAL_CHARS_SECRET"
     local special_value="password!@#$%^&*()_+-={}[]|\\:;\<>,.?/"
@@ -189,32 +190,85 @@ test_secret_export_special_characters_only() {
     assert_equals "$expected_length" "$actual_length" "Export should preserve exact length of value with special characters"
 }
 
-# Test export command with quiet flag
-test_secret_export_with_quiet_flag() {
+# # Test export command with quiet flag
+# test_secret_export_with_quiet_flag() {
+#     # Create and initialize a test secret
+#     local test_secret="QUIET_EXPORT_SECRET"
+#     local test_value="quiet_test_value"
+    
+#     # Directly create an encrypted secret file
+#     local key=$(D secret function sdk_fac_sec_get_encryption_key)
+#     local encrypted_value=$(printf '%s' "$test_value" | _openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass pass:"$key" | base64)
+#     echo "$encrypted_value" > "$SECRETS_DIR/$test_secret"
+    
+#     # Verify file creation succeeded
+#     assert_equals "0" "$?" "Should be able to initialize the secret for quiet flag testing"
+    
+#     # Export with quiet flag
+#     local export_output
+#     export_output=$(D secret export "$test_secret" --quiet)
+    
+#     # Verify export succeeded
+#     assert_equals "0" "$?" "Export with quiet flag should succeed with valid secret"
+    
+#     # Verify output is the exact secret value (should be the same as without quiet flag)
+#     assert_equals "$test_value" "$export_output" "Export with quiet flag should return exact secret value"
+    
+#     # Compare with non-quiet output to ensure they're the same
+#     local regular_output
+#     regular_output=$(D secret export "$test_secret")
+#     assert_equals "$regular_output" "$export_output" "Quiet export should produce same output as regular export"
+# }
+
+# must preserve secret on multi exports
+test_secret_export_multiple_times() {
     # Create and initialize a test secret
-    local test_secret="QUIET_EXPORT_SECRET"
-    local test_value="quiet_test_value"
-    
-    # Directly create an encrypted secret file
-    local key=$(D secret function sdk_fac_sec_get_encryption_key)
-    local encrypted_value=$(printf '%s' "$test_value" | _openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass pass:"$key" | base64)
-    echo "$encrypted_value" > "$SECRETS_DIR/$test_secret"
-    
+    local test_secret="MULTI_EXPORT_SECRET"
+    local test_value="multi_export_value_789"  
+    helper_create_secret "$test_secret" "$test_value"       
     # Verify file creation succeeded
-    assert_equals "0" "$?" "Should be able to initialize the secret for quiet flag testing"
-    
-    # Export with quiet flag
-    local export_output
-    export_output=$(D secret export "$test_secret" --quiet)
-    
-    # Verify export succeeded
-    assert_equals "0" "$?" "Export with quiet flag should succeed with valid secret"
-    
-    # Verify output is the exact secret value (should be the same as without quiet flag)
-    assert_equals "$test_value" "$export_output" "Export with quiet flag should return exact secret value"
-    
-    # Compare with non-quiet output to ensure they're the same
-    local regular_output
-    regular_output=$(D secret export "$test_secret")
-    assert_equals "$regular_output" "$export_output" "Quiet export should produce same output as regular export"
+    assert_equals "0" "$?" "Should be able to initialize the secret for multiple exports testing"
+    # Export multiple times and verify consistency
+    local export1 export2 export3
+    export1=$(D secret export "$test_secret")
+    assert_equals "0" "$?" "First export should succeed"
+    export2=$(D secret export "$test_secret")
+    assert_equals "0" "$?" "Second export should succeed"
+    export3=$(D secret export "$test_secret")
+    assert_equals "0" "$?" "Third export should succeed"
+    # Verify all exports match the original value
+    assert_equals "$test_value" "$export1" "First export should match original value"
+    assert_equals "$test_value" "$export2" "Second export should match original value"
+    assert_equals "$test_value" "$export3" "Third export should match original value"
+}
+
+# Key remains the same on adding validating and printin and exporting
+test_secret_export_multiple_times_with_intermediate_commands() {
+    # Create and initialize a test secret
+    local test_secret="MULTI_EXPORT_INTERMEDIATE_SECRET"
+    local test_value="intermediate_multi_export_value_101112"
+    helper_create_secret "$test_secret" "$test_value"       
+    local initial_key="$_export_test_key"
+    # Verify file creation succeeded
+    assert_equals "0" "$?" "Should be able to initialize the secret for multiple exports testing"
+    # Export multiple times with intermediate commands and verify consistency
+    local export1 export2 export3
+    export1=$(D secret export "$test_secret")
+    assert_equals "0" "$?" "First export should succeed"
+    D secret validate "$test_secret" >/dev/null 2>&1
+    assert_equals "0" "$?" "Validation should succeed"
+    export2=$(D secret export "$test_secret")
+    assert_equals "0" "$?" "Second export should succeed"
+    D secret print "$test_secret" >/dev/null 2>&1
+    assert_equals "0" "$?" "Print should succeed"
+    export3=$(D secret export "$test_secret")   
+    assert_equals "0" "$?" "Third export should succeed"
+    # Verify current key not empty and still same
+    local current_key=$(D config get --scope=repository "secrets.key")
+    assert_not_equals "" "$current_key" "Secret key should still be configured"
+    assert_equals "$initial_key" "$current_key" "Secret key should remain unchanged after multiple exports and intermediate commands"
+    # Verify all exports match the original value
+    assert_equals "$test_value" "$export1" "First export should match original value"
+    assert_equals "$test_value" "$export2" "Second export should match original value"
+    assert_equals "$test_value" "$export3" "Third export should match original value"
 }

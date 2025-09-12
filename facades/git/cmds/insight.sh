@@ -328,9 +328,12 @@ sdk_fac_git_cmd_generate_insight_report() {
         echo ""
         logit -a "Writing daily insights..."
         echo ""
+        # push the analysis_data to a tempfile
+        local temp_file=$(mktemp)
+        echo "$analysis_data" > "$temp_file"
 
-        local ai_insight=$(cli_ctx ai generate insight "$analysis_data")
-        
+        local ai_insight=$(cli_ctx ai generate insight "$temp_file")
+
         if [ -n "$ai_insight" ]; then
             # Save the result to cache
             {

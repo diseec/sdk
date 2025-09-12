@@ -23,7 +23,14 @@ sdk_fac_git_cmd_generate_commit_message() {
   
     # Use AI to generate commit message, with fallback
     if cli_ctx ai function sdk_fac_ai_is_available; then
-        cli_ctx ai generate commit "$diff_summary" "$diff_preview"
+        # push the diffs to temp files
+        local diff_summary_file=$(mktemp)
+        local diff_preview_file=$(mktemp)
+
+        echo "$diff_summary" > "$diff_summary_file"
+        echo "$diff_preview" > "$diff_preview_file"
+
+        cli_ctx ai generate commit "$diff_summary_file" "$diff_preview_file"
     else
         # Fallback: generate simple commit message based on modified files
         local files_changed=$(_git diff --staged --name-only | sort | uniq)
