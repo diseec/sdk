@@ -63,8 +63,7 @@ sdk_fac_git_cmd_commit() {
     # Don't allow commits directly to main
     if [ "$D_CURRENT_BRANCH" = "main" ]; then
         logit -e "Committing to main branch is forbidden.\nPlease create a feature branch first and move your changes."
-        echo -n "Type 'MAIN' to confirm (or anything else to cancel): "
-        read confirmation
+        input confirmation "Type 'MAIN' to confirm:"
         if [ "$confirmation" != "MAIN" ]; then
             return 1
         fi
