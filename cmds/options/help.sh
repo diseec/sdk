@@ -43,10 +43,11 @@ display_help "" "" \
 "    sec|secret               " "Encrypted secrets management" \
 "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
 "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
+"    api                      " "API operations" \
+"    sdk                      " "SDK container operations" \
 "    env|envs                 " "Manage environment variables. Examples:" \
 "                             " "$(ansi "2;90" 'set -a; eval "$($D_CLI_GLOBAL_NAME envs)"; set +a')" \
 "                             " "$(ansi "2;90" 'eval "$(cli_ctx envs)" > /dev/null')" \
-"    api                      " "API operations" \
-"    sdk                      " "SDK container operations" \
+"                             " "$(ansi "2;90" 'bash sdk envs >> $GITHUB_ENV')" \
 "$@"
 }
