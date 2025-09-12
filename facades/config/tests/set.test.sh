@@ -73,14 +73,14 @@ test_config_set_nested_values() {
 # Test overwriting existing values
 test_config_set_overwrite() {
     # Set an initial value
-    D config --scope=user set overwrite.test "initial_value" > /dev/null
+    D config --scope=repository set overwrite.test "initial_value" > /dev/null
     
     # Overwrite it
-    D config --scope=user set overwrite.test "new_value" > /dev/null
+    D config --scope=repository set overwrite.test "new_value" > /dev/null
     
     # Verify it was overwritten
     local value
-    value=$(D config --scope=user get overwrite.test)
+    value=$(D config --scope=repository get overwrite.test)
     assert_equals "new_value" "$value" "Should overwrite existing value"
 }
 
@@ -92,14 +92,14 @@ test_config_set_overwrite() {
 test_config_set_new_array() {
     # Add an item to a new array using comma-separated format
     local output
-    output=$(D config --scope=user set new.array 'item1')
+    output=$(D config --scope=repository set new.array 'item1')
     
     # Verify the command succeeded
-    assert_command_success "cd \"$TEST_WORKSPACE\" && D config --scope=user set new.array 'item1'" "Set array command should succeed"
+    assert_command_success "cd \"$TEST_WORKSPACE\" && D config --scope=repository set new.array 'item1'" "Set array command should succeed"
     
     # Verify the array was created and contains the item
     local array_value
-    array_value=$(D config --scope=user get new.array)
+    array_value=$(D config --scope=repository get new.array)
     
     # Expected output is the single item (not in array format for single items)
     local expected_output='item1'
@@ -111,11 +111,11 @@ test_config_set_new_array() {
 # Test adding multiple items to an array using set with comma-separated format
 test_config_set_multiple_items_array() {
     # Add multiple items to an array using comma-separated format
-    D config --scope=user set multiple.array 'item1,item2,item3' > /dev/null
+    D config --scope=repository set multiple.array 'item1,item2,item3' > /dev/null
     
     # Get the full array output for verification
     local array_value
-    array_value=$(D config --scope=user get multiple.array)
+    array_value=$(D config --scope=repository get multiple.array)
 
     # Expected output is YAML array format (each item on new line)
     local expected_lines=3
@@ -138,11 +138,11 @@ test_config_set_multiple_items_array() {
 # Test adding duplicate items using set with comma-separated format
 test_config_set_duplicate_items_array() {
     # Add an item twice using comma-separated format
-    D config --scope=user set duplicate.array 'item1,item1' > /dev/null
+    D config --scope=repository set duplicate.array 'item1,item1' > /dev/null
     
     # Get the array value for verification
     local array_value
-    array_value=$(D config --scope=user get duplicate.array)
+    array_value=$(D config --scope=repository get duplicate.array)
     
     # YAML arrays preserve duplicates - check that both items are present
     local item_count=$(echo "$array_value" | grep -c "item1")

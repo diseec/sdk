@@ -111,6 +111,20 @@ sdk_fac_con_yaml_array_add_yq() {
         return 0
     fi
     
+    # Check if the key exists but is not an array, convert it to an array containing the old value and the new one
+    local type
+    type=$(_yq eval "type" <(echo "$array_exists") 2>/dev/null)
+    
+    if [ "$type" != "seq" ]; then
+        # Convert to an array with both the old and new values
+        if [ "$array_exists" != "null" ] && [ -n "$array_exists" ]; then
+            _yq eval -i ".${key_path} = [.${key_path}, \"${value}\"]" "$config_file"
+        else
+            _yq eval -i ".${key_path} = [\"${value}\"]" "$config_file"
+        fi
+        return 0
+    fi
+    
     # Check if value already exists in the array
     # Simplify the approach - use a direct iteration pattern that's more reliable
     local exists=false

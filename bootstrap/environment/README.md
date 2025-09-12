@@ -128,7 +128,7 @@ All variables are exported and available:
 ### Constants
 
 - `D_ORG_NAME`, `D_SDK_NAME`, `D_CONT_CTX_DIR`
-- `D_REGISTRY_URL`, `D_SDK_IMAGE`, `D_REPOSITORY_URL`, `D_SDK_OF_CTX`
+- `D_REGISTRY_URL`, `D_SDK_IMAGE`, `D_REPOSITORY_URL`, `D_SDK_LOCAL_RELATIVE_PATH`
 
 ### Computed Paths
 

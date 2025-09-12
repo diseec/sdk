@@ -20,13 +20,10 @@ suite_teardown() {
 
 setup_test_workspace() {
     export TEST_WORKSPACE=$(create_test_workspace "test_workspace_$(date +%s%N)")
-    
-    mkdir -p "$TEST_WORKSPACE/$D_SDK_OF_CTX"
 
-    if [ -d "$D_SDK_DIR" ] && [ -n "$(ls -A $D_SDK_DIR 2>/dev/null)" ]; then
-        cp -r $D_SDK_DIR/* "$TEST_WORKSPACE/$D_SDK_OF_CTX"
-    else
-        logit -e "No files to copy from $D_SDK_DIR/"
+    if [ -z "$TEST_WORKSPACE" ] || [ ! -d "$TEST_WORKSPACE" ]; then
+        logit -e "Failed to create test workspace"
+        return 1
     fi
 
     cd "$TEST_WORKSPACE" || return 1
@@ -128,11 +125,17 @@ _sdk_tester_execute_suite() { # UNUSED
     return $suite_failed
 }
 
+
 # Create a temporary test workspace
 create_test_workspace() {
     local workspace_name="${1:-test_workspace_$$}"
     local workspace_dir="/tmp/$workspace_name"
-    
+
+    # Clean up any existing directory
+    if [ -d "$workspace_dir" ]; then
+        rm -rf "$workspace_dir"
+    fi
+
     mkdir -p "$workspace_dir"
     
     # Copy CLI template file to workspace
@@ -142,6 +145,27 @@ create_test_workspace() {
     else
         logit -w "CLI template not found at $D_SDK_DIR/templates/cli"
     fi
+
+    # Copy SDK files to workspace
+    mkdir -p "$workspace_dir/$D_SDK_LOCAL_RELATIVE_PATH"
+    if [ -d "$D_SDK_DIR" ] && [ -n "$(ls -A $D_SDK_DIR 2>/dev/null)" ]; then
+        cp -r $D_SDK_DIR/* "$workspace_dir/$D_SDK_LOCAL_RELATIVE_PATH"
+    else
+        logit -e "No files to copy from $D_SDK_DIR/"
+    fi
+
+    # Setup git
+    git config user.email "test@test.test" >/dev/null 2>&1
+    git config user.name "Tester Testing" >/dev/null 2>&1
+    git init -b main "$workspace_dir" >/dev/null 2>&1 || {
+        logit -e "Failed to initialize git repository in $workspace_dir"
+        return 1
+    }
+
+    (cd "$workspace_dir" && git remote add origin "https://github.com/$D_ORG_NAME/$workspace_name.git") >/dev/null 2>&1 || {
+        logit -e "Failed to add git remote in $workspace_dir"
+        return 1
+    }
 
     echo "$workspace_dir"
 }
@@ -237,7 +261,7 @@ capture() {
             # Command line with timestamp and exit status
             # Clean the command by removing the SDK dir prefix pattern
             local cleaned_cmd=$(echo "$cmd" | sed 's/env D_SDK_DIR=\/ctx \/ctx\///')
-            echo -e "\033[90m[$timestamp][\033[90m$\033[90m][EXT:\033[${color_code}m$exit_code\033[90m] $cleaned_cmd\033[0m"
+            echo -e "\033[90m[$timestamp][\033[90m$\033[90m][\033[${color_code}m$exit_code\033[90m] $cleaned_cmd\033[0m"
             
             # Output with proper indentation (if there is any output)
             if [ -n "$command_output_clean" ]; then

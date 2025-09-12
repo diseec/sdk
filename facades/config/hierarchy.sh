@@ -16,6 +16,9 @@ sdk_fac_con_get() {
     local key_path="$1"
     local specific_scope="$2"  # Optional: if specified, only check this scope
 
+    # Ensure config is initialized
+    sdk_fac_con_init >/dev/null 2>&1
+
     # Validate key path
     sdk_fac_con_validate_key_path "$key_path" || return 1
     
@@ -76,6 +79,9 @@ sdk_fac_con_set() {
     local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
     local is_array="${4:-false}"        # Optional: specify if value should be treated as array element
     
+    # Ensure config is initialized
+    sdk_fac_con_init >/dev/null 2>&1
+    
     # Validate inputs
     sdk_fac_con_validate_key_path "$key_path" || return 1
     sdk_fac_con_validate_scope "$scope" || return 1
@@ -109,6 +115,9 @@ sdk_fac_con_delete() {
     local key_path="$1"
     local value="$2"          # Optional: if provided, remove this value from array
     local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
+    
+    # Ensure config is initialized
+    sdk_fac_con_init >/dev/null 2>&1
     
     # Validate inputs
     sdk_fac_con_validate_key_path "$key_path" || return 1
@@ -177,6 +186,18 @@ sdk_fac_con_summary() {
 
 # Initialize configuration system - create all config files
 sdk_fac_con_init() {
+    # Use a file-based lock to prevent race conditions
+    local lock_file="/tmp/sdk_config_init.lock"
+    
+    # Try to acquire lock (non-blocking)
+    if ! mkdir "$lock_file" 2>/dev/null; then
+        # Another process is initializing, wait for it to complete
+        return 0
+    fi
+    
+    # Release lock when done
+    trap 'rmdir "$lock_file" 2>/dev/null || true' EXIT
+    
     local initialized_files=()
     
     # Initialize config files for all scopes
@@ -186,8 +207,10 @@ sdk_fac_con_init() {
             # File exists and has content - skip
             continue
         else
+            # Create directory if it doesn't exist
+            mkdir -p "$(dirname "$config_file")"
             # Create or initialize empty file
-            echo "{}" > "$config_file"
+            echo "" > "$config_file"
             initialized_files+=("$scope")
         fi
     done
@@ -244,6 +267,9 @@ sdk_fac_con_which() {
     set -e
     local key_path="$1"
     
+    # Ensure config is initialized
+    sdk_fac_con_init >/dev/null 2>&1
+    
     sdk_fac_con_validate_key_path "$key_path" || return 1
     
     echo "Configuration resolution for '$key_path':"
@@ -287,6 +313,9 @@ sdk_fac_con_which() {
 sdk_fac_con_print() {
     set -e
     local scope="${1:-all}"  # Default to all scopes
+    
+    # Ensure config is initialized
+    sdk_fac_con_init >/dev/null 2>&1
     
     if [ "$scope" = "all" ]; then
         echo "Complete configuration hierarchy:"

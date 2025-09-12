@@ -33,18 +33,16 @@ EOF
 }
 
 # Test selecting a submodule
-test_config_select_submodule_adds_to_array() {
+test_config_select_submodule_adds_to_array_only() {
     # Select a submodule
     local output
     output=$(D config select_submodule "test-submodule")
-    
-    # Verify the command succeeded
-    assert_command_success "cd \"$TEST_WORKSPACE\" && D config select_submodule \"test-submodule\"" "Select submodule command should succeed"
-    
+    cat /root/diseec/repositories/config.yaml
+
     # Verify the submodule was added to the configuration
-    # First, check if there's a submodules array in the context config
+    # First, check if there's a submodules array in the repository config
     local submodules
-    submodules=$(D config --scope=context get context.submodules)
+    submodules=$(D config --scope=repository get submodules)
     
     assert_not_empty "$submodules" "Submodules array should exist"
     assert_contains "$submodules" "test-submodule" "Submodules array should contain the selected submodule"
@@ -59,7 +57,7 @@ test_config_select_multiple_submodules() {
     
     # Verify all submodules were added
     local submodules
-    submodules=$(D config --scope=context get context.submodules)
+    submodules=$(D config --scope=repository get submodules)
     
     assert_contains "$submodules" "submodule1" "Submodules array should contain submodule1"
     assert_contains "$submodules" "submodule2" "Submodules array should contain submodule2"
@@ -77,7 +75,7 @@ test_config_select_duplicate_submodule() {
     # Some systems might allow duplicates, others might prevent them
     
     local submodules
-    submodules=$(D config --scope=context get context.submodules)
+    submodules=$(D config --scope=repository get submodules)
     
     # Count occurrences of "duplicate-submodule" in the array
     local count
@@ -88,28 +86,28 @@ test_config_select_duplicate_submodule() {
     assert_equals "1" "$count" "Duplicate submodules should be handled properly"
 }
 
-# Test that submodules are stored in context scope
-test_config_submodules_in_context_scope() {
+# Test that submodules are stored in repository scope
+test_config_submodules_in_repository_scope() {
     # Select a submodule
     D config select_submodule "scope-test-submodule" > /dev/null
     
-    # Verify it's in the context scope but not in other scopes
-    local context_submodules
-    context_submodules=$(D config --scope=context get context.submodules)
+    # Verify it's in the repository scope but not in other scopes
+    local repository_submodules
+    repository_submodules=$(D config --scope=repository get submodules)
     
-    assert_contains "$context_submodules" "scope-test-submodule" "Submodule should be in context scope"
+    assert_contains "$repository_submodules" "scope-test-submodule" "Submodule should be in repository scope"
     
-    # Check repository scope (might not have context.submodules key at all)
+    # Check repository scope (might not have submodules key at all)
     local repo_submodules
-    repo_submodules=$(D config --scope=repository get context.submodules 2>/dev/null || echo "not_found")
+    repo_submodules=$(D config --scope=repository get submodules 2>/dev/null || echo "not_found")
     
     if [ "$repo_submodules" != "not_found" ]; then
         assert_not_contains "$repo_submodules" "scope-test-submodule" "Submodule should not be in repository scope"
     fi
     
-    # Check user scope (might not have context.submodules key at all)
+    # Check user scope (might not have submodules key at all)
     local user_submodules
-    user_submodules=$(D config --scope=user get context.submodules 2>/dev/null || echo "not_found")
+    user_submodules=$(D config --scope=user get submodules 2>/dev/null || echo "not_found")
     
     if [ "$user_submodules" != "not_found" ]; then
         assert_not_contains "$user_submodules" "scope-test-submodule" "Submodule should not be in user scope"

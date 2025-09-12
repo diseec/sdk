@@ -80,6 +80,20 @@ sdk_boo_env_uti_get_repo_name() {
     if [ -n "$repo_url" ]; then
         # Remove trailing .git if present
         basename "${repo_url%.git}"
+    else
+        # Fallback: use the directory name containing .git
+        local git_dir
+        git_dir=$(sdk_boo_env_uti_get_git_dir)
+        
+        if [ -n "$git_dir" ]; then
+            # Get the parent directory of the .git folder
+            local repo_dir
+            repo_dir=$(dirname "$git_dir")
+            basename "$repo_dir"
+        else
+            # Last resort: use current directory name
+            basename "$D_CTX_DIR"
+        fi
     fi
 }
 

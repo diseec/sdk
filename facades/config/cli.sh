@@ -7,6 +7,9 @@ source_once "$D_SDK_DIR/facades/config/index.sh"
 # ========================================
 # CLI interface for configuration management
 
+# Ensure configuration is initialized
+sdk_fac_con_init >/dev/null 2>&1
+
 # Main configuration CLI handler
 
 # Extract scope option from arguments and preserve remaining arguments
@@ -42,7 +45,7 @@ set -- "${FILTERED_ARGS[@]}"
 
 c=$1; shift; case $c in
     # Basic operations
-    ini|init) sdk_fac_con_init "$@" ;; # no need for manual call automatically called on first get/set
+    ini|init) echo "Configuration already initialized" ;; # Initialization now happens automatically
     sum|summary) sdk_fac_con_summary "$@" ;;
     get) sdk_fac_con_get "$@" "$SCOPE" ;;
     set) sdk_fac_con_set "$1" "$2" "$SCOPE" ;;

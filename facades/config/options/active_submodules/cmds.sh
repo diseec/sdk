@@ -37,19 +37,7 @@ sdk_fac_con_opt_act_status() {
 
 # Select submodules for workspace
 sdk_fac_con_opt_act_select() {
-    local submodule_name="$1"
-    
-    if [ -n "$submodule_name" ]; then
-        # Non-interactive mode: add the specified submodule directly
-        logit -l "Adding submodule '$submodule_name' to workspace configuration..."
-        
-        # Add to context.submodules array
-        cli_ctx config function sdk_fac_con_set "context.submodules" "$submodule_name" "context" "true"
-        
-        logit -l "Submodule '$submodule_name' added to workspace configuration"
-    else
-        # Interactive mode: show selection UI
-        logit --ansi="34" --icon="Submodules" "Active submodules for your workspace"
-        sdk_fac_con_opt_act_create_config
-    fi
+    # Always run in interactive mode
+    logit --ansi="34" --icon="Submodules" "Active submodules for your workspace"
+    sdk_fac_con_opt_act_create_config
 }

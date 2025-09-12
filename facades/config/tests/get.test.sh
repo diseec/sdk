@@ -13,7 +13,7 @@ setup_test() {
     D config --scope=user set nested.config.key "nested_value" > /dev/null
     
     # Add some arrays
-    D config --scope=user set array.test '["item1", "item2"]' > /dev/null
+    D config --scope=user set array.test 'item1,item2' > /dev/null
 }
 
 

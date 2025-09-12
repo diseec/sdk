@@ -7,6 +7,10 @@ setup_test() {
     # Set up secrets directory in the test workspace
     export SECRETS_DIR="$TEST_WORKSPACE/secrets"
     mkdir -p "$SECRETS_DIR" 2>/dev/null
+    
+    # Generate and configure an encryption key for tests
+    local test_key="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    D secret key-set <<< "$test_key" >/dev/null 2>&1
 }
 
 # Test export command requires secret name
@@ -37,17 +41,22 @@ test_secret_export_nonexistent_secret() {
 }
 
 # Test export command with existing secret
-test_secret_export_existing_secret() {
+test_secret_export_existing_secret_only() {
     # Create and initialize a test secret
     local test_secret="EXPORT_TEST_SECRET"
     local test_value="export_test_value_456"
+    D secret add
+    # Use the add command to create the secret
+    local add_output
+    add_output=$(D secret add <<EOF
+$test_secret
+$test_value
+EOF
+)
     
-    # Use the init command to create the secret
-    local init_output
-    init_output=$(D secret init "$test_secret" <<< "$test_value")
-    
-    # Verify init succeeded
+    # Verify secret was added successfully
     assert_equals "0" "$?" "Should be able to initialize the secret for export testing"
+    assert_contains "$add_output" "added successfully" "Secret should be added successfully"
     
     # Now try to export it
     local export_output
@@ -63,16 +72,26 @@ test_secret_export_existing_secret() {
 }
 
 # Test export command without encryption key configured
-test_secret_export_no_key_configured() {
-    # Ensure no key exists by using the CLI command
-    D secret key-reset --force > /dev/null
-    
-    # Create a test secret name
+test_secret_export_no_key_configured_only() {
+    # First create a test secret with the current key
     local mock_secret="MOCK_SECRET_NO_KEY"
+    local test_value="test_value_for_no_key"
+    
+    # Directly create an encrypted secret file
+    local key=$(cli_ctx config get "secrets.key")
+    local encrypted_value=$(echo "$test_value" | _openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass pass:"$key" | base64)
+    echo "$encrypted_value" > "$SECRETS_DIR/$mock_secret"
+    
+    # Now reset the key by removing the config entry
+    cli_ctx config remove "secrets.key" >/dev/null 2>&1
     
     # Try to export without key
     local output
-    output=$(D secret export "$mock_secret")
+    D secret export "$mock_secret"
+    x $output <<EOF
+    y
+EOF
+    output=$()
     
     # Verify failure due to missing key
     assert_not_equals "0" "$?" "Export should fail without encryption key"
@@ -90,10 +109,12 @@ test_secret_export_output_format() {
 line2
 line3"
     
-    # Initialize the secret
-    local init_output
-    init_output=$(D secret init "$test_secret" <<< "$test_value")
+    # Directly create an encrypted secret file
+    local key=$(cli_ctx config get "secrets.key")
+    local encrypted_value=$(printf '%s' "$test_value" | _openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass pass:"$key" | base64)
+    echo "$encrypted_value" > "$SECRETS_DIR/$test_secret"
     
+    # Verify file creation succeeded
     assert_equals "0" "$?" "Should be able to initialize the secret for format testing"
     
     # Export and check output format
@@ -122,10 +143,12 @@ test_secret_export_special_characters() {
     local test_secret="SPECIAL_CHARS_SECRET"
     local special_value="password!@#$%^&*()_+-={}[]|\\:;\"'<>,.?/"
     
-    # Initialize the secret with special characters
-    local init_output
-    init_output=$(D secret init "$test_secret" <<< "$special_value")
+    # Directly create an encrypted secret file
+    local key=$(cli_ctx config get "secrets.key")
+    local encrypted_value=$(printf '%s' "$special_value" | _openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass pass:"$key" | base64)
+    echo "$encrypted_value" > "$SECRETS_DIR/$test_secret"
     
+    # Verify file creation succeeded
     assert_equals "0" "$?" "Should be able to initialize the secret with special characters"
     
     # Export and verify special characters are preserved
@@ -150,10 +173,12 @@ test_secret_export_with_quiet_flag() {
     local test_secret="QUIET_EXPORT_SECRET"
     local test_value="quiet_test_value"
     
-    # Initialize the secret
-    local init_output
-    init_output=$(D secret init "$test_secret" <<< "$test_value")
+    # Directly create an encrypted secret file
+    local key=$(cli_ctx config get "secrets.key")
+    local encrypted_value=$(printf '%s' "$test_value" | _openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass pass:"$key" | base64)
+    echo "$encrypted_value" > "$SECRETS_DIR/$test_secret"
     
+    # Verify file creation succeeded
     assert_equals "0" "$?" "Should be able to initialize the secret for quiet flag testing"
     
     # Export with quiet flag
