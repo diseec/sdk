@@ -59,7 +59,7 @@ suite_teardown() {
 
 # Individual test function
 test_specific_feature() {
-    # Each test function gets a fresh $TEST_WORKSPACE automatically
+    # Each test function gets a fresh $TEST_CTX automatically
     # and the current directory is already set to it
 
     # Setup specific to this test (if needed)
@@ -80,7 +80,7 @@ test_specific_feature() {
 
 1. **Suite Setup/Teardown**: These run once for the entire test file.
 2. **Test Functions**: Must be prefixed with `test_` to be discovered by the test runner.
-3. **Workspaces**: The framework automatically creates a fresh `$TEST_WORKSPACE` for each test function. You don't need to create or clean up workspaces manually.
+3. **Workspaces**: The framework automatically creates a fresh `$TEST_CTX` for each test function. You don't need to create or clean up workspaces manually.
 
 ## Assertion Best Practices
 
@@ -205,7 +205,7 @@ test_example_command_execution() {
 
 Tests must work in different environments:
 
-1. **Paths**: Always use `$TEST_WORKSPACE` rather than hardcoded paths.
+1. **Paths**: Always use `$TEST_CTX` rather than hardcoded paths.
 2. **Command Output Redirection**: Redirect command output to `/dev/null` when not testing the output directly.
 3. **Tool Availability**: Be aware that different environments may have different tools available.
 
@@ -353,23 +353,23 @@ Tests should never manually control their pass/fail status. Let assertions deter
 # BAD: Manual returns create false positives
 test_with_early_returns_bad() {
     # DON'T DO THIS: Early returns bypass assertions
-    if [ ! -f "$TEST_WORKSPACE/some-file" ]; then
+    if [ ! -f "$TEST_CTX/some-file" ]; then
         return 0  # DANGEROUS! Test "passes" without asserting anything
     fi
 
     # This assertion might never run:
-    assert_equals "expected" "$(cat "$TEST_WORKSPACE/some-file")" "File content check"
+    assert_equals "expected" "$(cat "$TEST_CTX/some-file")" "File content check"
 }
 
 # GOOD: Assertions control outcome
 test_file_content_good() {
     # Create the test file if testing its existence is not the main purpose
-    touch "$TEST_WORKSPACE/some-file"
-    echo "content" > "$TEST_WORKSPACE/some-file"
+    touch "$TEST_CTX/some-file"
+    echo "content" > "$TEST_CTX/some-file"
 
     # Always make assertions - let them determine pass/fail
-    assert_file_exists "$TEST_WORKSPACE/some-file" "File should exist"
-    assert_equals "content" "$(cat "$TEST_WORKSPACE/some-file")" "File content check"
+    assert_file_exists "$TEST_CTX/some-file" "File should exist"
+    assert_equals "content" "$(cat "$TEST_CTX/some-file")" "File content check"
 }
 ```
 
@@ -551,8 +551,8 @@ done
 assert_equals "3" "$count" "Array should have 3 items"
 
 # 5. Working with files in the test workspace (use capture for file operations)
-$(capture "echo 'test content' > $TEST_WORKSPACE/test-file.txt")
-assert_file_exists "$TEST_WORKSPACE/test-file.txt" "Test file should exist"
+$(capture "echo 'test content' > $TEST_CTX/test-file.txt")
+assert_file_exists "$TEST_CTX/test-file.txt" "Test file should exist"
 
 # 6. Capturing and inspecting command output
 local result=$(D some-command --option)

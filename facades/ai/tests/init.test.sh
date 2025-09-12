@@ -35,7 +35,7 @@ test_ai_init_with_existing_key() {
     # Mock the interactive init to return success
     # Note: In a real test environment, we'd want to mock the API call
     local output
-    output=$(cd "$TEST_WORKSPACE" && timeout 5 D ai init 2>&1 || echo "TIMEOUT")
+    output=$(cd "$TEST_CTX" && timeout 5 D ai init 2>&1 || echo "TIMEOUT")
     
     # Check that it recognizes existing initialization
     # This test may need adjustment based on actual secret handling behavior
@@ -57,7 +57,7 @@ test_ai_init_command_structure() {
 test_ai_init_command_exists() {
     # Just test that the command doesn't produce "Unknown command" error
     local output
-    output=$(cd "$TEST_WORKSPACE" && timeout 2 D ai init 2>&1 || echo "COMMAND_EXISTS")
+    output=$(cd "$TEST_CTX" && timeout 2 D ai init 2>&1 || echo "COMMAND_EXISTS")
     
     # Should not contain "Unknown command"
     echo "$output" | grep -v "Unknown command" > /dev/null

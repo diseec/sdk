@@ -57,7 +57,7 @@ test_config_summary_shows_key_counts() {
 test_config_summary_with_no_configs() {
     # Get summary before initializing configs
     local summary_output
-    summary_output=$(cd "$TEST_WORKSPACE" && D config summary)
+    summary_output=$(cd "$TEST_CTX" && D config summary)
     
     # Verify it handles the case with no configs
     assert_not_empty "$summary_output" "Summary should provide output even with no configs"

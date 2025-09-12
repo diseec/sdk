@@ -21,7 +21,7 @@ test_config_remove_item() {
     output=$(D config --scope=user remove simple.array "item2")
     
     # Verify the command succeeded
-    assert_command_success "cd \"$TEST_WORKSPACE\" && D config --scope=user remove simple.array \"item2\"" "Remove command should succeed"
+    assert_command_success "cd \"$TEST_CTX\" && D config --scope=user remove simple.array \"item2\"" "Remove command should succeed"
     
     # Verify the item was removed
     local array_value
@@ -120,7 +120,7 @@ test_config_remove_delete_simple_key() {
     output=$(D config --scope=user remove simple.key)
     
     # Verify the command succeeded
-    assert_command_success "cd \"$TEST_WORKSPACE\" && D config --scope=user remove simple.key" "Remove command should succeed for key deletion"
+    assert_command_success "cd \"$TEST_CTX\" && D config --scope=user remove simple.key" "Remove command should succeed for key deletion"
     
     # Verify the key was deleted
     # We know this will fail since we deleted the key, so setting directly to "not_found"
@@ -219,5 +219,5 @@ test_config_remove_delete_nonexistent_key() {
     
     # Verify behavior for non-existent keys
     # At minimum, ensure it doesn't crash
-    assert_command_success "cd \"$TEST_WORKSPACE\" && D config --scope=user remove nonexistent.key" "Removing non-existent key should not fail"
+    assert_command_success "cd \"$TEST_CTX\" && D config --scope=user remove nonexistent.key" "Removing non-existent key should not fail"
 }

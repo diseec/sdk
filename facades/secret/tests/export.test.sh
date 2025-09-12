@@ -5,7 +5,7 @@
 # Setup function - runs before each test
 setup_test() {
     # Set up secrets directory in the test workspace
-    export SECRETS_DIR="$TEST_WORKSPACE/secrets"
+    export SECRETS_DIR="$TEST_CTX/secrets"
     mkdir -p "$SECRETS_DIR" 2>/dev/null
     
     # Generate and configure an encryption key for tests

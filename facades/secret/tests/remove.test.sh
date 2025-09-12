@@ -33,7 +33,7 @@ test_secret_remove_existing_secret_confirm() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -43,7 +43,7 @@ test_secret_remove_existing_secret_confirm() {
     
     # First add a secret to remove
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
+    add_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
 REMOVE_TEST_SECRET
 remove_test_value
 EOF
@@ -57,12 +57,12 @@ EOF
     
     # Verify secret exists before removal
     local exists_before
-    exists_before=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret exists REMOVE_TEST_SECRET --quiet 2>&1)
+    exists_before=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret exists REMOVE_TEST_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should exist before removal"
     
     # Remove the secret with confirmation (answer 'y' to prompt)
     local remove_output
-    remove_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret remove REMOVE_TEST_SECRET <<EOF 2>&1
+    remove_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret remove REMOVE_TEST_SECRET <<EOF 2>&1
 y
 EOF
 )
@@ -73,7 +73,7 @@ EOF
         
         # Verify secret no longer exists
         local exists_after
-        exists_after=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret exists REMOVE_TEST_SECRET --quiet 2>&1)
+        exists_after=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret exists REMOVE_TEST_SECRET --quiet 2>&1)
         assert_not_equals "0" "$?" "Secret should not exist after removal"
     else
         # If remove failed, check if it was due to confirmation prompt
@@ -90,7 +90,7 @@ test_secret_remove_existing_secret_cancel() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -100,7 +100,7 @@ test_secret_remove_existing_secret_cancel() {
     
     # First add a secret to remove
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
+    add_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
 CANCEL_REMOVE_SECRET
 cancel_remove_value
 EOF
@@ -114,12 +114,12 @@ EOF
     
     # Verify secret exists before attempted removal
     local exists_before
-    exists_before=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret exists CANCEL_REMOVE_SECRET --quiet 2>&1)
+    exists_before=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret exists CANCEL_REMOVE_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should exist before removal attempt"
     
     # Try to remove the secret but cancel (answer 'n' to prompt)
     local remove_output
-    remove_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret remove CANCEL_REMOVE_SECRET <<EOF 2>&1
+    remove_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret remove CANCEL_REMOVE_SECRET <<EOF 2>&1
 n
 EOF
 )
@@ -130,7 +130,7 @@ EOF
     
     # Verify secret still exists
     local exists_after
-    exists_after=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret exists CANCEL_REMOVE_SECRET --quiet 2>&1)
+    exists_after=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret exists CANCEL_REMOVE_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should still exist after cancelled removal"
 }
 }
@@ -144,7 +144,7 @@ test_secret_remove_confirmation_prompt() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -154,7 +154,7 @@ test_secret_remove_confirmation_prompt() {
     
     # First add a secret to remove
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
+    add_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
 PROMPT_TEST_SECRET
 prompt_test_value
 EOF
@@ -168,7 +168,7 @@ EOF
     
     # Try to remove and check the confirmation prompt contains the secret name
     local remove_output
-    remove_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret remove PROMPT_TEST_SECRET <<EOF 2>&1
+    remove_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret remove PROMPT_TEST_SECRET <<EOF 2>&1
 n
 EOF
 )
@@ -186,7 +186,7 @@ test_secret_remove_command_aliases() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -196,19 +196,19 @@ test_secret_remove_command_aliases() {
     
     # Test 'rm' alias
     local rm_output
-    rm_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret rm NONEXISTENT_RM 2>&1)
+    rm_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret rm NONEXISTENT_RM 2>&1)
     local rm_result=$?
     assert_not_equals "0" "$rm_result" "rm alias should work and fail for non-existent secret"
     
     # Test 'del' alias  
     local del_output
-    del_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret del NONEXISTENT_DEL 2>&1)
+    del_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret del NONEXISTENT_DEL 2>&1)
     local del_result=$?
     assert_not_equals "0" "$del_result" "del alias should work and fail for non-existent secret"
     
     # Test 'delete' alias
     local delete_output
-    delete_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret delete NONEXISTENT_DELETE 2>&1)
+    delete_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret delete NONEXISTENT_DELETE 2>&1)
     local delete_result=$?
     assert_not_equals "0" "$delete_result" "delete alias should work and fail for non-existent secret"
 }
@@ -222,7 +222,7 @@ test_secret_remove_deletes_file() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -232,7 +232,7 @@ test_secret_remove_deletes_file() {
     
     # First add a secret to remove
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
+    add_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
 FILE_DELETE_SECRET
 file_delete_value
 EOF
@@ -249,7 +249,7 @@ EOF
     if [ -f "$secret_file" ]; then
         # Remove the secret with confirmation
         local remove_output
-        remove_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret remove FILE_DELETE_SECRET <<EOF 2>&1
+        remove_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret remove FILE_DELETE_SECRET <<EOF 2>&1
 y
 EOF
 )

@@ -242,8 +242,8 @@ test_third() { assert_equals "3" "3"; }
 
 ### Test Workspace Management
 
-- `create_test_workspace [name]` - Create temporary test directory
-- `cleanup_test_workspace <dir>` - Clean up test directory
+- `create_test_ctx [name]` - Create temporary test directory
+- `cleanup_test_ctx <dir>` - Clean up test directory
 - `create_test_file <path> [content]` - Create test file
 - `create_test_dir <path>` - Create test directory
 

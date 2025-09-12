@@ -30,7 +30,7 @@ _tester_assert_result() {
         sdk_tester_show_assertion_result "false" "$prefixed_message" "$test_name"
         
         # Record the assertion failure in the test result file
-        if [ -n "$TEST_WORKSPACE" ] && [ -d "$TEST_WORKSPACE" ]; then
+        if [ -n "$TEST_CTX" ] && [ -d "$TEST_CTX" ]; then
             echo "$TESTER_FAILURE_KEY $prefixed_message" >> "$TESTER_RESULT_FILE"
             
             # Include details if available

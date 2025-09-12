@@ -9,7 +9,7 @@ test_config_init_creates_files() {
     output=$(D config init)
     
     # Check that the command succeeds
-    assert_command_success "cd \"$TEST_WORKSPACE\" && D config init" "Config init should succeed"
+    assert_command_success "cd \"$TEST_CTX\" && D config init" "Config init should succeed"
     
     # Verify the output contains a success message
     assert_contains "$output" "initialized" "Output should indicate initialization"

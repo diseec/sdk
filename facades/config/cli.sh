@@ -79,14 +79,14 @@ c=$1; shift; case $c in
     "    pri|print                " "Print configuration for scope (or all if no scope)" \
     "    sta|status               " "Show configuration summary" \
     "    hel|help                 " "Show this help message" \
-    "" "" "$(ansi "1;90" "$(capitalize 'Scope Options')")                " "$(ansi "2;90" "Mandatory for most commands")" \
+    "" "" "$(ansi "1;90" "$(capitalize 'Scope Options')")                " "$(ansi "2;90" "Default scope is 'repository'")" \
     "    -s=<scope>               " "Set scope (short form)" \
     "    --scope=<scope>          " "Set scope (long form with equals)" \
     "    --scope <scope>          " "Set scope (long form with space)" \
     "" "" "    $(ansi "1;2;90" "$(capitalize 'Scopes')")" "" \
-    "    context                  " "Project-specific shared configuration ($SCOPE_CTX_FILE)" \
-    "    repository               " "Project-specific local configuration ($SCOPE_REPO_FILE)" \
-    "    user                     " "User-specific configuration ($SCOPE_USER_FILE)" \
+    "    context                  " "Project specific shared configuration ($SCOPE_CTX_FILE)" \
+    "    repository               " "Project specific local configuration ($SCOPE_REPO_FILE)" \
+    "    user                     " "User specific configuration ($SCOPE_USER_FILE)" \
     "" "" "    $(ansi "1;2;90" "$(capitalize 'Hierarchy')")" "" \
     "    $(ansi "2;90" "Configuration values are resolved in this order of precedence:")" \
     "    $(ansi "2;90" "context > repository > user")" \

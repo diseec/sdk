@@ -77,7 +77,11 @@ sdk_fac_con_set_act_select() {
         for module in $available_modules; do
             for index in "$@"; do
                 if [ "$i" -eq "$index" ]; then
-                    selected_modules="$selected_modules,$module"
+                    if [ -n "$selected_modules" ]; then
+                        selected_modules="$selected_modules $module"
+                    else
+                        selected_modules="$module"
+                    fi
                     break
                 fi
             done
@@ -88,12 +92,12 @@ sdk_fac_con_set_act_select() {
     # Create YAML array from selected modules
     if [ -n "$selected_modules" ]; then
         # Set the submodules array using the YAML format
-        cli_ctx config --scope=repository set submodules "[$selected_modules]"
+        sdk_fac_con_set submodules "[$(echo $selected_modules | tr ' ' ',')]" repository
 
         logit -i "Activated modules: $(echo $selected_modules | tr ' ' ', ')"
     else
         # Set empty array if no modules selected
-        cli_ctx config --scope=repository set submodules "[]"
+        sdk_fac_con_set submodules "[]" repository
         logit -w "Cleared all selected modules"
     fi
 }

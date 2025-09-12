@@ -18,18 +18,20 @@ suite_teardown() {
     return 0
 }
 
-setup_test_workspace() {
-    export TEST_WORKSPACE=$(create_test_workspace "test_workspace_$(date +%s%N)")
+setup_test_ctx() {
+    export TEST_CTX=$(create_test_ctx "ctx_$RANDOM")
+    export TESTER_LOG_FILE=$(mktemp $TEST_CTX/$TESTER_LOG_FILE_NAME)
+    export TESTER_RESULT_FILE="$TEST_CTX/$TESTER_RESULT_FILE_NAME"
 
-    if [ -z "$TEST_WORKSPACE" ] || [ ! -d "$TEST_WORKSPACE" ]; then
+    if [ -z "$TEST_CTX" ] || [ ! -d "$TEST_CTX" ]; then
         logit -e "Failed to create test workspace"
         return 1
     fi
     
     # Create and initialize the test result file
-    echo "PASSED" > "$TEST_WORKSPACE/.test_result"
+    echo "PASSED" > "$TESTER_RESULT_FILE"
 
-    cd "$TEST_WORKSPACE" || return 1
+    cd "$TEST_CTX" || return 1
 
     return 0
 }
@@ -130,8 +132,8 @@ _sdk_tester_execute_suite() { # UNUSED
 
 
 # Create a temporary test workspace
-create_test_workspace() {
-    local workspace_name="${1:-test_workspace_$$}"
+create_test_ctx() {
+    local workspace_name="${1:-test_ctx_$$}"
     local workspace_dir="/tmp/$workspace_name"
 
     # Clean up any existing directory
@@ -174,7 +176,7 @@ create_test_workspace() {
 }
 
 # Clean up test workspace  
-cleanup_test_workspace() {
+cleanup_test_ctx() {
     local workspace_dir="$1"
     
     if [ -n "$workspace_dir" ] && [ -d "$workspace_dir" ]; then

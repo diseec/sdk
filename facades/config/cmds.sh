@@ -81,7 +81,7 @@ sdk_fac_con_set() {
     local key_path="$1"
     local value="$2"
     local scope="${3:-$DEFAULT_SCOPE}"  # Default to $DEFAULT_SCOPE scope
-    
+
     # Ensure config is initialized
     sdk_fac_con_init >/dev/null 2>&1
     
@@ -100,9 +100,6 @@ sdk_fac_con_set() {
     sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
 
     logit -l "Set '$key_path' in '$scope' scope with value: $value"
-    x
-        cat $config_file
-    x
     
     return 0
 }

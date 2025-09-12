@@ -23,7 +23,7 @@ test_secret_key_reset_requires_openssl() {
     local original_path="$PATH"
     
     # Create a directory for our mock commands
-    local mock_dir="$TEST_WORKSPACE/mock_bin"
+    local mock_dir="$TEST_CTX/mock_bin"
     mkdir -p "$mock_dir"
     
     # Create a mock openssl that fails

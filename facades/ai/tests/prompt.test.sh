@@ -6,7 +6,7 @@
 setup_test() {
     
     # Create a test prompt file for testing
-    export TEST_PROMPT_FILE="$TEST_WORKSPACE/test.prompt"
+    export TEST_PROMPT_FILE="$TEST_CTX/test.prompt"
     echo "# Test prompt for demonstration" > "$TEST_PROMPT_FILE"
     echo "This is a test prompt with {{INPUT}} placeholder." >> "$TEST_PROMPT_FILE"
 }

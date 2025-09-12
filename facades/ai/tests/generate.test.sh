@@ -8,9 +8,9 @@ setup_test() {
     export ORIGINAL_OPENAI_API_KEY="$OPENAI_API_KEY"
     
     # Initialize a git repository for testing
-    cd "$TEST_WORKSPACE" && git init > /dev/null 2>&1
-    cd "$TEST_WORKSPACE" && git config user.email "test@example.com" > /dev/null 2>&1
-    cd "$TEST_WORKSPACE" && git config user.name "Test User" > /dev/null 2>&1
+    cd "$TEST_CTX" && git init > /dev/null 2>&1
+    cd "$TEST_CTX" && git config user.email "test@example.com" > /dev/null 2>&1
+    cd "$TEST_CTX" && git config user.name "Test User" > /dev/null 2>&1
 }
 
 # Suite teardown - runs once after all tests in this file
@@ -22,7 +22,7 @@ suite_teardown() {
 # Test generate commit without staged changes
 test_ai_generate_commit_no_changes() {
     # Clear any potential staged changes
-    cd "$TEST_WORKSPACE" && git reset > /dev/null 2>&1
+    cd "$TEST_CTX" && git reset > /dev/null 2>&1
     
     local output
     output=$(d ai generate commit 2>&1)
@@ -41,8 +41,8 @@ test_ai_generate_commit_no_api_key() {
     unset OPENAI_API_KEY
     
     # Create and stage a test file
-    echo "test content" > "$TEST_WORKSPACE/test.txt"
-    cd "$TEST_WORKSPACE" && git add test.txt
+    echo "test content" > "$TEST_CTX/test.txt"
+    cd "$TEST_CTX" && git add test.txt
     
     local output
     output=$(d ai generate commit 2>&1)

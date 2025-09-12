@@ -117,7 +117,7 @@ _sdk_tester_run_test_file() {
                 printf "  \033[2;90m→\033[0m \033[90m%s\033[0m" "$test_function"
             fi
             
-            setup_test_workspace
+            setup_test_ctx
 
             set +e
 
@@ -125,10 +125,6 @@ _sdk_tester_run_test_file() {
             if declare -f setup_test >/dev/null 2>&1; then
                 setup_test
             fi
-            
-            # Create a fresh log file for this test
-            export TESTER_LOG_FILE=$(mktemp $TEST_WORKSPACE/$TESTER_LOG_FILE_NAME)
-            export TESTER_RESULT_FILE="$TEST_WORKSPACE/$TESTER_RESULT_FILE_NAME"
 
             # Execute the test function
             "$test_function"
@@ -169,7 +165,7 @@ _sdk_tester_run_test_file() {
             if [ -f "$TESTER_RESULT_FILE" ]; then
                 rm -f "$TESTER_RESULT_FILE"
             fi
-            cleanup_test_workspace "$TEST_WORKSPACE"
+            cleanup_test_ctx "$TEST_CTX"
             
             # Show test function completion in verbose mode
             if [ "$TESTER_VERBOSE" = "true" ]; then

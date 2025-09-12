@@ -9,7 +9,7 @@ test_config_set_basic() {
     output=$(D config --scope=user set simple.key "simple_value")
     
     # Verify the command succeeded
-    assert_command_success "cd \"$TEST_WORKSPACE\" && D config --scope=user set simple.key \"simple_value\"" "Set command should succeed"
+    assert_command_success "cd \"$TEST_CTX\" && D config --scope=user set simple.key \"simple_value\"" "Set command should succeed"
     
     # Verify the value was set correctly
     local value
@@ -81,8 +81,7 @@ test_config_set_overwrite() {
     # Verify it was overwritten
     local value
     value=$(D config --scope=repository get overwrite.test)
-    D config pri
-    exit 1
+
     assert_equals "new_value" "$value" "Should overwrite existing value"
 }
 
@@ -97,7 +96,7 @@ test_config_set_new_array() {
     output=$(D config --scope=repository set new.array 'item1')
     
     # Verify the command succeeded
-    assert_command_success "cd \"$TEST_WORKSPACE\" && D config --scope=repository set new.array 'item1'" "Set array command should succeed"
+    assert_command_success "cd \"$TEST_CTX\" && D config --scope=repository set new.array 'item1'" "Set array command should succeed"
     
     # Verify the array was created and contains the item
     local array_value
@@ -206,7 +205,7 @@ test_config_set_nested_array() {
 }
 
 # Test adding multiple items to an array using set with comma-separated format
-test_config_set_array_from_comma_separated() {
+test_config_set_array_from_comma_separated_only() {
     # Add multiple items to an array using standard YAML array syntax
     # Note: Double quotes are needed to prevent the shell from interpreting brackets
     D config --scope=repository set submodules "[item1,item2,item3]" > /dev/null
@@ -214,7 +213,7 @@ test_config_set_array_from_comma_separated() {
     # Get the full array output for verification
     local array_value
     array_value=$(D config --scope=repository get submodules)
-
+    
     # Expected output is YAML array format (each item on new line)
     local expected_lines=3
     local actual_lines=$(echo "$array_value" | wc -l | tr -d ' ')

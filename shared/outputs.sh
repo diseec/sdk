@@ -156,8 +156,11 @@ confirm() {
     else
         # Non-TTY mode: Try to use redirected input if available
         if [ -t 0 ] || [ -p /dev/stdin ]; then
-            # Use redirection if available (< file, <<< string, or pipe)
-            local response=$(head -c1)
+            # Use read instead of head -c1 to read the full line but only use first character
+            # This properly consumes the newline that follows
+            local full_line
+            read full_line
+            local response=${full_line:0:1}
         else
             # Default to no in fully automated environments with no input
             local response="n"
@@ -166,6 +169,11 @@ confirm() {
 
     printf "\n"
     
+    # In testing environments, echo the input for visibility
+    if [ "$D_ENV" = "TESTING" ]; then
+        logit -i --icon="<" "Input received (non-TTY mode): $response"
+    fi
+
     case "$response" in
         [yY][eE][sS]|[yY])
             if [ $# -gt 0 ]; then "$@"; fi
@@ -354,7 +362,13 @@ input() {
     fi
     
     printf "\n"
+
     
+    # In testing environments, echo the input for visibility
+    if [ "$D_ENV" = "TESTING" ]; then
+        logit -i --icon="<" "Input received (non-TTY mode): $user_input"
+    fi
+
     # Use default if input is empty and default exists
     if [ -z "$user_input" ] && [ -n "$default_value" ]; then
         user_input="$default_value"
@@ -394,6 +408,11 @@ input() {
         fi
     fi
     
+    # In testing environments, echo the input for visibility
+    if [ "$D_ENV" = "TESTING" ]; then
+        logit -i --icon="<" "Input received (non-TTY mode) (Processed): $user_input"
+    fi
+
     # Set the value to the provided variable name
     eval "$var_name=\"$user_input\""
 }

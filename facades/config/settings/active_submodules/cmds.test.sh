@@ -5,7 +5,7 @@
 # Suite setup - runs once before all tests in this file
 setup_test() {
     # Create a mock .gitmodules file for testing
-    cat > "$TEST_WORKSPACE/.gitmodules" << EOF
+    cat > "$TEST_CTX/.gitmodules" << EOF
 [submodule "packages/test-submodule"]
 	path = packages/test-submodule
 	url = https://github.com/test/test-submodule.git
@@ -33,14 +33,14 @@ EOF
 }
 
 # Test interactive submodule selection with here string (selecting options 1,2)
-test_config_submodule_select_interactive_only() {
+test_config_submodule_select_interactive() {
     # If config exists, we'll need 'y' to confirm overwrite, then '1,2' for selection
     # If it's the first run, just '1,2' is needed
     # This handles both cases with a single multi-line input
-    D config submodule_select <<< $'1,2'
+
     # local output
-    # output=$(D config submodule_select <<< $'1,2')
-    D config pri
+    output=$(D config submodule_select <<< $'1,2')
+
     # Verify the submodules were added to the configuration
     local submodules
     submodules=$(D config --scope=repository get submodules)
@@ -57,7 +57,7 @@ test_config_submodule_select_interactive_only() {
 test_config_submodule_select_all() {
     # If config exists, we'll need 'y' to confirm overwrite, then 'all' for selection
     local output
-    output=$(D config submodule_select <<< $'y\nall')
+    output=$(D config submodule_select <<< $'all')
     
     # Verify all submodules were added to the configuration
     local submodules
@@ -76,25 +76,24 @@ test_config_submodule_select_all() {
 # Test interactive submodule selection with empty input
 test_config_submodule_select_empty() {
     # First set up some initial submodules
-    D config submodule_select <<< $'y\n1,2' > /dev/null
+    D config submodule_select <<< $'1,2' > /dev/null
     
     # Run the command with empty input
     # If a config exists, we'll first need 'y' to confirm overwrite, then '' for empty selection
     local output
     output=$(D config submodule_select <<< $'y\n')
     
-    # The original selections should remain unchanged
+    # The must unset all selected submodules
     local submodules
     submodules=$(D config --scope=repository get submodules)
-    
-    assert_contains "$submodules" "test-submodule" "Original selection should be preserved with empty input"
-    assert_contains "$submodules" "submodule1" "Original selection should be preserved with empty input"
+
+    assert_equals "[]" "$submodules" "Submodules array should be empty after selecting none"
 }
 
 # Test confirmation dialog with "no" response
 test_config_submodule_select_confirmation_no() {
     # First set up some initial submodules
-    D config submodule_select <<< $'y\n1,2' > /dev/null
+    D config submodule_select <<< $'1,2' > /dev/null
     
     # Now run the command but respond "n" to the confirmation prompt
     local output

@@ -8,9 +8,9 @@
 # Optional: Suite setup - runs once before all tests in this file
 setup_test() {
     # Create some test files
-    create_test_file "$TEST_WORKSPACE/sample.txt" "Hello, World!"
-    create_test_file "$TEST_WORKSPACE/empty.txt"
-    create_test_dir "$TEST_WORKSPACE/subdir"
+    create_test_file "$TEST_CTX/sample.txt" "Hello, World!"
+    create_test_file "$TEST_CTX/empty.txt"
+    create_test_dir "$TEST_CTX/subdir"
 }
 
 # Optional: Test setup - runs before each individual test
@@ -52,18 +52,18 @@ test_string_operations() {
 
 test_file_operations() {
     # Test file existence
-    assert_file_exists "$TEST_WORKSPACE/sample.txt" "Sample file should exist"
-    assert_file_not_exists "$TEST_WORKSPACE/nonexistent.txt" "Nonexistent file should not exist"
+    assert_file_exists "$TEST_CTX/sample.txt" "Sample file should exist"
+    assert_file_not_exists "$TEST_CTX/nonexistent.txt" "Nonexistent file should not exist"
     
     # Test directory existence
-    assert_dir_exists "$TEST_WORKSPACE" "Test workspace should exist"
-    assert_dir_exists "$TEST_WORKSPACE/subdir" "Subdirectory should exist"
+    assert_dir_exists "$TEST_CTX" "Test workspace should exist"
+    assert_dir_exists "$TEST_CTX/subdir" "Subdirectory should exist"
 }
 
 test_command_execution() {
     # Test command success and failure
     assert_command_success "echo 'hello world'" "Echo command should succeed"
-    assert_command_success "ls $TEST_WORKSPACE" "Listing test workspace should succeed"
+    assert_command_success "ls $TEST_CTX" "Listing test workspace should succeed"
     
     assert_command_fails "ls /nonexistent/directory/that/does/not/exist" "Listing nonexistent directory should fail"
     assert_command_fails "false" "False command should fail"

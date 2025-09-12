@@ -18,7 +18,7 @@ test_secret_key_set_interactive_prompt() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -29,11 +29,11 @@ test_secret_key_set_interactive_prompt() {
     # Test interactive prompt behavior
     local test_key="fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
     local output
-    output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+    output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 $test_key
 EOF
 )ssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -43,13 +43,13 @@ EOF
     
     # Try to set an empty key
     local output
-    output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+    output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 
 EOF
 )file
 setup_test() {
     # Set up secrets directory
-    export SECRETS_DIR="$TEST_WORKSPACE/secrets"
+    export SECRETS_DIR="$TEST_CTX/secrets"
     mkdir -p "$SECRETS_DIR" 2>/dev/null || {
         # If we can't create the secrets directory, skip all tests
         export SKIP_TESTS="true"
@@ -66,13 +66,13 @@ test_secret_key_set_requires_openssl() {
     
     # Skip if OpenSSL is not available (we can't easily test this scenario)
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
         # OpenSSL not available - key-set should fail
         local output
-        output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+        output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 test_key_123
 EOF
 )
@@ -91,7 +91,7 @@ test_secret_key_set_basic_functionality() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -102,7 +102,7 @@ test_secret_key_set_basic_functionality() {
     # Set a valid encryption key
     local valid_key="abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
     local output
-    output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+    output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 $valid_key
 EOF
 )
@@ -113,7 +113,7 @@ EOF
         
         # Verify key was set by checking if we can show it
         local show_output
-        show_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-show 2>&1)
+        show_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-show 2>&1)
         local show_result=$?
         
         if [ "$show_result" -eq 0 ]; then
@@ -159,7 +159,7 @@ test_secret_key_set_invalid_key_format() {
     # Try to set an invalid key (too short, non-hex characters)
     local invalid_key="invalid_key_123"
     local output
-    output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+    output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 $invalid_key
 y
 EOF
@@ -185,7 +185,7 @@ test_secret_key_set_existing_key_no_secrets() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -196,7 +196,7 @@ test_secret_key_set_existing_key_no_secrets() {
     # First set a key
     local first_key="1111111111111111111111111111111111111111111111111111111111111111"
     local output1
-    output1=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+    output1=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 $first_key
 EOF
 )
@@ -210,7 +210,7 @@ EOF
     # Try to set a different key when one already exists (no secrets)
     local second_key="2222222222222222222222222222222222222222222222222222222222222222"
     local output2
-    output2=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+    output2=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 $second_key
 EOF
 )
@@ -230,7 +230,7 @@ test_secret_key_set_validates_with_existing_secrets() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -240,7 +240,7 @@ test_secret_key_set_validates_with_existing_secrets() {
     
     # First add a secret (this will create a key automatically)
     local add_output
-    add_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
+    add_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret add <<EOF 2>&1
 VALIDATION_SECRET
 validation_value
 EOF
@@ -254,7 +254,7 @@ EOF
     
     # Get the current key so we can test with it
     local current_key_output
-    current_key_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-show 2>&1)
+    current_key_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-show 2>&1)
     local current_key_result=$?
     
     if [ "$current_key_result" -ne 0 ]; then
@@ -267,7 +267,7 @@ EOF
     
     # Now try to set the same key again (should work since it matches existing secrets)
     local output
-    output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+    output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 $current_key
 EOF
 )
@@ -280,7 +280,7 @@ EOF
     # Try to set a wrong key (should fail validation against existing secrets)
     local wrong_key="9999999999999999999999999999999999999999999999999999999999999999"
     local wrong_output
-    wrong_output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+    wrong_output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 $wrong_key
 EOF
 )
@@ -301,7 +301,7 @@ test_secret_key_set_valid_hex_key() {
     
     # Check if OpenSSL is available first
     local openssl_check
-    openssl_check=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
+    openssl_check=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret available --quiet 2>&1)
     local result=$?
     
     if [ "$result" -ne 0 ]; then
@@ -312,7 +312,7 @@ test_secret_key_set_valid_hex_key() {
     # Set a properly formatted 64-character hex key
     local valid_hex_key="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
     local output
-    output=$(cd "$TEST_WORKSPACE" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
+    output=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret key-set <<EOF 2>&1
 $valid_hex_key
 EOF
 )
