@@ -21,7 +21,7 @@ test_ai_available_without_api_key() {
     
     # Run availability check and capture exit code
     local result
-    d ai available --quiet > /dev/null 2>&1
+    D ai available > /dev/null 2>&1
     result=$?
     
     # Should return non-zero exit code when API key is missing
@@ -35,7 +35,7 @@ test_ai_available_with_api_key() {
     
     # Run availability check
     local result
-    d ai available --quiet > /dev/null 2>&1
+    D ai available --quiet > /dev/null 2>&1
     result=$?
     
     # Should return zero exit code when API key is present
@@ -49,7 +49,7 @@ test_ai_available_output_format() {
     
     # Run availability check and capture output
     local output
-    output=$(d ai available 2>&1)
+    output=$(D ai available 2>&1)
     
     # Check that output contains expected information
     assert_contains "$output" "AI services are available" "Output should confirm availability"
@@ -65,13 +65,13 @@ test_sdk_fac_ai_is_available_function() {
     unset OPENAI_API_KEY
     
     # Should return false without API key
-    d ai function sdk_fac_ai_is_available
+    D ai function sdk_fac_ai_is_available
     local result=$?
     assert_not_equals "0" "$result" "Function should return false without API key"
     
     # Set API key and test again
     export OPENAI_API_KEY="sk-test123"
-    d ai function sdk_fac_ai_is_available
+    D ai function sdk_fac_ai_is_available
     result=$?
     assert_equals "0" "$result" "Function should return true with API key"
 }

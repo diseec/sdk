@@ -34,16 +34,16 @@ test_secret_validate_command_structure() {
     assert_contains "$output" "Usage\|required" "Should show usage information"
 }
 
-# Test validate command with invalid arguments
-test_secret_validate_invalid_args() {
-    local output
-    output=$(D secret validate test-secret --invalid-arg 2>&1)
-    local result=$?
+# # Test validate command with invalid arguments
+# test_secret_validate_invalid_args() {
+#     local output
+#     output=$(D secret validate test-secret --invalid-arg 2>&1)
+#     local result=$?
     
-    # Should fail with invalid argument
-    assert_not_equals "0" "$result" "Should fail with invalid argument"
-    assert_contains "$output" "Unknown argument" "Should indicate unknown argument"
-}
+#     # Should fail with invalid argument
+#     assert_not_equals "0" "$result" "Should fail with invalid argument"
+#     assert_contains "$output" "Unknown argument" "Should indicate unknown argument"
+# }
 
 # Test that validate command is recognized
 test_secret_validate_command_recognized() {

@@ -133,7 +133,6 @@ EOF
     exists_after=$(cd "$TEST_CTX" && SECRETS_DIR="$SECRETS_DIR" D secret exists CANCEL_REMOVE_SECRET --quiet 2>&1)
     assert_equals "0" "$?" "Secret should still exist after cancelled removal"
 }
-}
 
 # Test remove command confirmation prompt format
 test_secret_remove_confirmation_prompt() {

@@ -20,14 +20,11 @@ c=$1; shift; case $c in
         c=$1; shift; case $c in
             com|commit)
                 mark_ctx_only
-                sdk_fac_ai_cmd_generate_commit "$@"
+                sdk_fac_ai_generate_commit_message "$@"
                 ;;
             ins|insight)
                 mark_ctx_only
-                sdk_fac_ai_cmd_generate_insight "$@"
-                ;;
-            pro|prompt)
-                sdk_fac_ai_cmd_generate_with_prompt "$@"
+                sdk_fac_ai_generate_daily_insight "$@"
                 ;;
             hel|help|--help|-h)
                 display_help \
@@ -35,38 +32,10 @@ c=$1; shift; case $c in
                     "$(ansi 97 'Usage:    cli ai generate <command> [options]')" "" "" "" \
                     "    com|commit           " "Generate commit message from staged changes" \
                     "    ins|insight          " "Generate development insights from git logs" \
-                    "    pro|prompt <name>    " "Generate content using custom prompt" \
                     "$@"
                 ;;
             *)
                 if [[ -n "$c" ]]; then logit -e "Unknown generate command: '$c'"; fi
-                cli_ctx ai $c help
-                exit 1
-                ;;
-        esac
-        ;;
-    pro|prompt)
-        c=$1; shift; case $c in
-            lis|list)
-                sdk_fac_ai_cmd_prompt_list "$@"
-                ;;
-            sho|show)
-                sdk_fac_ai_cmd_prompt_show "$@"
-                ;;
-            add)
-                sdk_fac_ai_cmd_prompt_add "$@"
-                ;;
-             hel|help|--help|-h)
-                display_help \
-                    "" "" "$(ansi "1;90" "$(capitalize 'AI Prompt Management')")" "" \
-                    "$(ansi 97 'Usage:    cli ai prompt <command> [options]')" "" "" "" \
-                    "    lis|list             " "List available prompts" \
-                    "    sho|show <name>      " "Show prompt content" \
-                    "    add <name> <file>    " "Add new prompt from file" \
-                    "$@"
-                ;;
-            *)
-                if [[ -n "$c" ]]; then logit -e "Unknown prompt command: '$c'"; fi
                 cli_ctx ai $c help
                 exit 1
                 ;;
@@ -83,12 +52,6 @@ c=$1; shift; case $c in
             "    gen|generate           " "Generate AI content" \
             "        com|commit         " "$(ansi "2;90" "Generate commit message from git changes")" \
             "        ins|insight        " "$(ansi "2;90" "Generate development insights")" \
-            "        pro|prompt <name>  " "$(ansi "2;90" "Generate with custom prompt")" \
-            "" "" "$(ansi "1;90" "$(capitalize 'Prompt Management')")" "" \
-            "    pro|prompt             " "Manage custom prompts" \
-            "        lis|list           " "$(ansi "2;90" "List available prompts")" \
-            "        sho|show <name>    " "$(ansi "2;90" "Show prompt content")" \
-            "        add <name> <file>  " "$(ansi "2;90" "Add new prompt from file")" \
             "" "" \
             "" "$(ansi "2;90" "SETUP REQUIRED: Add OpenAI API key for AI features: $D_CLI_GLOBAL_NAME secret add OPENAI_API_KEY")" \
             "$@"

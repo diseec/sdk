@@ -48,7 +48,7 @@ sdk_fac_ai_generate() {
     
     # Check token count for logging
     local token_count=$(sdk_fac_ai_count_tokens "$prompt")
-    echo "Sending prompt with ~$token_count tokens to model $model" >&2
+    logit -i "Sending prompt with ~$token_count tokens to model $model" >&2
     
     local response=$(sdk_fac_ai_call_openai "$prompt" "$model" "$temperature" "$max_tokens")
     

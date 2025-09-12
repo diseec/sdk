@@ -15,7 +15,7 @@ export FAC_AI_MAX_INPUT_TOKENS="10000"
 # Returns: 0 if successful, 1 if failed
 sdk_fac_ai_init_interactive() {
     if cli_ctx secret validate "OPENAI_API_KEY"; then
-        # export OPENAI_API_KEY="$(cli_ctx secret export OPENAI_API_KEY)"
+        export OPENAI_API_KEY="$(cli_ctx secret export OPENAI_API_KEY)"
         return 0
     else
         logit -e "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2

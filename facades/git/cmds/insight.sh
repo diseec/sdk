@@ -329,7 +329,7 @@ sdk_fac_git_cmd_generate_insight_report() {
         logit -a "Writing daily insights..."
         echo ""
 
-        local ai_insight=$(cli_ctx ai function sdk_fac_ai_generate_daily_insight "$analysis_data")
+        local ai_insight=$(cli_ctx ai generate insight "$analysis_data")
         
         if [ -n "$ai_insight" ]; then
             # Save the result to cache

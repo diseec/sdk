@@ -20,7 +20,7 @@ c=$1; shift; case $c in
     inf|informs)    mark_ctx_only; source "$D_SDK_DIR/informs/cli.sh" "$@" ;;
     con|config)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/config/cli.sh" "$@" ;;
     doc|docker)     source "$D_SDK_DIR/facades/docker/cli.sh" "$@" ;;
-    git)            source "$D_SDK_DIR/facades/git/cli.sh" "$@" ;;
+    git)            source_safely "$D_SDK_DIR/facades/git/cli.sh" "$@" ;;
     int|internet)   source_safely "$D_SDK_DIR/facades/internet/cli.sh" "$@" ;;
     ain|ai)         source_safely "$D_SDK_DIR/facades/ai/cli.sh" "$@" ;;
     env|envs)       source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
