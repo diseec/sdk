@@ -22,9 +22,7 @@ source_once "$D_SDK_DIR/lib/tester/core/reporter.sh"
 source_once "$D_SDK_DIR/lib/tester/core/suite.sh"
 
 # Initialize tester framework
-sdk_tester_initialize() {
-    export D_ENV="TESTING"; 
-    
+sdk_tester_initialize() { 
     # Disable TTY functionality during tests
     export D_TTY_AVAILABLE="false"
 
