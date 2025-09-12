@@ -14,7 +14,7 @@ sdk_fac_ai_cmd_prompt_list() {
                 verbose_flag=true
                 ;;
             *)
-                logit -e "Unknown argument: $arg"
+                logit -e "sdk_fac_ai_cmd_prompt_list: Unknown argument: $arg"
                 return 1
                 ;;
         esac

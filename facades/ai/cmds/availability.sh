@@ -14,7 +14,7 @@ sdk_fac_ai_cmd_check_availability() {
                 quiet_flag=true
                 ;;
             *)
-                logit -e "Unknown argument: $arg"
+                logit -e "sdk_fac_ai_cmd_check_availability: Unknown argument: $arg"
                 return 1
                 ;;
         esac

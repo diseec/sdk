@@ -170,7 +170,7 @@ sdk_fac_sec_cmd_check_availability() {
                 quiet_flag=true
                 ;;
             *)
-                logit -e "Unknown argument: $arg"
+                logit -e "sdk_fac_sec_cmd_check_availability: Unknown argument: $arg"
                 return 1
                 ;;
         esac
@@ -206,10 +206,9 @@ sdk_fac_sec_cmd_check_availability() {
 }
 
 # Validate and prepare a secret (interactive)
-# Usage: sdk_fac_sec_cmd_validate_secret <secret_name> [--quiet]
+# Usage: sdk_fac_sec_cmd_validate_secret <secret_name>
 sdk_fac_sec_cmd_validate_secret() {
     local secret_name="$1"
-    local quiet_flag=false
     
     if [ -z "$secret_name" ]; then
         logit -e "Secret name required"
@@ -218,33 +217,11 @@ sdk_fac_sec_cmd_validate_secret() {
     fi
     shift
     
-    # Parse remaining arguments
-    for arg in "$@"; do
-        case $arg in
-            --quiet|-q)
-                quiet_flag=true
-                ;;
-            *)
-                logit -e "Unknown argument: $arg"
-                return 1
-                ;;
-        esac
-    done
-    
-    if [ "$quiet_flag" != "true" ]; then
-        logit -i "Validating secret '$secret_name'..."
-    fi
     
     # Use the existing validation function
     if sdk_fac_sec_validate_and_prepare_secret_interactive "$secret_name"; then
-        if [ "$quiet_flag" != "true" ]; then
-            logit -s "Secret '$secret_name' is valid and ready to use"
-        fi
         return 0
     else
-        if [ "$quiet_flag" != "true" ]; then
-            logit -e "Failed to validate secret '$secret_name'"
-        fi
         return 1
     fi
 }
@@ -269,7 +246,7 @@ sdk_fac_sec_cmd_secret_exists() {
                 quiet_flag=true
                 ;;
             *)
-                logit -e "Unknown argument: $arg"
+                logit -e "sdk_fac_sec_cmd_secret_exists: Unknown argument: $arg"
                 return 1
                 ;;
         esac

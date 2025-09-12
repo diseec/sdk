@@ -18,7 +18,7 @@ sdk_fac_ai_cmd_generate_commit() {
                 temperature="${arg#*=}"
                 ;;
             *)
-                logit -e "Unknown argument: $arg"
+                logit -e "sdk_fac_ai_cmd_generate_commit: Unknown argument: $arg"
                 return 1
                 ;;
         esac
@@ -72,7 +72,7 @@ sdk_fac_ai_cmd_generate_insight() {
                 input_file="${arg#*=}"
                 ;;
             *)
-                logit -e "Unknown argument: $arg"
+                logit -e "sdk_fac_ai_cmd_generate_insight: Unknown argument: $arg"
                 return 1
                 ;;
         esac
@@ -147,7 +147,7 @@ sdk_fac_ai_cmd_generate_with_prompt() {
                 input_data="${arg#*=}"
                 ;;
             *)
-                logit -e "Unknown argument: $arg"
+                logit -e "sdk_fac_ai_cmd_generate_with_prompt: Unknown argument: $arg"
                 return 1
                 ;;
         esac
