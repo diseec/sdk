@@ -52,7 +52,7 @@ jobs:
 
       - name: Load envs
         run: |
-          set -a; eval "$(D envs)"; set +a;
+          set -a; eval "$(bash cli envs)"; set +a;
           echo "D_REGISTRY_URL=$D_REGISTRY_URL" >> $GITHUB_ENV
 
       - name: Set up QEMU
