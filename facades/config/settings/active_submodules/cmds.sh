@@ -3,11 +3,11 @@
 # commands.sh - Command handlers for workspace operations
 
 # Show workspace status
-sdk_fac_con_opt_act_status() {
+sdk_fac_con_set_act_status() {
     local config_file="$(sdk_fac_con_get_config_file repository)"
     if [ -f "$config_file" ]; then
         logit "config: $config_file"
-        local selected_modules=$(sdk_fac_con_opt_act_get_selected_modules)
+        local selected_modules=$(sdk_fac_con_set_act_get_selected_modules)
         if [ -n "$selected_modules" ]; then
             active_modules=""
             for module in $selected_modules; do
@@ -28,8 +28,8 @@ sdk_fac_con_opt_act_status() {
 }
 
 # Select submodules for workspace
-sdk_fac_con_opt_act_select() {
+sdk_fac_con_set_act_select() {
     # Always run in interactive mode
     logit --ansi="34" --icon="Submodules" "Active submodules for your workspace"
-    sdk_fac_con_opt_act_create_config
+    sdk_fac_con_set_act_create_config
 }

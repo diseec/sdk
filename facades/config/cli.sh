@@ -59,8 +59,8 @@ c=$1; shift; case $c in
     ;;
 
     # Available settings
-    sse|submodule_select) sdk_fac_con_opt_act_select "$@" ;;
-    sst|submodule_status) sdk_fac_con_opt_act_status "$@" ;;
+    sse|submodule_select) sdk_fac_con_set_act_select "$@" ;;
+    sst|submodule_status) sdk_fac_con_set_act_status "$@" ;;
 
     hel|help|--help|-h) display_help "" "" \
     "$(ansi "1;90" "$(capitalize 'Configuration Management System')")" "" \

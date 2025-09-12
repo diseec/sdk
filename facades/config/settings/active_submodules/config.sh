@@ -12,7 +12,7 @@
 # =============================================================================
 
 # Create configuration with new structure
-sdk_fac_con_opt_act_create_config() {
+sdk_fac_con_set_act_create_config() {
     local config_file="$(sdk_fac_con_get_config_file repository)"
 
     # Check if config already exists and has content
@@ -28,7 +28,7 @@ sdk_fac_con_opt_act_create_config() {
 
     # TODO: this bit must be extracted from here, this file is internal funcitonality but the followings are a specific settings, have a settings dir keep these in
     # Get available submodules
-    available_modules=$(sdk_fac_con_opt_act_get_available_modules)
+    available_modules=$(sdk_fac_con_set_act_get_available_modules)
     
     if [ -z "$available_modules" ]; then
         logit -w "No submodules found in .gitmodules"

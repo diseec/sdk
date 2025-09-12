@@ -395,7 +395,7 @@ sdk_fac_git_cmd_daily_insight() {
     collect_repo_data_wrapper "$D_REPO_NAME" "."
     
     # Process all selected submodules
-    cli_ctx config function sdk_fac_con_opt_act_foreach_selected_module collect_repo_data_wrapper
+    cli_ctx config function sdk_fac_con_set_act_foreach_selected_module collect_repo_data_wrapper
     
     # Check if any data was collected
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then

@@ -83,7 +83,7 @@ sdk_fac_ins_cmd_update() {
             cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 update.--recursive
             logit -l "Updated dependencies for '$module'."
         }
-        cli_ctx config function sdk_fac_con_opt_act_foreach_selected_module update_dependencies
+        cli_ctx config function sdk_fac_con_set_act_foreach_selected_module update_dependencies
     fi
 
     handle_hook after_update

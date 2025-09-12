@@ -38,7 +38,7 @@ sdk_fac_ins_repository() {
             _git submodule update --init --recursive --remote "$module_path"
             logit -l "Initialized submodule '$module_path'."
         }
-        cli_ctx config function sdk_fac_con_opt_act_foreach_selected_module initialize_submodule
+        cli_ctx config function sdk_fac_con_set_act_foreach_selected_module initialize_submodule
     fi
 
     cli_ctx sdk stop;
@@ -51,7 +51,7 @@ sdk_fac_ins_repository() {
             cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive
             logit -l "Installed dependencies for '$module'."
         }
-        cli_ctx config function sdk_fac_con_opt_act_foreach_selected_module install_dependencies
+        cli_ctx config function sdk_fac_con_set_act_foreach_selected_module install_dependencies
     fi
 
     handle_hook after_install
