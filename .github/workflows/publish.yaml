@@ -52,8 +52,7 @@ jobs:
 
       - name: Load envs
         run: |
-          bash cli envs
-          bash cli envs >> $GITHUB_ENV
+          bash sdk envs >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
