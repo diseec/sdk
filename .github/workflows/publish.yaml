@@ -52,7 +52,7 @@ jobs:
 
       - name: Load envs
         run: |
-          . D envs; # need to cd to the root of the project this way it uses the servers global D envs
+          eval "$(D envs)";
           echo "D_REGISTRY_URL=$D_REGISTRY_URL" >> $GITHUB_ENV
 
       - name: Set up QEMU
