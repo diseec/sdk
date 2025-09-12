@@ -37,8 +37,9 @@ test_config_submodule_select_interactive_only() {
     # If config exists, we'll need 'y' to confirm overwrite, then '1,2' for selection
     # If it's the first run, just '1,2' is needed
     # This handles both cases with a single multi-line input
-    local output
-    output=$(D config submodule_select <<< $'1,2')
+    D config submodule_select <<< $'1,2'
+    # local output
+    # output=$(D config submodule_select <<< $'1,2')
     D config pri
     # Verify the submodules were added to the configuration
     local submodules

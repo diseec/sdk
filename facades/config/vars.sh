@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly DEFAULT_SCOPE="context"
+readonly DEFAULT_SCOPE="repository"
 
 # =============================================================================
 # FUNDAMENTAL ARCHITECTURAL

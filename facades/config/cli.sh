@@ -13,7 +13,7 @@ sdk_fac_con_init >/dev/null 2>&1
 # Main configuration CLI handler
 
 # Extract scope option from arguments and preserve remaining arguments
-SCOPE=""
+SCOPE="$DEFAULT_SCOPE"
 FILTERED_ARGS=()
 NEXT_IS_SCOPE=""
 
@@ -52,11 +52,7 @@ c=$1; shift; case $c in
     rem|remove) sdk_fac_con_delete "$1" "$2" "$SCOPE" ;;
     pat|path) sdk_fac_con_get_config_file "$SCOPE" ;;
     whi|which) sdk_fac_con_which "$@" ;;
-    pri|print) 
-        # Print can work without scope (prints all scopes) or with scope
-        if [ -n "$SCOPE" ]; then sdk_fac_con_print "$@" "$SCOPE"
-        else sdk_fac_con_print "$@"; fi
-    ;;
+    pri|print) sdk_fac_con_print "$@" ;;
 
     # Available settings
     sse|submodule_select) sdk_fac_con_set_act_select "$@" ;;

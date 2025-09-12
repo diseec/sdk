@@ -49,7 +49,7 @@ sdk_fac_con_get() {
     # Search through scopes in order of precedence
     for scope in $CONFIG_SCOPES; do
         local config_file="$(sdk_fac_con_get_config_file "$scope")"
-        
+
         # Skip if config file doesn't exist for this scope
         if [ ! -f "$config_file" ]; then
             continue
@@ -100,6 +100,9 @@ sdk_fac_con_set() {
     sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
 
     logit -l "Set '$key_path' in '$scope' scope with value: $value"
+    x
+        cat $config_file
+    x
     
     return 0
 }

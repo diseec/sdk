@@ -81,6 +81,8 @@ test_config_set_overwrite() {
     # Verify it was overwritten
     local value
     value=$(D config --scope=repository get overwrite.test)
+    D config pri
+    exit 1
     assert_equals "new_value" "$value" "Should overwrite existing value"
 }
 

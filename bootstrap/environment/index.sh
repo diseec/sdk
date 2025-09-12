@@ -13,7 +13,10 @@ sdk_boo_env_setup_environment() {
     source $D_SDK_DIR/bootstrap/environment/utils/validate_environment.sh
     source $D_SDK_DIR/bootstrap/environment/utils/computed_paths.sh
 
+    : ${D_ENV:=DEVELOPMENT}
     export D_ENV # Valid environments: DEVELOPMENT, TESTING, PRODUCTION
+
+    export D_TTY_AVAILABLE="true"
 
     # =============================================================================
     # STORE ORIGINAL ENVIRONMENT VARIABLES
