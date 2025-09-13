@@ -53,7 +53,7 @@ sdk_fac_ins_ensure_patched() {
     mark_ctx_only
     local is_forced="${_D_SDK_PATCH_FORCE:-false}";
     local sdk_dir="$D_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH";
-
+x $D_CTX_DIR
     # Patch operation applied only either asked to or target project is missing the sdk
     if { [ _D_SDK_HAS_PATCHED != "true" ] && \
         [ -f "$D_CTX_DIR/$D_CLI_LOCAL_NAME" ] && \

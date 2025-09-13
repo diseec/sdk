@@ -5,8 +5,9 @@
 source "${D_SDK_DIR:-$(cd "$(npm root -g)" && pwd)"/@diseec/sdk"}/index.sh"
 
 if [ -n "$D_CTX_DIR" ]; then
+    x $D_CTX_DIR
     cli_ctx install function sdk_fac_ins_ensure_patched
-    # ("$D_CLI_STUB" "$@")
+    ("$D_CLI_STUB" "$@")
 else
     ("$D_CLI_SDK" "$@")
 fi
