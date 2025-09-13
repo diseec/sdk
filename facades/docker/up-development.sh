@@ -11,7 +11,7 @@ sdk_fac_doc_up_development() {
     handle_hook before_dev
 
     # Filter services based on workspace configuration
-    services_filter=$(cli_ctx config function sdk_fac_con_set_act_get_services_filter)
+    services_filter=$(cli_ctx config function sdk_fac_sub_fea_act_get_services_filter)
 
     if [ "$D_IS_IN_CONTAINER" = "true" ]; then
         if [ -f "$D_CTX_DIR/docker-compose.override.yaml" ]; then

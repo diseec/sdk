@@ -20,7 +20,7 @@ sdk_fac_ins_repository() {
 
     # cli_ctx sdk start;
 
-    _git config --global credential.helper store
+    cli_ctx git _ config --global credential.helper store
 
     cli_ctx git function sdk_fac_git_cmd_checkout_branch
     cli_ctx git function sdk_fac_git_cmd_checkout_if_detached
@@ -32,7 +32,7 @@ sdk_fac_ins_repository() {
             _git submodule update --init --recursive --remote "$module_path"
             logit -l "Initialized submodule '$module_path'."
         }
-        cli_ctx config function sdk_fac_con_set_act_foreach_selected_module initialize_submodule
+        cli_ctx submodule foreach initialize_submodule
     fi
 
     # cli_ctx sdk stop;
@@ -42,10 +42,10 @@ sdk_fac_ins_repository() {
         install_dependencies() {
             local module="$1"
             local module_path="$2"
-            cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive
+            (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive)
             logit -l "Installed dependencies for '$module'."
         }
-        cli_ctx config function sdk_fac_con_set_act_foreach_selected_module install_dependencies
+        cli_ctx submodule foreach install_dependencies
     fi
 
     handle_hook after_install

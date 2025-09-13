@@ -57,18 +57,9 @@ c=$1; shift; case $c in
         else sdk_fac_con_print "$@"; fi
     ;;
 
-    # Available settings
-    sse|submodule_select) sdk_fac_con_set_act_select "$@" ;;
-    sst|submodule_status) sdk_fac_con_set_act_status "$@" ;;
-
     hel|help|--help|-h) display_help "" "" \
     "$(ansi "1;90" "$(capitalize 'Configuration Management System')")" "" \
     "" "" "$(ansi "1;90" "$(capitalize 'Usage')")" "    config <command> [SCOPE_OPTIONS] [arguments]" \
-    "" "" "$(ansi "1;90" "$(capitalize 'Available Settings')")" "" \
-    "    $(ansi "1;2;90" "$(capitalize 'Submodule')")" "" \
-    "    sse|submodule_select     " "Activate submodules for workspace" \
-    "    sst|submodule_status     " "Show active submodules in workspace" \
-    "" "" "$(ansi "1;90" "$(capitalize 'Basic Commands')")" "" \
     "    get                      " "Get configuration value with hierarchy resolution" \
     "                             " "$(ansi "2;90" "Example: get <key.path>")" \
     "    set                      " "Set configuration value" \

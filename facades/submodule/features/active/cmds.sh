@@ -3,11 +3,11 @@
 # commands.sh - Command handlers for workspace operations
 
 # Show workspace status
-sdk_fac_con_set_act_status() {
-    local config_file="$(sdk_fac_con_get_config_file repository)"
+sdk_fac_sub_fea_act_status() {
+    local config_file="$(cli_ctx config function sdk_fac_con_get_config_file repository)"
     if [ -f "$config_file" ]; then
         logit "config: $config_file"
-        local selected_modules=$(sdk_fac_con_set_act_get_selected_modules)
+        local selected_modules=$(sdk_fac_sub_fea_act_get_selected_modules)
         if [ -n "$selected_modules" ]; then
             active_modules=""
             for module in $selected_modules; do
@@ -28,12 +28,12 @@ sdk_fac_con_set_act_status() {
 }
 
 # Select submodules for workspace
-sdk_fac_con_set_act_select() {
-    local config_file="$(sdk_fac_con_get_config_file repository)"
+sdk_fac_sub_fea_act_select() {
+    local config_file="$(cli_ctx config function sdk_fac_con_get_config_file repository)"
 
     # Check if config already exists and has content
     if [ -f "$config_file" ] && [ -s "$config_file" ]; then
-        local submodules="$(sdk_fac_con_get submodules repository 2>/dev/null)"
+        local submodules="$(cli_ctx config function sdk_fac_con_get submodules repository 2>/dev/null)"
         if [ "$submodules" != "null" ] && [ -n "$submodules" ]; then
             if ! confirm "Config already exists. Overwrite?"; then
                 logit -i "Keeping existing configuration"
@@ -44,7 +44,7 @@ sdk_fac_con_set_act_select() {
 
     # TODO: this bit must be extracted from here, this file is internal funcitonality but the followings are a specific settings, have a settings dir keep these in
     # Get available submodules
-    available_modules=$(sdk_fac_con_set_act_get_available_modules)
+    available_modules=$(sdk_fac_sub_fea_act_get_available_modules)
     
     if [ -z "$available_modules" ]; then
         logit -w "No submodules found in .gitmodules"
@@ -92,12 +92,12 @@ sdk_fac_con_set_act_select() {
     # Create YAML array from selected modules
     if [ -n "$selected_modules" ]; then
         # Set the submodules array using the YAML format
-        sdk_fac_con_set submodules "[$(echo $selected_modules | tr ' ' ',')]" repository
+        cli_ctx config function sdk_fac_con_set submodules "[$(echo $selected_modules | tr ' ' ',')]" repository
 
         logit -i "Activated modules: $(echo $selected_modules | tr ' ' ', ')"
     else
         # Set empty array if no modules selected
-        sdk_fac_con_set submodules "[]" repository
+        cli_ctx config function sdk_fac_con_set submodules "[]" repository
         logit -w "Cleared all selected modules"
     fi
 }

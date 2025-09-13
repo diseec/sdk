@@ -493,7 +493,7 @@ The most reliable way to test interactive commands is using Bash's here strings 
 local output=$(D interactive-command <<< "y")
 
 # Using here string for multiple inputs (for simple cases require less than 2 simple inputs)
-local output=$(D config submodule_select <<< $'y\n1,2')
+local output=$(D submodule select <<< $'y\n1,2')
 
 # Using here document for multiple lines of input
 local output=$(D interactive-sequence << EOF

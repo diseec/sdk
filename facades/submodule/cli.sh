@@ -86,6 +86,14 @@ if [[ -n "$target_dir" ]]; then
 fi
 
 case $command in
+
+    # Feature 
+    sel|select) sdk_fac_sub_fea_act_select "$@" ;;
+    sta|status) sdk_fac_sub_fea_act_status "$@" ;;
+    for|foreach) sdk_fac_sub_fea_act_foreach_selected_module "$@" ;;
+    act|actives) sdk_fac_sub_fea_act_get_selected_module_paths "$@" ;;
+
+    # Core submodule commands
     add)
         if [[ -z "$repo_name" ]]; then
             logit -e "Repository name is required for add command"
@@ -175,6 +183,10 @@ case $command in
     hel|help|--help|-h) display_help "" "" \
         "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[$D_CLI_GLOBAL_NAME] submodule <command> submodule_type/path/to/reponame [options] [arguments]" \
         "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$D_ORG_NAME/$D_SDK_NAME")")" \
+        "" "" "$(ansi "1;90" "$(capitalize 'Features')")" "" \
+        "    $(ansi "1;2;90" "$(capitalize 'Active Modules')")" "" \
+        "    sse|select               " "Activate submodules for workspace" \
+        "    sst|status               " "Show active submodules in workspace" \
         "" "" "$(ansi "1;90" "$(capitalize 'Commands')")" "" \
         "    add <path>               " "Add a new submodule from repository" \
         "    rem|remove|rm <path>     " "Remove an existing submodule" \

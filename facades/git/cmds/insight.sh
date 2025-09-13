@@ -310,7 +310,7 @@ sdk_fac_git_cmd_daily_insight() {
     
     # Process main repository and submodules
     _process_repo "$D_REPO_NAME" "."
-    cli_ctx config function sdk_fac_con_set_act_foreach_selected_module _process_repo
+    cli_ctx submodule foreach _process_repo
     
     # Check if any data was collected
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then

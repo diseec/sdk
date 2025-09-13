@@ -15,7 +15,7 @@ c=$1; shift; case $c in
     dai|daily)      mark_ctx_only; cli_ctx git insight-day "$@" ;;
     pru|prune)      cli_ctx docker _ system prune "$@" ;;
     for|format)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/format/cli.sh" prettier "$@" ;;
-    sub|submodule)  mark_ctx_only; source "$D_SDK_DIR/facades/submodule/cli.sh" "$@" ;;
+    sub|submodule)  mark_ctx_only; source_safely "$D_SDK_DIR/facades/submodule/cli.sh" "$@" ;;
     sec|secret)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/secret/cli.sh" "$@" ;;
     inf|informs)    mark_ctx_only; source_safely "$D_SDK_DIR/informs/cli.sh" "$@" ;;
     con|config)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/config/cli.sh" "$@" ;;

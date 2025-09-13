@@ -6,8 +6,8 @@ if [ $# -eq 0 ]; then set -- repository; fi
 
 c=$1; shift; case $c in
     pat|patch) sdk_fac_ins_sdk "$@" ;;
-    rep|repository) safely && sdk_fac_ins_repository "$@" ;;
-    upd|update) safely && sdk_fac_ins_cmd_update "$@" ;;
+    rep|repository) sdk_fac_ins_repository "$@" ;;
+    upd|update) sdk_fac_ins_cmd_update "$@" ;;
     pre|prettier) sdk_fac_ins_prettier "$@" ;;
     glo|globally) sdk_fac_ins_globally "$@" ;;
     sys|system) c=$1; shift; case $c in

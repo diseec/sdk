@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test for the 'config submodule_select' command
+# Test for the 'submodule select' command
 
 # Suite setup - runs once before all tests in this file
 setup_test() {
@@ -33,13 +33,13 @@ EOF
 }
 
 # Test interactive submodule selection with here string (selecting options 1,2)
-test_config_submodule_select_interactive() {
+test_submodule_select_interactive() {
     # If config exists, we'll need 'y' to confirm overwrite, then '1,2' for selection
     # If it's the first run, just '1,2' is needed
     # This handles both cases with a single multi-line input
 
     # local output
-    output=$(D config submodule_select <<< $'1,2')
+    output=$(D submodule select <<< $'1,2')
 
     # Verify the submodules were added to the configuration
     local submodules
@@ -54,10 +54,10 @@ test_config_submodule_select_interactive() {
 }
 
 # Test interactive submodule selection with "all" option
-test_config_submodule_select_all() {
+test_submodule_select_all() {
     # If config exists, we'll need 'y' to confirm overwrite, then 'all' for selection
     local output
-    output=$(D config submodule_select <<< $'all')
+    output=$(D submodule select <<< $'all')
     
     # Verify all submodules were added to the configuration
     local submodules
@@ -74,14 +74,14 @@ test_config_submodule_select_all() {
 }
 
 # Test interactive submodule selection with empty input
-test_config_submodule_select_empty() {
+test_submodule_select_empty() {
     # First set up some initial submodules
-    D config submodule_select <<< $'1,2' > /dev/null
+    D submodule select <<< $'1,2' > /dev/null
     
     # Run the command with empty input
     # If a config exists, we'll first need 'y' to confirm overwrite, then '' for empty selection
     local output
-    output=$(D config submodule_select <<< $'y\n')
+    output=$(D submodule select <<< $'y\n')
     
     # The must unset all selected submodules
     local submodules
@@ -91,13 +91,13 @@ test_config_submodule_select_empty() {
 }
 
 # Test confirmation dialog with "no" response
-test_config_submodule_select_confirmation_no() {
+test_submodule_select_confirmation_no() {
     # First set up some initial submodules
-    D config submodule_select <<< $'1,2' > /dev/null
+    D submodule select <<< $'1,2' > /dev/null
     
     # Now run the command but respond "n" to the confirmation prompt
     local output
-    output=$(D config submodule_select <<< $'n')
+    output=$(D submodule select <<< $'n')
     
     # Original selections should remain unchanged when declining the confirmation
     local submodules
@@ -107,7 +107,7 @@ test_config_submodule_select_confirmation_no() {
     assert_contains "$submodules" "submodule1" "Original selection should be preserved when declining confirmation"
     
     # Now test with confirmation "yes" and new selection
-    output=$(D config submodule_select <<< $'y\n3')
+    output=$(D submodule select <<< $'y\n3')
     
     # Verify the new selection was applied
     submodules=$(D config --scope=repository get submodules)
