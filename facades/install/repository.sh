@@ -40,8 +40,8 @@ check_clean_submodule() {
     local dir="$D_CTX_DIR/$module_path"
     
     # Check if directory exists but is not a proper git submodule
-    if [ ! -d "$dir/.git" ] || [ ! -f "$dir/.git" ]; then
-        if confirm "Submodule '$module_path' not a git repository, Clean it up?"; then
+    if [ ! -d "$dir/.git" ] && [ ! -f "$dir/.git" ]; then
+        if confirm "Submodule '$module_path' not a git repository, clean it up?"; then
             rm -rf "$dir"
         fi
     fi
