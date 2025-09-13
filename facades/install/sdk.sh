@@ -5,37 +5,37 @@ sdk_fac_ins_sdk_process() {
         logit -e "The 'patch' command works only on bench! (the $D_SDK_NAME container)"; return 1; 
     fi
 
-    target_kit="$D_CONT_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH"
+    local target_kit="$D_CONT_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH"
 
     if [ -L "$target_kit" ]; then
         logit -w "$target_kit is a symlink, most probably to a global $D_SDK_NAME installation. Aborting patch to avoid overwriting global sdk."
         return 1
     fi
 
-    VERSION_SPECIFIER=$(_node -p "require('$D_CONT_CTX_DIR/package.json').dependencies?.['$D_SDK_NPM_PKG'] || require('$D_CONT_CTX_DIR/package.json').devDependencies['$D_SDK_NPM_PKG']")
+    local version_specifier=$(_node -p "require('$D_CONT_CTX_DIR/package.json').dependencies?.['$D_SDK_NPM_PKG'] || require('$D_CONT_CTX_DIR/package.json').devDependencies['$D_SDK_NPM_PKG']")
 
-    if [ -z "$VERSION_SPECIFIER" ]; then
+    if [ -z "$version_specifier" ]; then
         logit -e "$D_SDK_NPM_PKG not found in '$D_CONT_CTX_DIR/package.json'. $PWD"
         exit 1
     fi
 
-    package_name="$D_SDK_NPM_PKG@$VERSION_SPECIFIER"
+    local package_name="$D_SDK_NPM_PKG@$version_specifier"
 
     logit -l "Fetching $package_name to $D_CONT_CTX_DIR .."
     
-    TMPDIR=$(mktemp -d)
-    npm_output=$(cd $TMPDIR && _npm install "$package_name")
+    local _tempdir=$(mktemp -d)
+    local npm_output=$(cd $_tempdir && _npm install "$package_name")
 
     if [ $? -ne 0 ]; then
         logit -e "Failed to fetch $package_name from registry." >&2
         echo "$npm_output" 
-        rm -rf "$TMPDIR"
+        rm -rf "$_tempdir"
         return 1
     fi
 
     rm -rf "$target_kit" 2>/dev/null 
     mkdir -p "$target_kit" 2>/dev/null
-    cp -r "$TMPDIR/$D_SDK_LOCAL_RELATIVE_PATH"/* "$target_kit"
+    cp -r "$_tempdir/$D_SDK_LOCAL_RELATIVE_PATH"/* "$target_kit"
 
     if [ ! -f "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME" ]; then
         logit -l "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file..."
@@ -43,7 +43,8 @@ sdk_fac_ins_sdk_process() {
     fi
 
     # if [ ! -f "$D_CONT_CTX_DIR/.gitignore" ]; then cp "/$D_SDK_NAME/templates/.gitignore" "$D_CONT_CTX_DIR/.gitignore"; fi
-    logit -o "$D_SDK_NAME current version: $D_VERSION"
+    local d_version="$(cd $D_CONT_CTX_DIR && _npm list -g $D_SDK_NPM_PKG --depth=0 --json 2>/dev/null | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')"
+    logit -o "$D_SDK_NAME current version: $d_version"
 }
 
 sdk_fac_ins_sdk() {

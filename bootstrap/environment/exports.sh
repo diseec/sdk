@@ -1,9 +1,10 @@
 #!/bin/bash
 
 vars=( \
+    D_VERSION \
     D_CTX_DIR \
-    D_REPO_NAME \
     D_SDK_DIR \
+    D_REPO_NAME \
     D_SDK_NAME \
     D_GIT_DIR \
     D_ORG_CACHE_DIR \

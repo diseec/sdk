@@ -102,7 +102,7 @@ sdk_fac_ins_cmd_update() {
             (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 update.--recursive)
             local cmd_status=$?
             if [ $cmd_status -ne 0 ]; then
-                echo "ERROR: Failed to update $module" >&2
+                logit -e "Failed to update $module" >&2
                 return $cmd_status
             fi
             logit -l "Updated dependencies for '$module'."

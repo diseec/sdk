@@ -6,29 +6,67 @@ sdk_fac_ins_rep_handle() {
     # Early return in CI environment - silent skip
     [ -n "$CI" ] && { logit -w "Skipping interactive installation in CI environment"; return 0; }
 
+    local rep_failures=()
+    local rep_exit_code=0
+
     # cli_ctx sdk start;
+
+    cli_ctx git _ config --global credential.helper store
+    if [ $? -ne 0 ]; then
+        rep_failures+=("Git credential.helper store failed")
+        rep_exit_code=1
+    fi
+
+    cli_ctx git function sdk_fac_git_cmd_checkout_branch
+    if [ $? -ne 0 ]; then
+        rep_failures+=("Git checkout branch failed")
+        rep_exit_code=1
+    fi
+
+    cli_ctx git function sdk_fac_git_cmd_checkout_if_detached
+    if [ $? -ne 0 ]; then
+        rep_failures+=("Git common issues auto-fix failed")
+        rep_exit_code=1
+    fi
 
     if [ -z "$(cli_ctx submodule actives)" ] && [ "$D_HAS_SUBMODULES" = "true" ]; then
         cli_ctx submodule select
+        if [ $? -ne 0 ]; then
+            rep_failures+=("Submodule selection failed")
+            rep_exit_code=1
+        fi
     fi
-
-    cli_ctx git _ config --global credential.helper store
-
-    cli_ctx git function sdk_fac_git_cmd_checkout_branch
-    cli_ctx git function sdk_fac_git_cmd_checkout_if_detached
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         logit -l "Cloning selected submodules..."
         initialize_submodule() {
             local module="$1"; local module_path="$2"
             _git submodule update --init --remote "$module_path"
-            # _git submodule update --init --recursive --remote "$module_path"
+            local cmd_status=$?
+            if [ $cmd_status -ne 0 ]; then
+                logit -e "Failed to initialize submodule $module_path" >&2
+                return $cmd_status
+            fi
             logit -l "Initialized submodule '$module_path'."
+            return 0
         }
         cli_ctx submodule foreach initialize_submodule
+        if [ $? -ne 0 ]; then
+            rep_failures+=("Submodule initialization failed")
+            rep_exit_code=1
+        fi
     fi
 
     # cli_ctx sdk stop;
+
+    # Report results
+    if [ ${#rep_failures[@]} -ne 0 ]; then
+        logit -w "Repository handling completed with ${#rep_failures[@]} issues:"
+        for failure in "${rep_failures[@]}"; do
+            logit -e "  - $failure"
+        done
+    fi
+    return $rep_exit_code
 }
 
 sdk_fac_ins_repository() {
@@ -75,7 +113,7 @@ sdk_fac_ins_repository() {
             (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive)
             local cmd_status=$?
             if [ $cmd_status -ne 0 ]; then
-                echo "ERROR: Failed to install dependencies for $module" >&2
+                logit -e "Failed to install dependencies for $module" >&2
                 return $cmd_status
             fi
             logit -l "Installed dependencies for '$module'."
