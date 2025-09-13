@@ -62,11 +62,6 @@ sdk_fac_ins_cmd_update() {
     local update_failures=()
     local exit_code=0
     
-    local IS_RECURSIVE="false"
-    ARGS=""; for arg in "$@"; do case "$arg" in
-        -r|--recursive) IS_RECURSIVE="true";;
-    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
-
     logit -i "Updating '$D_CTX_DIR' with sdk source '$D_SDK_DIR'..."
     logit -i "On branch '$D_CURRENT_BRANCH' Pulling changes for '$D_REPO_NAME'..."
 
@@ -94,7 +89,7 @@ sdk_fac_ins_cmd_update() {
         exit_code=1
     fi
 
-    if [ "$IS_RECURSIVE" = "true" ]; then
+    if [ "$D_IS_RECURSIVE" = "true" ]; then
         logit -l "Updating dependencies in selected submodules..."
         update_dependencies() {
             local module="$1"

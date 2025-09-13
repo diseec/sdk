@@ -11,6 +11,7 @@ export D_TTY_AVAILABLE="${D_TTY_AVAILABLE:-true}"  # TTY availability flag, true
 _ARGS_ENVS_PROCESS=""; for arg in "$@"; do case "$arg" in
     --patch) _D_SDK_PATCH_FORCE="true" ;;
     --log-level=*) D_LOG_LEVEL="${arg#*=}";;
+    -r|--recursive) D_IS_RECURSIVE="true";;
     # --log-level*) D_LOG_LEVEL="${arg#--log-level }";;
     --debug) D_LOG_LEVEL="DEBUG" ;;
 *) _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\"";; esac; done; eval set -- $(eval echo $_ARGS_ENVS_PROCESS);

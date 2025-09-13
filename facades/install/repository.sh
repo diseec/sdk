@@ -94,11 +94,6 @@ sdk_fac_ins_repository() {
     local install_failures=()
     local exit_code=0
 
-    local IS_RECURSIVE="false"
-    ARGS=""; for arg in "$@"; do case "$arg" in
-        -r|--recursive) IS_RECURSIVE="true";;
-    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
-
     handle_hook before_install
     if [ $? -ne 0 ]; then
         install_failures+=("Before install hook failed")
@@ -119,7 +114,7 @@ sdk_fac_ins_repository() {
         fi
     fi
 
-    if [ "$IS_RECURSIVE" = "true" ]; then
+    if [ "$D_IS_RECURSIVE" = "true" ]; then
         logit -l "Installing dependencies in selected submodules..."
         install_dependencies() {
             local module="$1"

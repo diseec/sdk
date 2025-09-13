@@ -26,11 +26,11 @@ c=$1; shift; case $c in
     env|envs)       source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
     sdk)            (env D_HOST_CTX_DIR="$D_CTX_DIR" "$D_CLI_SDK" "$@") ;;
     api)            source "$D_SDK_DIR/api/cli.sh" "$@" ;;
+    about)          sdk_cmd_opt_about "$@" ;;
 
     # OPTIONS
     --safely|-s)    sdk_cmd_opt_safely "$@" ;;
     --version)      sdk_cmd_opt_version "$@" ;;
-    --about)        sdk_cmd_opt_about "$@" ;;
     --help|-h|hel|help) sdk_cmd_opt_help "$@" ;;
 
     # TEMPORARY ALIASES

@@ -3,11 +3,6 @@
 sdk_fac_doc_up_development() {
     set -e
 
-    local IS_RECURSIVE="false"
-    ARGS=""; for arg in "$@"; do case "$arg" in
-        -r|--recursive) IS_RECURSIVE="true";;
-    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
-
     handle_hook before_dev
 
     # Filter services based on workspace configuration

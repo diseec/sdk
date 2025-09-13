@@ -3,11 +3,6 @@
 sdk_fac_git_cmd_commit_push_pr() {
     set -e
 
-    local IS_RECURSIVE="false"
-    ARGS=""; for arg in "$@"; do case "$arg" in
-        -r|--recursive) IS_RECURSIVE="true";;
-    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
-
     cli_ctx informs sdk_inf_check_internet_connection
 
     sdk_fac_git_cmd_checkout_if_detached
@@ -27,7 +22,7 @@ sdk_fac_git_cmd_commit_push_pr() {
     echo "$D_REPO_NAME: Cpp done."
     sdk_fac_git_cmd_git_log "HEAD"
 
-    if [ "$IS_RECURSIVE" = "true" ]; then
+    if [ "$D_IS_RECURSIVE" = "true" ]; then
         logit -l "Cpp for selected submodules..."
         cpp_submodule() {
             local module="$1"; local module_path="$2"

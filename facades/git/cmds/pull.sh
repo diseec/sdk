@@ -3,11 +3,6 @@
 sdk_fac_git_cmd_pull_merge() {
     set -e
 
-    local IS_RECURSIVE="false"
-    ARGS=""; for arg in "$@"; do case "$arg" in
-        -r|--recursive) IS_RECURSIVE="true";;
-    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
-
     logit -l "Pulling latest branch '$D_CURRENT_BRANCH' changes ..."
     _git -C "$D_CTX_DIR" pull origin
     logit -l "Merging latest 'origin/main' changes to branch '$D_CURRENT_BRANCH'..."
@@ -15,7 +10,7 @@ sdk_fac_git_cmd_pull_merge() {
 
     logit -l "Pull and merge complete."
 
-    if [ "$IS_RECURSIVE" = "true" ]; then
+    if [ "$D_IS_RECURSIVE" = "true" ]; then
         logit -l "Pull and merging in submodules..."
         pull_submodule() {
             local module="$1"
