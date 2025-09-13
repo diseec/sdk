@@ -68,12 +68,12 @@ fi
 if [[ -z "$command" ]]; then
     logit -e "No command specified"
     display_help "" "" \
-        "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[$D_CLI_GLOBAL_NAME] submodule <command> submodule_type/path/to/reponame [options] [arguments]" \
+        "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[$D_CLI_GLOBAL_NAME] submodule <command> <type>/[path]/<reponame> [options] [arguments]" \
         "" "" "$(ansi "1;90" "$(capitalize 'For more information')")" "" \
         "    Run '$D_CLI_GLOBAL_NAME submodule help' for detailed usage information"
     exit 1
-elif [[ "$command" != "help" && "$command" != "--help" && "$command" != "-h" && "$command" != "list" && "$command" != "ls" && "$command" != "lis" ]]; then
-    # Most commands require a path specification
+elif [[ "$command" == "add" || "$command" == "rem" || "$command" == "remove" || "$command" == "rm" || "$command" == "upd" || "$command" == "update" ]]; then
+    # Only these commands require a path specification
     if [[ -z "$type" || -z "$repo_name" ]]; then
         logit -e "Missing path specification. Format should be: $D_CLI_GLOBAL_NAME submodule $command type/path/to/reponame [args]"
         exit 1
@@ -181,7 +181,7 @@ case $command in
         ;;
 
     hel|help|--help|-h) display_help "" "" \
-        "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[$D_CLI_GLOBAL_NAME] submodule <command> submodule_type/path/to/reponame [options] [arguments]" \
+        "$(ansi "1;90" "$(capitalize 'Usage')")                        " "$D_CLI_GLOBAL_NAME submodule <command> <type>/[path]/<reponame> [options] [arguments]" \
         "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$D_ORG_NAME/$D_SDK_NAME")")" \
         "" "" "$(ansi "1;90" "$(capitalize 'Features')")" "" \
         "    $(ansi "1;2;90" "$(capitalize 'Active Modules')")" "" \
@@ -193,17 +193,16 @@ case $command in
         "    upd|update [path]        " "Update specific or all submodules" \
         "    lin|link <path>          " "Link local package for development" \
         "    lis|list|ls [path]       " "List submodules or contents" \
-        "" "" "$(ansi "1;90" "$(capitalize 'Path Format')")" "" \
-        "    submodule_type/path/repo " "Format: type/path/to/repository" \
+        "" "" "    $(ansi "1;2;90" "$(capitalize 'Path Format')")              " "type/path/to/repository" \
         "                             " "$(ansi "2;90" "Where type is typically 'package', 'service', etc.")" \
         "                             " "$(ansi "2;90" "The path components between type and repo are optional")" \
-        "" "" "$(ansi "1;90" "$(capitalize 'Examples')")" "" \
-        "    $D_CLI_GLOBAL_NAME submodule add package/my-package          " "Add a package submodule" \
-        "    $D_CLI_GLOBAL_NAME submodule add service/my-service/api      " "Add with nested path" \
-        "    $D_CLI_GLOBAL_NAME submodule remove package/my-package       " "Remove a submodule" \
-        "    $D_CLI_GLOBAL_NAME submodule update service/my-service       " "Update specific submodule" \
-        "    $D_CLI_GLOBAL_NAME submodule update package                  " "Update all packages" \
-        "    $D_CLI_GLOBAL_NAME submodule ls package/my-package           " "List contents of submodule"
+        "    $(ansi "1;2;90" "$(capitalize 'Examples')")              " "" \
+        "    $(ansi "2;90" "$D_CLI_GLOBAL_NAME submodule add package/my-package")          " "$(ansi "2;90" "Add a package submodule")" \
+        "    $(ansi "2;90" "$D_CLI_GLOBAL_NAME submodule add service/my-service/api")      " "$(ansi "2;90" "Add with nested path")" \
+        "    $(ansi "2;90" "$D_CLI_GLOBAL_NAME submodule remove package/my-package")       " "$(ansi "2;90" "Remove a submodule")" \
+        "    $(ansi "2;90" "$D_CLI_GLOBAL_NAME submodule update service/my-service")       " "$(ansi "2;90" "Update specific submodule")" \
+        "    $(ansi "2;90" "$D_CLI_GLOBAL_NAME submodule update package")                  " "$(ansi "2;90" "Update all packages")" \
+        "    $(ansi "2;90" "$D_CLI_GLOBAL_NAME submodule ls package/my-package")           " "$(ansi "2;90" "List contents of submodule")"
     ;;
     fun|function) "$@" ;;
     *)

@@ -59,20 +59,17 @@ sdk_fac_ins_cmd_update() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    logit -l "Updating '$D_CTX_DIR' with sdk source '$D_SDK_DIR'..."
-    logit -l "On branch '$D_CURRENT_BRANCH' Pulling changes for '$D_REPO_NAME'..."
+    logit -i "Updating '$D_CTX_DIR' with sdk source '$D_SDK_DIR'..."
+    logit -i "On branch '$D_CURRENT_BRANCH' Pulling changes for '$D_REPO_NAME'..."
 
     cli_ctx git _ pull origin
 
-    cli_ctx install patch
-    logit -l "$D_SDK_NAME version patched to: $D_VERSION"
-
     handle_hook before_update
 
-    logit -i "Installing dependencies..."
+    logit -l "Installing dependencies..."
     cli_ctx install repository
 
-    logit -i "Pulling latest changes..."
+    logit -l "Pulling latest changes..."
     cli_ctx git function sdk_fac_git_cmd_pull_merge
 
     if [  "$IS_RECURSIVE" = "true"  ]; then

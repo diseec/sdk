@@ -1,24 +1,16 @@
 #!/bin/bash
 
-sdk_fac_ins_repository() {
-    set -e;
+# npm link ./packages/sdk
 
-    logit -l "Installing ..."
-
-    local IS_RECURSIVE="false"
-    ARGS=""; for arg in "$@"; do case "$arg" in
-        -r|--recursive) IS_RECURSIVE="true";;
-    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
-
-    # cli_ctx install patch;
-    logit -l "$D_SDK_NAME version patched to: $D_VERSION"
-
-    handle_hook before_install
-
+sdk_fac_ins_rep_handle() {
     # Early return in CI environment - silent skip
     [ -n "$CI" ] && { logit -w "Skipping interactive installation in CI environment"; return 0; }
 
     # cli_ctx sdk start;
+
+    if [ -z "$(cli_ctx submodule actives)" ] && [ "$D_HAS_SUBMODULES" = "true" ]; then
+        cli_ctx submodule select
+    fi
 
     cli_ctx git _ config --global credential.helper store
 
@@ -29,13 +21,33 @@ sdk_fac_ins_repository() {
         logit -l "Cloning selected submodules..."
         initialize_submodule() {
             local module="$1"; local module_path="$2"
-            _git submodule update --init --recursive --remote "$module_path"
+            _git submodule update --init --remote "$module_path"
+            # _git submodule update --init --recursive --remote "$module_path"
             logit -l "Initialized submodule '$module_path'."
         }
         cli_ctx submodule foreach initialize_submodule
     fi
 
     # cli_ctx sdk stop;
+}
+
+sdk_fac_ins_repository() {
+    set -e;
+
+    logit -l "Installing ..."
+
+    local IS_RECURSIVE="false"
+    ARGS=""; for arg in "$@"; do case "$arg" in
+        -r|--recursive) IS_RECURSIVE="true";;
+    *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
+
+    handle_hook before_install
+
+    if [ "$IS_IN_SDK_CONTAINER" = "true" ]; then
+        sdk_fac_ins_rep_handle
+    else
+        cli_ctx --safely install function sdk_fac_ins_rep_handle;
+    fi
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         logit -l "Installing dependencies in selected submodules..."

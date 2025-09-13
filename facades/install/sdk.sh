@@ -21,11 +21,18 @@ sdk_fac_ins_sdk_process() {
 
     package_name="$D_SDK_NPM_PKG@$VERSION_SPECIFIER"
 
-    logit -l "Fetching $package_name from registry .."
+    logit -l "Fetching $package_name to $D_CONT_CTX_DIR .."
+    
     TMPDIR=$(mktemp -d)
-    (cd $TMPDIR && _npm install "$package_name")
+    npm_output=$(cd $TMPDIR && _npm install "$package_name")
 
-    logit -l "Patching $package_name to $D_CONT_CTX_DIR .."
+    if [ $? -ne 0 ]; then
+        logit -e "Failed to fetch $package_name from registry." >&2
+        echo "$npm_output" 
+        rm -rf "$TMPDIR"
+        return 1
+    fi
+
     rm -rf "$target_kit" 2>/dev/null 
     mkdir -p "$target_kit" 2>/dev/null
     cp -r "$TMPDIR/$D_SDK_LOCAL_RELATIVE_PATH"/* "$target_kit"
@@ -36,7 +43,7 @@ sdk_fac_ins_sdk_process() {
     fi
 
     # if [ ! -f "$D_CONT_CTX_DIR/.gitignore" ]; then cp "/$D_SDK_NAME/templates/.gitignore" "$D_CONT_CTX_DIR/.gitignore"; fi
-    logit -l "$D_SDK_NAME patched for: $package_name"
+    logit -o "$D_SDK_NAME current version: $D_VERSION"
 }
 
 sdk_fac_ins_sdk() {

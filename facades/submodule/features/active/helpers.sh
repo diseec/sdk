@@ -68,6 +68,12 @@ sdk_fac_sub_fea_act_foreach_selected_module() {
     shift
     local selected_modules=$(sdk_fac_sub_fea_act_get_selected_modules)
 
+
+    # Store current errexit state
+    local errexit_state=$(set -o | grep errexit | awk '{print $2}')
+    # Temporarily disable errexit
+    set +e
+
     if [ -z "$selected_modules" ]; then
         # No submodules selected is a valid state - just return success
         logit -w "No submodules selected in workspace configuration"
@@ -82,6 +88,13 @@ sdk_fac_sub_fea_act_foreach_selected_module() {
             logit -w "Module path not found for $module, skipping"
         fi
     done
+
+    # Restore previous errexit state
+    if [ "$errexit_state" = "on" ]; then
+        set -e
+    else
+        set +e
+    fi
 }
 
 # Get a space-separated list of paths for selected modules only
