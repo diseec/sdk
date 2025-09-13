@@ -1,6 +1,8 @@
+docker-compose.yaml
+docker-compose.override.yaml
+
 # Others
 charts
-# myworkspace.yaml
 node_modules
 **/.DS_Store
 .venv

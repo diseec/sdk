@@ -1,5 +1,5 @@
-# Workspace configuration
-myworkspace.yaml
+docker-compose.yaml
+docker-compose.override.yaml
 
 .env
 node_modules

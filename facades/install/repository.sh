@@ -2,90 +2,6 @@
 
 # npm link ./packages/sdk
 
-# Function to create minimal docker-compose files for a submodule
-create_minimal_compose_files() {
-    local module="$1"
-    local module_path="$2"
-    
-    local compose_file="$D_CTX_DIR/$module_path/docker-compose.yaml"
-    local override_file="$D_CTX_DIR/$module_path/docker-compose.override.yaml"
-    local root_compose="$D_CTX_DIR/docker-compose.yaml"
-    local root_override="$D_CTX_DIR/docker-compose.override.yaml"
-    
-    # Check if the service is defined in the root docker-compose files
-    local service_exists=false
-    
-    # Check in root docker-compose.yaml if it exists
-    if [ -f "$root_compose" ]; then
-        # Check for direct service definition
-        if _yq '.services["'"$module"'"]' "$root_compose" 2>/dev/null | grep -v "null" &>/dev/null; then
-            service_exists=true
-        # Check for service with 'extends' pointing to this module
-        elif _yq '.services[] | select(.extends.service == "'"$module"'")' "$root_compose" 2>/dev/null | grep -v "null" &>/dev/null; then
-            service_exists=true
-        # Check if the service name exists as a key in the services object (older yq syntax)
-        elif _yq '.services | keys[] | select(. == "'"$module"'")' "$root_compose" 2>/dev/null | grep -q "$module" &>/dev/null; then
-            service_exists=true
-        fi
-    fi
-    
-    # Check in root docker-compose.override.yaml if it exists
-    if [ "$service_exists" = "false" ] && [ -f "$root_override" ]; then
-        # Check for direct service definition
-        if _yq '.services["'"$module"'"]' "$root_override" 2>/dev/null | grep -v "null" &>/dev/null; then
-            service_exists=true
-        # Check for service with 'extends' pointing to this module
-        elif _yq '.services[] | select(.extends.service == "'"$module"'")' "$root_override" 2>/dev/null | grep -v "null" &>/dev/null; then
-            service_exists=true
-        # Check if the service name exists as a key in the services object (older yq syntax)
-        elif _yq '.services | keys[] | select(. == "'"$module"'")' "$root_override" 2>/dev/null | grep -q "$module" &>/dev/null; then
-            service_exists=true
-        fi
-    fi
-    
-    # Only create minimal compose files if the service exists in the root files
-    if [ "$service_exists" = "true" ]; then
-        # Create directory if it doesn't exist
-        if [ ! -d "$D_CTX_DIR/$module_path" ]; then
-            mkdir -p "$D_CTX_DIR/$module_path"
-        fi
-        
-        if [ ! -f "$compose_file" ]; then
-            cat > "$compose_file" << EOF
-services:
-  $module:
-    profiles: []
-EOF
-        fi
-        
-        if [ ! -f "$override_file" ]; then
-            cat > "$override_file" << EOF
-services:
-  $module:
-    profiles: []
-EOF
-        fi
-    fi
-    
-    return 0
-}
-
-# Function to check if a submodule directory is properly initialized (has .git)
-check_clean_submodule() {
-    local module="$1"
-    local module_path="$2"
-    local dir="$D_CTX_DIR/$module_path"
-    
-    # Check if directory exists but is not a proper git submodule
-    if [ ! -d "$dir/.git" ] && [ ! -f "$dir/.git" ]; then
-        if confirm "Submodule '$module_path' not a git repository, clean it up?"; then
-            rm -rf "$dir"
-        fi
-    fi
-    
-    return 0
-}
-
 initialize_submodule() {
     local module="$1"; local module_path="$2"
     _git submodule update --init --remote "$module_path"
@@ -134,13 +50,6 @@ sdk_fac_ins_rep_handle() {
             fi
         fi
 
-        # Check and clean submodules before initialization
-        cli_ctx submodule foreach check_clean_submodule
-        if [ $? -ne 0 ]; then
-            rep_failures+=("Submodule directory check failed")
-            rep_exit_code=1
-        fi
-
         if [ -n "$(cli_ctx submodule actives)" ]; then
             logit -l "Cloning selected submodules..."
             cli_ctx submodule foreach_active initialize_submodule
@@ -149,13 +58,17 @@ sdk_fac_ins_rep_handle() {
                 rep_exit_code=1
             fi
         fi
+    fi
 
-        # create docker-compose.override.yaml and docker-compose.yaml if not exist for all submodules defined
-        cli_ctx submodule foreach create_minimal_compose_files
-        if [ $? -ne 0 ]; then
-            rep_failures+=("Creating minimal docker-compose files failed")
-            rep_exit_code=1
-        fi
+    cli_ctx docker function sdk_doc_init_compose_files
+    if [ $? -ne 0 ]; then
+        rep_failures+=("Docker compose file initialization failed")
+        rep_exit_code=1
+    fi
+    cli_ctx submodule foreach_active cli_ctx docker function sdk_doc_init_compose_files
+    if [ $? -ne 0 ]; then
+        rep_failures+=("Docker compose file initialization in submodules failed")
+        rep_exit_code=1
     fi
 
     # cli_ctx sdk stop;

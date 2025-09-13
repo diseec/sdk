@@ -5,6 +5,7 @@
 # 1. Automatically creating PRs with AI-generated commit messages
 # 2. Checking existing PRs for unresolved issues/comments
 
+source "$D_SDK_DIR/facades/docker/helpers.sh"
 source "$D_SDK_DIR/facades/docker/compose.sh"
 source "$D_SDK_DIR/facades/docker/up-development.sh"
 source "$D_SDK_DIR/facades/docker/up-production.sh"
