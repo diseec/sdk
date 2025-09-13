@@ -8,26 +8,64 @@ create_minimal_compose_files() {
     local module_path="$2"
     local compose_file="$D_CTX_DIR/$module_path/docker-compose.yaml"
     local override_file="$D_CTX_DIR/$module_path/docker-compose.override.yaml"
+    local root_compose="$D_CTX_DIR/docker-compose.yaml"
+    local root_override="$D_CTX_DIR/docker-compose.override.yaml"
     
-    # Create directory if it doesn't exist
-    if [ ! -d "$D_CTX_DIR/$module_path" ]; then
-        mkdir -p "$D_CTX_DIR/$module_path"
+    # Check if the service is defined in the root docker-compose files
+    local service_exists=false
+    
+    # Check in root docker-compose.yaml if it exists
+    if [ -f "$root_compose" ]; then
+        if command -v _yq &>/dev/null; then
+            # Use _yq to check if the service exists in the root compose file
+            if _yq e ".services.$module" "$root_compose" | grep -v "null" &>/dev/null; then
+                service_exists=true
+            fi
+        else
+            # Fallback to grep if _yq is not available
+            if grep -q "^[[:space:]]*$module:" "$root_compose"; then
+                service_exists=true
+            fi
+        fi
     fi
     
-    if [ ! -f "$compose_file" ]; then
-        cat > "$compose_file" << EOF
+    # Check in root docker-compose.override.yaml if it exists
+    if [ "$service_exists" = "false" ] && [ -f "$root_override" ]; then
+        if command -v _yq &>/dev/null; then
+            # Use _yq to check if the service exists in the root override file
+            if _yq e ".services.$module" "$root_override" | grep -v "null" &>/dev/null; then
+                service_exists=true
+            fi
+        else
+            # Fallback to grep if _yq is not available
+            if grep -q "^[[:space:]]*$module:" "$root_override"; then
+                service_exists=true
+            fi
+        fi
+    fi
+    
+    # Only create minimal compose files if the service exists in the root files
+    if [ "$service_exists" = "true" ]; then
+        # Create directory if it doesn't exist
+        if [ ! -d "$D_CTX_DIR/$module_path" ]; then
+            mkdir -p "$D_CTX_DIR/$module_path"
+        fi
+        
+        if [ ! -f "$compose_file" ]; then
+            cat > "$compose_file" << EOF
 services:
   $module:
     profiles: []
 EOF
-    fi
-    
-    if [ ! -f "$override_file" ]; then
-        cat > "$override_file" << EOF
+        fi
+        
+        if [ ! -f "$override_file" ]; then
+            cat > "$override_file" << EOF
 services:
   $module:
     profiles: []
 EOF
+        fi
     fi
     
     return 0
