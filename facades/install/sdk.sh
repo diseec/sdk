@@ -51,8 +51,7 @@ sdk_fac_ins_sdk() {
     set -e
     # docker pull image.registry.diseec.com/kit \
     #     --disable-content-trust > /dev/null 2>&1
-    # TODO
-    # cli_core "$D_SDK_NAME" docker compose _ pull
+    cli_core "$D_SDK_NAME" docker compose _ pull
     cli_core "$D_SDK_NAME" stop
     cli_core "$D_SDK_NAME" run --quiet "/$D_SDK_NAME/$D_SDK_NAME" install function sdk_fac_ins_sdk_process
 }

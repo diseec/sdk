@@ -6,6 +6,7 @@
 create_minimal_compose_files() {
     local module="$1"
     local module_path="$2"
+    
     local compose_file="$D_CTX_DIR/$module_path/docker-compose.yaml"
     local override_file="$D_CTX_DIR/$module_path/docker-compose.override.yaml"
     local root_compose="$D_CTX_DIR/docker-compose.yaml"
@@ -16,31 +17,29 @@ create_minimal_compose_files() {
     
     # Check in root docker-compose.yaml if it exists
     if [ -f "$root_compose" ]; then
-        if command -v _yq &>/dev/null; then
-            # Use _yq to check if the service exists in the root compose file
-            if _yq e ".services.$module" "$root_compose" | grep -v "null" &>/dev/null; then
-                service_exists=true
-            fi
-        else
-            # Fallback to grep if _yq is not available
-            if grep -q "^[[:space:]]*$module:" "$root_compose"; then
-                service_exists=true
-            fi
+        # Check for direct service definition
+        if _yq '.services["'"$module"'"]' "$root_compose" 2>/dev/null | grep -v "null" &>/dev/null; then
+            service_exists=true
+        # Check for service with 'extends' pointing to this module
+        elif _yq '.services[] | select(.extends.service == "'"$module"'")' "$root_compose" 2>/dev/null | grep -v "null" &>/dev/null; then
+            service_exists=true
+        # Check if the service name exists as a key in the services object (older yq syntax)
+        elif _yq '.services | keys[] | select(. == "'"$module"'")' "$root_compose" 2>/dev/null | grep -q "$module" &>/dev/null; then
+            service_exists=true
         fi
     fi
     
     # Check in root docker-compose.override.yaml if it exists
     if [ "$service_exists" = "false" ] && [ -f "$root_override" ]; then
-        if command -v _yq &>/dev/null; then
-            # Use _yq to check if the service exists in the root override file
-            if _yq e ".services.$module" "$root_override" | grep -v "null" &>/dev/null; then
-                service_exists=true
-            fi
-        else
-            # Fallback to grep if _yq is not available
-            if grep -q "^[[:space:]]*$module:" "$root_override"; then
-                service_exists=true
-            fi
+        # Check for direct service definition
+        if _yq '.services["'"$module"'"]' "$root_override" 2>/dev/null | grep -v "null" &>/dev/null; then
+            service_exists=true
+        # Check for service with 'extends' pointing to this module
+        elif _yq '.services[] | select(.extends.service == "'"$module"'")' "$root_override" 2>/dev/null | grep -v "null" &>/dev/null; then
+            service_exists=true
+        # Check if the service name exists as a key in the services object (older yq syntax)
+        elif _yq '.services | keys[] | select(. == "'"$module"'")' "$root_override" 2>/dev/null | grep -q "$module" &>/dev/null; then
+            service_exists=true
         fi
     fi
     
