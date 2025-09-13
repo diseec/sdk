@@ -61,9 +61,9 @@ sdk_fac_ins_rep_handle() {
 
     # Report results
     if [ ${#rep_failures[@]} -ne 0 ]; then
-        logit -w "Repository handling completed with ${#rep_failures[@]} issues:"
+        logit -w --ansi="31" "Repository handling finished with ${#rep_failures[@]} issues:"
         for failure in "${rep_failures[@]}"; do
-            logit -e "  - $failure"
+            logit -e --icon="✖︎" "$failure"
         done
     fi
     return $rep_exit_code
@@ -137,9 +137,9 @@ sdk_fac_ins_repository() {
     if [ ${#install_failures[@]} -eq 0 ]; then
         logit -o "Installation completed successfully."
     else
-        logit -w "Installation completed with ${#install_failures[@]} issues:"
+        logit -w --ansi="31" "Installation completed with ${#install_failures[@]} issues:"
         for failure in "${install_failures[@]}"; do
-            logit -e "  - $failure"
+            logit -e --icon="✖︎" "$failure"
         done
     fi
     

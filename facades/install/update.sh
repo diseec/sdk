@@ -126,9 +126,9 @@ sdk_fac_ins_cmd_update() {
     if [ ${#update_failures[@]} -eq 0 ]; then
         logit -o "Update completed successfully"
     else
-        logit -w "Update completed with ${#update_failures[@]} issues:"
+        logit -w --ansi="31" "Update completed with ${#update_failures[@]} issues:"
         for failure in "${update_failures[@]}"; do
-            logit -e "  - $failure"
+            logit -e --icon="✖︎" "$failure"
         done
     fi
     

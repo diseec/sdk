@@ -43,7 +43,7 @@ sdk_fac_ins_sdk_process() {
     fi
 
     # if [ ! -f "$D_CONT_CTX_DIR/.gitignore" ]; then cp "/$D_SDK_NAME/templates/.gitignore" "$D_CONT_CTX_DIR/.gitignore"; fi
-    local d_version="$(cd $D_CONT_CTX_DIR && _npm list -g $D_SDK_NPM_PKG --depth=0 --json 2>/dev/null | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[", ]//g')"
+    local d_version="$(grep '"version"' "$D_CONT_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH/package.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"
     logit -o "$D_SDK_NAME current version: $d_version"
 }
 
@@ -51,7 +51,8 @@ sdk_fac_ins_sdk() {
     set -e
     # docker pull image.registry.diseec.com/kit \
     #     --disable-content-trust > /dev/null 2>&1
-    cli_core "$D_SDK_NAME" docker compose _ pull
+    # TODO
+    # cli_core "$D_SDK_NAME" docker compose _ pull
     cli_core "$D_SDK_NAME" stop
     cli_core "$D_SDK_NAME" run --quiet "/$D_SDK_NAME/$D_SDK_NAME" install function sdk_fac_ins_sdk_process
 }
