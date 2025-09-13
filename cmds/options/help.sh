@@ -5,9 +5,9 @@ display_help "" "" \
 "$(ansi "1;90" "$(capitalize 'Usage')")                        " "$D_CLI_GLOBAL_NAME/[bash $D_CLI_LOCAL_NAME] <command> <subcommand> [options] [arguments]" \
 "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$D_ORG_NAME/$D_SDK_NAME")")" \
 "$(ansi "1;2;90" "$(capitalize '[Global Options]')")              " "" \
-"    --patch                  " "Force pull and reinstall sdk into project" \
-"                             " "$(ansi "2;90" "Ensures a fresh sdk binary is used,")" \
-"                             " "$(ansi "2;90" "when the local sdk is missing, corrupted,")" \
+"    --patch                  " "Force pull and reinstall $D_SDK_NAME into project" \
+"                             " "$(ansi "2;90" "Ensures a fresh $D_SDK_NAME binary is used,")" \
+"                             " "$(ansi "2;90" "when the local $D_SDK_NAME is missing, corrupted,")" \
 "                             " "$(ansi "2;90" "or unable to bootstrap the CLI itself")" \
 "    --recursive|-r           " "Recurse actions into submodules" \
 "                             " "$(ansi "2;90" "Not supported by all commands, check command help")" \
@@ -42,11 +42,11 @@ display_help "" "" \
 "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
 "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
 "    api                      " "API operations" \
-"    sdk                      " "SDK container operations" \
+"    $D_SDK_NAME                      " "$(capitalize $D_SDK_NAME) internal operations" \
 "    env|envs                 " "Manage environment variables. Examples:" \
 "                             " "$(ansi "2;90" '$ set -a && eval $('$D_CLI_GLOBAL_NAME envs') && set +a')" \
 "                             " "$(ansi "2;90" '$ eval $(cli_ctx envs) > /dev/null')" \
-"                             " "$(ansi "2;90" '$ bash sdk envs >> $GITHUB_ENV')" \
+"                             " "$(ansi "2;90" '$ bash '$D_SDK_NAME' envs >> $GITHUB_ENV')" \
 "    abo|about                " "About $D_SDK_NAME, authors, $D_ORG_NAME, policies and licensing" \
 "$@"
 }
