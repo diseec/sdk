@@ -109,7 +109,7 @@ sdk_fac_ins_cmd_update() {
             return 0
         }
         
-        cli_ctx submodule foreach update_dependencies
+        cli_ctx submodule foreach_active update_dependencies
         if [ $? -ne 0 ]; then
             update_failures+=("Submodule updates failed")
             exit_code=1

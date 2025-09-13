@@ -236,7 +236,7 @@ sdk_fac_git_cmd_git_log() {
 #     collect_repo_data "$D_REPO_NAME" "."
     
 #     # Process all selected submodules
-#     cli_ctx submodule foreach collect_repo_data
+#     cli_ctx submodule foreach_active collect_repo_data
     
 #     # If no data collected, show simple message
 #     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then

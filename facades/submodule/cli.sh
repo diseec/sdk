@@ -90,7 +90,8 @@ case $command in
     # Feature 
     sel|select) sdk_fac_sub_fea_act_select "$@" ;;
     sta|status) sdk_fac_sub_fea_act_status "$@" ;;
-    for|foreach) sdk_fac_sub_fea_act_foreach_selected_module "$@" ;;
+    for|foreach) sdk_fac_sub_fea_foreach_submodule "$@" ;;
+    fac|foreach_active) sdk_fac_sub_fea_act_foreach_selected_module "$@" ;;
     act|actives) sdk_fac_sub_fea_act_get_selected_module_paths "$@" ;;
 
     # Core submodule commands

@@ -2,6 +2,65 @@
 
 # npm link ./packages/sdk
 
+# Function to create minimal docker-compose files for a submodule
+create_minimal_compose_files() {
+    local module="$1"
+    local module_path="$2"
+    local compose_file="$D_CTX_DIR/$module_path/docker-compose.yaml"
+    local override_file="$D_CTX_DIR/$module_path/docker-compose.override.yaml"
+    
+    # Create directory if it doesn't exist
+    if [ ! -d "$D_CTX_DIR/$module_path" ]; then
+        mkdir -p "$D_CTX_DIR/$module_path"
+    fi
+    
+    if [ ! -f "$compose_file" ]; then
+        cat > "$compose_file" << EOF
+services:
+  $module:
+    profiles: []
+EOF
+    fi
+    
+    if [ ! -f "$override_file" ]; then
+        cat > "$override_file" << EOF
+services:
+  $module:
+    profiles: []
+EOF
+    fi
+    
+    return 0
+}
+
+# Function to check if a submodule directory is properly initialized (has .git)
+check_clean_submodule() {
+    local module="$1"
+    local module_path="$2"
+    local dir="$D_CTX_DIR/$module_path"
+    
+    # Check if directory exists but is not a proper git submodule
+    if [ ! -d "$dir/.git" ] || [ ! -f "$dir/.git" ]; then
+        if confirm "Submodule '$module_path' not a git repository, Clean it up?"; then
+            rm -rf "$dir"
+        fi
+    fi
+    
+    return 0
+}
+
+initialize_submodule() {
+    local module="$1"; local module_path="$2"
+    _git submodule update --init --remote "$module_path"
+    local cmd_status=$?
+    if [ $cmd_status -ne 0 ]; then
+        logit -e "Failed to initialize submodule $module_path" >&2
+        return $cmd_status
+    fi
+    logit -l "Initialized submodule '$module_path'."
+    return 0
+}
+
 sdk_fac_ins_rep_handle() {
     # Early return in CI environment - silent skip
     [ -n "$CI" ] && { logit -w "Skipping interactive installation in CI environment"; return 0; }
@@ -29,30 +88,35 @@ sdk_fac_ins_rep_handle() {
         rep_exit_code=1
     fi
 
-    if [ -z "$(cli_ctx submodule actives)" ] && [ "$D_HAS_SUBMODULES" = "true" ]; then
-        cli_ctx submodule select
+    if [ "$D_HAS_SUBMODULES" = "true" ]; then
+        if [ -z "$(cli_ctx submodule actives)" ]; then
+            cli_ctx submodule select
+            if [ $? -ne 0 ]; then
+                rep_failures+=("Submodule selection failed")
+                rep_exit_code=1
+            fi
+        fi
+
+        # Check and clean submodules before initialization
+        cli_ctx submodule foreach check_clean_submodule
         if [ $? -ne 0 ]; then
-            rep_failures+=("Submodule selection failed")
+            rep_failures+=("Submodule directory check failed")
             rep_exit_code=1
         fi
-    fi
 
-    if [ "$IS_RECURSIVE" = "true" ]; then
-        logit -l "Cloning selected submodules..."
-        initialize_submodule() {
-            local module="$1"; local module_path="$2"
-            _git submodule update --init --remote "$module_path"
-            local cmd_status=$?
-            if [ $cmd_status -ne 0 ]; then
-                logit -e "Failed to initialize submodule $module_path" >&2
-                return $cmd_status
+        if [ -n "$(cli_ctx submodule actives)" ]; then
+            logit -l "Cloning selected submodules..."
+            cli_ctx submodule foreach_active initialize_submodule
+            if [ $? -ne 0 ]; then
+                rep_failures+=("Submodule initialization failed")
+                rep_exit_code=1
             fi
-            logit -l "Initialized submodule '$module_path'."
-            return 0
-        }
-        cli_ctx submodule foreach initialize_submodule
+        fi
+
+        # create docker-compose.override.yaml and docker-compose.yaml if not exist for all submodules defined
+        cli_ctx submodule foreach create_minimal_compose_files
         if [ $? -ne 0 ]; then
-            rep_failures+=("Submodule initialization failed")
+            rep_failures+=("Creating minimal docker-compose files failed")
             rep_exit_code=1
         fi
     fi
@@ -120,7 +184,7 @@ sdk_fac_ins_repository() {
             return 0
         }
         
-        cli_ctx submodule foreach install_dependencies
+        cli_ctx submodule foreach_active install_dependencies
         if [ $? -ne 0 ]; then
             install_failures+=("Submodule dependency installation failed")
             exit_code=1

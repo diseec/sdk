@@ -34,7 +34,7 @@ sdk_fac_git_cmd_commit_push_pr() {
             (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME api v1 git.commit.push.pr.--recursive)
             logit -l "Cpp done for submodule '$module'."
         }
-        cli_ctx submodule foreach cpp_submodule
+        cli_ctx submodule foreach_active cpp_submodule
     fi
 
     handle_hook after_push
