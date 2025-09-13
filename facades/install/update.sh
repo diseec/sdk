@@ -52,7 +52,15 @@ sdk_fac_ins_has_version_changed() {
 }
 
 sdk_fac_ins_cmd_update() {
-    set -e
+    # Store current errexit state
+    local errexit_state=$(set -o | grep errexit | awk '{print $2}')
+    
+    # Force set -e off to track failures ourselves
+    set +e
+    
+    # Initialize failure tracking
+    local update_failures=()
+    local exit_code=0
     
     local IS_RECURSIVE="false"
     ARGS=""; for arg in "$@"; do case "$arg" in
@@ -63,27 +71,71 @@ sdk_fac_ins_cmd_update() {
     logit -i "On branch '$D_CURRENT_BRANCH' Pulling changes for '$D_REPO_NAME'..."
 
     cli_ctx git _ pull origin
+    if [ $? -ne 0 ]; then
+        update_failures+=("Failed to pull from origin")
+        exit_code=1
+    fi
 
     handle_hook before_update
+    if [ $? -ne 0 ]; then
+        update_failures+=("Before update hook failed")
+        exit_code=1
+    fi
 
-    logit -l "Installing dependencies..."
     cli_ctx install repository
+    if [ $? -ne 0 ]; then
+        update_failures+=("Repository installation failed")
+        exit_code=1
+    fi
 
-    logit -l "Pulling latest changes..."
     cli_ctx git function sdk_fac_git_cmd_pull_merge
+    if [ $? -ne 0 ]; then
+        update_failures+=("Git pull merge failed")
+        exit_code=1
+    fi
 
-    if [  "$IS_RECURSIVE" = "true"  ]; then
+    if [ "$IS_RECURSIVE" = "true" ]; then
         logit -l "Updating dependencies in selected submodules..."
         update_dependencies() {
             local module="$1"
             local module_path="$2"
             (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 update.--recursive)
+            local cmd_status=$?
+            if [ $cmd_status -ne 0 ]; then
+                echo "ERROR: Failed to update $module" >&2
+                return $cmd_status
+            fi
             logit -l "Updated dependencies for '$module'."
+            return 0
         }
+        
         cli_ctx submodule foreach update_dependencies
+        if [ $? -ne 0 ]; then
+            update_failures+=("Submodule updates failed")
+            exit_code=1
+        fi
     fi
 
     handle_hook after_update
-
-    logit -o "Update completed successfully"
+    if [ $? -ne 0 ]; then
+        update_failures+=("After update hook failed")
+        exit_code=1
+    fi
+    
+    # Report results
+    if [ ${#update_failures[@]} -eq 0 ]; then
+        logit -o "Update completed successfully"
+    else
+        logit -w "Update completed with ${#update_failures[@]} issues:"
+        for failure in "${update_failures[@]}"; do
+            logit -e "  - $failure"
+        done
+    fi
+    
+    # Restore previous errexit state
+    if [ "$errexit_state" = "on" ]; then
+        set -e
+    fi
+    
+    return $exit_code
 }

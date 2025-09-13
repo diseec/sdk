@@ -2,7 +2,6 @@
 
 sdk_fac_git_cmd_checkout_branch() {
     local mode="$1" # options: --skip-check
-    logit -l "Setting up branch tracking..."
 
     # Check for uncommitted changes
     local uncommitted_changes=$(_git status --porcelain)
