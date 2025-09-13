@@ -2,7 +2,6 @@
 
 sdk_cmd_opt_safely() {
     mark_ctx_only
-
     # logit -d "CLI:$D_CLI_CORE:SAFELY:ARGS: $@";
 
     cli_ctx "$D_SDK_NAME" stop > /dev/null 2>&1 || true ;

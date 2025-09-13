@@ -41,19 +41,18 @@ sdk_fac_ins_sdk_process() {
 
 sdk_fac_ins_sdk() {
     set -e
-
     # docker pull image.registry.diseec.com/kit \
     #     --disable-content-trust > /dev/null 2>&1
-    cli_ctx $D_SDK_NAME docker compose _ pull > /dev/null 2>&1
-
-    cli_ctx --safely install function sdk_fac_ins_sdk_process 
+    cli_core "$D_SDK_NAME" docker compose _ pull
+    cli_core "$D_SDK_NAME" stop
+    cli_core "$D_SDK_NAME" run --quiet "/$D_SDK_NAME/$D_SDK_NAME" install function sdk_fac_ins_sdk_process
 }
 
 sdk_fac_ins_ensure_patched() {
     mark_ctx_only
     local is_forced="${_D_SDK_PATCH_FORCE:-false}";
     local sdk_dir="$D_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH";
-x $D_CTX_DIR
+
     # Patch operation applied only either asked to or target project is missing the sdk
     if { [ _D_SDK_HAS_PATCHED != "true" ] && \
         [ -f "$D_CTX_DIR/$D_CLI_LOCAL_NAME" ] && \
@@ -63,7 +62,7 @@ x $D_CTX_DIR
         [ "$is_forced" = "true" ]; then
 
         _D_SDK_HAS_PATCHED="true"
-        cli_ctx install patch
+        sdk_fac_ins_sdk
 
         # abort if patch failed
         if [ $? -ne 0 ]; then

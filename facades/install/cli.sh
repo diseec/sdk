@@ -2,11 +2,13 @@
 
 source_once "$D_SDK_DIR/facades/install/index.sh"
 
+if [ $# -eq 0 ]; then set -- repository; fi
+
 c=$1; shift; case $c in
     pat|patch) sdk_fac_ins_sdk "$@" ;;
-    rep|repository) sdk_fac_ins_repository "$@" ;;
+    rep|repository) safely && sdk_fac_ins_repository "$@" ;;
+    upd|update) safely && sdk_fac_ins_cmd_update "$@" ;;
     pre|prettier) sdk_fac_ins_prettier "$@" ;;
-    upd|update) sdk_fac_ins_cmd_update "$@" ;;
     glo|globally) sdk_fac_ins_globally "$@" ;;
     sys|system) c=$1; shift; case $c in
         dep|dependency-check)
@@ -37,5 +39,5 @@ c=$1; shift; case $c in
             "$@"
         ;;
     fun|function) "$@" ;;
-    *) if [ ! -z "$c" ]; then logit -e "Unknown command: '$c'"; fi ;;
+    *) if [ ! -z "$c" ]; then logit -e "install: Unknown command: '$c'"; fi ;;
 esac

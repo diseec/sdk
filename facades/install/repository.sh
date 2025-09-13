@@ -10,8 +10,7 @@ sdk_fac_ins_repository() {
         -r|--recursive) IS_RECURSIVE="true";;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
-    cli_ctx install sdk;
-
+    # cli_ctx install patch;
     logit -l "$D_SDK_NAME version patched to: $D_VERSION"
 
     handle_hook before_install
@@ -19,14 +18,9 @@ sdk_fac_ins_repository() {
     # Early return in CI environment - silent skip
     [ -n "$CI" ] && { logit -w "Skipping interactive installation in CI environment"; return 0; }
 
-    cli_ctx sdk start;
+    # cli_ctx sdk start;
 
     _git config --global credential.helper store
-
-    if [ ! -f "$(cli_ctx config path --scope=repository)" ] && [ "$D_HAS_SUBMODULES" = "true" ]; then
-        logit -l "Initializing config configuration..."
-        cli_ctx --safely config init
-    fi
 
     cli_ctx git function sdk_fac_git_cmd_checkout_branch
     cli_ctx git function sdk_fac_git_cmd_checkout_if_detached
@@ -41,7 +35,7 @@ sdk_fac_ins_repository() {
         cli_ctx config function sdk_fac_con_set_act_foreach_selected_module initialize_submodule
     fi
 
-    cli_ctx sdk stop;
+    # cli_ctx sdk stop;
 
     if [ "$IS_RECURSIVE" = "true" ]; then
         logit -l "Installing dependencies in selected submodules..."

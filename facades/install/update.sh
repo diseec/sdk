@@ -3,7 +3,7 @@
 # Get version information for a package
 sdk_fac_ins_get_version_info() {
     local package_name="$D_SDK_NPM_PKG"
-    
+
     # Get outdated info as JSON
     local outdated_json=$(_npm outdated "$package_name" --json 2>/dev/null)
 
@@ -70,7 +70,7 @@ sdk_fac_ins_cmd_update() {
     handle_hook before_update
 
     logit -i "Installing dependencies..."
-    cli_ctx install
+    cli_ctx install repository
 
     logit -i "Pulling latest changes..."
     cli_ctx git function sdk_fac_git_cmd_pull_merge
@@ -80,7 +80,7 @@ sdk_fac_ins_cmd_update() {
         update_dependencies() {
             local module="$1"
             local module_path="$2"
-            cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 update.--recursive
+            (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 update.--recursive)
             logit -l "Updated dependencies for '$module'."
         }
         cli_ctx config function sdk_fac_con_set_act_foreach_selected_module update_dependencies
