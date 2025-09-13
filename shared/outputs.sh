@@ -417,6 +417,58 @@ input() {
     eval "$var_name=\"$user_input\""
 }
 
+
+# Retry mechanism function
+# Usage: retry "complex command" [max_attempts]
+retry() {
+    local operation_cmd="$1"
+    local max_attempts="${2:-3}"  # Default to 3 attempts
+    
+    local attempt=1
+    local success=false
+    
+    # store set -e state
+    local set_e_state=$(set +o | grep errexit)
+    set +e  # Disable exit on error for retries
+
+    while [ $attempt -le $max_attempts ] && [ "$success" = "false" ]; do
+        # logit -l "Attempting $operation_name (try $attempt/$max_attempts)..."
+        
+        # Execute the command
+        eval "$operation_cmd"
+        local exit_code=$?
+        
+        if [ $exit_code -eq 0 ]; then
+            success=true
+            # logit -o "$operation_name succeeded"
+        else
+            if [ $attempt -lt $max_attempts ]; then
+                if confirm "Operation failed. Retry? (attempts $attempt/$max_attempts)"; then
+                    # logit -w "Retrying $operation_name..."
+                    attempt=$((attempt + 1))
+                else
+                    # logit -e "User chose not to retry $operation_name"
+                    break
+                fi
+            # else
+            #     logit -e "Operation '$operation_name' failed after $max_attempts attempts"
+            fi
+        fi
+    done
+
+    # restore set -e state
+    if [[ "$set_e_state" == *"on"* ]]; then
+        set -e
+    fi
+    
+    # Return success/failure
+    if [ "$success" = "true" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 display_help() {
     # Loop through the arguments and print them
     while [ "$#" -gt 0 ]; do

@@ -163,22 +163,22 @@ test_command_with_automatic_logging() {
 4. **Complete Logging**: Captures command, output, and exit code for easier debugging.
 5. **Zero Effort**: Test writers don't need to remember special syntax or wrappers.
 
-### The `capture` Function for Non-D Commands
+### The `capture_test_log` Function for Non-D Commands
 
-For commands other than `D` (like system commands or complex operations), you can use the `capture` function:
+For commands other than `D` (like system commands or complex operations), you can use the `capture_test_log` function:
 
 ```bash
 # For system commands or complex operations
-result=$(capture ls -la)
+result=$(capture_test_log ls -la)
 
 # For commands with pipes, redirections, or complex syntax
-result=$(capture "grep 'pattern' file.txt | wc -l")
+result=$(capture_test_log "grep 'pattern' file.txt | wc -l")
 ```
 
 ### Best Practices for Command Execution
 
 1. **Use D Commands Directly**: Simply use `D` commands as normal.
-2. **Use `capture` for Non-D Commands**: For system commands or complex operations, use the `capture` function.
+2. **Use `capture_test_log` for Non-D Commands**: For system commands or complex operations, use the `capture_test_log` function.
 3. **Keep Original Output**: Avoid unnecessary transformations that might hide relevant information.
 4. **Selective Assertions**: Don't assert on the entire output; focus on specific parts that matter.
 
@@ -192,8 +192,8 @@ test_example_command_execution() {
     assert_contains "$output" "Operation succeeded" "Success message should be present"
     assert_equals "0" "$?" "Command should exit successfully"
 
-    # For non-D commands, use capture
-    local system_output=$(capture grep "pattern" /etc/hosts)
+    # For non-D commands, use capture_test_log
+    local system_output=$(capture_test_log grep "pattern" /etc/hosts)
     assert_contains "$system_output" "localhost" "Pattern should be found"
 
     # Run more D commands
@@ -232,7 +232,7 @@ test_config_set_command_bad() {
     echo "my value" > "$CONFIG_DIR/my.setting"
 
     # This doesn't test the actual command!
-    assert_equals "my value" "$(capture cat "$CONFIG_DIR/my.setting")" "Config should be set"
+    assert_equals "my value" "$(capture_test_log cat "$CONFIG_DIR/my.setting")" "Config should be set"
 }
 ```
 
@@ -244,8 +244,8 @@ Tests should challenge the command properly and let it handle its own responsibi
 # GOOD: Let the command handle its prerequisites
 test_secret_add_command() {
     # Run the command directly, let it create its directory structure
-    # Use capture for the echo pipe since it's not a D command
-    local output=$(capture echo -e "SECRET_NAME\nsecret_value" | D secret add)
+    # Use capture_test_log for the echo pipe since it's not a D command
+    local output=$(capture_test_log echo -e "SECRET_NAME\nsecret_value" | D secret add)
 
     # Verify the command succeeded and did its job
     assert_contains "$output" "added successfully" "Should indicate success"
@@ -465,8 +465,8 @@ test_environment_setup_good() {
     # Verify actual effects
     assert_file_exists "/expected/config/path" "Setup should create config file"
 
-    # Use capture for file reading since it's not a D command
-    local config_content=$(capture cat /expected/config/path)
+    # Use capture_test_log for file reading since it's not a D command
+    local config_content=$(capture_test_log cat /expected/config/path)
     assert_contains "$config_content" "expected_setting" "Config should have correct content"
 
     local check_result=$(D environment-check)
@@ -550,8 +550,8 @@ for item in $array_value; do
 done
 assert_equals "3" "$count" "Array should have 3 items"
 
-# 5. Working with files in the test workspace (use capture for file operations)
-$(capture "echo 'test content' > $TEST_CTX/test-file.txt")
+# 5. Working with files in the test workspace (use capture_test_log for file operations)
+$(capture_test_log "echo 'test content' > $TEST_CTX/test-file.txt")
 assert_file_exists "$TEST_CTX/test-file.txt" "Test file should exist"
 
 # 6. Capturing and inspecting command output
@@ -559,7 +559,7 @@ local result=$(D some-command --option)
 assert_contains "$result" "expected output" "Command should output expected text"
 
 # 7. Capturing complex commands that aren't D commands
-local result=$(capture "grep pattern file.txt | wc -l")
+local result=$(capture_test_log "grep pattern file.txt | wc -l")
 assert_equals "0" "$?" "Complex command should succeed"
 
 # 8. Using D commands directly

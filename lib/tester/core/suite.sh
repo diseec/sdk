@@ -223,7 +223,7 @@ fi
 D() {
     # In this case, we want to access the global D command
     if [ -x "$_GLOBAL_D_CMD" ]; then
-        (cd $TEST_CTX && capture "$_GLOBAL_D_CMD" "$@")
+        (cd $TEST_CTX && capture_test_log "$_GLOBAL_D_CMD" "$@")
         return $?
     else
         logit -e "Global D command not found at $_GLOBAL_D_CMD"
@@ -233,9 +233,9 @@ D() {
 
 # Capture command output and add it to the logs
 # Usage: 
-#   result=$(capture command args)     # Runs command and returns its output
-#   result=$(capture "command args")   # Alternative syntax for complex commands
-capture() {
+#   result=$(capture_test_log command args)     # Runs command and returns its output
+#   result=$(capture_test_log "command args")   # Alternative syntax for complex commands
+capture_test_log() {
     # If no command provided, return empty
     if [ $# -eq 0 ]; then
         return 0

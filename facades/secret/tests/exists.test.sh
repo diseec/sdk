@@ -13,7 +13,7 @@ setup_test() {
 test_secret_exists_missing_argument() {
     local output
     # Use the capture function instead of command substitution to preserve exit code
-    output=$(capture D secret exists)
+    output=$(capture_test_log D secret exists)
     local result=$?
     
     # Verify command fails without secret name

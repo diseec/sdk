@@ -2,9 +2,13 @@
 
 # npm link ./packages/sdk
 
+# todo: extract the error handling use a global var and show at the end of the process name it 'capture' (maybe)
+# todo: develop a chain syntax `capture retry input` ?!
+
 initialize_submodule() {
     local module="$1"; local module_path="$2"
-    _git submodule update --init --remote "$module_path"
+    
+    retry "_git submodule update --init --remote \"$module_path\""
     local cmd_status=$?
     if [ $cmd_status -ne 0 ]; then
         logit -e "Failed to initialize submodule $module_path" >&2
@@ -23,19 +27,22 @@ sdk_fac_ins_rep_handle() {
 
     # cli_ctx sdk start;
 
-    cli_ctx git _ config --global credential.helper store
+    # Git credential helper setup with retry
+    retry "cli_ctx git _ config --global credential.helper store"
     if [ $? -ne 0 ]; then
         rep_failures+=("Git credential.helper store failed")
         rep_exit_code=1
     fi
 
-    cli_ctx git function sdk_fac_git_cmd_checkout_branch
+    # Git branch checkout with retry
+    retry "cli_ctx git function sdk_fac_git_cmd_checkout_branch"
     if [ $? -ne 0 ]; then
         rep_failures+=("Git checkout branch failed")
         rep_exit_code=1
     fi
 
-    cli_ctx git function sdk_fac_git_cmd_checkout_if_detached
+    # Fix detached HEAD with retry
+    retry "cli_ctx git function sdk_fac_git_cmd_checkout_if_detached"
     if [ $? -ne 0 ]; then
         rep_failures+=("Git common issues auto-fix failed")
         rep_exit_code=1
@@ -43,7 +50,8 @@ sdk_fac_ins_rep_handle() {
 
     if [ "$D_HAS_SUBMODULES" = "true" ]; then
         if [ -z "$(cli_ctx submodule actives)" ]; then
-            cli_ctx submodule select
+            # Submodule selection with retry
+            retry "cli_ctx submodule select"
             if [ $? -ne 0 ]; then
                 rep_failures+=("Submodule selection failed")
                 rep_exit_code=1
@@ -52,7 +60,7 @@ sdk_fac_ins_rep_handle() {
 
         if [ -n "$(cli_ctx submodule actives)" ]; then
             logit -l "Cloning selected submodules..."
-            cli_ctx submodule foreach_active initialize_submodule
+            retry "cli_ctx submodule foreach_active initialize_submodule"
             if [ $? -ne 0 ]; then
                 rep_failures+=("Submodule initialization failed")
                 rep_exit_code=1
@@ -60,19 +68,26 @@ sdk_fac_ins_rep_handle() {
         fi
     fi
 
-    cli_ctx docker function sdk_doc_init_compose_files
+    retry "cli_ctx docker function sdk_doc_init_compose_files"
     if [ $? -ne 0 ]; then
         rep_failures+=("Docker compose file initialization failed")
         rep_exit_code=1
     fi
-    cli_ctx submodule foreach_active cli_ctx docker function sdk_doc_init_compose_files
+    
+    _compose_files_init () {
+        local module="$1"
+        local module_path="$2"
+        retry "cli_ctx docker function sdk_doc_init_compose_files"
+        return $?
+    }
+    retry "cli_ctx submodule foreach_active _compose_files_init"
     if [ $? -ne 0 ]; then
         rep_failures+=("Docker compose file initialization in submodules failed")
         rep_exit_code=1
     fi
 
     # cli_ctx sdk stop;
-
+    
     # Report results
     if [ ${#rep_failures[@]} -ne 0 ]; then
         logit -w --ansi="31" "Repository handling finished with ${#rep_failures[@]} issues:"
@@ -94,7 +109,7 @@ sdk_fac_ins_repository() {
     local install_failures=()
     local exit_code=0
 
-    handle_hook before_install
+    retry "handle_hook before_install"
     if [ $? -ne 0 ]; then
         install_failures+=("Before install hook failed")
         exit_code=1
@@ -119,7 +134,8 @@ sdk_fac_ins_repository() {
         install_dependencies() {
             local module="$1"
             local module_path="$2"
-            (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive)
+            
+            retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive)"
             local cmd_status=$?
             if [ $cmd_status -ne 0 ]; then
                 logit -e "Failed to install dependencies for $module" >&2
@@ -136,7 +152,7 @@ sdk_fac_ins_repository() {
         fi
     fi
 
-    handle_hook after_install
+    retry "handle_hook after_install"
     if [ $? -ne 0 ]; then
         install_failures+=("After install hook failed")
         exit_code=1
