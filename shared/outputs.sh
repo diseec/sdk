@@ -513,7 +513,7 @@ retry() {
         
         while [ "$success" = "false" ]; do
             # If this is not the first manual attempt, run the command
-            if [ $attempt -gt 1 ]; then
+            if [ $attempt -gt 0 ]; then
                 eval "$operation_cmd"
                 exit_code=$?
                 
@@ -525,7 +525,7 @@ retry() {
             fi
             
             # Ask for confirmation to retry
-            if confirm "Operation failed. Retry? (manual attempt $attempt)"; then
+            if confirm "Operation failed. Retry?"; then
                 attempt=$((attempt + 1))
             else
                 # logit -w "User chose not to retry. Exiting retry loop."
