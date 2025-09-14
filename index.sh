@@ -5,12 +5,13 @@
 # =============================================================================
 
 export D_LOG_LEVEL="${D_LOG_LEVEL:-DEBUG}" # change this to info when app stable
-_D_SDK_PATCH_FORCE="${_D_SDK_PATCH_FORCE:-false}"
 export D_TTY_AVAILABLE="${D_TTY_AVAILABLE:-true}"  # TTY availability flag, true by default
+export D_SDK_PATCH_FORCE="${D_SDK_PATCH_FORCE:-false}"
+export D_IS_RECURSIVE="${D_IS_RECURSIVE:-false}"
 
 _ARGS_ENVS_PROCESS=""; for arg in "$@"; do case "$arg" in
-    --patch) _D_SDK_PATCH_FORCE="true" ;;
-    --log-level=*) D_LOG_LEVEL="${arg#*=}";;
+    --patch)        D_SDK_PATCH_FORCE="true" ;;
+    --log-level=*)  D_LOG_LEVEL="${arg#*=}";;
     -r|--recursive) D_IS_RECURSIVE="true";;
     # --log-level*) D_LOG_LEVEL="${arg#--log-level }";;
     --debug) D_LOG_LEVEL="DEBUG" ;;
@@ -40,6 +41,10 @@ source "$D_SDK_DIR/cmds/index.sh"
 # Setup environment variables
 sdk_boo_env_setup_environment "$@"
 
+# =============================================================================
+# FINALIZE INITIALIZATION
+# =============================================================================
+
 # Set to context directory if available
 if [ -d "$D_CTX_DIR" ]; then cd "$D_CTX_DIR"; fi
 
@@ -50,4 +55,3 @@ if [ -d "$D_CTX_DIR" ]; then cd "$D_CTX_DIR"; fi
 
 # Add help command if no arguments provided
 if [ $# -eq 0 ]; then set -- --help; fi
-

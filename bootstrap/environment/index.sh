@@ -13,18 +13,22 @@ sdk_boo_env_setup_environment() {
     source $D_SDK_DIR/bootstrap/environment/utils/validate_environment.sh
     source $D_SDK_DIR/bootstrap/environment/utils/computed_paths.sh
 
-    : ${D_ENV:=DEVELOPMENT}
-    export D_ENV # Valid environments: DEVELOPMENT, TESTING, PRODUCTION
-
-    : ${D_TTY_AVAILABLE:=true}
-    export D_TTY_AVAILABLE
-
     # =============================================================================
     # STORE ORIGINAL ENVIRONMENT VARIABLES
     # =============================================================================
 
     readonly D_INI_ARGS="$@"
     readonly D_INI_PWD="$PWD"
+
+    # =============================================================================
+    # BASIC ENVIRONMENT VARIABLES
+    # =============================================================================
+
+    : ${D_ENV:=DEVELOPMENT}
+    export D_ENV # Valid environments: DEVELOPMENT, TESTING, PRODUCTION
+
+    : ${D_TTY_AVAILABLE:=true}
+    export D_TTY_AVAILABLE
 
     : ${D_D_CLI_EXECUTED:=false}
     readonly D_D_CLI_EXECUTED

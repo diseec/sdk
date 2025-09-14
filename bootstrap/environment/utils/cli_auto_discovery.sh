@@ -19,7 +19,7 @@ sdk_boo_env_uti_cli_auto_discovery() {
     # Canonicalize D_SDK_DIR
     starting_dir=$(cd "$1" 2>/dev/null && pwd) || {
         echo "Error: can't access '$1'" >&2
-        exit 1
+        return 1
     }
 
     # If we are in a SDK CLI context
@@ -59,7 +59,7 @@ sdk_boo_env_uti_cli_auto_discovery() {
     done
     
     # echo "Error: $D_CLI_LOCAL_NAME not found, looked up all levels from: $starting_dir" >&2
-    # exit 1
+    # return 1
 }
 
 sdk_boo_env_uti_get_org_dir() {

@@ -13,13 +13,13 @@
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 # Source core testing components
-source_once "$D_SDK_DIR/lib/tester/core/assertions.sh"
-source_once "$D_SDK_DIR/lib/tester/core/registry.sh"
-source_once "$D_SDK_DIR/lib/tester/core/helpers.sh"
-source_once "$D_SDK_DIR/lib/tester/core/runner.sh"
-source_once "$D_SDK_DIR/lib/tester/core/discovery.sh"
-source_once "$D_SDK_DIR/lib/tester/core/reporter.sh"
-source_once "$D_SDK_DIR/lib/tester/core/suite.sh"
+source_once "$D_SDK_DIR/facades/tester/core/assertions.sh"
+source_once "$D_SDK_DIR/facades/tester/core/registry.sh"
+source_once "$D_SDK_DIR/facades/tester/core/helpers.sh"
+source_once "$D_SDK_DIR/facades/tester/core/runner.sh"
+source_once "$D_SDK_DIR/facades/tester/core/discovery.sh"
+source_once "$D_SDK_DIR/facades/tester/core/reporter.sh"
+source_once "$D_SDK_DIR/facades/tester/core/suite.sh"
 
 # Initialize tester framework
 sdk_tester_initialize() { 

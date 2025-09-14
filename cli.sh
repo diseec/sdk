@@ -17,7 +17,7 @@ c=$1; shift; case $c in
     for|format)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/format/cli.sh" prettier "$@" ;;
     sub|submodule)  mark_ctx_only; source_safely "$D_SDK_DIR/facades/submodule/cli.sh" "$@" ;;
     sec|secret)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/secret/cli.sh" "$@" ;;
-    inf|informs)    mark_ctx_only; source_safely "$D_SDK_DIR/informs/cli.sh" "$@" ;;
+    inf|informs)    mark_ctx_only; source_safely "$D_SDK_DIR/facades/informs/cli.sh" "$@" ;;
     con|config)     mark_ctx_only; source_safely "$D_SDK_DIR/facades/config/cli.sh" "$@" ;;
     doc|docker)     source "$D_SDK_DIR/facades/docker/cli.sh" "$@" ;;
     git)            source_safely "$D_SDK_DIR/facades/git/cli.sh" "$@" ;;
@@ -34,7 +34,7 @@ c=$1; shift; case $c in
     --help|-h|hel|help) sdk_cmd_opt_help "$@" ;;
 
     # TEMPORARY ALIASES
-    rst|run-sdk-tests|t) cli_core sdk test run --verbose --fail-fast "$@" ;;
+    rst|run-sdk-tests|t) cli_core sdk tester run --verbose --fail-fast "$@" ;;
     
     # HOOKS
     hook:*) ;;

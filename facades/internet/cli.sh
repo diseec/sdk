@@ -125,6 +125,6 @@ c=$1; shift; case $c in
     fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-        cli_ctx internet help; exit 1;
+        cli_ctx internet help; return 1;
         ;;
 esac

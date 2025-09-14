@@ -9,7 +9,7 @@ handle_hook() {
     # Exit early if no hook specified
     if [ -z "$HOOK" ]; then
         echo "error: No hook specified. Usage: $0 <hook_name>"
-        exit 1
+        return 1
     fi
 
     # logit 34 "hook" "Executing hook '$HOOK' across workspace"

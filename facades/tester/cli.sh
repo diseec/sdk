@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source the tester framework
-source_once "$D_SDK_DIR/lib/tester/index.sh"
+source_once "$D_SDK_DIR/facades/tester/index.sh"
 
 export TESTER_VERBOSE=false
 export TESTER_FAIL_FAST=false
@@ -36,7 +36,7 @@ c=$1; shift; case $c in
         # Filter tests by pattern and run them
         if [ $# -eq 0 ]; then
             logit -e "Filter pattern required. Usage: tester filter <pattern>"
-            exit 1
+            return 1
         fi
         sdk_tester_filter_and_run "$@"
         ;;
@@ -103,7 +103,7 @@ c=$1; shift; case $c in
         if [[ -n "$c" ]]; then 
             logit -e "Unknown test command: '$c'"
             logit -i "Run '$D_CLI_GLOBAL_NAME test help' for available commands"
-            exit 1
+            return 1
         fi
         cli_ctx test help
         ;;

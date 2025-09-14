@@ -1,5 +1,59 @@
 #!/bin/bash
 
+# Function to extract information from the path format
+sdk_fac_sub_parse_path_format() {
+    local full_path="$1"
+
+    # Validate the full path format
+    if [[ ! "$full_path" =~ ^([^/]+)/([^/]+)$ ]]; then
+        logit -e "Invalid path format. Must be 'type/path/to/reponame', provided: '$full_path'"
+        return 1
+    fi
+
+    # Split the path into components
+    IFS='/' read -ra path_components <<< "$full_path"
+    
+    # Must have at least 2 segments (type/reponame)
+    if [[ ${#path_components[@]} -lt 2 ]]; then
+        logit -e "Invalid path format. Must be at least 'type/reponame'"
+        return 1
+    fi
+    
+    # Extract type (first component)
+    local type="${path_components[0]}"
+    
+    # Extract repo name (last component)
+    local repo_name="${path_components[${#path_components[@]}-1]}"
+    
+    # # Build the relative path (everything except the repo name)
+    local path_prefix=()
+    for ((i=0; i<${#path_components[@]}-1; i++)); do
+        path_prefix+=("${path_components[$i]}")
+    done
+    
+    # Join the path components for the target directory
+    local type_dir=$(IFS='/'; echo "${path_prefix[*]}")
+
+    if [[ -z "$type" ]]; then
+        logit -e "Type is required, please specify as type/path/to/reponame"
+        return 1
+    fi
+    
+    if [[ -z "$repo_name" ]]; then
+        logit -e "Repository name is required, please specify as type/path/to/reponame"
+        return 1
+    fi
+
+    # Ensure target directory exists if specified
+    if [[ -n "$type_dir" ]]; then
+        mkdir -p "$type_dir"
+    fi
+
+    # Return values
+    echo "$type" "$repo_name" "$type_dir"
+    return 0
+}
+
 # Process all submodules from .gitmodules
 sdk_fac_sub_fea_foreach_submodule() {
     local action_func="$1"

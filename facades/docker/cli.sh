@@ -21,7 +21,7 @@ c=$1; shift; case $c in
         ;;
         *)
             if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-            cli_ctx docker compose help; exit 1;
+            cli_ctx docker compose help; return 1;
         ;;
     esac ;;
     _) _docker "$@" ;;
@@ -33,6 +33,6 @@ c=$1; shift; case $c in
     fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-        cli_ctx docker help; exit 1;
+        cli_ctx docker help; return 1;
     ;;
 esac

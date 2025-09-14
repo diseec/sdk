@@ -10,8 +10,8 @@ source_once "$D_SDK_DIR/facades/git/index.sh"
 c=$1; shift; case $c in
     sta|status)
         mark_ctx_only
-        cli_ctx informs sdk_inf_forbid_dev_on_main
-        cli_ctx informs sdk_inf_summary_branch_status
+        cli_ctx informs sdk_fac_inf_forbid_dev_on_main
+        cli_ctx informs sdk_fac_inf_summary_branch_status
         sdk_fac_git_cmd_pr_check_status
         ;;
     clo|clone)
@@ -52,7 +52,7 @@ c=$1; shift; case $c in
         _) _gh "$@" ;;
         *)
             if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-            # cli_ctx git hub help; exit 1;
+            # cli_ctx git hub help; return 1;
         ;;
     esac ;;
     _) _git "$@" ;;
@@ -90,6 +90,6 @@ c=$1; shift; case $c in
     fun|function) "$@" ;;
     *)
         if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
-        cli_ctx git help; exit 1;
+        cli_ctx git help; return 1;
     ;;
 esac

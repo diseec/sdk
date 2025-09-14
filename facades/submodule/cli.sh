@@ -3,149 +3,70 @@
 source_once "$D_SDK_DIR/facades/submodule/index.sh"
 
 # Unified submodule management for packages and services
-# Uses structure: command submodule_type/path/to/reponame [options] [arguments]
 
-# Initialize variables
-type=""
-target_dir=""
-repo_name=""
-command=""
-command_args=()
-relative_path=""
-submodule_path=""
-
-# Function to extract information from the path format
-sdk_fac_sub_parse_path_format() {
-    local full_path="$1"
-    
-    # Split the path into components
-    IFS='/' read -ra path_components <<< "$full_path"
-    
-    # Must have at least 2 segments (type/reponame)
-    if [[ ${#path_components[@]} -lt 2 ]]; then
-        logit -e "Invalid path format. Must be at least 'type/reponame'"
-        return 1
-    fi
-    
-    # Extract type (first component)
-    type="${path_components[0]}"
-    
-    # Extract repo name (last component)
-    repo_name="${path_components[${#path_components[@]}-1]}"
-    
-    # Build the relative path (everything except the repo name)
-    local path_prefix=()
-    for ((i=0; i<${#path_components[@]}-1; i++)); do
-        path_prefix+=("${path_components[$i]}")
-    done
-    
-    # Join the path components for the target directory
-    target_dir=$(IFS='/'; echo "${path_prefix[*]}")
-    
-    # The full submodule path includes the repo name
-    submodule_path="$target_dir/$repo_name"
-    
-    return 0
-}
-
-# Parse command line arguments
-if [[ $# -gt 0 ]]; then
-    # First argument is the command
-    command="$1"
-    shift
-
-    # Second argument should be the path if available
-    if [[ $# -gt 0 && "$1" == */* ]]; then
-        sdk_fac_sub_parse_path_format "$1" || exit 1
-        shift
-    fi
-    
-    # Remaining arguments are command args
-    command_args=("$@")
-fi
-
-# Validate inputs
-if [[ -z "$command" ]]; then
-    logit -e "No command specified"
-    display_help "" "" \
-        "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[$D_CLI_GLOBAL_NAME] submodule <command> <type>/[path]/<reponame> [options] [arguments]" \
-        "" "" "$(ansi "1;90" "$(capitalize 'For more information')")" "" \
-        "    Run '$D_CLI_GLOBAL_NAME submodule help' for detailed usage information"
-    exit 1
-elif [[ "$command" == "add" || "$command" == "rem" || "$command" == "remove" || "$command" == "rm" || "$command" == "upd" || "$command" == "update" ]]; then
-    # Only these commands require a path specification
-    if [[ -z "$type" || -z "$repo_name" ]]; then
-        logit -e "Missing path specification. Format should be: $D_CLI_GLOBAL_NAME submodule $command type/path/to/reponame [args]"
-        exit 1
-    fi
-fi
-
-# Ensure target directory exists if specified
-if [[ -n "$target_dir" ]]; then
-    mkdir -p "$target_dir"
-fi
-
-case $command in
+c=$1; shift; case $c in
 
     # Feature 
+    # TODO: to centralize the selected modules use docker-compose file instead(!?)
     sel|select) sdk_fac_sub_fea_act_select "$@" ;;
+    fac|foreach_active) sdk_fac_sub_fea_act_foreach_selected_module "$@" ;;
+
     sta|status) sdk_fac_sub_fea_act_status "$@" ;;
     for|foreach) sdk_fac_sub_fea_foreach_submodule "$@" ;;
-    fac|foreach_active) sdk_fac_sub_fea_act_foreach_selected_module "$@" ;;
     act|actives) sdk_fac_sub_fea_act_get_selected_module_paths "$@" ;;
 
     # Core submodule commands
     add)
-        if [[ -z "$repo_name" ]]; then
-            logit -e "Repository name is required for add command"
-            exit 1
-        fi
-        
-        logit "Adding repository '$repo_name' to $target_dir/ as type '$type'"
+        local submodule_path="$1"
+        read type repo_name type_dir <<< "$(sdk_fac_sub_parse_path_format "$submodule_path")"
+        logit "Adding repository '$repo_name' to $type_dir/ as type '$type'"
         set -e
-        _git submodule add https://$D_REPOSITORY_URL/$repo_name.git $submodule_path
+        _git submodule add https://$D_REPOSITORY_URL/$repo_name.git "$submodule_path"
         _git submodule update --init --recursive
         ;;
 
     rem|remove|rm)
-        if [[ -z "$repo_name" ]]; then
-            logit -e "Repository name is required for remove command"
-            exit 1
+        local submodule_path="$1"
+        read type repo_name type_dir <<< "$(sdk_fac_sub_parse_path_format "$submodule_path")"
+        if confirm "Are you sure you want to remove '$repo_name' from '$type_dir/'?"; then
+            set -e
+            _git submodule deinit -f -- "$submodule_path"
+            rm -rf .git/modules/"$submodule_path"
+            _git rm -f "$submodule_path"
         fi
-        
-        confirm "Are you sure you want to remove '$repo_name' from $target_dir/?" \
-            set -e; \
-            _git submodule deinit -f -- $submodule_path; \
-            rm -rf .git/modules/$submodule_path; \
-            _git rm -f $submodule_path;
         ;;
 
     upd|update)
+        local submodule_path="$1"
+        read type repo_name type_dir <<< "$(sdk_fac_sub_parse_path_format "$submodule_path")"
         if [[ -n "$repo_name" ]]; then
             logit "Updating submodule at $submodule_path"
-            _git submodule update --remote -- $submodule_path
+            _git submodule update --remote -- "$submodule_path"
         else
-            target_to_update=${target_dir:-"."}
+            # todo
+            target_to_update=${type_dir:-"."}
             logit "Updating all submodules in $target_to_update"
-            _git submodule update --remote --merge -- $target_to_update
+            _git submodule update --remote --merge -- "$target_to_update"
         fi
         ;;
 
     lin|link)
+        local submodule_path="$1"
+        read type repo_name type_dir <<< "$(sdk_fac_sub_parse_path_format "$submodule_path")"
         if [[ -z "$repo_name" ]]; then
             # Interactive mode if no specific repo is given
             available_packages=$(ls packages 2>/dev/null || echo '')
             if [[ -z "$available_packages" ]]; then
                 logit -e "No packages found in packages/"
-                exit 1
+                return 1
             fi
             logit --ansi="35" --icon="PACKAGES:" "$available_packages"
-            read -p "$(logit --ansi="35" --icon="?" "Select a package to link: ")" selected_package
+            input selected_package "Select a package to link:" 
             if [[ -n "$selected_package" ]]; then
                 repo_name="$selected_package"
                 submodule_path="packages/$repo_name"
             else
-                exit 1
+                return 1
             fi
         elif [[ "$type" != "package" && "$type" != "packages" ]]; then
             logit -w "Linking is typically used with packages. Proceeding anyway with $submodule_path"
@@ -156,12 +77,14 @@ case $command in
             _npm link ./$submodule_path
         else
             logit -e "Directory $submodule_path does not exist"
-            exit 1
+            return 1
         fi
         ;;
 
     lis|list|ls)
-        search_dir=${target_dir:-"."}
+        local submodule_path="$1"
+        read type repo_name type_dir <<< "$(sdk_fac_sub_parse_path_format "$submodule_path")"
+        search_dir=${type_dir:-"."}
         if [[ -d "$search_dir" ]]; then
             if [[ -n "$repo_name" ]]; then
                 # List contents of the specific repo
@@ -169,7 +92,7 @@ case $command in
                     logit --ansi="34" --icon="CONTENTS of $submodule_path:" "\n$(ls -la $submodule_path 2>/dev/null || echo 'Empty directory')"
                 else
                     logit -e "Directory $submodule_path does not exist"
-                    exit 1
+                    return 1
                 fi
             else
                 # List all items in the target directory
@@ -206,20 +129,5 @@ case $command in
         "    $(ansi "2;90" "$D_CLI_GLOBAL_NAME submodule ls package/my-package")           " "$(ansi "2;90" "List contents of submodule")"
     ;;
     fun|function) "$@" ;;
-    *)
-        if [[ -n "$submodule_path" && -d "$submodule_path" && -f "$submodule_path/$D_CLI_LOCAL_NAME" ]]; then
-            # If the submodule has a cli script, run it with the command as first argument
-            "$submodule_path/$D_CLI_LOCAL_NAME" "${command_args[@]}"
-        elif [[ -n "$target_dir" && -d "$target_dir" && -f "$target_dir/$D_CLI_LOCAL_NAME" ]]; then
-            # If the target directory has a cli script, run it
-            "$target_dir/$D_CLI_LOCAL_NAME" "${command_args[@]}"
-        else
-            logit -e "Unknown command: '$command'"
-            display_help "" "" \
-                "$(ansi "1;90" "$(capitalize 'Usage')")                        " "[$D_CLI_GLOBAL_NAME] submodule <command> submodule_type/path/to/reponame [options] [arguments]" \
-                "" "" "$(ansi "1;90" "$(capitalize 'For more information')")" "" \
-                "    Run '$D_CLI_GLOBAL_NAME submodule help' for detailed usage information"
-            exit 1
-        fi
-    ;;
+    *) if [ ! -z "$c" ]; then logit -e "submodule: Unknown command: '$c'"; fi ;;
 esac

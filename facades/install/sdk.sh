@@ -16,7 +16,7 @@ sdk_fac_ins_sdk_process() {
 
     if [ -z "$version_specifier" ]; then
         logit -e "$D_SDK_NPM_PKG not found in '$D_CONT_CTX_DIR/package.json'. $PWD"
-        exit 1
+        return 1
     fi
 
     local package_name="$D_SDK_NPM_PKG@$version_specifier"
@@ -58,7 +58,7 @@ sdk_fac_ins_sdk() {
 
 sdk_fac_ins_ensure_patched() {
     mark_ctx_only
-    local is_forced="${_D_SDK_PATCH_FORCE:-false}";
+    local is_forced="${D_SDK_PATCH_FORCE:-false}";
     local sdk_dir="$D_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH";
 
     # Patch operation applied only either asked to or target project is missing the sdk
@@ -74,7 +74,7 @@ sdk_fac_ins_ensure_patched() {
 
         # abort if patch failed
         if [ $? -ne 0 ]; then
-            logit -e "Patching $D_SDK_NAME failed" >&2; exit 1
+            logit -e "Patching $D_SDK_NAME failed" >&2; return 1
         fi
     fi
 }

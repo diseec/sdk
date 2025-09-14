@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sdk_inf_check_for_updates_repo() {
+sdk_fac_inf_check_for_updates_repo() {
     # Check if the main repository is behind
     current_branch=$(_git -C "$D_CTX_DIR" rev-parse --abbrev-ref HEAD)
 

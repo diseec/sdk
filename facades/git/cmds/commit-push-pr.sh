@@ -3,7 +3,7 @@
 sdk_fac_git_cmd_commit_push_pr() {
     set -e
 
-    cli_ctx informs sdk_inf_check_internet_connection
+    cli_ctx informs sdk_fac_inf_check_internet_connection
 
     sdk_fac_git_cmd_checkout_if_detached
 

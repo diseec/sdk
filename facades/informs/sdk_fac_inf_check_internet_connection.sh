@@ -1,7 +1,7 @@
 #!/bin/bash
 
-sdk_inf_check_internet_connection() {
-    # X "IN sdk_inf_check_internet_connection"
+sdk_fac_inf_check_internet_connection() {
+    # X "IN sdk_fac_inf_check_internet_connection"
     if ! cli_ctx internet is-online > /dev/null; then
         # X "Internet connection appears to be down."
         if ! cli_ctx internet test; then

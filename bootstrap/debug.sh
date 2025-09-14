@@ -11,7 +11,7 @@ x() {
     local file="${BASH_SOURCE[1]##*/}"
     local line="${BASH_LINENO[0]:-0}"
     local func="${FUNCNAME[1]:-unknown}"
-    
+
     if [[ "${D_LOG_LEVEL}" == "DEBUG" || "${DEBUG}" == "true" ]]; then
         # Log entry to function with more context
         logit -e --icon="¤][$file:$line:$func" "${*:-Sunshine, rainbows and sh*t!}"

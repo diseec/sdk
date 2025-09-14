@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sdk_inf_check_for_updates_kit() {
+sdk_fac_inf_check_for_updates_kit() {
     # Check if version changed or if repo/modules are behind
     X
     if cli_ctx install function sdk_fac_ins_has_version_changed; then

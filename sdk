@@ -5,7 +5,7 @@
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/index.sh"
 
 c=$1; shift; case $c in
-    tes|test)   mark_ctx_only; export D_ENV="TESTING"; source_safely "$D_SDK_DIR/lib/tester/cli.sh" "$@" ;;
+    tes|tester) mark_ctx_only; export D_ENV="TESTING"; source_safely "$D_SDK_DIR/facades/tester/cli.sh" "$@" ;;
     pul|pull)   cli_ctx git _ pull origin main "$@" ;;
     run)        cli_ctx docker compose execute $D_SDK_NAME "$@" ;;
     bui|build)

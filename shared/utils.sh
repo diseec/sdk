@@ -3,7 +3,7 @@
 cli_ctx() {
     if [ -z "$D_CTX_DIR" ]; then
         logit -e "calling cli_ctx in a undefined context. Cannot proceed." >&2
-        exit 1
+        return 1
     fi
     source "$D_CLI_STUB" "$@"
 }
@@ -32,38 +32,40 @@ source_once() {
     fi
 }
 
-safely() {
-    if [ "$IS_IN_SDK_CONTAINER" = "true" ]; then
-        "$@" # Watch out the exit status
-    elif [ "$D_IS_IN_CONTAINER" = "true" ]; then
-        CONTAINER_ID=$(hostname 2>/dev/null || echo "unknown")
-        logit -e "Trying to run '${D_INI_ARGS[@]}' command in '$D_SDK_NAME' container, but already in a different container: $CONTAINER_ID" >&2
-        exit 1
-    else
-        cli_ctx --safely "${D_INI_ARGS[@]}";
-    fi
-}
-
 source_safely() {
     # Usage:
     # source_safely "./script.sh" "$@" ;;
-    process_source_safely() {
-        local script_path="$1"; shift
-        
-        # Validate that first argument is a valid .sh script path
-        if [ -z "$script_path" ]; then
-            logit -e "No script path provided to source_safely"
-            return 1
-        fi
-        
-        if [[ ! "$script_path" == *.sh ]]; then
-            logit -e "Script path must end with .sh: $script_path"
-            return 1
-        fi
-        source "$script_path" "$@" # DO NOT use source_once here, the clean state variables need constant sourcing
-    }
 
-    safely process_source_safely "$@"
+    # Validate that first argument is a valid .sh script path
+    if [ -z "$1" ]; then
+        logit -e "No script path provided to source_safely"
+        return 1
+    fi
+
+    local script_path="$1"; shift
+    
+    if [[ ! "$script_path" == *cli.sh ]]; then
+        logit -e "Script path must end with cli.sh: $script_path"
+        return 1
+    fi
+
+    # extract path part between command_root_name up to cli.sh (end of path) and join with spaces
+    local path_based_cmd="${script_path#*facades/}";
+    path_based_cmd="${path_based_cmd%/cli.sh}";
+    path_based_cmd="${path_based_cmd//\// }"
+    local full_cmd="$path_based_cmd $*"
+
+    if [ "$IS_IN_SDK_CONTAINER" = "true" ]; then
+        source "$script_path" "$@" # DO NOT use source_once here, the clean state variables need constant sourcing
+        # Watch out the exit status
+    elif [ "$D_IS_IN_CONTAINER" = "true" ]; then
+        CONTAINER_ID=$(hostname 2>/dev/null || echo "unknown")
+        logit -e "Trying to run '$full_cmd' command in '$D_SDK_NAME' container, but already in a different container: $CONTAINER_ID" >&2
+        return 1
+    else
+        logit -l "Container only command, redirecting: $full_cmd"
+        cli_ctx --safely "$full_cmd";
+    fi
 }
 
 mark_ctx_only() {
@@ -75,6 +77,6 @@ mark_ctx_only() {
         local calling_function=$(echo "$caller_info" | cut -d ' ' -f 2)
         local calling_file=$(echo "$caller_info" | cut -d ' ' -f 3-)
         logit -e --icon="E:OOC" "Command forbidden: '$D_INI_ARGS': Called in '$calling_function'() at $calling_file:$line_number" >&2
-        exit 1
+        return 1
     fi
 }
