@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sdk_doc_init_compose_files() {
-    local ctx_dir="${D_CTX_DIR:-$(pwd)}"
+    local ctx_dir="${1:-$D_CTX_DIR}"
 
     if [ -f "$ctx_dir/docker-compose.yaml.example" ] && [ ! -f "$ctx_dir/docker-compose.yaml" ]; then
         cp "$ctx_dir/docker-compose.yaml.example" "$ctx_dir/docker-compose.yaml"

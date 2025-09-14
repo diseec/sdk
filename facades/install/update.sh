@@ -65,13 +65,13 @@ sdk_fac_ins_cmd_update() {
     logit -i "Updating '$D_CTX_DIR' with sdk source '$D_SDK_DIR'..."
     logit -i "On branch '$D_CURRENT_BRANCH' Pulling changes for '$D_REPO_NAME'..."
 
-    cli_ctx git _ pull origin
+    retry --manual --auto "cli_ctx git _ pull origin"
     if [ $? -ne 0 ]; then
         update_failures+=("Failed to pull from origin")
         exit_code=1
     fi
 
-    handle_hook before_update
+    retry "handle_hook before_update"
     if [ $? -ne 0 ]; then
         update_failures+=("Before update hook failed")
         exit_code=1
@@ -83,7 +83,7 @@ sdk_fac_ins_cmd_update() {
         exit_code=1
     fi
 
-    cli_ctx git function sdk_fac_git_cmd_pull_merge
+    retry --manual --auto "cli_ctx git function sdk_fac_git_cmd_pull_merge"
     if [ $? -ne 0 ]; then
         update_failures+=("Git pull merge failed")
         exit_code=1
@@ -94,7 +94,7 @@ sdk_fac_ins_cmd_update() {
         update_dependencies() {
             local module="$1"
             local module_path="$2"
-            (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME --patch api v1 update.--recursive)
+            retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME --patch api v1 update.--recursive)"
             local cmd_status=$?
             if [ $cmd_status -ne 0 ]; then
                 logit -e "Failed to update $module" >&2
@@ -111,7 +111,7 @@ sdk_fac_ins_cmd_update() {
         fi
     fi
 
-    handle_hook after_update
+    retry "handle_hook after_update"
     if [ $? -ne 0 ]; then
         update_failures+=("After update hook failed")
         exit_code=1
