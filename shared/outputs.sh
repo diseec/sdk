@@ -419,54 +419,127 @@ input() {
 
 
 # Retry mechanism function
-# Usage: retry "complex command" [max_attempts]
+# Usage: retry [--manual] [--timeout=N] [--max-attempts=N] "complex command"
+# Options:
+#   --manual           Manual retry mode (default): asks user for each retry attempt with no max limit
+#   --auto             Automatic retry mode: retries automatically with a timeout between attempts
+#   --timeout=N        Auto-retry mode: wait N seconds before retrying automatically (default: 5)
+#   --max-attempts=N   Maximum number of automatic retry attempts (default: 3, only applies in auto mode)
+#
+# Behavior:
+#   - Default: Manual mode (asks user for each retry with no max limit)
+#   - With --timeout: Auto-retry mode with specified pause between attempts (limited by max-attempts)
+#   - With both --manual and --timeout: First tries auto-retries up to max-attempts, then switches to manual mode
 retry() {
-    local operation_cmd="$1"
-    local max_attempts="${2:-3}"  # Default to 3 attempts
+    local operation_cmd=""
+    local max_attempts=3  # Default max attempts for auto mode
+    local timeout=5       # Default timeout in seconds for auto mode
+    local manual_mode=false
+    local auto_mode=false
+    
+    # Parse options
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --manual)
+                manual_mode=true
+                shift
+                ;;
+            --auto)
+                auto_mode=true
+                shift
+                ;;
+            --timeout=*)
+                timeout="${1#*=}"
+                shift
+                ;;
+            --max-attempts=*)
+                max_attempts="${1#*=}"
+                shift
+                ;;
+            *)
+                # The only non-option argument is the command
+                operation_cmd="$1"
+                shift
+                ;;
+        esac
+    done
+
+    # If no mode specified, default to manual
+    if [ "$auto_mode" = "false" ] && [ "$manual_mode" = "false" ]; then
+        manual_mode=true
+    fi
     
     local attempt=1
     local success=false
+    local exit_code=1  # Default to failure
     
     # store set -e state
     local set_e_state=$(set +o | grep errexit)
     set +e  # Disable exit on error for retries
 
-    while [ $attempt -le $max_attempts ] && [ "$success" = "false" ]; do
-        # logit -l "Attempting $operation_name (try $attempt/$max_attempts)..."
+    # First phase: Automatic retries if auto_mode is enabled
+    if [ "$auto_mode" = "true" ]; then
+        # logit -l "Auto-retry mode enabled (max $max_attempts attempts, $timeout second intervals)"
         
-        # Execute the command
-        eval "$operation_cmd"
-        local exit_code=$?
-        
-        if [ $exit_code -eq 0 ]; then
-            success=true
-            # logit -o "$operation_name succeeded"
-        else
-            if [ $attempt -lt $max_attempts ]; then
-                if confirm "Operation failed. Retry? (attempts $attempt/$max_attempts)"; then
-                    # logit -w "Retrying $operation_name..."
+        while [ $attempt -le $max_attempts ] && [ "$success" = "false" ]; do
+            # Execute the command
+            eval "$operation_cmd"
+            exit_code=$?
+            
+            if [ $exit_code -eq 0 ]; then
+                success=true
+                # logit -o "Command succeeded on auto-attempt $attempt/$max_attempts"
+            else
+                if [ $attempt -lt $max_attempts ]; then
+                    logit -w "Operation failed. Retrying in $timeout seconds... ($attempt/$max_attempts) Press Ctrl+C to cancel"
+                    sleep $timeout
                     attempt=$((attempt + 1))
                 else
-                    # logit -e "User chose not to retry $operation_name"
+                    # # logit -w "All $max_attempts automatic retries failed."
+                    # # If manual mode is also enabled, we'll continue to manual phase
+                    # if [ "$manual_mode" = "true" ]; then
+                    #     logit -i "Switching to manual retry..."
+                    # fi
                     break
                 fi
-            # else
-            #     logit -e "Operation '$operation_name' failed after $max_attempts attempts"
             fi
-        fi
-    done
+        done
+    fi
+    
+    # Second phase: Manual retries if manual_mode is enabled and command hasn't succeeded yet
+    if [ "$manual_mode" = "true" ] && [ "$success" = "false" ]; then
+        # logit -l "Manual retry mode active (unlimited attempts, user confirmation required)"
+        attempt=1  # Reset attempt counter for manual mode
+        
+        while [ "$success" = "false" ]; do
+            # If this is not the first manual attempt, run the command
+            if [ $attempt -gt 1 ]; then
+                eval "$operation_cmd"
+                exit_code=$?
+                
+                if [ $exit_code -eq 0 ]; then
+                    success=true
+                    # logit -o "Command succeeded on manual attempt $attempt"
+                    break
+                fi
+            fi
+            
+            # Ask for confirmation to retry
+            if confirm "Operation failed. Retry? (manual attempt $attempt)"; then
+                attempt=$((attempt + 1))
+            else
+                # logit -w "User chose not to retry. Exiting retry loop."
+                break
+            fi
+        done
+    fi
 
     # restore set -e state
     if [[ "$set_e_state" == *"on"* ]]; then
         set -e
     fi
     
-    # Return success/failure
-    if [ "$success" = "true" ]; then
-        return 0
-    else
-        return 1
-    fi
+    return $exit_code
 }
 
 display_help() {

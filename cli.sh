@@ -35,6 +35,15 @@ c=$1; shift; case $c in
 
     # TEMPORARY ALIASES
     rst|run-sdk-tests|t) cli_core sdk test run --verbose --fail-fast "$@" ;;
+    
+    # HOOKS
+    hook:*) ;;
+    # hook:before_update) logit -i "Commands before updating completed..." ;;
+    # hook:after_update)  logit -i "Commands after updating completed..." ;;
+    # hook:after_install) logit -i "Commands before installing completed..." ;;
+    # hook:after_install) logit -i "Commands after installing completed..." ;;
+    # hook:before_push)   logit -i "Commands before pushing changes..." ;;
+    # hook:after_push)    logit -i "Commands after pushing changes..." ;;
 
     *) sdk_cmd_any "$@" ;;
 esac

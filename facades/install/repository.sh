@@ -8,7 +8,7 @@
 initialize_submodule() {
     local module="$1"; local module_path="$2"
     
-    retry "_git submodule update --init --remote \"$module_path\""
+    retry --manual --auto "_git submodule update --init --remote \"$module_path\""
     local cmd_status=$?
     if [ $cmd_status -ne 0 ]; then
         logit -e "Failed to initialize submodule $module_path" >&2
@@ -27,21 +27,21 @@ sdk_fac_ins_rep_handle() {
 
     # cli_ctx sdk start;
 
-    # Git credential helper setup with retry
+    # Git credential helper setup
     retry "cli_ctx git _ config --global credential.helper store"
     if [ $? -ne 0 ]; then
         rep_failures+=("Git credential.helper store failed")
         rep_exit_code=1
     fi
 
-    # Git branch checkout with retry
+    # Git branch checkout
     retry "cli_ctx git function sdk_fac_git_cmd_checkout_branch"
     if [ $? -ne 0 ]; then
         rep_failures+=("Git checkout branch failed")
         rep_exit_code=1
     fi
 
-    # Fix detached HEAD with retry
+    # Fix detached HEAD
     retry "cli_ctx git function sdk_fac_git_cmd_checkout_if_detached"
     if [ $? -ne 0 ]; then
         rep_failures+=("Git common issues auto-fix failed")
@@ -50,7 +50,7 @@ sdk_fac_ins_rep_handle() {
 
     if [ "$D_HAS_SUBMODULES" = "true" ]; then
         if [ -z "$(cli_ctx submodule actives)" ]; then
-            # Submodule selection with retry
+            # Submodule selection
             retry "cli_ctx submodule select"
             if [ $? -ne 0 ]; then
                 rep_failures+=("Submodule selection failed")
@@ -60,7 +60,7 @@ sdk_fac_ins_rep_handle() {
 
         if [ -n "$(cli_ctx submodule actives)" ]; then
             logit -l "Cloning selected submodules..."
-            retry "cli_ctx submodule foreach_active initialize_submodule"
+            cli_ctx submodule foreach_active initialize_submodule
             if [ $? -ne 0 ]; then
                 rep_failures+=("Submodule initialization failed")
                 rep_exit_code=1
@@ -80,7 +80,7 @@ sdk_fac_ins_rep_handle() {
         retry "cli_ctx docker function sdk_doc_init_compose_files"
         return $?
     }
-    retry "cli_ctx submodule foreach_active _compose_files_init"
+    cli_ctx submodule foreach_active _compose_files_init
     if [ $? -ne 0 ]; then
         rep_failures+=("Docker compose file initialization in submodules failed")
         rep_exit_code=1
