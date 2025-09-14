@@ -77,7 +77,7 @@ sdk_fac_ins_rep_handle() {
     _compose_files_init () {
         local module="$1"
         local module_path="$2"
-        retry "cli_ctx docker function sdk_doc_init_compose_files"
+        retry "cli_ctx docker function sdk_doc_init_compose_files \"$D_CTX_DIR/$module_path\""
         return $?
     }
     cli_ctx submodule foreach_active _compose_files_init

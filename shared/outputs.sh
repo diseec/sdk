@@ -481,7 +481,11 @@ retry() {
     if [ "$auto_mode" = "true" ]; then
         # logit -l "Auto-retry mode enabled (max $max_attempts attempts, $timeout second intervals)"
         
-        while [ $attempt -le $max_attempts ] && [ "$success" = "false" ]; do
+        # Set up signal handling for auto mode
+        local interrupted=false
+        trap 'interrupted=true' INT
+        
+        while [ $attempt -le $max_attempts ] && [ "$success" = "false" ] && [ "$interrupted" = "false" ]; do
             # Execute the command
             eval "$operation_cmd"
             exit_code=$?
@@ -492,7 +496,15 @@ retry() {
             else
                 if [ $attempt -lt $max_attempts ]; then
                     logit -w "Operation failed. Retrying in $timeout seconds... ($attempt/$max_attempts) Press Ctrl+C to cancel"
-                    sleep $timeout
+                    sleep $timeout &
+                    wait $!  # Wait for sleep to complete, but allow signal interruption
+                    
+                    # Check if we were interrupted during sleep
+                    if [ "$interrupted" = "true" ]; then
+                        # logit -w "Operation cancelled by user (Ctrl+C)"
+                        break
+                    fi
+                    
                     attempt=$((attempt + 1))
                 else
                     # # logit -w "All $max_attempts automatic retries failed."
@@ -504,6 +516,10 @@ retry() {
                 fi
             fi
         done
+        
+        # Reset interrupted flag for potential manual phase
+        interrupted=false
+        trap - INT
     fi
     
     # Second phase: Manual retries if manual_mode is enabled and command hasn't succeeded yet
@@ -511,7 +527,11 @@ retry() {
         # logit -l "Manual retry mode active (unlimited attempts, user confirmation required)"
         attempt=1  # Reset attempt counter for manual mode
         
-        while [ "$success" = "false" ]; do
+        # Set up signal handling for manual mode
+        local interrupted=false
+        trap 'interrupted=true' INT
+        
+        while [ "$success" = "false" ] && [ "$interrupted" = "false" ]; do
             # If this is not the first manual attempt, run the command
             if [ $attempt -gt 0 ]; then
                 eval "$operation_cmd"
@@ -531,7 +551,16 @@ retry() {
                 # logit -w "User chose not to retry. Exiting retry loop."
                 break
             fi
+            
+            # Check if we were interrupted during confirm
+            if [ "$interrupted" = "true" ]; then
+                # logit -w "Operation cancelled by user (Ctrl+C)"
+                break
+            fi
         done
+        
+        # Restore default signal handling
+        trap - INT
     fi
 
     # restore set -e state
