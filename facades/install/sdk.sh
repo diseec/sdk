@@ -69,6 +69,12 @@ sdk_fac_ins_ensure_patched() {
         [ -z "$(ls -A "$sdk_dir" 2> /dev/null)" ]; } } || \
         [ "$is_forced" = "true" ]; then
 
+        local npm_update_sdk_global=$(_npm update -g $D_SDK_NPM_PKG)
+        if [ $? -ne 0 ]; then
+            echo "$npm_update_sdk_global"
+            logit -e "Patching global $D_SDK_NAME failed" >&2; return 1
+        fi
+
         _D_SDK_HAS_PATCHED="true"
         sdk_fac_ins_sdk
 
