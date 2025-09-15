@@ -27,8 +27,8 @@ sdk_boo_env_setup_environment() {
     : ${D_ENV:=DEVELOPMENT}
     export D_ENV # Valid environments: DEVELOPMENT, TESTING, PRODUCTION
 
-    : ${D_TTY_AVAILABLE:=true}
-    export D_TTY_AVAILABLE
+    : ${D_GLOBAL_TTY_AVAILABLE:=true}
+    export D_GLOBAL_TTY_AVAILABLE
 
     : ${D_D_CLI_EXECUTED:=false}
     readonly D_D_CLI_EXECUTED

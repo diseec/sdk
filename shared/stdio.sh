@@ -45,7 +45,7 @@ ansi() {
 }
 
 logit() {
-    if [ "$D_IS_QUIET" = "true" ]; then return 0; fi
+    if [ "$D_GLOBAL_IS_QUIET" = "true" ]; then return 0; fi
 
     local level="DEBUG" # DEBUG > INFO > WARNING > ERROR
     local repo_name=${D_REPO_NAME:-$D_CLI_GLOBAL_NAME}
@@ -113,7 +113,7 @@ logit() {
     fi
 
     # Handle logging levels
-    case $D_LOG_LEVEL in
+    case $D_GLOBAL_LOG_LEVEL in
         DEBUG|debug) ;;
         INFO|info) case $level in       DEBUG) return 0; esac ;;
         WARNING|warning) case $level in DEBUG|INFO) return 0; esac ;;
@@ -141,7 +141,7 @@ confirm() {
     printf "$(logit --ansi="35" --icon="Y/N" "$question ")"
     
     # Check if TTY is available
-    if [ "$D_TTY_AVAILABLE" = "true" ]; then
+    if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
         # Store original terminal settings to restore later
         local old_settings=$(stty -g)
     
@@ -301,7 +301,7 @@ input() {
     printf "$(logit --ansi="35" --icon=">" "$display_prompt") "
     
     # Check if input is available from redirection (<, <<, <<<, pipe)
-    if [ ! -t 0 ] && [ "$D_TTY_AVAILABLE" = "false" ]; then
+    if [ ! -t 0 ] && [ "$D_GLOBAL_TTY_AVAILABLE" = "false" ]; then
         # Non-TTY mode with redirection available
         if [ "$hidden" = true ]; then
             # For hidden input, just read once
@@ -310,7 +310,7 @@ input() {
             # For normal input, read as usual
             read user_input
         fi
-    elif [ "$D_TTY_AVAILABLE" = "true" ]; then
+    elif [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
         # TTY mode
         # Store original terminal settings
         local old_settings=$(stty -g)
@@ -378,7 +378,7 @@ input() {
     
     # Check if input is required
     if [ "$required" = true ] && [ -z "$user_input" ]; then
-        if [ "$D_TTY_AVAILABLE" = "true" ]; then
+        if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
             logit -e "Input is required."
             # Retry input in TTY mode
             input "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
@@ -393,7 +393,7 @@ input() {
     # Validate input if pattern provided
     if [ -n "$validate_pattern" ] && [ -n "$user_input" ]; then
         if ! echo "$user_input" | grep -qE "$validate_pattern"; then
-            if [ "$D_TTY_AVAILABLE" = "true" ]; then
+            if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
                 logit -e "$error_message"
                 # Retry input in TTY mode
                 input "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}

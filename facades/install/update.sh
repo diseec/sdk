@@ -89,7 +89,7 @@ sdk_fac_ins_cmd_update() {
         exit_code=1
     fi
 
-    if [ "$D_IS_RECURSIVE" = "true" ]; then
+    if [ "$D_GLOBAL_IS_RECURSIVE" = "true" ]; then
         logit -l "Updating dependencies in selected submodules..."
         local active_modules="$(cli_ctx --quiet submodule actives)" # sample output: "path/to/module_1 path/to/module_2"
         for module_path in $active_modules; do

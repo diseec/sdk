@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set debug variables early
-: "${D_LOG_LEVEL:=INFO}"  # DEBUG, INFO, WARNING, ERROR
+: "${D_GLOBAL_LOG_LEVEL:=INFO}"  # DEBUG, INFO, WARNING, ERROR
 : "${DEBUG:=false}"
 : "${D_TRACE_DEPTH:=10}"  # How many stack frames to show (max)
 : "${D_TRACE_ENABLED:=true}"  # Enable/disable tracing
@@ -12,7 +12,7 @@ x() {
     local line="${BASH_LINENO[0]:-0}"
     local func="${FUNCNAME[1]:-unknown}"
 
-    if [[ "${D_LOG_LEVEL}" == "DEBUG" || "${DEBUG}" == "true" ]]; then
+    if [[ "${D_GLOBAL_LOG_LEVEL}" == "DEBUG" || "${DEBUG}" == "true" ]]; then
         # Log entry to function with more context
         logit -e --icon="¤][$file:$line:$func" "${*:-Sunshine, rainbows and sh*t!}"
     fi
@@ -111,7 +111,7 @@ get_env_variables() {
     printf "\033[90mPWD            \033[0m \033[90m%s\033[0m\n" "${PWD:-unknown}"
     printf "\033[90mD_INI_PWD      \033[0m \033[90m%s\033[0m\n" "${D_INI_PWD:-unknown}"
     printf "\033[90mD_INI_ARGS     \033[0m \033[90m%s\033[0m\n" "${D_INI_ARGS:-unknown}"
-    printf "\033[90mD_LOG_LEVEL    \033[0m \033[90m%s\033[0m\n" "${D_LOG_LEVEL:-unknown}"
+    printf "\033[90mD_GLOBAL_LOG_LEVEL    \033[0m \033[90m%s\033[0m\n" "${D_GLOBAL_LOG_LEVEL:-unknown}"
     printf "\033[90mD_SDK_DIR      \033[0m \033[90m%s\033[0m\n" "${D_SDK_DIR:-unknown}"
     printf "\033[90mD_CTX_DIR      \033[0m \033[90m%s\033[0m\n" "${D_CTX_DIR:-unknown}"
 }
@@ -173,7 +173,7 @@ start_tracing() {
 
 function sdk_boo_debug_init() {
     # Set default values for potentially unbound variables
-    : "${D_LOG_LEVEL:=INFO}"
+    : "${D_GLOBAL_LOG_LEVEL:=INFO}"
     : "${DEBUG:=false}"
     : "${D_EXIT_ON_ERROR:=true}"  # This is now enforced regardless
     

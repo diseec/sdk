@@ -10,7 +10,7 @@ sdk_fac_git_cmd_pull_merge() {
 
     logit -l "Pull and merge complete."
 
-    if [ "$D_IS_RECURSIVE" = "true" ]; then
+    if [ "$D_GLOBAL_IS_RECURSIVE" = "true" ]; then
         logit -l "Pull and merging in submodules..."
         pull_submodule() {
             local module="$1"

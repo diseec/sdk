@@ -58,7 +58,7 @@ sdk_fac_ins_sdk() {
 
 sdk_fac_ins_ensure_patched() {
     mark_ctx_only
-    local is_forced="${D_SDK_PATCH_FORCE:-false}";
+    local is_forced="${D_GLOBAL_SDK_PATCH_FORCE:-false}";
     local sdk_dir="$D_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH";
 
     # Patch operation applied only either asked to or target project is missing the sdk
