@@ -129,23 +129,28 @@ sdk_fac_ins_repository() {
         fi
     fi
 
+
     if [ "$D_IS_RECURSIVE" = "true" ]; then
         logit -l "Installing dependencies in selected submodules..."
-        install_dependencies() {
-            local module="$1"
-            local module_path="$2"
-            
-            retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive)"
-            local cmd_status=$?
-            if [ $cmd_status -ne 0 ]; then
-                logit -e "Failed to install dependencies for $module" >&2
-                return $cmd_status
+        local active_modules="$(cli_ctx submodule actives)" # sample output: "path/to/module_1 path/to/module_2"
+        for module_path in $active_modules; do
+            if [ -d "$D_CTX_DIR/$module_path" ]; then
+                logit -l "Installing dependencies in $module_path..."
+                retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive)"
+                if [ $? -ne 0 ]; then
+                    install_failures+=("Dependency installation failed in submodule at $module_path")
+                    exit_code=1
+                else
+                    logit -l "Dependencies installed successfully in $module_path."
+                fi
+            else
+                logit -w "Submodule path '$module_path' does not exist or is not a directory."
+                install_failures+=("Submodule path '$module_path' invalid")
+                exit_code=1
             fi
-            logit -l "Installed dependencies for '$module'."
-            return 0
-        }
-        
-        cli_ctx submodule foreach_active install_dependencies
+        done
+
+
         if [ $? -ne 0 ]; then
             install_failures+=("Submodule dependency installation failed")
             exit_code=1
