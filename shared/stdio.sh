@@ -148,7 +148,7 @@ stdout() {
 # OR
 # confirm "Do you want to proceed?" echo 'does this!'
 confirm() {
-    D_GLOBAL_IS_QUIET="false"
+    local D_GLOBAL_IS_QUIET="false"
 
     local question=$1; shift
     
@@ -261,7 +261,7 @@ confirm() {
 #   - Optional vs required input modes
 #   - Terminal state preservation and restoration
 stdin() {
-    D_GLOBAL_IS_QUIET="false"
+    local D_GLOBAL_IS_QUIET="false"
 
     local var_name="$1"; shift
     local prompt="$1"; shift
@@ -449,7 +449,7 @@ stdin() {
 #   - With --timeout: Auto-retry mode with specified pause between attempts (limited by max-attempts)
 #   - With both --manual and --timeout: First tries auto-retries up to max-attempts, then switches to manual mode
 retry() {
-    D_GLOBAL_IS_QUIET="false"
+    local D_GLOBAL_IS_QUIET="false"
 
     local operation_cmd=""
     local max_attempts=3  # Default max attempts for auto mode
