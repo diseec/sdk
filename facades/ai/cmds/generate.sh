@@ -9,7 +9,7 @@ sdk_fac_ai_generate_commit_message() {
     local diff_summary_file="$1"
     local diff_preview_file="$2"
     if [ ! -f "$diff_summary_file" ] || [ ! -f "$diff_preview_file" ]; then
-        logit -e "Diff summary or preview file does not exist"
+        stdout -e "Diff summary or preview file does not exist"
         return 1
     fi
     # Read contents from files using cat
@@ -19,18 +19,18 @@ sdk_fac_ai_generate_commit_message() {
     # Check token count and truncate if necessary
     local token_count=$(sdk_fac_ai_count_tokens "$diff_summary")
     if [ "$token_count" -gt "$FAC_AI_MAX_INPUT_TOKENS" ]; then
-        logit -w "Diff summary exceeds token limit ($token_count tokens), truncating..." >&2
+        stdout -w "Diff summary exceeds token limit ($token_count tokens), truncating..." >&2
         # use half of max tokens for summary and half for preview
         diff_summary=$(sdk_fac_ai_truncate_to_token_limit "$diff_summary" "$FAC_AI_MAX_INPUT_TOKENS/2")
     fi
     token_count=$(sdk_fac_ai_count_tokens "$diff_preview")
     if [ "$token_count" -gt "$FAC_AI_MAX_INPUT_TOKENS" ]; then
-        logit -w "Diff preview exceeds token limit ($token_count tokens), truncating..." >&2
+        stdout -w "Diff preview exceeds token limit ($token_count tokens), truncating..." >&2
         diff_preview=$(sdk_fac_ai_truncate_to_token_limit "$diff_preview" "$FAC_AI_MAX_INPUT_TOKENS/2")
     fi
 
     if [ -z "$diff_summary" ] || [ -z "$diff_preview" ]; then
-        logit -e "Missing diff summary or preview for commit message generation"
+        stdout -e "Missing diff summary or preview for commit message generation"
         return 1
     fi
     
@@ -53,21 +53,21 @@ Please format the response as a commit message with a short title (max 50 chars)
 sdk_fac_ai_generate_daily_insight() {
     local analysis_data_file="$1"
     if [ ! -f "$analysis_data_file" ]; then
-        logit -e "Analysis data file does not exist"
+        stdout -e "Analysis data file does not exist"
         return 1
     fi
     # Read contents from file using cat
     local analysis_data=$(cat "$analysis_data_file")
 
     if [ -z "$analysis_data" ]; then
-        logit -e "Missing analysis data for daily insight generation"
+        stdout -e "Missing analysis data for daily insight generation"
         return 1
     fi
     
     # Check token count and truncate if necessary
     local token_count=$(sdk_fac_ai_count_tokens "$analysis_data")
     if [ "$token_count" -gt "$FAC_AI_MAX_INPUT_TOKENS" ]; then
-        logit -w "Analysis data exceeds token limit ($token_count tokens), truncating..." >&2
+        stdout -w "Analysis data exceeds token limit ($token_count tokens), truncating..." >&2
         analysis_data=$(sdk_fac_ai_truncate_to_token_limit "$analysis_data" "$FAC_AI_MAX_INPUT_TOKENS")
     fi
     

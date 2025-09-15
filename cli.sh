@@ -38,12 +38,12 @@ c=$1; shift; case $c in
     
     # HOOKS
     hook:*) ;;
-    # hook:before_update) logit -i "Commands before updating completed..." ;;
-    # hook:after_update)  logit -i "Commands after updating completed..." ;;
-    # hook:after_install) logit -i "Commands before installing completed..." ;;
-    # hook:after_install) logit -i "Commands after installing completed..." ;;
-    # hook:before_push)   logit -i "Commands before pushing changes..." ;;
-    # hook:after_push)    logit -i "Commands after pushing changes..." ;;
+    # hook:before_update) stdout -i "Commands before updating completed..." ;;
+    # hook:after_update)  stdout -i "Commands after updating completed..." ;;
+    # hook:after_install) stdout -i "Commands before installing completed..." ;;
+    # hook:after_install) stdout -i "Commands after installing completed..." ;;
+    # hook:before_push)   stdout -i "Commands before pushing changes..." ;;
+    # hook:after_push)    stdout -i "Commands after pushing changes..." ;;
 
     *) sdk_cmd_any "$@" ;;
 esac

@@ -39,5 +39,5 @@ c=$1; shift; case $c in
             "$@"
         ;;
     fun|function) "$@" ;;
-    *) if [ ! -z "$c" ]; then logit -e "install: Unknown command: '$c'"; fi ;;
+    *) if [ ! -z "$c" ]; then stdout -e "install: Unknown command: '$c'"; fi ;;
 esac

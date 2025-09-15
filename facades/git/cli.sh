@@ -20,7 +20,7 @@ c=$1; shift; case $c in
         # cli_ctx config help sdk_fac_con_get_suggest_ctx_dir "$1"
         # local ctx_dir="$(cli_ctx config function sdk_fac_con_get_suggest_ctx_dir "$1")"
         # cli_ctx git _ clone https://$D_REPOSITORY_URL/"$1" "$ctx_dir"
-        # logit -l "Initializing recursively.., cloned into: $ctx_dir"
+        # stdout -l "Initializing recursively.., cloned into: $ctx_dir"
         # cd "$ctx_dir"
         # ("$D_CLI_GLOBAL_NAME" install)
         ;;
@@ -32,7 +32,7 @@ c=$1; shift; case $c in
     pre|pull-request|pr) mark_ctx_only; c=$1; shift; case $c in
         cre|create) sdk_fac_git_cmd_pr_create "$@" ;;
         sta|status) sdk_fac_git_cmd_pr_check_status "$@" ;;
-        *) if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi ;;
+        *) if [[ -n "$c" ]]; then stdout -e "Unknown command: '$c'"; fi ;;
     esac; ;;
     log)
         mark_ctx_only;
@@ -51,7 +51,7 @@ c=$1; shift; case $c in
     hub) c=$1; shift; case $c in
         _) _gh "$@" ;;
         *)
-            if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
+            if [[ -n "$c" ]]; then stdout -e "Unknown command: '$c'"; fi
             # cli_ctx git hub help; return 1;
         ;;
     esac ;;
@@ -89,7 +89,7 @@ c=$1; shift; case $c in
     ;;
     fun|function) "$@" ;;
     *)
-        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
+        if [[ -n "$c" ]]; then stdout -e "Unknown command: '$c'"; fi
         cli_ctx git help; return 1;
     ;;
 esac

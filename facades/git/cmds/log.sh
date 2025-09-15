@@ -240,7 +240,7 @@ sdk_fac_git_cmd_git_log() {
     
 #     # If no data collected, show simple message
 #     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then
-#         logit -i "No commits or changes found for today"
+#         stdout -i "No commits or changes found for today"
 #         return 0
 #     fi
     
@@ -284,7 +284,7 @@ sdk_fac_git_cmd_git_log() {
     
 #     read -p "Generate daily insight report? (y/n): " confirm
 #     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-#         logit -w "Daily insight report generation cancelled"
+#         stdout -w "Daily insight report generation cancelled"
 #         return 0
 #     fi
     
@@ -300,7 +300,7 @@ sdk_fac_git_cmd_git_log() {
 #     # Use AI to generate insight report
 #     if cli_ctx ai function sdk_fac_ai_is_available; then
 #         echo ""
-#         logit -a "Writing daily insights..."
+#         stdout -a "Writing daily insights..."
 #         echo ""
 
 #         local ai_insight=$(cli_ctx ai function sdk_fac_ai_generate_daily_insight "$analysis_data")
@@ -326,12 +326,12 @@ sdk_fac_git_cmd_git_log() {
 #             #     echo "Total changes: $total_files_changed files (+$total_insertions -$total_deletions lines)"
 #             # fi
 #         else
-#             logit -e "Failed to generate AI insight. Showing raw data."
+#             stdout -e "Failed to generate AI insight. Showing raw data."
 #             echo ""
 #             echo "$analysis_data"
 #         fi
 #     else
-#         logit -e "AI not available. Showing raw data instead."
+#         stdout -e "AI not available. Showing raw data instead."
 #         echo ""
 #         echo "$analysis_data"
 #     fi

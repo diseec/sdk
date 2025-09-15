@@ -2,7 +2,7 @@
 
 sdk_fac_inf_check_for_updates() {
     if ! cli_ctx internet is-online; then
-        logit --ansi="31" --icon="⊘" "Disconnected, skipping update check..."
+        stdout --ansi="31" --icon="⊘" "Disconnected, skipping update check..."
         return 0
     fi
 

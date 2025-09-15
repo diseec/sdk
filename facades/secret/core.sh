@@ -7,7 +7,7 @@
 # Helper function to check if OpenSSL is available
 sdk_fac_sec_check_openssl() {
     if ! command -v _openssl >/dev/null 2>&1; then
-        logit -e "OpenSSL is required but not installed"
+        stdout -e "OpenSSL is required but not installed"
         return 1
     fi
     return 0
@@ -23,12 +23,12 @@ sdk_fac_sec_validate_secret_name() {
     local secret_name="$1"
     
     if [ -z "$secret_name" ]; then
-        logit -e "Secret name cannot be empty"
+        stdout -e "Secret name cannot be empty"
         return 1
     fi
     
     if ! echo "$secret_name" | grep -q '^[A-Za-z_][A-Za-z0-9_]*$'; then
-        logit -e "Invalid secret name. Use only letters, numbers, and underscores"
+        stdout -e "Invalid secret name. Use only letters, numbers, and underscores"
         return 1
     fi
     
@@ -40,7 +40,7 @@ sdk_fac_sec_validate_encryption_key() {
     local key="$1"
     
     if [ -z "$key" ]; then
-        logit -e "Encryption key cannot be empty"
+        stdout -e "Encryption key cannot be empty"
         return 1
     fi
     

@@ -96,7 +96,7 @@ c=$1; shift; case $c in
     ;;
     fun|function) "$@" ;;
     *)
-        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
+        if [[ -n "$c" ]]; then stdout -e "Unknown command: '$c'"; fi
         cli_ctx config help; return 1;
         ;;
 esac

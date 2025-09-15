@@ -22,7 +22,7 @@ sdk_fac_sub_fea_act_get_available_modules() {
     local gitmodules_file="$D_CTX_DIR/.gitmodules"
     
     if [ ! -f "$gitmodules_file" ]; then
-        logit -e ".gitmodules file not found at $gitmodules_file" >&2
+        stdout -e ".gitmodules file not found at $gitmodules_file" >&2
         return 1
     fi
     
@@ -76,7 +76,7 @@ sdk_fac_sub_fea_act_foreach_selected_module() {
 
     if [ -z "$selected_modules" ]; then
         # No submodules selected is a valid state - just return success
-        logit -w "No submodules selected in workspace configuration"
+        stdout -w "No submodules selected in workspace configuration"
         return 0
     fi
 
@@ -85,7 +85,7 @@ sdk_fac_sub_fea_act_foreach_selected_module() {
         if [ -n "$module_path" ]; then
             "$callback_function" "$module" "$module_path" "$@"
         else
-            logit -w "Module path not found for $module, skipping"
+            stdout -w "Module path not found for $module, skipping"
         fi
     done
 

@@ -6,7 +6,7 @@ sdk_fac_git_cmd_push() {
   echo "Pushing to remote..."
   _git push -u origin "$D_CURRENT_BRANCH"
   if [ $? -ne 0 ]; then
-    logit -e "Failed to push changes to remote."
+    stdout -e "Failed to push changes to remote."
     return 1
   fi
 

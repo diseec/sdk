@@ -10,7 +10,7 @@ sdk_fac_ins_get_version_info() {
     if [ -n "$outdated_json" ] && [ "$outdated_json" != "{}" ]; then
         # Debug the JSON structure
         local debug_output=$(echo "$outdated_json" | _jq -r 'keys')
-        # logit -d "JSON keys: $debug_output"
+        # stdout -d "JSON keys: $debug_output"
         
         # Try to extract versions using different approaches since npm outdated format varies
         if echo "$outdated_json" | _jq -e '."@'$D_ORG_NAME'/'$D_SDK_NAME'" | has("current")' &>/dev/null; then
@@ -62,8 +62,8 @@ sdk_fac_ins_cmd_update() {
     local update_failures=()
     local exit_code=0
     
-    logit -i "Updating '$D_CTX_DIR' with sdk source '$D_SDK_DIR'..."
-    logit -i "On branch '$D_CURRENT_BRANCH' Pulling changes for '$D_REPO_NAME'..."
+    stdout -i "Updating '$D_CTX_DIR' with sdk source '$D_SDK_DIR'..."
+    stdout -i "On branch '$D_CURRENT_BRANCH' Pulling changes for '$D_REPO_NAME'..."
 
     retry --manual --auto "cli_ctx git _ pull origin"
     if [ $? -ne 0 ]; then
@@ -90,20 +90,20 @@ sdk_fac_ins_cmd_update() {
     fi
 
     if [ "$D_GLOBAL_IS_RECURSIVE" = "true" ]; then
-        logit -l "Updating dependencies in selected submodules..."
+        stdout -l "Updating dependencies in selected submodules..."
         local active_modules="$(cli_ctx --quiet submodule actives)" # sample output: "path/to/module_1 path/to/module_2"
         for module_path in $active_modules; do
             if [ -d "$D_CTX_DIR/$module_path" ]; then
-                logit -l "Updating dependencies in $module_path..."
+                stdout -l "Updating dependencies in $module_path..."
                 retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME api v1 update)"
                 if [ $? -ne 0 ]; then
                     install_failures+=("Dependency update failed in submodule at $module_path")
                     exit_code=1
                 else
-                    logit -l "Dependencies updated successfully in $module_path."
+                    stdout -l "Dependencies updated successfully in $module_path."
                 fi
             else
-                logit -w "Submodule path '$module_path' does not exist or is not a directory."
+                stdout -w "Submodule path '$module_path' does not exist or is not a directory."
                 install_failures+=("Submodule path '$module_path' invalid (update)")
                 exit_code=1
             fi
@@ -124,11 +124,11 @@ sdk_fac_ins_cmd_update() {
     
     # Report results
     if [ ${#update_failures[@]} -eq 0 ]; then
-        logit -o "Update completed successfully"
+        stdout -o "Update completed successfully"
     else
-        logit -w --ansi="31" "Update completed with ${#update_failures[@]} issues:"
+        stdout -w --ansi="31" "Update completed with ${#update_failures[@]} issues:"
         for failure in "${update_failures[@]}"; do
-            logit -e --icon="✖︎" "$failure"
+            stdout -e --icon="✖︎" "$failure"
         done
     fi
     

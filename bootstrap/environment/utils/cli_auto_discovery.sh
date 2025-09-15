@@ -50,7 +50,7 @@ sdk_boo_env_uti_cli_auto_discovery() {
 
         # If not found just silently skip and return null
         if [ "$dir" = "/" ]; then
-            # logit -e "'$D_CLI_LOCAL_NAME' not found, try cd to project root" >&2
+            # stdout -e "'$D_CLI_LOCAL_NAME' not found, try cd to project root" >&2
             # printf '%s\n' "$PWD"
             break
         fi

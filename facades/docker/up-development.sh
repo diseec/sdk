@@ -17,7 +17,7 @@ sdk_fac_doc_up_development() {
     else
         # Set up a trap to ensure we stop all containers on interrupt
         cleanup() {
-            # logit -w "CLEANUP" "Stopping all containers..."
+            # stdout -w "CLEANUP" "Stopping all containers..."
             cli_ctx docker compose _ down
             exit 0
         }
@@ -32,7 +32,7 @@ sdk_fac_doc_up_development() {
         fi
         
         if [ -n "$services_filter" ]; then
-            logit "Starting selected services: $services_filter"
+            stdout "Starting selected services: $services_filter"
             cli_ctx docker compose _ up $services_filter "$@"
         else
             cli_ctx docker compose _ up "$@"

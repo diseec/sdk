@@ -68,7 +68,7 @@ sdk_tester_show_progress() {
     
     if [ "$TESTER_VERBOSE" = "true" ]; then
         local progress="[$current_test/$total_tests]"
-        logit --ansi="$TESTER_COLOR_DIM" "$(ansi 90 "$progress") $test_name"
+        stdout --ansi="$TESTER_COLOR_DIM" "$(ansi 90 "$progress") $test_name"
     fi
 }
 

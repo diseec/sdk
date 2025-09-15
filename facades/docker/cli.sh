@@ -20,7 +20,7 @@ c=$1; shift; case $c in
             "    _               " "Direct docker compose command passthrough"
         ;;
         *)
-            if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
+            if [[ -n "$c" ]]; then stdout -e "Unknown command: '$c'"; fi
             cli_ctx docker compose help; return 1;
         ;;
     esac ;;
@@ -32,7 +32,7 @@ c=$1; shift; case $c in
     ;;
     fun|function) "$@" ;;
     *)
-        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
+        if [[ -n "$c" ]]; then stdout -e "Unknown command: '$c'"; fi
         cli_ctx docker help; return 1;
     ;;
 esac

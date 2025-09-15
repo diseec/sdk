@@ -6,13 +6,13 @@ sdk_fac_git_cmd_checkout_branch() {
     # Check for uncommitted changes
     local uncommitted_changes=$(_git status --porcelain)
     if [ -n "$uncommitted_changes" ]; then
-        logit -w "You have uncommitted changes, please commit or stash them before switching branches."
+        stdout -w "You have uncommitted changes, please commit or stash them before switching branches."
     fi
 
     # Check for unpushed commits
     local unpushed_commits=$(_git log --oneline @{u}.. 2>/dev/null | wc -l | tr -d ' ')
     if [ "$unpushed_commits" -gt 0 ]; then
-        logit -w "You have $unpushed_commits unpushed commits. Please push them before switching branches."
+        stdout -w "You have $unpushed_commits unpushed commits. Please push them before switching branches."
     fi
 
     # if has uncommitted changes or unpushed commits and not in skip-check mode, prompt user
@@ -27,64 +27,64 @@ sdk_fac_git_cmd_checkout_branch() {
     fi
 
     GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-    input BRANCH "Branch to checkout:" --default="$GH_USERNAME" --optional
+    stdin BRANCH "Branch to checkout:" --default="$GH_USERNAME" --optional
     if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
 
-    logit -l "Checking out to branch '$BRANCH'..."
+    stdout -l "Checking out to branch '$BRANCH'..."
     _git fetch && _git checkout $BRANCH || _git checkout -b $BRANCH origin/$BRANCH || _git checkout -b $BRANCH;
 }
 
 sdk_fac_git_cmd_checkout_if_detached() {
     if _git symbolic-ref HEAD >/dev/null 2>&1; then
-        # logit -l "Already on a branch, no checkout needed."
+        # stdout -l "Already on a branch, no checkout needed."
         return 0
     else
-        logit -w "$D_REPO_NAME: Repository is in detached HEAD state."
+        stdout -w "$D_REPO_NAME: Repository is in detached HEAD state."
         # Check for local changes in detached HEAD
         if [ -n "$(_git status --porcelain)" ]; then
-            logit -e "You have local changes in detached HEAD."
+            stdout -e "You have local changes in detached HEAD."
             # Prompt for branch to merge changes into
             GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-            input TARGET_BRANCH "Branch to merge changes into:" --default="$GH_USERNAME" --optional
+            stdin TARGET_BRANCH "Branch to merge changes into:" --default="$GH_USERNAME" --optional
             if [ -z "$TARGET_BRANCH" ]; then TARGET_BRANCH="$GH_USERNAME"; fi
             TEMP_BRANCH="temp-detached-$(date +%s)"
-            logit -l "Creating temporary branch '$TEMP_BRANCH' from detached HEAD..."
+            stdout -l "Creating temporary branch '$TEMP_BRANCH' from detached HEAD..."
             _git checkout -b "$TEMP_BRANCH"
-            logit -l "Committing local changes on '$TEMP_BRANCH'..."
+            stdout -l "Committing local changes on '$TEMP_BRANCH'..."
             _git add . && _git commit -m "WIP: changes from detached HEAD" || true
-            logit -l "Checking out to target branch '$TARGET_BRANCH'..."
+            stdout -l "Checking out to target branch '$TARGET_BRANCH'..."
             _git fetch && _git checkout "$TARGET_BRANCH" || _git checkout -b "$TARGET_BRANCH" origin/"$TARGET_BRANCH" || _git checkout -b "$TARGET_BRANCH"
-            logit -l "Merging changes from '$TEMP_BRANCH' into '$TARGET_BRANCH'..."
+            stdout -l "Merging changes from '$TEMP_BRANCH' into '$TARGET_BRANCH'..."
             _git merge "$TEMP_BRANCH"
-            logit -l "Deleting temporary branch '$TEMP_BRANCH'..."
+            stdout -l "Deleting temporary branch '$TEMP_BRANCH'..."
             _git branch -d "$TEMP_BRANCH"
         else
             sdk_fac_git_cmd_checkout_branch
             # After branch checkout, check for uncommitted changes left behind
             if [ -n "$(_git status --porcelain)" ]; then
-                logit -e "You have uncommitted changes that may have been left behind after switching from detached HEAD."
-                logit -q "Choose how to handle these changes:"
+                stdout -e "You have uncommitted changes that may have been left behind after switching from detached HEAD."
+                stdout -q "Choose how to handle these changes:"
                 echo "1) Stash them"
                 echo "2) Commit to a temporary branch"
                 echo "3) Merge into current branch"
-                input DANGER_CHOICE "Enter choice [1/2/3]:"
+                stdin DANGER_CHOICE "Enter choice [1/2/3]:"
                 case "$DANGER_CHOICE" in
                     1)
                         _git stash
-                        logit -l "Changes stashed."
+                        stdout -l "Changes stashed."
                         ;;
                     2)
                         TEMP_BRANCH="temp-uncommitted-$(date +%s)"
                         _git checkout -b "$TEMP_BRANCH"
                         _git add . && _git commit -m "WIP: uncommitted changes after detached HEAD" || true
-                        logit -l "Changes committed to temporary branch '$TEMP_BRANCH'."
+                        stdout -l "Changes committed to temporary branch '$TEMP_BRANCH'."
                         ;;
                     3)
                         _git add . && _git commit -m "WIP: merge uncommitted changes after detached HEAD" || true
-                        logit -l "Changes committed to current branch."
+                        stdout -l "Changes committed to current branch."
                         ;;
                     *)
-                        logit -l "No action taken. Please handle changes manually."
+                        stdout -l "No action taken. Please handle changes manually."
                         ;;
                 esac
             fi

@@ -84,10 +84,10 @@ sdk_fac_ins_check_system_dependencies() {
     done
     
     if [ $missing_count -eq 0 ]; then
-        logit -o "All system dependencies are installed!"
+        stdout -o "All system dependencies are installed!"
         return 0
     else
-        logit -e "$missing_count missing dependencies found: ${missing_deps[*]}"
+        stdout -e "$missing_count missing dependencies found: ${missing_deps[*]}"
         return 1
     fi
 }
@@ -297,10 +297,10 @@ sdk_fac_ins_install_system_dependencies() {
     done
     
     if $all_success; then
-        logit -o "All system dependencies installed successfully!"
+        stdout -o "All system dependencies installed successfully!"
         return 0
     else
-        logit -e "Some dependencies failed to install"
+        stdout -e "Some dependencies failed to install"
         return 1
     fi
 }

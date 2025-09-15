@@ -90,7 +90,7 @@ sdk_fac_con_set() {
     sdk_fac_con_validate_scope "$scope" || return 1
     
     if [ -z "$value" ]; then
-        logit -e "Configuration value cannot be empty"
+        stdout -e "Configuration value cannot be empty"
         return 1
     fi
     
@@ -99,7 +99,7 @@ sdk_fac_con_set() {
     
     sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
 
-    logit -l "Set '$key_path' in '$scope' scope with value: $value"
+    stdout -l "Set '$key_path' in '$scope' scope with value: $value"
     
     return 0
 }
@@ -122,7 +122,7 @@ sdk_fac_con_delete() {
     local config_file="$(sdk_fac_con_get_config_file "$scope")"
     
     if [ ! -f "$config_file" ]; then
-        logit -w "Configuration file does not exist for scope: $scope"
+        stdout -w "Configuration file does not exist for scope: $scope"
         return 1
     fi
     
@@ -132,7 +132,7 @@ sdk_fac_con_delete() {
     
     if [ "$key_exists" = "__key_not_found__" ] || [ -z "$key_exists" ] || [ "$key_exists" = "null" ]; then
         # Key doesn't exist, but we'll still consider this a success for idempotency
-        logit -l "Deleted '$key_path' from '$scope' scope"
+        stdout -l "Deleted '$key_path' from '$scope' scope"
         return 0
     fi
     
@@ -140,11 +140,11 @@ sdk_fac_con_delete() {
     if [ -n "$value" ]; then
         # Remove value from array
         sdk_fac_con_yaml_array_remove "$config_file" "$key_path" "$value"
-        logit -l "Removed '$value' from '$key_path' array in '$scope' scope"
+        stdout -l "Removed '$value' from '$key_path' array in '$scope' scope"
     else
         # Delete entire key
         sdk_fac_con_yaml_delete "$config_file" "$key_path"
-        logit -l "Deleted '$key_path' from '$scope' scope"
+        stdout -l "Deleted '$key_path' from '$scope' scope"
     fi
     
     return 0

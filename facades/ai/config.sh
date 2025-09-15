@@ -18,7 +18,7 @@ sdk_fac_ai_init_interactive() {
         export OPENAI_API_KEY="$(cli_ctx secret export OPENAI_API_KEY)"
         return 0
     else
-        logit -e "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2
+        stdout -e "Unable to prepare secret 'OPENAI_API_KEY' for export" >&2
         return 1
     fi
 }

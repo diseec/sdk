@@ -12,7 +12,7 @@ sdk_fac_con_get_suggest_ctx_dir() {
     local repo_name="${1:-$D_REPO_NAME}"
     
     if [ -z "$repo_name" ]; then
-        logit -e "Repository name is undefined. Cannot determine context directory."
+        stdout -e "Repository name is undefined. Cannot determine context directory."
         return 1
     fi
     
@@ -21,7 +21,7 @@ sdk_fac_con_get_suggest_ctx_dir() {
 
 sdk_fac_con_get_scope_ctx_dir() {
     if [ -z "$D_REPO_NAME" ]; then
-        logit -e "Repository name (D_REPO_NAME) is undefined. Cannot determine context scope directory."
+        stdout -e "Repository name (D_REPO_NAME) is undefined. Cannot determine context scope directory."
         return 1
     fi
     
@@ -36,7 +36,7 @@ readonly SCOPE_CTX_DIR="$(sdk_fac_con_get_scope_ctx_dir)"
 
 sdk_fac_con_get_scope_repo_dir() {
     if [ -z "$D_REPO_NAME" ]; then
-        logit -e "Repository name (D_REPO_NAME) is undefined. Cannot determine repository scope directory."
+        stdout -e "Repository name (D_REPO_NAME) is undefined. Cannot determine repository scope directory."
         return 1
     fi
     

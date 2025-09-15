@@ -2,7 +2,7 @@
 
 cli_ctx() {
     if [ -z "$D_CTX_DIR" ]; then
-        logit -e "calling cli_ctx in a undefined context. Cannot proceed." >&2
+        stdout -e "calling cli_ctx in a undefined context. Cannot proceed." >&2
         return 1
     fi
     source "$D_CLI_STUB" "$@"
@@ -23,11 +23,11 @@ source_once() {
             _SOURCED_FILES="$_SOURCED_FILES $script_path "
             source "$script_path" "$@" # Watch out the exit status
         else
-            logit -e "Error: Script not found: $script_path"
+            stdout -e "Error: Script not found: $script_path"
         fi
     else
         if [ "$#" -gt 0 ]; then
-            logit -w "Script already sourced, but arguments were provided and will be ignored: $script_path"
+            stdout -w "Script already sourced, but arguments were provided and will be ignored: $script_path"
         fi
     fi
 }
@@ -38,14 +38,14 @@ source_safely() {
 
     # Validate that first argument is a valid .sh script path
     if [ -z "$1" ]; then
-        logit -e "No script path provided to source_safely"
+        stdout -e "No script path provided to source_safely"
         return 1
     fi
 
     local script_path="$1"; shift
     
     if [[ ! "$script_path" == *cli.sh ]]; then
-        logit -e "Script path must end with cli.sh: $script_path"
+        stdout -e "Script path must end with cli.sh: $script_path"
         return 1
     fi
 
@@ -60,10 +60,10 @@ source_safely() {
         # Watch out the exit status
     elif [ "$D_IS_IN_CONTAINER" = "true" ]; then
         CONTAINER_ID=$(hostname 2>/dev/null || echo "unknown")
-        logit -e "Trying to run '$full_cmd' command in '$D_SDK_NAME' container, but already in a different container: $CONTAINER_ID" >&2
+        stdout -e "Trying to run '$full_cmd' command in '$D_SDK_NAME' container, but already in a different container: $CONTAINER_ID" >&2
         return 1
     else
-        logit -l "Container only command, redirecting: $full_cmd"
+        stdout -l "Container only command, redirecting: $full_cmd"
         cli_ctx --safely "$full_cmd";
     fi
 }
@@ -76,7 +76,7 @@ mark_ctx_only() {
         local line_number=$(echo "$caller_info" | cut -d ' ' -f 1)
         local calling_function=$(echo "$caller_info" | cut -d ' ' -f 2)
         local calling_file=$(echo "$caller_info" | cut -d ' ' -f 3-)
-        logit -e --icon="E:OOC" "Command forbidden: '$D_INI_ARGS': Called in '$calling_function'() at $calling_file:$line_number" >&2
+        stdout -e --icon="E:OOC" "Command forbidden: '$D_INI_ARGS': Called in '$calling_function'() at $calling_file:$line_number" >&2
         return 1
     fi
 }

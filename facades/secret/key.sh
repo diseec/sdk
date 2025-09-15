@@ -9,22 +9,22 @@ sdk_fac_sec_set_key() {
     sdk_fac_sec_check_openssl || return 1
     
     if sdk_fac_sec_is_key_configured && ! sdk_fac_sec_secrets_exist; then
-        logit -w "Encryption key is already configured"
-        logit -i "Use 'reset-key' to change existing key"
+        stdout -w "Encryption key is already configured"
+        stdout -i "Use 'reset-key' to change existing key"
         return 1
     fi
     
     local encryption_key
-    input encryption_key "Enter encryption key" --hidden
+    stdin encryption_key "Enter encryption key" --hidden
     
     if [ -z "$encryption_key" ]; then
-        logit -e "Encryption key cannot be empty"
+        stdout -e "Encryption key cannot be empty"
         return 1
     fi
     
     # Validate key format
     if ! sdk_fac_sec_validate_encryption_key "$encryption_key"; then
-        logit -w "Key should be 64 hexadecimal characters"
+        stdout -w "Key should be 64 hexadecimal characters"
         if ! confirm "Continue anyway?"; then
             return 0
         fi
@@ -38,7 +38,7 @@ sdk_fac_sec_set_key() {
     fi
     
     sdk_fac_sec_store_encryption_key "$encryption_key"
-    logit -o "Encryption key configured successfully"
+    stdout -o "Encryption key configured successfully"
 }
 
 # Reset encryption key
@@ -46,13 +46,13 @@ sdk_fac_sec_reset_key() {
     sdk_fac_sec_check_openssl || return 1
     
     if ! sdk_fac_sec_is_key_configured; then
-        logit -e "No encryption key configured. Use 'set-key' first"
+        stdout -e "No encryption key configured. Use 'set-key' first"
         return 1
     fi
     
     if sdk_fac_sec_secrets_exist; then
-        logit -w "This will re-encrypt all existing secrets with a new key"
-        logit -w "Make sure you have the current key before proceeding"
+        stdout -w "This will re-encrypt all existing secrets with a new key"
+        stdout -w "Make sure you have the current key before proceeding"
         
         if ! confirm "Continue?"; then
             return 0
@@ -63,30 +63,30 @@ sdk_fac_sec_reset_key() {
         
         if sdk_fac_sec_reencrypt_all_secrets "$current_key" "$new_key"; then
             sdk_fac_sec_store_encryption_key "$new_key"
-            logit -l "All secrets re-encrypted with new key"
-            logit -l "New key: $new_key"
-            logit -w "Store this key safely!"
+            stdout -l "All secrets re-encrypted with new key"
+            stdout -l "New key: $new_key"
+            stdout -w "Store this key safely!"
         else
             return 1
         fi
     else
         local new_key=$(sdk_fac_sec_generate_encryption_key)
         sdk_fac_sec_store_encryption_key "$new_key"
-        logit -l "New encryption key generated"
-        logit -l "Key: $new_key"
-        logit -w "Store this key safely!"
+        stdout -l "New encryption key generated"
+        stdout -l "Key: $new_key"
+        stdout -w "Store this key safely!"
     fi
 }
 
 # Show current encryption key
 sdk_fac_sec_show_key() {
     if ! sdk_fac_sec_is_key_configured; then
-        logit -e "No encryption key configured. Run 'secrets init' first"
+        stdout -e "No encryption key configured. Run 'secrets init' first"
         return 1
     fi
     
     local key=$(sdk_fac_sec_get_encryption_key)
-    logit -l "Current encryption key:"
+    stdout -l "Current encryption key:"
     echo "$key"
 }
 
@@ -97,21 +97,21 @@ sdk_fac_sec_clear_secrets() {
     
     # Check if secrets directory has any files
     if [ ! -n "$(ls -A "$SECRETS_DIR" 2>/dev/null)" ]; then
-        logit -w "No secrets found"
+        stdout -w "No secrets found"
         return 0
     fi
 
-    logit --ansi="43" --icon="WARNING" "This will permanently delete ALL secrets!"
-    logit --ansi="45" --icon="?" "Are you sure? Type 'DELETE' to confirm: "
+    stdout --ansi="43" --icon="WARNING" "This will permanently delete ALL secrets!"
+    stdout --ansi="45" --icon="?" "Are you sure? Type 'DELETE' to confirm: "
     read confirmation
     
     if [ "$confirmation" = "DELETE" ]; then
         # Remove all files but keep the directory
         rm -f "$SECRETS_DIR"/*
-        logit -l "All secrets cleared"
+        stdout -l "All secrets cleared"
         return 0
     else
-        logit -l "Operation cancelled"
+        stdout -l "Operation cancelled"
         # Explicitly exit with non-zero to ensure it's propagated properly
         return 1
     fi

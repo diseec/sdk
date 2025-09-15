@@ -33,7 +33,7 @@ c=$1; shift; case $c in
     #         *) [ -z "$B" ] && B=$1;;
     #         -*|--*|-h|--help) echo "Unknown option: $1"; return 1;;
     #     esac; shift; done;
-    #     logit --ansi="1;34" --icon="example" "B:'$B', X:'$X', Y:'$Y'"
+    #     stdout --ansi="1;34" --icon="example" "B:'$B', X:'$X', Y:'$Y'"
     # ;;
     
     ins|install)
@@ -57,12 +57,12 @@ c=$1; shift; case $c in
     tes|test) cli_core test "$@" ;;
 
     # Hooks
-    # hook:after_install) logit -i "Commands before installing completed..." ;;
-    # hook:after_install) logit -i "Commands after installing completed..." ;;
-    # hook:before_update) logit -i "Commands after updating completed..." ;;
-    # hook:after_update) logit -i "Commands after updating completed..." ;;
-    # hook:before_push) logit -i "Commands before pushing changes..." ;;
-    # hook:after_push) logit -i "Commands after pushing changes..." ;;
+    # hook:after_install) stdout -i "Commands before installing completed..." ;;
+    # hook:after_install) stdout -i "Commands after installing completed..." ;;
+    # hook:before_update) stdout -i "Commands after updating completed..." ;;
+    # hook:after_update) stdout -i "Commands after updating completed..." ;;
+    # hook:before_push) stdout -i "Commands before pushing changes..." ;;
+    # hook:after_push) stdout -i "Commands after pushing changes..." ;;
 
     # hel|help|--help|-h) cli_core --help "" "" "$(ansi "1;90" "$(capitalize "$D_REPO_NAME Commands")")" "" \
     #     "    myc|mycommand" "            Display the help message" ;;

@@ -44,7 +44,21 @@ ansi() {
     printf "\033[0m\033[%sm%s\033[0m" "$ansi" "$text"
 }
 
-logit() {
+# Usage: stdout [type] [--icon=ICON] [--ansi=CODE] "Your message here"
+# Types: -l|--log (default), -d|--debug, -f|--fail, -e|--error, -o|--okey, -w|--warning, -i|--info, -q|--question, -a|--ai, -s|--statement
+# Examples:
+#   stdout "This is a log message"
+#   stdout -i --icon="i" --ansi="34" "This is an info message"
+#   stdout --icon="✓" --ansi="32" "This is a success message"
+#   stdout -e "This is an error message"
+#   stdout -w --icon="!" "This is a warning message"
+#   stdout -d --icon="¤" "This is a debug message"
+#   stdout -f --icon="✖" "This is a failure message"
+#   stdout -q --icon="?" "This is a question message"
+#   stdout -a --icon="✦" "This is an AI-related message"
+#   stdout -s "This is a plain statement message"
+# Note: In quiet mode (D_GLOBAL_IS_QUIET="true"), this function produces no output
+stdout() {
     if [ "$D_GLOBAL_IS_QUIET" = "true" ]; then return 0; fi
 
     local level="DEBUG" # DEBUG > INFO > WARNING > ERROR
@@ -125,20 +139,21 @@ logit() {
 }
 
 # Function for use in if statements - returns 0 (true) or 1 (false)
+# usage:
+# if confirm "Do you want to proceed?"; then
+#     # Your code here for the "yes" case
+# else
+#     # Your code here for the "no" case
+# fi
+# OR
+# confirm "Do you want to proceed?" echo 'does this!'
 confirm() {
-    # usage:
-    # if confirm "Do you want to proceed?"; then
-    #     # Your code here for the "yes" case
-    # else
-    #     # Your code here for the "no" case
-    # fi
-    # OR
-    # confirm "Do you want to proceed?" echo 'does this!'
+    D_GLOBAL_IS_QUIET="false"
 
     local question=$1; shift
     
     # First output the question so in non-tty environments it's still shown
-    printf "$(logit --ansi="35" --icon="Y/N" "$question ")"
+    printf "$(stdout --ansi="35" --icon="Y/N" "$question ")"
     
     # Check if TTY is available
     if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
@@ -173,7 +188,7 @@ confirm() {
     
     # In testing environments, echo the input for visibility
     if [ "$D_ENV" = "TESTING" ]; then
-        logit -i --icon="<" "Input received (non-TTY mode): $response"
+        stdout -i --icon="<" "Input received (non-TTY mode): $response"
     fi
 
     case "$response" in
@@ -184,7 +199,7 @@ confirm() {
         [nN][oO]|[nN]) return 1 ;; # Return 1 for failure/false in bash
         *)
             # Invalid response, prompt again
-            logit -e "Invalid response. Please enter Y or N."
+            stdout -e "Invalid response. Please enter Y or N."
             # Recursive call to retry - pass all original arguments
             confirm "$question" "$@"
             return $?
@@ -197,56 +212,57 @@ confirm() {
 # ┃ Provides a consistent, user-friendly way to collect input from users     ┃
 # ┃ with optional validation, default values, and secure hidden input        ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-input() {
-    # BASIC USAGE:
-    #   input variable "Prompt text:"
-    #   Sets the variable with the user's input
-    #
-    # PARAMETERS:
-    #   $1              Variable name to store the input
-    #   $2              Required prompt text to display to user
-    #   --default=VAL   Default value (shown in gray, used if user presses enter)
-    #   --validate=REG  Regex pattern for input validation
-    #   --error=MSG     Custom error message for validation failures
-    #   --hidden        Hide input (for passwords, no echo to terminal)
-    #   --optional      Allow empty input (default: input is required)
-    #
-    # EXAMPLES:
-    #   # Basic required input
-    #   input name "Enter your name:"
-    #
-    #   # Input with default value
-    #   input port "Enter port:" --default="3000"
-    #   input email "Enter email:" --default="user@example.com"
-    #
-    #   # Input with validation
-    #   input age "Enter age:" --validate="^[0-9]+$" --error="Age must be a number"
-    #   input ip "IP address:" --validate="^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$"
-    #
-    #   # Secure password input (hidden)
-    #   input password "Enter password:" --hidden
-    #   input token "API token:" --hidden --validate="^[a-zA-Z0-9]{20,}$"
-    #
-    #   # Optional input (can be empty)
-    #   input comment "Any comments:" --optional
-    #   input description "Description:" --optional --default="No description"
-    #
-    #   # Complex validation examples
-    #   input username "Username:" --validate="^[a-zA-Z0-9_]{3,20}$" \
-    #          --error="Username: 3-20 chars, letters/numbers/underscore only"
-    #   input url "Website URL:" --validate="^https?://.*" \
-    #         --error="URL must start with http:// or https://"
-    #
-    # FEATURES:
-    #   - Consistent styling using logit() and ansi() functions
-    #   - Proper signal handling (Ctrl+C safe)
-    #   - Input validation with regex patterns
-    #   - Default values displayed in gray brackets
-    #   - Hidden input mode for sensitive data
-    #   - Retry loop for invalid input with clear error messages
-    #   - Optional vs required input modes
-    #   - Terminal state preservation and restoration
-    
+# BASIC USAGE:
+#   stdin variable "Prompt text:"
+#   Sets the variable with the user's input
+#
+# PARAMETERS:
+#   $1              Variable name to store the input
+#   $2              Required prompt text to display to user
+#   --default=VAL   Default value (shown in gray, used if user presses enter)
+#   --validate=REG  Regex pattern for input validation
+#   --error=MSG     Custom error message for validation failures
+#   --hidden        Hide input (for passwords, no echo to terminal)
+#   --optional      Allow empty input (default: input is required)
+#
+# EXAMPLES:
+#   # Basic required input
+#   stdin name "Enter your name:"
+#
+#   # Input with default value
+#   stdin port "Enter port:" --default="3000"
+#   stdin email "Enter email:" --default="user@example.com"
+#
+#   # Input with validation
+#   stdin age "Enter age:" --validate="^[0-9]+$" --error="Age must be a number"
+#   stdin ip "IP address:" --validate="^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$"
+#
+#   # Secure password input (hidden)
+#   stdin password "Enter password:" --hidden
+#   stdin token "API token:" --hidden --validate="^[a-zA-Z0-9]{20,}$"
+#
+#   # Optional input (can be empty)
+#   stdin comment "Any comments:" --optional
+#   stdin description "Description:" --optional --default="No description"
+#
+#   # Complex validation examples
+#   stdin username "Username:" --validate="^[a-zA-Z0-9_]{3,20}$" \
+#          --error="Username: 3-20 chars, letters/numbers/underscore only"
+#   stdin url "Website URL:" --validate="^https?://.*" \
+#         --error="URL must start with http:// or https://"
+#
+# FEATURES:
+#   - Consistent styling using stdout() and ansi() functions
+#   - Proper signal handling (Ctrl+C safe)
+#   - Input validation with regex patterns
+#   - Default values displayed in gray brackets
+#   - Hidden input mode for sensitive data
+#   - Retry loop for invalid input with clear error messages
+#   - Optional vs required input modes
+#   - Terminal state preservation and restoration
+stdin() {
+    D_GLOBAL_IS_QUIET="false"
+
     local var_name="$1"; shift
     local prompt="$1"; shift
     local default_value=""
@@ -298,7 +314,7 @@ input() {
             display_prompt="$default_prompt"
         fi
     fi
-    printf "$(logit --ansi="35" --icon=">" "$display_prompt") "
+    printf "$(stdout --ansi="35" --icon=">" "$display_prompt") "
     
     # Check if input is available from redirection (<, <<, <<<, pipe)
     if [ ! -t 0 ] && [ "$D_GLOBAL_TTY_AVAILABLE" = "false" ]; then
@@ -368,7 +384,7 @@ input() {
     
     # In testing environments, echo the input for visibility
     if [ "$D_ENV" = "TESTING" ]; then
-        logit -i --icon="<" "Input received (non-TTY mode): $user_input"
+        stdout -i --icon="<" "Input received (non-TTY mode): $user_input"
     fi
 
     # Use default if input is empty and default exists
@@ -379,13 +395,13 @@ input() {
     # Check if input is required
     if [ "$required" = true ] && [ -z "$user_input" ]; then
         if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
-            logit -e "Input is required."
-            # Retry input in TTY mode
-            input "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
+            stdout -e "Input is required."
+            # Retry stdin in TTY mode
+            stdin "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
             return $?
         else
             # In non-TTY mode, fail or use a sensible fallback
-            logit -e "Required input missing and no TTY available."
+            stdout -e "Required input missing and no TTY available."
             user_input="__MISSING_REQUIRED_INPUT__"
         fi
     fi
@@ -394,13 +410,13 @@ input() {
     if [ -n "$validate_pattern" ] && [ -n "$user_input" ]; then
         if ! echo "$user_input" | grep -qE "$validate_pattern"; then
             if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
-                logit -e "$error_message"
+                stdout -e "$error_message"
                 # Retry input in TTY mode
-                input "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
+                stdin "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
                 return $?
             else
                 # In non-TTY mode, use default or fail
-                logit -e "Input validation failed and no TTY available."
+                stdout -e "Input validation failed and no TTY available."
                 if [ -n "$default_value" ]; then
                     user_input="$default_value"
                 else
@@ -412,7 +428,7 @@ input() {
     
     # In testing environments, echo the input for visibility
     if [ "$D_ENV" = "TESTING" ]; then
-        logit -i --icon="<" "Input received (non-TTY mode) (Processed): $user_input"
+        stdout -i --icon="<" "Input received (non-TTY mode) (Processed): $user_input"
     fi
 
     # Set the value to the provided variable name
@@ -433,6 +449,8 @@ input() {
 #   - With --timeout: Auto-retry mode with specified pause between attempts (limited by max-attempts)
 #   - With both --manual and --timeout: First tries auto-retries up to max-attempts, then switches to manual mode
 retry() {
+    D_GLOBAL_IS_QUIET="false"
+
     local operation_cmd=""
     local max_attempts=3  # Default max attempts for auto mode
     local timeout=5       # Default timeout in seconds for auto mode
@@ -481,7 +499,7 @@ retry() {
 
     # First phase: Automatic retries if auto_mode is enabled
     if [ "$auto_mode" = "true" ]; then
-        # logit -l "Auto-retry mode enabled (max $max_attempts attempts, $timeout second intervals)"
+        # stdout -l "Auto-retry mode enabled (max $max_attempts attempts, $timeout second intervals)"
         
         # Set up signal handling for auto mode
         local interrupted=false
@@ -494,25 +512,25 @@ retry() {
             
             if [ $exit_code -eq 0 ]; then
                 success=true
-                # logit -o "Command succeeded on auto-attempt $attempt/$max_attempts"
+                # stdout -o "Command succeeded on auto-attempt $attempt/$max_attempts"
             else
                 if [ $attempt -lt $max_attempts ]; then
-                    logit -w "Operation failed. Retrying in $timeout seconds... ($attempt/$max_attempts) Press Ctrl+C to cancel"
+                    stdout -w "Operation failed. Retrying in $timeout seconds... ($attempt/$max_attempts) Press Ctrl+C to cancel"
                     sleep $timeout &
                     wait $!  # Wait for sleep to complete, but allow signal interruption
                     
                     # Check if we were interrupted during sleep
                     if [ "$interrupted" = "true" ]; then
-                        # logit -w "Operation cancelled by user (Ctrl+C)"
+                        # stdout -w "Operation cancelled by user (Ctrl+C)"
                         break
                     fi
                     
                     attempt=$((attempt + 1))
                 else
-                    # # logit -w "All $max_attempts automatic retries failed."
+                    # # stdout -w "All $max_attempts automatic retries failed."
                     # # If manual mode is also enabled, we'll continue to manual phase
                     # if [ "$manual_mode" = "true" ]; then
-                    #     logit -i "Switching to manual retry..."
+                    #     stdout -i "Switching to manual retry..."
                     # fi
                     break
                 fi
@@ -526,7 +544,7 @@ retry() {
     
     # Second phase: Manual retries if manual_mode is enabled and command hasn't succeeded yet
     if [ "$manual_mode" = "true" ] && [ "$success" = "false" ]; then
-        # logit -l "Manual retry mode active (unlimited attempts, user confirmation required)"
+        # stdout -l "Manual retry mode active (unlimited attempts, user confirmation required)"
         attempt=1  # Reset attempt counter for manual mode
         
         # Set up signal handling for manual mode
@@ -541,7 +559,7 @@ retry() {
                 
                 if [ $exit_code -eq 0 ]; then
                     success=true
-                    # logit -o "Command succeeded on manual attempt $attempt"
+                    # stdout -o "Command succeeded on manual attempt $attempt"
                     break
                 fi
             fi
@@ -550,13 +568,13 @@ retry() {
             if confirm "Operation failed. Retry?"; then
                 attempt=$((attempt + 1))
             else
-                # logit -w "User chose not to retry. Exiting retry loop."
+                # stdout -w "User chose not to retry. Exiting retry loop."
                 break
             fi
             
             # Check if we were interrupted during confirm
             if [ "$interrupted" = "true" ]; then
-                # logit -w "Operation cancelled by user (Ctrl+C)"
+                # stdout -w "Operation cancelled by user (Ctrl+C)"
                 break
             fi
         done

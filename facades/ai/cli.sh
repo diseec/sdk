@@ -35,7 +35,7 @@ c=$1; shift; case $c in
                     "$@"
                 ;;
             *)
-                if [[ -n "$c" ]]; then logit -e "Unknown generate command: '$c'"; fi
+                if [[ -n "$c" ]]; then stdout -e "Unknown generate command: '$c'"; fi
                 cli_ctx ai $c help
                 return 1
                 ;;
@@ -58,7 +58,7 @@ c=$1; shift; case $c in
         ;;
     fun|function) "$@" ;;
     *)
-        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
+        if [[ -n "$c" ]]; then stdout -e "Unknown command: '$c'"; fi
         cli_ctx ai help; return 1;
         ;;
 esac

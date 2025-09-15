@@ -6,7 +6,7 @@ sdk_fac_inf_check_for_updates_kit() {
     if cli_ctx install function sdk_fac_ins_has_version_changed; then
     X 0
         version_info=$(cli_ctx install function sdk_fac_ins_get_version_info)
-        logit --ansi="34" --icon="↓" "New sdk version available $version_info!"
+        stdout --ansi="34" --icon="↓" "New sdk version available $version_info!"
         return 0
     else
     X 1

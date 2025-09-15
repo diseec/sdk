@@ -32,18 +32,18 @@ sdk_tester_discover_tests() {
     local pattern="${1:-}"
     local show_stats="${2:-true}"
     
-    logit -i "$(ansi $TESTER_COLOR_HEADER "DISCOVERING TESTS")"
-    logit --ansi="$TESTER_COLOR_DIM" "Search root: $(ansi 97 "${D_CTX_DIR:-$(pwd)}")"
+    stdout -i "$(ansi $TESTER_COLOR_HEADER "DISCOVERING TESTS")"
+    stdout --ansi="$TESTER_COLOR_DIM" "Search root: $(ansi 97 "${D_CTX_DIR:-$(pwd)}")"
     
     if [ -n "$pattern" ]; then
-        logit --ansi="$TESTER_COLOR_DIM" "Filter pattern: $(ansi 97 "$pattern")"
+        stdout --ansi="$TESTER_COLOR_DIM" "Filter pattern: $(ansi 97 "$pattern")"
     fi
     
     local all_tests
     all_tests=$(sdk_tester_discover_all_tests)
     
     if [ -z "$all_tests" ]; then
-        logit -w "No test files found matching pattern '*.test.sh'"
+        stdout -w "No test files found matching pattern '*.test.sh'"
         return 1
     fi
     
@@ -51,7 +51,7 @@ sdk_tester_discover_tests() {
     filtered_tests=$(sdk_tester_filter_tests "$pattern" "$all_tests")
     
     if [ -z "$filtered_tests" ]; then
-        logit -w "No test files found matching pattern: $pattern"
+        stdout -w "No test files found matching pattern: $pattern"
         return 1
     fi
     
@@ -60,7 +60,7 @@ sdk_tester_discover_tests() {
     
     if [ "$show_stats" = "true" ]; then
         echo ""
-        logit -i "$(ansi $TESTER_COLOR_INFO "Found $test_count test file(s):")"
+        stdout -i "$(ansi $TESTER_COLOR_INFO "Found $test_count test file(s):")"
         echo ""
     fi
     
@@ -70,7 +70,7 @@ sdk_tester_discover_tests() {
         if [ -n "$test_file" ]; then
             local relative_path="${test_file#$search_root/}"
             if [ "$show_stats" = "true" ]; then
-                logit --ansi="$TESTER_COLOR_DIM" "  $(ansi 97 "$relative_path")"
+                stdout --ansi="$TESTER_COLOR_DIM" "  $(ansi 97 "$relative_path")"
             else
                 echo "$test_file"
             fi

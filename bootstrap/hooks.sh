@@ -12,7 +12,7 @@ handle_hook() {
         return 1
     fi
 
-    # logit 34 "hook" "Executing hook '$HOOK' across workspace"
+    # stdout 34 "hook" "Executing hook '$HOOK' across workspace"
 
     # # Execute hook in root repository
     # execute_hook() {
@@ -29,12 +29,12 @@ handle_hook() {
         
     #     # # Skip if no handler found
     #     # if [ $has_handler -ne 0 ]; then
-    #     #     # logit 33 "$name" "No handler for 'hook:$hook' found"
+    #     #     # stdout 33 "$name" "No handler for 'hook:$hook' found"
     #     #     return 0
     #     # fi
         
     #     # # hook handler found, execute it
-    #     # logit 34 "$name" "Executing 'hook:$hook'"
+    #     # stdout 34 "$name" "Executing 'hook:$hook'"
         
     #     # # Execute the command directly without capturing output
     #     # # This allows interactive prompts to work properly
@@ -45,21 +45,21 @@ handle_hook() {
         
     #     # # Skip if no handler found
     #     # if [ $has_handler -ne 0 ]; then
-    #     #     # logit 33 "$name" "No handler for 'hook:$hook' found"
+    #     #     # stdout 33 "$name" "No handler for 'hook:$hook' found"
     #     #     return 0
     #     # fi
         
     #     # # hook handler found, execute it
-    #     # logit 34 "$name" "Executing 'hook:$hook'"
+    #     # stdout 34 "$name" "Executing 'hook:$hook'"
         
     #     # Execute the command directly without capturing output
     #     # This allows interactive prompts to work properly
     #     cli_ctx "hook:$hook"
     #     rc=$?
     #     # if [ $rc -eq 0 ]; then
-    #     #     logit 32 "$name" "hook '$hook' completed successfully"
+    #     #     stdout 32 "$name" "hook '$hook' completed successfully"
     #     # else
-    #     #     logit 31 "$name" "hook '$hook' failed (exit code $rc)"
+    #     #     stdout 31 "$name" "hook '$hook' failed (exit code $rc)"
     #     # fi
         
     #     return $rc
@@ -84,6 +84,6 @@ handle_hook() {
         fi
     fi
 
-    # logit -o "hook '$HOOK' execution completed"
+    # stdout -o "hook '$HOOK' execution completed"
     return $exit_code
 }

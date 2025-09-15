@@ -21,7 +21,7 @@ sdk_fac_sec_validate_and_prepare_secret_interactive() {
     
     # Validate key configuration and prompt to set if missing
     if ! sdk_fac_sec_is_key_configured; then
-        logit -e "No encryption key configured" >&2
+        stdout -e "No encryption key configured" >&2
         if confirm "Would you like to set the encryption key now?"; then
             sdk_fac_sec_set_key
             if [ $? -ne 0 ]; then
@@ -51,13 +51,13 @@ sdk_fac_sec_prompt_add_missing_secret() {
     local secret_name="$1"
     local secret_value
 
-    logit -w "Secret '$secret_name' not found" >&2
+    stdout -w "Secret '$secret_name' not found" >&2
 
     if confirm "Would you like to add this secret now?"; then
-        input secret_value "Enter secret value for '$secret_name'" --hidden >&2
+        stdin secret_value "Enter secret value for '$secret_name'" --hidden >&2
         
         if [ -z "$secret_value" ]; then
-            logit -e "Secret value cannot be empty" >&2
+            stdout -e "Secret value cannot be empty" >&2
             return 1
         fi
         
@@ -67,7 +67,7 @@ sdk_fac_sec_prompt_add_missing_secret() {
         local key=$(sdk_fac_sec_get_encryption_key)
         sdk_fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
         
-        logit -o "Secret '$secret_name' added successfully" >&2
+        stdout -o "Secret '$secret_name' added successfully" >&2
         echo "$secret_value"
         return 0
     else
@@ -80,16 +80,16 @@ sdk_fac_sec_handle_decryption_failure() {
     local secret_name="$1"
     local encrypted_value="$2"
     
-    logit -e "Failed to decrypt secret: $secret_name" >&2
-    logit -e "The encryption key might be incorrect" >&2
-    logit -w "If you've lost the original key, this data cannot be recovered" >&2
+    stdout -e "Failed to decrypt secret: $secret_name" >&2
+    stdout -e "The encryption key might be incorrect" >&2
+    stdout -w "If you've lost the original key, this data cannot be recovered" >&2
     
     echo "Options:" >&2
     echo "1. Try entering the correct key" >&2
     echo "2. Remove this secret and add a new one" >&2
     echo "3. Cancel operation" >&2
     
-    input choice "Choose option (1-3)" >&2
+    stdin choice "Choose option (1-3)" >&2
     
     case "$choice" in
         "1")
@@ -102,7 +102,7 @@ sdk_fac_sec_handle_decryption_failure() {
                         echo "$decrypted_value"
                         return 0
                     else
-                        logit -e "Still unable to decrypt - key may be permanently lost" >&2
+                        stdout -e "Still unable to decrypt - key may be permanently lost" >&2
                         return 1
                     fi
                 fi

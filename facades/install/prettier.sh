@@ -5,5 +5,5 @@ sdk_fac_ins_prettier() {
         _npm install --save-dev --save-exact prettier; \
         _node --eval "fs.writeFileSync('.prettierrc','{}\n')";
 
-    logit -o "Prettier installed and configured"
+    stdout -o "Prettier installed and configured"
 }

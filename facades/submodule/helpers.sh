@@ -6,7 +6,7 @@ sdk_fac_sub_parse_path_format() {
 
     # Validate the full path format
     if [[ ! "$full_path" =~ ^([^/]+)/([^/]+)$ ]]; then
-        logit -e "Invalid path format. Must be 'type/path/to/reponame', provided: '$full_path'"
+        stdout -e "Invalid path format. Must be 'type/path/to/reponame', provided: '$full_path'"
         return 1
     fi
 
@@ -15,7 +15,7 @@ sdk_fac_sub_parse_path_format() {
     
     # Must have at least 2 segments (type/reponame)
     if [[ ${#path_components[@]} -lt 2 ]]; then
-        logit -e "Invalid path format. Must be at least 'type/reponame'"
+        stdout -e "Invalid path format. Must be at least 'type/reponame'"
         return 1
     fi
     
@@ -35,12 +35,12 @@ sdk_fac_sub_parse_path_format() {
     local type_dir=$(IFS='/'; echo "${path_prefix[*]}")
 
     if [[ -z "$type" ]]; then
-        logit -e "Type is required, please specify as type/path/to/reponame"
+        stdout -e "Type is required, please specify as type/path/to/reponame"
         return 1
     fi
     
     if [[ -z "$repo_name" ]]; then
-        logit -e "Repository name is required, please specify as type/path/to/reponame"
+        stdout -e "Repository name is required, please specify as type/path/to/reponame"
         return 1
     fi
 
@@ -60,7 +60,7 @@ sdk_fac_sub_fea_foreach_submodule() {
     
     # Extract submodule info from .gitmodules
     if [ ! -f "$D_CTX_DIR/.gitmodules" ]; then
-        logit -w "No .gitmodules file found"
+        stdout -w "No .gitmodules file found"
         return 0
     fi
     

@@ -292,12 +292,12 @@ sdk_tester_filter_and_run() {
 sdk_tester_clean_artifacts() {
     local search_root="${D_CTX_DIR:-$(pwd)}"
     
-    logit -i "Cleaning test artifacts..."
+    stdout -i "Cleaning test artifacts..."
     
     # Remove common test artifacts
     find "$search_root" -name "*.test.log" -type f -delete 2>/dev/null || true
     find "$search_root" -name "*.test.tmp" -type f -delete 2>/dev/null || true
     find "$search_root" -name ".test_*" -type f -delete 2>/dev/null || true
     
-    logit -o "Test artifacts cleaned"
+    stdout -o "Test artifacts cleaned"
 }

@@ -10,7 +10,7 @@ sdk_fac_inf_check_for_updates_repo() {
         remote_commit=$(_git -C "$D_CTX_DIR" rev-parse "@{u}")
         
         if [ $? -eq 0 ] && [ "$local_commit" != "$remote_commit" ]; then
-            logit --ansi="34" --icon="↓" "New commits available in $current_branch"
+            stdout --ansi="34" --icon="↓" "New commits available in $current_branch"
             return 0
         else
             # Check if any of the selected modules are behind
@@ -33,7 +33,7 @@ sdk_fac_inf_check_for_updates_repo() {
             cli_ctx submodule foreach_active check_module_status
             
             if $modules_behind; then
-                logit --ansi="34" --icon="↓" "New commits available in one or more selected modules"
+                stdout --ansi="34" --icon="↓" "New commits available in one or more selected modules"
                 return 0
             fi
         fi

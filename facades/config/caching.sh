@@ -13,7 +13,7 @@ sdk_fac_con_get_cache_dir() {
         context) cache_dir="$CACHE_CTX_DIR" ;;
         repository) cache_dir="$CACHE_REPO_DIR" ;;
         user) cache_dir="$CACHE_USER_DIR" ;;
-        *) logit -e "Invalid cache scope: $scope" ; return 1 ;;
+        *) stdout -e "Invalid cache scope: $scope" ; return 1 ;;
     esac
 
 

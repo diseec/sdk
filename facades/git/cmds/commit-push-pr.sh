@@ -23,11 +23,11 @@ sdk_fac_git_cmd_commit_push_pr() {
     sdk_fac_git_cmd_git_log "HEAD"
 
     if [ "$D_GLOBAL_IS_RECURSIVE" = "true" ]; then
-        logit -l "Cpp for selected submodules..."
+        stdout -l "Cpp for selected submodules..."
         cpp_submodule() {
             local module="$1"; local module_path="$2"
             (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME api v1 git.commit.push.pr)
-            logit -l "Cpp done for submodule '$module'."
+            stdout -l "Cpp done for submodule '$module'."
         }
         cli_ctx submodule foreach_active cpp_submodule
     fi

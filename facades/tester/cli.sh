@@ -35,7 +35,7 @@ c=$1; shift; case $c in
     fil|filter)
         # Filter tests by pattern and run them
         if [ $# -eq 0 ]; then
-            logit -e "Filter pattern required. Usage: tester filter <pattern>"
+            stdout -e "Filter pattern required. Usage: tester filter <pattern>"
             return 1
         fi
         sdk_tester_filter_and_run "$@"
@@ -101,8 +101,8 @@ c=$1; shift; case $c in
         ;;
     *)
         if [[ -n "$c" ]]; then 
-            logit -e "Unknown test command: '$c'"
-            logit -i "Run '$D_CLI_GLOBAL_NAME test help' for available commands"
+            stdout -e "Unknown test command: '$c'"
+            stdout -i "Run '$D_CLI_GLOBAL_NAME test help' for available commands"
             return 1
         fi
         cli_ctx test help

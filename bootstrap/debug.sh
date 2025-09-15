@@ -6,7 +6,7 @@
 : "${D_TRACE_DEPTH:=10}"  # How many stack frames to show (max)
 : "${D_TRACE_ENABLED:=true}"  # Enable/disable tracing
 
-# Original x function - preserved (using logit as requested)
+# Original x function - preserved (using stdout as requested)
 x() {
     local file="${BASH_SOURCE[1]##*/}"
     local line="${BASH_LINENO[0]:-0}"
@@ -14,7 +14,7 @@ x() {
 
     if [[ "${D_GLOBAL_LOG_LEVEL}" == "DEBUG" || "${DEBUG}" == "true" ]]; then
         # Log entry to function with more context
-        logit -e --icon="¤][$file:$line:$func" "${*:-Sunshine, rainbows and sh*t!}"
+        stdout -e --icon="¤][$file:$line:$func" "${*:-Sunshine, rainbows and sh*t!}"
     fi
 }
 

@@ -5,7 +5,7 @@ sdk_fac_for_prettier() {
     set -e;
 
     # if ! grep -q '"prettier"' "$D_CTX_DIR/package.json"; then
-    #     logit -w "Prettier not found. Installing..."
+    #     stdout -w "Prettier not found. Installing..."
     #     $D_SDK_DIR/cmds/install/prettier.sh
     # fi
 
@@ -14,7 +14,7 @@ sdk_fac_for_prettier() {
         set -- "**/*.{js,jsx,ts,tsx,json,css,scss,md}"
     fi
 
-    logit --ansi="34" --icon="❄︎" "Running formatter using Prettier..."
+    stdout --ansi="34" --icon="❄︎" "Running formatter using Prettier..."
 
     if [ "$CI" = "true" ]; then 
         _prettier --check --log-level=warn "$@";

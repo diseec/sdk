@@ -16,7 +16,7 @@ sdk_fac_con_yaml_init() {
         return 0
     else
         YAML_USE_YQ="false"
-        logit -w "yq not found. Using fallback YAML parsing (limited functionality)"
+        stdout -w "yq not found. Using fallback YAML parsing (limited functionality)"
         return 1
     fi
 }
@@ -131,7 +131,7 @@ sdk_fac_con_yaml_set_fallback() {
     
     # Only support simple top-level keys in fallback mode
     if echo "$key_path" | grep -q '\.'; then
-        logit -e "Nested keys require yq. Please install yq for full functionality."
+        stdout -e "Nested keys require yq. Please install yq for full functionality."
         return 1
     fi
     
@@ -228,7 +228,7 @@ sdk_fac_con_yaml_array_remove() {
             _yq eval -i ".${key_path} |= map(select(. != \"${value}\"))" "$config_file"
         fi
     else
-        logit -e "Array operations require yq. Please install yq."
+        stdout -e "Array operations require yq. Please install yq."
         return 1
     fi
 }

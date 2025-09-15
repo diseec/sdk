@@ -2,32 +2,32 @@
 
 sdk_fac_ins_sdk_process() {
     if [ "$IS_IN_SDK_CONTAINER" != "true" ]; then
-        logit -e "The 'patch' command works only on bench! (the $D_SDK_NAME container)"; return 1; 
+        stdout -e "The 'patch' command works only on bench! (the $D_SDK_NAME container)"; return 1; 
     fi
 
     local target_kit="$D_CONT_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH"
 
     if [ -L "$target_kit" ]; then
-        logit -w "$target_kit is a symlink, most probably to a global $D_SDK_NAME installation. Aborting patch to avoid overwriting global sdk."
+        stdout -w "$target_kit is a symlink, most probably to a global $D_SDK_NAME installation. Aborting patch to avoid overwriting global sdk."
         return 1
     fi
 
     local version_specifier=$(_node -p "require('$D_CONT_CTX_DIR/package.json').dependencies?.['$D_SDK_NPM_PKG'] || require('$D_CONT_CTX_DIR/package.json').devDependencies['$D_SDK_NPM_PKG']")
 
     if [ -z "$version_specifier" ]; then
-        logit -e "$D_SDK_NPM_PKG not found in '$D_CONT_CTX_DIR/package.json'. $PWD"
+        stdout -e "$D_SDK_NPM_PKG not found in '$D_CONT_CTX_DIR/package.json'. $PWD"
         return 1
     fi
 
     local package_name="$D_SDK_NPM_PKG@$version_specifier"
 
-    logit -l "Fetching $package_name to $D_CONT_CTX_DIR .."
+    stdout -l "Fetching $package_name to $D_CONT_CTX_DIR .."
     
     local _tempdir=$(mktemp -d)
     local npm_output=$(cd $_tempdir && _npm install "$package_name")
 
     if [ $? -ne 0 ]; then
-        logit -e "Failed to fetch $package_name from registry." >&2
+        stdout -e "Failed to fetch $package_name from registry." >&2
         echo "$npm_output" 
         rm -rf "$_tempdir"
         return 1
@@ -38,13 +38,13 @@ sdk_fac_ins_sdk_process() {
     cp -r "$_tempdir/$D_SDK_LOCAL_RELATIVE_PATH"/* "$target_kit"
 
     if [ ! -f "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME" ]; then
-        logit -l "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file..."
+        stdout -l "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file..."
         cp "/$D_SDK_NAME/templates/$D_CLI_LOCAL_NAME" "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME";
     fi
 
     # if [ ! -f "$D_CONT_CTX_DIR/.gitignore" ]; then cp "/$D_SDK_NAME/templates/.gitignore" "$D_CONT_CTX_DIR/.gitignore"; fi
     local d_version="$(grep '"version"' "$D_CONT_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH/package.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"
-    logit -o "$D_SDK_NAME current version: $d_version"
+    stdout -o "$D_SDK_NAME current version: $d_version"
 }
 
 sdk_fac_ins_sdk() {
@@ -72,7 +72,7 @@ sdk_fac_ins_ensure_patched() {
         local npm_update_sdk_global=$(_npm update -g $D_SDK_NPM_PKG)
         if [ $? -ne 0 ]; then
             echo "$npm_update_sdk_global"
-            logit -e "Patching global $D_SDK_NAME failed" >&2; return 1
+            stdout -e "Patching global $D_SDK_NAME failed" >&2; return 1
         fi
 
         _D_SDK_HAS_PATCHED="true"
@@ -80,7 +80,7 @@ sdk_fac_ins_ensure_patched() {
 
         # abort if patch failed
         if [ $? -ne 0 ]; then
-            logit -e "Patching $D_SDK_NAME failed" >&2; return 1
+            stdout -e "Patching $D_SDK_NAME failed" >&2; return 1
         fi
     fi
 }

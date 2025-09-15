@@ -32,7 +32,7 @@ sdk_fac_sec_get_encryption_key() {
 sdk_fac_sec_store_encryption_key() {
     local key="$1"
     cli_ctx config --scope=repository set "secrets.key" "$key"
-    logit -l "Encryption key stored in configuration"
+    stdout -l "Encryption key stored in configuration"
 }
 
 # Check if encryption key is configured
@@ -44,11 +44,11 @@ sdk_fac_sec_is_key_configured() {
 # Initialize encryption key if not exists
 sdk_fac_sec_ensure_encryption_key() {
     if ! sdk_fac_sec_is_key_configured; then
-        logit -l "Generating new encryption key..."
+        stdout -l "Generating new encryption key..."
         local new_key=$(sdk_fac_sec_generate_encryption_key)
         sdk_fac_sec_store_encryption_key "$new_key"
-        logit --ansi="34" --icon="KEY" "$new_key"
-        logit -w "Store this key safely - it's needed to decrypt your secrets!"
+        stdout --ansi="34" --icon="KEY" "$new_key"
+        stdout -w "Store this key safely - it's needed to decrypt your secrets!"
         return 0
     fi
     return 0
@@ -57,7 +57,7 @@ sdk_fac_sec_ensure_encryption_key() {
 # Validate key configuration before operations
 sdk_fac_sec_validate_key_for_operation() {
     if sdk_fac_sec_secrets_exist && ! sdk_fac_sec_is_key_configured; then
-        logit -e "Secrets exist but no encryption key configured!"
+        stdout -e "Secrets exist but no encryption key configured!"
         echo "You must either:"
         echo "  1. Provide the original key using: secrets key-set"
         echo "  2. Remove all existing secrets using: secrets remove <name>"

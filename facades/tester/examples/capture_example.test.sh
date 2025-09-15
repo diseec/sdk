@@ -11,7 +11,7 @@ test_basic_capture() {
 }
 
 test_command_capture() {
-    # Run D command and capture_test_log both stdout and stderr
+    # Run D command and capture_test_log
     local output=$(capture_test_log D --version)
     
     # Make assertions on the captured output - use case-insensitive matching for flexibility
@@ -43,7 +43,7 @@ test_capture_with_complex_command() {
 #     # Second command generates more output
 #     local output2=$(capture_test_log "ls -la / | head -5")
     
-#     # Third command runs a command that produces both stdout and stderr
+#     # Third command runs a command that produces
 #     local output3=$(capture_test_log "find /tmp -type f -name 'test*' 2>&1 | head -3")
     
 #     # Print some info about what we're doing

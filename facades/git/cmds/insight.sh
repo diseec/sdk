@@ -224,13 +224,13 @@ _generate_report() {
     local stats="$3"
     
     if ! cli_ctx ai function sdk_fac_ai_is_available; then
-        logit -e "AI not available. Showing raw data instead."
+        stdout -e "AI not available. Showing raw data instead."
         echo "$analysis_data"
         return
     fi
     
     echo
-    logit -a "Writing daily insights..."
+    stdout -a "Writing daily insights..."
     echo
     
     local temp_file=$(mktemp)
@@ -250,7 +250,7 @@ EOF
         echo
         echo -e "\033[36m$(cat "$cache_file")\033[0m"
     else
-        logit -e "Failed to generate AI insight. Showing raw data."
+        stdout -e "Failed to generate AI insight. Showing raw data."
         echo "$analysis_data"
     fi
     echo
@@ -314,7 +314,7 @@ sdk_fac_git_cmd_daily_insight() {
     
     # Check if any data was collected
     if [ -z "$all_commits" ] && [ -z "$all_changes" ]; then
-        logit -i "No commits or changes found for today"
+        stdout -i "No commits or changes found for today"
         return 0
     fi
     
@@ -334,14 +334,14 @@ sdk_fac_git_cmd_daily_insight() {
     _display_commits "$all_summaries" "$stats_display"
 
     echo
-    logit -i "Let's add your perspective to make the insight more meaningful..."
+    stdout -i "Let's add your perspective to make the insight more meaningful..."
     echo
     
-    input work_focus "What was your main focus?"
+    stdin work_focus "What was your main focus?"
     
     # Show preview and get confirmation
     if ! _show_analysis_preview "$work_focus" "$all_commits" "$all_changes"; then
-        logit -i "Daily insight generation cancelled"
+        stdout -i "Daily insight generation cancelled"
         return 0
     fi
     

@@ -24,7 +24,7 @@ setup_test_ctx() {
     export TESTER_RESULT_FILE="$TEST_CTX/$TESTER_RESULT_FILE_NAME"
 
     if [ -z "$TEST_CTX" ] || [ ! -d "$TEST_CTX" ]; then
-        logit -e "Failed to create test workspace"
+        stdout -e "Failed to create test workspace"
         return 1
     fi
     
@@ -57,7 +57,7 @@ _sdk_tester_execute_test_with_hooks() {
     # Run test setup if defined
     if declare -f setup_test >/dev/null 2>&1; then
         if ! setup_test; then
-            logit -e "Test setup failed for $test_function"
+            stdout -e "Test setup failed for $test_function"
             return 1
         fi
     fi
@@ -71,7 +71,7 @@ _sdk_tester_execute_test_with_hooks() {
     # Run test teardown if defined (always run, even if test failed)
     if declare -f teardown_test >/dev/null 2>&1; then
         if ! teardown_test; then
-            logit -w "Test teardown failed for $test_function"
+            stdout -w "Test teardown failed for $test_function"
         fi
     fi
     
@@ -88,7 +88,7 @@ _sdk_tester_execute_suite() { # UNUSED
     # Run suite setup if defined
     if declare -f suite_setup >/dev/null 2>&1; then
         if ! suite_setup; then
-            logit -e "Suite setup failed for $test_file"
+            stdout -e "Suite setup failed for $test_file"
             return 1
         fi
     fi
@@ -98,7 +98,7 @@ _sdk_tester_execute_suite() { # UNUSED
     test_functions=$(declare -F | grep "declare -f test_" | sed 's/declare -f //')
     
     if [ -z "$test_functions" ]; then
-        logit -w "  No test functions found (functions should start with 'test_')"
+        stdout -w "  No test functions found (functions should start with 'test_')"
         return 0
     fi
     
@@ -108,7 +108,7 @@ _sdk_tester_execute_suite() { # UNUSED
     echo "$test_functions" | while IFS= read -r test_function; do
         if [ -n "$test_function" ]; then
             if [ "$TESTER_VERBOSE" = "true" ]; then
-                logit --ansi="$TESTER_COLOR_DIM" "    $(ansi 90 "→") $test_function"
+                stdout --ansi="$TESTER_COLOR_DIM" "    $(ansi 90 "→") $test_function"
             fi
             
             if ! _sdk_tester_execute_test_with_hooks "$test_function"; then
@@ -123,7 +123,7 @@ _sdk_tester_execute_suite() { # UNUSED
     # Run suite teardown if defined (always run)
     if declare -f suite_teardown >/dev/null 2>&1; then
         if ! suite_teardown; then
-            logit -w "Suite teardown failed for $test_file"
+            stdout -w "Suite teardown failed for $test_file"
         fi
     fi
     
@@ -148,7 +148,7 @@ create_test_ctx() {
         cp "$D_SDK_DIR/templates/cli" "$workspace_dir/cli"
         chmod +x "$workspace_dir/cli"
     else
-        logit -w "CLI template not found at $D_SDK_DIR/templates/cli"
+        stdout -w "CLI template not found at $D_SDK_DIR/templates/cli"
     fi
 
     # Copy SDK files to workspace
@@ -156,19 +156,19 @@ create_test_ctx() {
     if [ -d "$D_SDK_DIR" ] && [ -n "$(ls -A $D_SDK_DIR 2>/dev/null)" ]; then
         cp -r $D_SDK_DIR/* "$workspace_dir/$D_SDK_LOCAL_RELATIVE_PATH"
     else
-        logit -e "No files to copy from $D_SDK_DIR/"
+        stdout -e "No files to copy from $D_SDK_DIR/"
     fi
 
     # Setup git
     git config user.email "test@test.test" >/dev/null 2>&1
     git config user.name "Tester Testing" >/dev/null 2>&1
     git init -b main "$workspace_dir" >/dev/null 2>&1 || {
-        logit -e "Failed to initialize git repository in $workspace_dir"
+        stdout -e "Failed to initialize git repository in $workspace_dir"
         return 1
     }
 
     (cd "$workspace_dir" && git remote add origin "https://github.com/$D_ORG_NAME/$workspace_name.git") >/dev/null 2>&1 || {
-        logit -e "Failed to add git remote in $workspace_dir"
+        stdout -e "Failed to add git remote in $workspace_dir"
         return 1
     }
 
@@ -226,7 +226,7 @@ D() {
         (cd $TEST_CTX && capture_test_log "$_GLOBAL_D_CMD" "$@")
         return $?
     else
-        logit -e "Global D command not found at $_GLOBAL_D_CMD"
+        stdout -e "Global D command not found at $_GLOBAL_D_CMD"
         return 1
     fi
 }
@@ -317,6 +317,6 @@ assert_mock_called_with() {
     
     # This is a simplified implementation - in practice, you'd need to track calls
     # For a full implementation, you'd modify mock_command to track calls
-    logit -w "assert_mock_called_with is not fully implemented yet"
+    stdout -w "assert_mock_called_with is not fully implemented yet"
     return 0
 }

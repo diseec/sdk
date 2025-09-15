@@ -6,7 +6,7 @@
 sdk_fac_sub_fea_act_status() {
     local config_file="$(cli_ctx config function sdk_fac_con_get_config_file repository)"
     if [ -f "$config_file" ]; then
-        logit "config: $config_file"
+        stdout "config: $config_file"
         local selected_modules=$(sdk_fac_sub_fea_act_get_selected_modules)
         if [ -n "$selected_modules" ]; then
             active_modules=""
@@ -17,12 +17,12 @@ sdk_fac_sub_fea_act_status() {
                     active_modules="$module"
                 fi
             done
-            logit "Modules: $active_modules"
+            stdout "Modules: $active_modules"
         else
-            logit -w "No submodules selected in workspace configuration"
+            stdout -w "No submodules selected in workspace configuration"
         fi
     else
-        logit -w "No workspace configuration found for $D_REPO_NAME"
+        stdout -w "No workspace configuration found for $D_REPO_NAME"
         echo "Run 'config init' to create one"
     fi
 }
@@ -36,7 +36,7 @@ sdk_fac_sub_fea_act_select() {
         local submodules="$(cli_ctx config function sdk_fac_con_get submodules repository 2>/dev/null)"
         if [ "$submodules" != "null" ] && [ -n "$submodules" ]; then
             if ! confirm "Config already exists. Overwrite?"; then
-                logit -i "Keeping existing configuration"
+                stdout -i "Keeping existing configuration"
                 return 0
             fi
         fi
@@ -47,19 +47,19 @@ sdk_fac_sub_fea_act_select() {
     available_modules=$(sdk_fac_sub_fea_act_get_available_modules)
     
     if [ -z "$available_modules" ]; then
-        logit -w "No submodules found in .gitmodules"
+        stdout -w "No submodules found in .gitmodules"
         return 1
     fi
     
     # Display available submodules and let user select them
-    logit -q "Select module numbers to activate"
+    stdout -q "Select module numbers to activate"
     i=1
     for module in $available_modules; do
         echo ""$(ansi 35 $i)" $module"
         i=$((i+1))
     done
 
-    input selection "Enter comma-separated (e.g. 1,3) or 'all'" --default="none" --optional
+    stdin selection "Enter comma-separated (e.g. 1,3) or 'all'" --default="none" --optional
 
     selected_modules=""
     
@@ -94,10 +94,10 @@ sdk_fac_sub_fea_act_select() {
         # Set the submodules array using the YAML format
         cli_ctx config function sdk_fac_con_set submodules "[$(echo $selected_modules | tr ' ' ',')]" repository
 
-        logit -i "Activated modules: $(echo $selected_modules | tr ' ' ', ')"
+        stdout -i "Activated modules: $(echo $selected_modules | tr ' ' ', ')"
     else
         # Set empty array if no modules selected
         cli_ctx config function sdk_fac_con_set submodules "[]" repository
-        logit -w "Cleared all selected modules"
+        stdout -w "Cleared all selected modules"
     fi
 }

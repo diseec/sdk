@@ -169,15 +169,15 @@ Notice the hierarchical structure with:
 
 ```bash
 # Success message
-logit -o "Dependencies installed successfully"
+stdout -o "Dependencies installed successfully"
 # Output: [12:34:56][SDK][✓] Dependencies installed successfully
 
 # Error message
-logit -e "Failed to connect to server"
+stdout -e "Failed to connect to server"
 # Output: [12:34:56][SDK][E] Failed to connect to server
 
 # Warning with custom icon
-logit -w --icon="⚠" "Disk space running low"
+stdout -w --icon="⚠" "Disk space running low"
 # Output: [12:34:56][SDK][⚠] Disk space running low
 ```
 
@@ -204,11 +204,11 @@ if confirm "Delete all temporary files?"; then
 fi
 
 # Input with validation
-input email "Enter email address:" --validate="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" --error="Please enter a valid email address"
+stdin email "Enter email address:" --validate="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" --error="Please enter a valid email address"
 echo $email
 
-# Password input with hidden characters
-input password "Enter password:" --hidden --validate=".{8,}" --error="Password must be at least 8 characters"
+# Password stdin with hidden characters
+stdin password "Enter password:" --hidden --validate=".{8,}" --error="Password must be at least 8 characters"
 echo $password
 ```
 
@@ -266,9 +266,9 @@ By following these guidelines, you'll maintain visual consistency across the SDK
 All styling functions are defined in `packages/sdk/shared/outputs.sh`:
 
 - `ansi`: Apply ANSI color and style codes to text
-- `logit`: Log a message with timestamp, context, and type
+- `stdout`: Log a message with timestamp, context, and type
 - `confirm`: Ask a yes/no question
-- `input`: Get user input with validation
+- `stdin`: Get user input with validation
 - `display_help`: Display formatted help text
 
 Refer to these files for implementation details and examples.

@@ -3,7 +3,7 @@
 # npm link ./packages/sdk
 
 # todo: extract the error handling use a global var and show at the end of the process name it 'capture' (maybe)
-# todo: develop a chain syntax `capture retry input` ?!
+# todo: develop a chain syntax `capture retry stdin` ?!
 
 initialize_submodule() {
     local module="$1"; local module_path="$2"
@@ -11,16 +11,16 @@ initialize_submodule() {
     retry --manual --auto "_git submodule update --init --remote \"$module_path\""
     local cmd_status=$?
     if [ $cmd_status -ne 0 ]; then
-        logit -e "Failed to initialize submodule $module_path" >&2
+        stdout -e "Failed to initialize submodule $module_path" >&2
         return $cmd_status
     fi
-    logit -l "Initialized submodule '$module_path'."
+    stdout -l "Initialized submodule '$module_path'."
     return 0
 }
 
 sdk_fac_ins_rep_handle() {
     # Early return in CI environment - silent skip
-    [ -n "$CI" ] && { logit -w "Skipping interactive installation in CI environment"; return 0; }
+    [ -n "$CI" ] && { stdout -w "Skipping interactive installation in CI environment"; return 0; }
 
     local rep_failures=()
     local rep_exit_code=0
@@ -59,7 +59,7 @@ sdk_fac_ins_rep_handle() {
         fi
 
         if [ -n "$(cli_ctx --quiet submodule actives)" ]; then
-            logit -l "Cloning selected submodules..."
+            stdout -l "Cloning selected submodules..."
             cli_ctx submodule foreach_active initialize_submodule
             if [ $? -ne 0 ]; then
                 rep_failures+=("Submodule initialization failed")
@@ -90,9 +90,9 @@ sdk_fac_ins_rep_handle() {
     
     # Report results
     if [ ${#rep_failures[@]} -ne 0 ]; then
-        logit -w --ansi="31" "Repository handling finished with ${#rep_failures[@]} issues:"
+        stdout -w --ansi="31" "Repository handling finished with ${#rep_failures[@]} issues:"
         for failure in "${rep_failures[@]}"; do
-            logit -e --icon="✖︎" "$failure"
+            stdout -e --icon="✖︎" "$failure"
         done
     fi
     return $rep_exit_code
@@ -131,20 +131,20 @@ sdk_fac_ins_repository() {
 
 
     if [ "$D_GLOBAL_IS_RECURSIVE" = "true" ]; then
-        logit -l "Installing dependencies in selected submodules..."
+        stdout -l "Installing dependencies in selected submodules..."
         local active_modules="$(cli_ctx --quiet submodule actives)" # sample output: "path/to/module_1 path/to/module_2"
         for module_path in $active_modules; do
             if [ -d "$D_CTX_DIR/$module_path" ]; then
-                logit -l "Installing dependencies in $module_path..."
+                stdout -l "Installing dependencies in $module_path..."
                 retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME api v1 install)"
                 if [ $? -ne 0 ]; then
                     install_failures+=("Dependency installation failed in submodule at $module_path")
                     exit_code=1
                 else
-                    logit -l "Dependencies installed successfully in $module_path."
+                    stdout -l "Dependencies installed successfully in $module_path."
                 fi
             else
-                logit -w "Submodule path '$module_path' does not exist or is not a directory."
+                stdout -w "Submodule path '$module_path' does not exist or is not a directory."
                 install_failures+=("Submodule path '$module_path' invalid")
                 exit_code=1
             fi
@@ -165,11 +165,11 @@ sdk_fac_ins_repository() {
     
     # Report results
     if [ ${#install_failures[@]} -eq 0 ]; then
-        logit -o "Installation completed successfully."
+        stdout -o "Installation completed successfully."
     else
-        logit -w --ansi="31" "Installation completed with ${#install_failures[@]} issues:"
+        stdout -w --ansi="31" "Installation completed with ${#install_failures[@]} issues:"
         for failure in "${install_failures[@]}"; do
-            logit -e --icon="✖︎" "$failure"
+            stdout -e --icon="✖︎" "$failure"
         done
     fi
     

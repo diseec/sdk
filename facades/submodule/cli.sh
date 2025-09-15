@@ -19,7 +19,7 @@ c=$1; shift; case $c in
     add)
         local submodule_path="$1"
         read type repo_name type_dir <<< "$(sdk_fac_sub_parse_path_format "$submodule_path")"
-        logit "Adding repository '$repo_name' to $type_dir/ as type '$type'"
+        stdout "Adding repository '$repo_name' to $type_dir/ as type '$type'"
         set -e
         _git submodule add https://$D_REPOSITORY_URL/$repo_name.git "$submodule_path"
         _git submodule update --init --recursive
@@ -40,12 +40,12 @@ c=$1; shift; case $c in
         local submodule_path="$1"
         read type repo_name type_dir <<< "$(sdk_fac_sub_parse_path_format "$submodule_path")"
         if [[ -n "$repo_name" ]]; then
-            logit "Updating submodule at $submodule_path"
+            stdout "Updating submodule at $submodule_path"
             _git submodule update --remote -- "$submodule_path"
         else
             # todo
             target_to_update=${type_dir:-"."}
-            logit "Updating all submodules in $target_to_update"
+            stdout "Updating all submodules in $target_to_update"
             _git submodule update --remote --merge -- "$target_to_update"
         fi
         ;;
@@ -57,11 +57,11 @@ c=$1; shift; case $c in
             # Interactive mode if no specific repo is given
             available_packages=$(ls packages 2>/dev/null || echo '')
             if [[ -z "$available_packages" ]]; then
-                logit -e "No packages found in packages/"
+                stdout -e "No packages found in packages/"
                 return 1
             fi
-            logit --ansi="35" --icon="PACKAGES:" "$available_packages"
-            input selected_package "Select a package to link:" 
+            stdout --ansi="35" --icon="PACKAGES:" "$available_packages"
+            stdin selected_package "Select a package to link:" 
             if [[ -n "$selected_package" ]]; then
                 repo_name="$selected_package"
                 submodule_path="packages/$repo_name"
@@ -69,14 +69,14 @@ c=$1; shift; case $c in
                 return 1
             fi
         elif [[ "$type" != "package" && "$type" != "packages" ]]; then
-            logit -w "Linking is typically used with packages. Proceeding anyway with $submodule_path"
+            stdout -w "Linking is typically used with packages. Proceeding anyway with $submodule_path"
         fi
         
         if [[ -d "$submodule_path" ]]; then
-            logit "Linking package at $submodule_path"
+            stdout "Linking package at $submodule_path"
             _npm link ./$submodule_path
         else
-            logit -e "Directory $submodule_path does not exist"
+            stdout -e "Directory $submodule_path does not exist"
             return 1
         fi
         ;;
@@ -89,18 +89,18 @@ c=$1; shift; case $c in
             if [[ -n "$repo_name" ]]; then
                 # List contents of the specific repo
                 if [[ -d "$submodule_path" ]]; then
-                    logit --ansi="34" --icon="CONTENTS of $submodule_path:" "\n$(ls -la $submodule_path 2>/dev/null || echo 'Empty directory')"
+                    stdout --ansi="34" --icon="CONTENTS of $submodule_path:" "\n$(ls -la $submodule_path 2>/dev/null || echo 'Empty directory')"
                 else
-                    logit -e "Directory $submodule_path does not exist"
+                    stdout -e "Directory $submodule_path does not exist"
                     return 1
                 fi
             else
                 # List all items in the target directory
                 type_display=${type:-"item"}
-                logit --ansi="34" --icon="${type_display^^}S in $search_dir:" "\n$(ls $search_dir 2>/dev/null || echo 'No items found')"
+                stdout --ansi="34" --icon="${type_display^^}S in $search_dir:" "\n$(ls $search_dir 2>/dev/null || echo 'No items found')"
             fi
         else
-            logit -w "Directory $search_dir does not exist"
+            stdout -w "Directory $search_dir does not exist"
         fi
         ;;
 
@@ -129,5 +129,5 @@ c=$1; shift; case $c in
         "    $(ansi "2;90" "$D_CLI_GLOBAL_NAME submodule ls package/my-package")           " "$(ansi "2;90" "List contents of submodule")"
     ;;
     fun|function) "$@" ;;
-    *) if [ ! -z "$c" ]; then logit -e "submodule: Unknown command: '$c'"; fi ;;
+    *) if [ ! -z "$c" ]; then stdout -e "submodule: Unknown command: '$c'"; fi ;;
 esac

@@ -15,22 +15,22 @@ c=$1; shift; case $c in
             --parallel "$@"
         ;;
     sta|start)
-        logit -l "Starting $D_SDK_NAME container..."
+        stdout -l "Starting $D_SDK_NAME container..."
         # cli_ctx docker compose _ up --no-color --detach --force-recreate "$@"
         output=$(cli_ctx docker compose _ up --no-color --detach --force-recreate "$@" 2>&1)
         status=$?
         if [ $status -ne 0 ]; then
-            logit -e "Failed to start $D_SDK_NAME container"
+            stdout -e "Failed to start $D_SDK_NAME container"
             echo "$output"
         fi
         ;;
     sto|stop)
-        logit -l "Stopping $D_SDK_NAME container..."
+        stdout -l "Stopping $D_SDK_NAME container..."
         # cli_ctx docker compose _ down --timeout 0 "$@"
         output=$(cli_ctx docker compose _ down --timeout 0 "$@" 2>&1)
         status=$?
         if [ $status -ne 0 ]; then
-            logit -e "Failed to stop $D_SDK_NAME container"
+            stdout -e "Failed to stop $D_SDK_NAME container"
             echo "$output"
         fi
         ;;

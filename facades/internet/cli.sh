@@ -16,7 +16,7 @@ c=$1; shift; case $c in
         MODE="test"
         # Start with a header unless silent mode is enabled
         if [ "$SILENT_MODE" != "true" ]; then
-            logit --ansi="97" --icon="⌁" "Quick internet connectivity check...\n"
+            stdout --ansi="97" --icon="⌁" "Quick internet connectivity check...\n"
         fi
         
         # Run basic connectivity test
@@ -30,9 +30,9 @@ c=$1; shift; case $c in
         # Display a summary
         if [ "$SILENT_MODE" != "true" ]; then
             if [ "$overall_status" = "true" ]; then
-                logit --ansi="32" --icon="⊕" "Internet connection working properly"
+                stdout --ansi="32" --icon="⊕" "Internet connection working properly"
             else
-                logit --ansi="31" --icon="⊘" "Internet connection has issues"
+                stdout --ansi="31" --icon="⊘" "Internet connection has issues"
             fi
         fi
         
@@ -42,7 +42,7 @@ c=$1; shift; case $c in
     dia|diagnose)
         MODE="diagnose"
         SILENT_MODE=false
-        logit --ansi="97" --icon="⚙" "Diagnosing internet connection ..."
+        stdout --ansi="97" --icon="⚙" "Diagnosing internet connection ..."
 
         overall_status=true
         quick_check_success=false
@@ -90,9 +90,9 @@ c=$1; shift; case $c in
         echo ""
         # Display a summary
         if [ "$overall_status" = "true" ]; then
-            logit --ansi="32" --icon="⊕" "Internet connection working properly"
+            stdout --ansi="32" --icon="⊕" "Internet connection working properly"
         else
-            logit --ansi="31" --icon="⊘" "Internet connection has issues"
+            stdout --ansi="31" --icon="⊘" "Internet connection has issues"
         fi
         
         # return with appropriate code
@@ -124,7 +124,7 @@ c=$1; shift; case $c in
         ;;
     fun|function) "$@" ;;
     *)
-        if [[ -n "$c" ]]; then logit -e "Unknown command: '$c'"; fi
+        if [[ -n "$c" ]]; then stdout -e "Unknown command: '$c'"; fi
         cli_ctx internet help; return 1;
         ;;
 esac
