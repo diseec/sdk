@@ -15,7 +15,7 @@ sdk_fac_git_cmd_pull_merge() {
         pull_submodule() {
             local module="$1"
             local module_path="$2"
-            cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME api v1 pull.--recursive
+            cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME api v1 pull
         }
         cli_ctx submodule foreach_active pull_submodule
     fi

@@ -26,7 +26,7 @@ sdk_fac_git_cmd_commit_push_pr() {
         logit -l "Cpp for selected submodules..."
         cpp_submodule() {
             local module="$1"; local module_path="$2"
-            (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME api v1 git.commit.push.pr.--recursive)
+            (cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME api v1 git.commit.push.pr)
             logit -l "Cpp done for submodule '$module'."
         }
         cli_ctx submodule foreach_active cpp_submodule

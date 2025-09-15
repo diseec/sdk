@@ -31,8 +31,8 @@ D git cml                 # Get commit report status
 D git rel                 # Create release tag (dev only)
 
 # Recursive operations (monorepos)
-D push --recursive        # Run on all selected submodules
-D pull --recursive        # Pull/merge in all submodules
+D --recursive push        # Run on all selected submodules
+D --recursive pull        # Pull/merge in all submodules
 ```
 
 ## Key Features
@@ -108,10 +108,10 @@ D push
 
 ```bash
 # Work on multiple packages/services
-D push --recursive
+D --recursive push
 # Runs commit-push-pr on all selected submodules
 
-D pull --recursive
+D --recursive pull
 # Pulls and merges latest changes in all submodules
 ```
 

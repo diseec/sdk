@@ -21,7 +21,6 @@ _ARGS_ENVS_PROCESS=""; _remaining_args=(); _found_command=false; for arg in "$@"
             # --log-level*) D_LOG_LEVEL="${arg#--log-level }";;
             --debug)        D_LOG_LEVEL="DEBUG" ;;
             --log-level=*)  D_LOG_LEVEL="${arg#*=}";;
-            -*) ;; # ignore other pre-command options
             *) _remaining_args+=("$arg"); _found_command=true;;
         esac
     fi

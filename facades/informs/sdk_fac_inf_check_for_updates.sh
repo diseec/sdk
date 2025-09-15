@@ -19,6 +19,6 @@ sdk_fac_inf_check_for_updates() {
     fi
 
     if [ "$kit_update_available" = "true" ] || [ "$repo_update_available" = "true" ]; then
-        confirm "Apply updates now?" cli_ctx update --recursive
+        confirm "Apply updates now?" cli_ctx --recursive update
     fi
 }

@@ -22,7 +22,7 @@ c=$1; shift; case $c in
         # cli_ctx git _ clone https://$D_REPOSITORY_URL/"$1" "$ctx_dir"
         # logit -l "Initializing recursively.., cloned into: $ctx_dir"
         # cd "$ctx_dir"
-        # ("$D_CLI_GLOBAL_NAME" install --patch --recursive)
+        # ("$D_CLI_GLOBAL_NAME" install)
         ;;
     cpp|commit-push-pr) mark_ctx_only; sdk_fac_git_cmd_commit_push_pr "$@" ;;
     che|checkout) mark_ctx_only; sdk_fac_git_cmd_checkout_branch "$@" ;;
@@ -80,8 +80,8 @@ c=$1; shift; case $c in
         "    _                    " "Direct git command passthrough" \
         "    hub _                " "Direct GitHub CLI command passthrough" \
         "" "" "$(ansi "1;90" "$(capitalize 'Aliases & Shortcuts')")" "" \
-        "    $D_CLI_GLOBAL_NAME push [--recursive]  " "$(ansi 96 '✦') $(ansi 90 'Alias for commit-push-pr')" \
-        "    $D_CLI_GLOBAL_NAME pull [--recursive]  " "Alias for pull" \
+        "    $D_CLI_GLOBAL_NAME [--recursive] push  " "$(ansi 96 '✦') $(ansi 90 'Alias for commit-push-pr')" \
+        "    $D_CLI_GLOBAL_NAME [--recursive] pull  " "Alias for pull" \
         "" "" "$(ansi "1;90" "$(capitalize 'Setup Required')")" "" \
         "    $D_CLI_GLOBAL_NAME secret add          " "Add OPENAI_API_KEY for AI commit messages" \
         "    gh auth login         " "Authenticate GitHub cli for PR management" \

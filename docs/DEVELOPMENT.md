@@ -12,7 +12,7 @@ Sets up project and workspace from scratch.
 
 ```bash
 D ins
-D ins ----recursive
+D --recursive ins
 ```
 
 ## update / ude

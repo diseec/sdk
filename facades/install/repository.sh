@@ -49,7 +49,7 @@ sdk_fac_ins_rep_handle() {
     fi
 
     if [ "$D_HAS_SUBMODULES" = "true" ]; then
-        if [ -z "$(cli_ctx submodule actives --quiet)" ]; then
+        if [ -z "$(cli_ctx --quiet submodule actives)" ]; then
             # Submodule selection
             retry "cli_ctx submodule select"
             if [ $? -ne 0 ]; then
@@ -58,7 +58,7 @@ sdk_fac_ins_rep_handle() {
             fi
         fi
 
-        if [ -n "$(cli_ctx submodule actives --quiet)" ]; then
+        if [ -n "$(cli_ctx --quiet submodule actives)" ]; then
             logit -l "Cloning selected submodules..."
             cli_ctx submodule foreach_active initialize_submodule
             if [ $? -ne 0 ]; then
@@ -132,11 +132,11 @@ sdk_fac_ins_repository() {
 
     if [ "$D_IS_RECURSIVE" = "true" ]; then
         logit -l "Installing dependencies in selected submodules..."
-        local active_modules="$(cli_ctx submodule actives --quiet)" # sample output: "path/to/module_1 path/to/module_2"
+        local active_modules="$(cli_ctx --quiet submodule actives)" # sample output: "path/to/module_1 path/to/module_2"
         for module_path in $active_modules; do
             if [ -d "$D_CTX_DIR/$module_path" ]; then
                 logit -l "Installing dependencies in $module_path..."
-                retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME --patch api v1 install.--recursive)"
+                retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME api v1 install)"
                 if [ $? -ne 0 ]; then
                     install_failures+=("Dependency installation failed in submodule at $module_path")
                     exit_code=1

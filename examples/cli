@@ -38,17 +38,17 @@ c=$1; shift; case $c in
     
     ins|install)
         # yarn install # Add project specific install commands here
-        cli_core install --recursive "$@"
+        cli_core --recursive install "$@"
     ;;
 
     dev)
         cli_ctx sdk start > /dev/null 2>&1
         confirm "Run post dev ops?" \
             cli_ctx status \
-            confirm "Pull and merge latest changes?" cli_ctx pull --recursive
+            confirm "Pull and merge latest changes?" cli_ctx --recursive pull
         cli_core dev "$@"
         cli_ctx format
-        confirm "Commit, push and PR changes?" cli_ctx push --recursive
+        confirm "Commit, push and PR changes?" cli_ctx --recursive push
         cli_ctx sdk stop
     ;;
 

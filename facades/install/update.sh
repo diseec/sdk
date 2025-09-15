@@ -91,11 +91,11 @@ sdk_fac_ins_cmd_update() {
 
     if [ "$D_IS_RECURSIVE" = "true" ]; then
         logit -l "Updating dependencies in selected submodules..."
-        local active_modules="$(cli_ctx submodule actives --quiet)" # sample output: "path/to/module_1 path/to/module_2"
+        local active_modules="$(cli_ctx --quiet submodule actives)" # sample output: "path/to/module_1 path/to/module_2"
         for module_path in $active_modules; do
             if [ -d "$D_CTX_DIR/$module_path" ]; then
                 logit -l "Updating dependencies in $module_path..."
-                retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME --patch api v1 update.--recursive)"
+                retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME api v1 update)"
                 if [ $? -ne 0 ]; then
                     install_failures+=("Dependency update failed in submodule at $module_path")
                     exit_code=1
