@@ -2,10 +2,10 @@
 
 sdk_cmd_opt_help() {
 display_help "" "" \
-"$(ansi "1;90" "$(capitalize 'Usage')")                        " "$D_CLI_GLOBAL_NAME/[bash $D_CLI_LOCAL_NAME] <command> <subcommand> [options] [arguments]" \
+"$(ansi "1;90" "$(capitalize 'Usage')")                        " "$D_CLI_GLOBAL_NAME/[bash $D_CLI_LOCAL_NAME] [global-options] <command> <subcommand> [options] [arguments]" \
 "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$D_ORG_NAME/$D_SDK_NAME")")" \
-"$(ansi "1;2;90" "$(capitalize '[Global Options]')")              " "" \
-"    --patch|-p               " "Force pull and reinstall $D_SDK_NAME into project" \
+"$(ansi "1;2;90" "$(capitalize '[Global Options]')")              " "$(ansi "2;90" "Must always be used before <command>")" \
+"    --patch                  " "Force pull and reinstall $D_SDK_NAME into project" \
 "                             " "$(ansi "2;90" "Ensures a fresh $D_SDK_NAME binary is used,")" \
 "                             " "$(ansi "2;90" "when the local $D_SDK_NAME is missing, corrupted,")" \
 "                             " "$(ansi "2;90" "or unable to bootstrap the CLI itself")" \
