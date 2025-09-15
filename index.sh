@@ -8,13 +8,15 @@ export D_LOG_LEVEL="${D_LOG_LEVEL:-DEBUG}" # change this to info when app stable
 export D_TTY_AVAILABLE="${D_TTY_AVAILABLE:-true}"  # TTY availability flag, true by default
 export D_SDK_PATCH_FORCE="${D_SDK_PATCH_FORCE:-false}"
 export D_IS_RECURSIVE="${D_IS_RECURSIVE:-false}"
+export D_IS_QUIET="${D_IS_QUIET:-false}"
 
 _ARGS_ENVS_PROCESS=""; for arg in "$@"; do case "$arg" in
-    --patch)        D_SDK_PATCH_FORCE="true" ;;
-    --log-level=*)  D_LOG_LEVEL="${arg#*=}";;
+    -q|--quiet)     D_IS_QUIET="true" ;;
+    -p|--patch)     D_SDK_PATCH_FORCE="true" ;;
     -r|--recursive) D_IS_RECURSIVE="true";;
     # --log-level*) D_LOG_LEVEL="${arg#--log-level }";;
-    --debug) D_LOG_LEVEL="DEBUG" ;;
+    --debug)        D_LOG_LEVEL="DEBUG" ;;
+    --log-level=*)  D_LOG_LEVEL="${arg#*=}";;
 *) _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\"";; esac; done; eval set -- $(eval echo $_ARGS_ENVS_PROCESS);
 
 # =============================================================================

@@ -5,13 +5,14 @@ display_help "" "" \
 "$(ansi "1;90" "$(capitalize 'Usage')")                        " "$D_CLI_GLOBAL_NAME/[bash $D_CLI_LOCAL_NAME] <command> <subcommand> [options] [arguments]" \
 "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$D_ORG_NAME/$D_SDK_NAME")")" \
 "$(ansi "1;2;90" "$(capitalize '[Global Options]')")              " "" \
-"    --patch                  " "Force pull and reinstall $D_SDK_NAME into project" \
+"    --patch|-p               " "Force pull and reinstall $D_SDK_NAME into project" \
 "                             " "$(ansi "2;90" "Ensures a fresh $D_SDK_NAME binary is used,")" \
 "                             " "$(ansi "2;90" "when the local $D_SDK_NAME is missing, corrupted,")" \
 "                             " "$(ansi "2;90" "or unable to bootstrap the CLI itself")" \
 "    --recursive|-r           " "Recurse actions into submodules" \
 "                             " "$(ansi "2;90" "Not supported by all commands, check command help")" \
 "    --safely|-s              " "Safe command execution, (in $D_SDK_NAME container!)" \
+"    --quiet|-q               " "Suppress all output" \
 "    --log-level              " "Set the log level for the CLI" \
 "                             " "$(ansi "2;90" "Valid values: DEBUG, INFO, WARNING, ERROR")" \
 "    --version                " "Show version information" \

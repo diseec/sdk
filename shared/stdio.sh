@@ -45,6 +45,8 @@ ansi() {
 }
 
 logit() {
+    if [ "$D_IS_QUIET" = "true" ]; then return 0; fi
+
     local level="DEBUG" # DEBUG > INFO > WARNING > ERROR
     local repo_name=${D_REPO_NAME:-$D_CLI_GLOBAL_NAME}
     local type="--log"
