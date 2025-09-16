@@ -52,6 +52,8 @@ sdk_fac_ins_has_version_changed() {
 }
 
 sdk_fac_ins_cmd_update() {
+    trap 'stdout -e "Interrupted by user (Ctrl+C). Exiting."; exit 130' INT
+    
     # Store current errexit state
     local errexit_state=$(set -o | grep errexit | awk '{print $2}')
     

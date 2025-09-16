@@ -99,7 +99,10 @@ sdk_fac_ins_rep_handle() {
 }
 
 sdk_fac_ins_repository() {
+    trap 'stdout -e "Interrupted by user (Ctrl+C). Exiting."; exit 130' INT
+
     # Store current errexit state
+
     local errexit_state=$(set -o | grep errexit | awk '{print $2}')
     
     # Force set -e off to track failures ourselves
