@@ -2,6 +2,10 @@
 
 # Test for the 'secret export' command
 _export_test_key="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+# Setup function - runs before each test
+setup_test() {
+    TEST_SECRET_DIR="$(D secret function sdk_fac_sec_get_secrets_dir)"
+}
 
 helper_create_secret() {
     local test_secret="$1"

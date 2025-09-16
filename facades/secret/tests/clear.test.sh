@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Test for the 'secret clear' command
-
 # Setup function - runs before each test
 setup_test() {
+    TEST_SECRET_DIR="$(D secret function sdk_fac_sec_get_secrets_dir)"
     # Set up secrets directory in the test workspace
-    export SECRETS_DIR="$TEST_CTX/secrets"
+    export SECRETS_DIR="$TEST_SECRET_DIR"
     mkdir -p "$SECRETS_DIR" 2>/dev/null
 }
 

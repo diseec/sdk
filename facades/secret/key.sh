@@ -102,9 +102,8 @@ sdk_fac_sec_clear_secrets() {
     fi
 
     stdout --ansi="43" --icon="WARNING" "This will permanently delete ALL secrets!"
-    stdout --ansi="45" --icon="?" "Are you sure? Type 'DELETE' to confirm: "
-    read confirmation
-    
+    stdin confirmation "Are you sure? Type 'DELETE' to confirm:"
+
     if [ "$confirmation" = "DELETE" ]; then
         # Remove all files but keep the directory
         rm -f "$SECRETS_DIR"/*

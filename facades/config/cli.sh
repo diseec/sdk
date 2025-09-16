@@ -79,8 +79,11 @@ c=$1; shift; case $c in
     "    --scope <scope>          " "Set scope (long form with space)" \
     "" "" "    $(ansi "1;2;90" "$(capitalize 'Scopes')")" "" \
     "    context                  " "Project specific shared configuration ($SCOPE_CTX_FILE)" \
+    "                             " "$(ansi "2;90" "Stores configuration that is burned into the repository itself and is version controlled. This ensures that certain settings are tracked and shared with all collaborators via version control.")" \
     "    repository               " "Project specific local configuration ($SCOPE_REPO_FILE)" \
+    "                             " "$(ansi "2;90" "Acts as the main scope for configuration, providing repository-specific settings that take precedence.")" \
     "    user                     " "User specific configuration ($SCOPE_USER_FILE)" \
+    "                             " "$(ansi "2;90" "Used for common settings that a user wants to share across repositories. These preferences are personal and portable between projects.")" \
     "" "" "    $(ansi "1;2;90" "$(capitalize 'Hierarchy')")" "" \
     "    $(ansi "2;90" "Configuration values are resolved in this order of precedence:")" \
     "    $(ansi "2;90" "context > repository > user")" \

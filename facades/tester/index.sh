@@ -25,6 +25,8 @@ source_once "$D_SDK_DIR/facades/tester/core/suite.sh"
 sdk_tester_initialize() { 
     # Disable TTY functionality during tests
     export D_GLOBAL_TTY_AVAILABLE="false"
+    export D_GLOBAL_LOG_LEVEL="VERBOSE"
+    export D_GLOBAL_DEBUG="true"
 
     export TESTER_RESULT_FILE_NAME=".test_result"
     export TESTER_LOG_FILE_NAME=".test_logs_XXXXXX"

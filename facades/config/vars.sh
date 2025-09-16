@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Repository scope acts as main scope and then we have user scope for common settings that user wants to share across repositories and context scope is for configs that we burn to the repository itself and is version controlled
 readonly DEFAULT_SCOPE="repository"
 
 # =============================================================================

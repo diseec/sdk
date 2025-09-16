@@ -2,12 +2,17 @@
 
 # Test for the 'secret add' command
 
+# Setup function - runs before each test
+setup_test() {
+    TEST_SECRET_DIR="$(D secret function sdk_fac_sec_get_secrets_dir)"
+}
+
 # Test add command with existing secret - decline overwrite
 test_secret_add_decline_overwrite() {
     # Following the testing guidelines, let the command handle its own prerequisites
     
     # First, make sure we have a clean state
-    rm -rf "$TEST_CTX/secrets" 2>/dev/null
+    rm -rf "$TEST_SECRET_DIR" 2>/dev/null
     
     # Add initial secret
     local add_output
@@ -21,7 +26,7 @@ EOF
     assert_contains "$add_output" "added successfully" "Initial secret should be added successfully"
     
     # Verify the secret file exists (more reliable than checking decryption in test env)
-    local secret_file="$TEST_CTX/secrets/DECLINE_OVERWRITE_SECRET"
+    local secret_file="$TEST_SECRET_DIR/DECLINE_OVERWRITE_SECRET"
     assert_file_exists "$secret_file" "Secret file should exist"
     
     # Capture the content of the secret file for later comparison
@@ -54,7 +59,7 @@ test_secret_add_basic_functionality() {
     # Following the testing guidelines, let the command handle its own prerequisites
     
     # First, make sure we have a clean state
-    rm -rf "$TEST_CTX/secrets" 2>/dev/null
+    rm -rf "$TEST_SECRET_DIR" 2>/dev/null
     
     # Test interactive input by providing input through heredoc
     local output
@@ -69,7 +74,7 @@ EOF
     assert_contains "$output" "added successfully" "Should indicate successful addition"
     
     # Verify the secret file exists
-    local secret_file="$TEST_CTX/secrets/TEST_SECRET"
+    local secret_file="$TEST_SECRET_DIR/TEST_SECRET"
     assert_file_exists "$secret_file" "Secret file should exist"
     
     # For verifying the content, we would typically use secret export
@@ -86,7 +91,7 @@ test_secret_add_overwrite_existing() {
     # Following the testing guidelines, let the command handle its own prerequisites
     
     # First, make sure we have a clean state
-    rm -rf "$TEST_CTX/secrets" 2>/dev/null
+    rm -rf "$TEST_SECRET_DIR" 2>/dev/null
     
     # First add a secret
     local output1
@@ -101,7 +106,7 @@ EOF
     assert_contains "$output1" "added successfully" "Should indicate successful initial addition"
     
     # Verify the secret file exists
-    local secret_file="$TEST_CTX/secrets/EXISTING_SECRET"
+    local secret_file="$TEST_SECRET_DIR/EXISTING_SECRET"
     assert_file_exists "$secret_file" "Secret file should exist"
     
     # Capture the content of the secret file after initial creation
@@ -133,7 +138,7 @@ test_secret_add_empty_name() {
     # Following the testing guidelines, let the command handle its own prerequisites
     
     # First, make sure we have a clean state
-    rm -rf "$TEST_CTX/secrets" 2>/dev/null
+    rm -rf "$TEST_SECRET_DIR" 2>/dev/null
     
     # Test with empty name input - the command should prompt again or fail
     local output
@@ -154,7 +159,7 @@ test_secret_add_empty_value() {
     # Following the testing guidelines, let the command handle its own prerequisites
     
     # First, make sure we have a clean state
-    rm -rf "$TEST_CTX/secrets" 2>/dev/null
+    rm -rf "$TEST_SECRET_DIR" 2>/dev/null
     
     # Test with empty value input using a heredoc instead of a subshell
     local output
@@ -175,7 +180,7 @@ test_secret_add_creates_secrets_directory() {
     # We should not manually create directories or prepare things that are the command's responsibility
 
     # Make sure the directory doesn't exist beforehand
-    rm -rf "$TEST_CTX/secrets" 2>/dev/null
+    rm -rf "$TEST_SECRET_DIR" 2>/dev/null
     
     # Run the command and let it create the secrets directory by itself
     local output
@@ -190,7 +195,7 @@ EOF
     assert_contains "$output" "added successfully" "Should indicate successful addition"
     
     # Verify the secret file exists - which implicitly tests directory creation
-    local secret_file="$TEST_CTX/secrets/DIR_CREATION_TEST"
+    local secret_file="$TEST_SECRET_DIR/DIR_CREATION_TEST"
     assert_file_exists "$secret_file" "Secret file should exist in the created directory"
     
     # Verify the file has content

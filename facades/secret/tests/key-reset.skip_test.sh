@@ -1,6 +1,10 @@
 #!/bin/bash
 
 # Test for the 'secret key-reset' command
+# Setup function - runs before each test
+setup_test() {
+    TEST_SECRET_DIR="$(D secret function sdk_fac_sec_get_secrets_dir)"
+}
 
 # Test key-reset command with no key configured
 test_secret_key_reset_no_key_configured() {

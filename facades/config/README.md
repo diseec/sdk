@@ -1,5 +1,13 @@
 # Centralized Configuration System
 
+# Scope Overview
+
+**Repository Scope**: Acts as the main scope for configuration, providing repository-specific settings that take precedence. This is where most configuration is managed for a given project.
+
+**User Scope**: Used for common settings that a user wants to share across multiple repositories. These preferences are personal and portable between projects.
+
+**Context Scope**: Stores configuration that is burned into the repository itself and is version controlled. This ensures that certain settings are tracked and shared with all collaborators via version control.
+
 This document describes the new centralized configuration management system that replaces the old scattered configuration handling across multiple facades.
 
 ## Overview

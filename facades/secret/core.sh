@@ -4,6 +4,10 @@
 # CORE VALIDATION AND UTILITY FUNCTIONS
 # ========================================
 
+sdk_fac_sec_get_secrets_dir() {
+    echo "$(cli_ctx config function sdk_fac_con_get_scope_repo_dir)/secrets"
+}
+
 # Helper function to check if OpenSSL is available
 sdk_fac_sec_check_openssl() {
     if ! command -v _openssl >/dev/null 2>&1; then
