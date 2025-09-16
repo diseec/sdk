@@ -57,13 +57,7 @@ source_safely() {
 
     if [ "$IS_IN_SDK_CONTAINER" = "true" ]; then
         source "$script_path" "$@" # DO NOT use source_once here, the clean state variables need constant sourcing
-        # Watch out the exit status
-    elif [ "$D_IS_IN_CONTAINER" = "true" ]; then
-        CONTAINER_ID=$(hostname 2>/dev/null || echo "unknown")
-        stdout -e "Trying to run '$full_cmd' command in '$D_SDK_NAME' container, but already in a different container: $CONTAINER_ID" >&2
-        return 1
     else
-        stdout -l "Container only command, redirecting: $full_cmd"
         cli_ctx --safely "$full_cmd";
     fi
 }
