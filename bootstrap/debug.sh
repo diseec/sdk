@@ -178,5 +178,6 @@ function sdk_boo_debug_init() {
     if [[ "$D_GLOBAL_DEBUG" == "true" ]]; then
         D_GLOBAL_LOG_LEVEL="VERBOSE"
         trap trace_error_handler ERR
+        set -x
     fi
 }

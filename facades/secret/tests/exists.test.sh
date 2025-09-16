@@ -51,7 +51,7 @@ test_secret_exists_quiet_nonexistent() {
     local output
     output=$(D secret exists $nonexistent --quiet)
     local result=$?
-    
+
     # Verify quiet mode behavior for non-existent secret
     assert_not_equals "0" "$result" "Should return false for non-existent secret even in quiet mode"
     assert_equals "" "$output" "With quiet flag, output should be empty"
