@@ -2,21 +2,25 @@
 
 sdk_cmd_opt_help() {
 display_help "" "" \
-"$(ansi "1;90" "$(capitalize 'Usage')")                        " "$D_CLI_GLOBAL_NAME/[bash $D_CLI_LOCAL_NAME] [global-options] <command> <subcommand> [options] [arguments]" \
+"$(ansi "1;90" "$(capitalize 'Usage')")                        " "$D_CLI_GLOBAL_NAME/(bash $D_CLI_LOCAL_NAME) [opts] <cmd> <sub-cmd> [opts] [args]" \
 "                             " "$(ansi "2;90" "Documentation at $(ansi "2;4;90" "https://github.com/$D_ORG_NAME/$D_SDK_NAME")")" \
-"$(ansi "1;2;90" "$(capitalize '[Global Options]')")              " "$(ansi "2;90" "Must always be used before <command>")" \
-"    --patch                  " "Force pull and reinstall $D_SDK_NAME into project" \
+"$(ansi "1;90" "$(capitalize '[Global Options]')")             " "" \
+"                             " "" \
+"    -p|--patch               " "Force pull and reinstall $D_SDK_NAME into project" \
 "                             " "$(ansi "2;90" "Ensures a fresh $D_SDK_NAME binary is used,")" \
 "                             " "$(ansi "2;90" "when the local $D_SDK_NAME is missing, corrupted,")" \
 "                             " "$(ansi "2;90" "or unable to bootstrap the CLI itself")" \
-"    --recursive|-r           " "Recurse actions into submodules" \
+"    -s|--safely              " "Safe command execution, (in $D_SDK_NAME container!)" \
+"    -r|--recursive           " "Recurse actions into submodules" \
 "                             " "$(ansi "2;90" "Not supported by all commands, check command help")" \
-"    --safely|-s              " "Safe command execution, (in $D_SDK_NAME container!)" \
-"    --quiet|-q               " "Suppress all output" \
+"    -q|--quiet               " "Suppress all output" \
+"    -v|--verbose             " "Set log level to VERBOSE (most detailed)" \
 "    --log-level              " "Set the log level for the CLI" \
-"                             " "$(ansi "2;90" "Valid values: DEBUG, INFO, WARNING, ERROR")" \
+"                             " "$(ansi "2;90" "Valid values: VERBOSE, INFO, WARNING, ERROR")" \
+"    --no-tty                 " "Disable TTY detection (force non-interactive mode)" \
 "    --version                " "Show version information" \
-"    --help|-h                " "Brief usage and docs information" \
+"    -d|--debug               " "Enable debug mode: tracing and verbose logging" \
+"    -h|--help                " "Brief usage and docs information" \
 "" "" "$(ansi "1;90" "$(capitalize 'Project Management')")" "" \
 "    ins|install              " "Install project dependencies and tools" \
 "    ude|update               " "Update CLI and sync project" \

@@ -44,7 +44,7 @@ ansi() {
     printf "\033[0m\033[%sm%s\033[0m" "$ansi" "$text"
 }
 
-# Usage: stdout [type] [--icon=ICON] [--ansi=CODE] "Your message here"
+# Usage: stdout [type] [--icon=ICON] [--ansi=CODE] [--level=LEVEL] "Your message here"
 # Types: -l|--log (default), -d|--debug, -f|--fail, -e|--error, -o|--okey, -w|--warning, -i|--info, -q|--question, -a|--ai, -s|--statement
 # Examples:
 #   stdout "This is a log message"
@@ -57,13 +57,10 @@ ansi() {
 #   stdout -q --icon="?" "This is a question message"
 #   stdout -a --icon="✦" "This is an AI-related message"
 #   stdout -s "This is a plain statement message"
-# Note: In quiet mode (D_GLOBAL_IS_QUIET="true"), this function produces no output
 stdout() {
-    if [ "$D_GLOBAL_IS_QUIET" = "true" ]; then return 0; fi
-
-    local level="DEBUG" # DEBUG > INFO > WARNING > ERROR
     local repo_name=${D_REPO_NAME:-$D_CLI_GLOBAL_NAME}
     local type="--log"
+    local default_level="VERBOSE"
     local default_ansi="90"
     local default_icon=""
     local content=""
@@ -89,6 +86,10 @@ stdout() {
                 local given_ansi="${1#*=}"
                 shift
                 ;;
+            --level=*)
+                local given_level="${1#*=}"
+                shift
+                ;;
             *)
                 # All remaining arguments form the content
                 content="$*"
@@ -99,22 +100,23 @@ stdout() {
 
     # Parse type config
     case $type in
-        -l|--log)       default_ansi="90"; default_icon="";  level="DEBUG" ;;
-        -d|--debug)     default_ansi="31"; default_icon="¤"; level="DEBUG" ;;
-        -f|--fail)      default_ansi="31"; default_icon="✖"; level="ERROR"   ;; # ✗
-        -e|--error)     default_ansi="31"; default_icon="E"; level="ERROR"   ;;
-        -o|--okey)      default_ansi="32"; default_icon="✓"; level="INFO"    ;; # ✔
-        -w|--warning)   default_ansi="33"; default_icon="!"; level="WARNING" ;;
-        -i|--info)      default_ansi="34"; default_icon="i"; level="INFO"    ;;
-        -q|--question)  default_ansi="35"; default_icon="?"; level="INFO"    ;;
-        -a|--ai)        default_ansi="96"; default_icon="✦"; level="INFO"    ;;
-        -s|--statement) default_ansi="97"; default_icon="";  level="INFO"    ;;
-        *)                                                   level="DEBUG" ;;
+        -l|--log)       default_ansi="90"; default_icon="";  default_level="VERBOSE" ;;
+        -d|--debug)     default_ansi="31"; default_icon="¤"; default_level="VERBOSE" ;;
+        -f|--fail)      default_ansi="31"; default_icon="✖"; default_level="ERROR"   ;; # ✗
+        -e|--error)     default_ansi="31"; default_icon="E"; default_level="ERROR"   ;;
+        -o|--okey)      default_ansi="32"; default_icon="✓"; default_level="INFO"    ;; # ✔
+        -w|--warning)   default_ansi="33"; default_icon="!"; default_level="WARNING" ;;
+        -i|--info)      default_ansi="34"; default_icon="i"; default_level="INFO"    ;;
+        -q|--question)  default_ansi="35"; default_icon="?"; default_level="ERROR"    ;;
+        -a|--ai)        default_ansi="96"; default_icon="✦"; default_level="INFO"    ;;
+        -s|--statement) default_ansi="97"; default_icon="";  default_level="INFO"    ;;
+        *)                                                   default_level="VERBOSE" ;;
     esac
 
-    # Prepare icon and ANSI color
+    # Prepare icon and ANSI color and level
     local _ansi="${given_ansi:-$default_ansi}"
     local _icon="${given_icon:-$default_icon}"
+    local _level="${given_level:-$default_level}"
 
     # Prepare prompt & content
     local prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
@@ -128,10 +130,11 @@ stdout() {
 
     # Handle logging levels
     case $D_GLOBAL_LOG_LEVEL in
-        DEBUG|debug) ;;
-        INFO|info) case $level in       DEBUG) return 0; esac ;;
-        WARNING|warning) case $level in DEBUG|INFO) return 0; esac ;;
-        ERROR|error) case $level in     DEBUG|INFO|WARNING) return 0; esac ;;
+        VERBOSE|verbose) ;;
+        INFO|info) case $_level in       VERBOSE) return 0; esac ;;
+        WARNING|warning) case $_level in VERBOSE|INFO) return 0; esac ;;
+        ERROR|error) case $_level in     VERBOSE|INFO|WARNING) return 0; esac ;;
+        QUIET|quiet) case $_level in     VERBOSE|INFO|WARNING|ERROR) return 0; esac ;;
     esac
 
     # Output log message
@@ -148,13 +151,11 @@ stdout() {
 # OR
 # confirm "Do you want to proceed?" echo 'does this!'
 confirm() {
-    local D_GLOBAL_IS_QUIET="false"
-
     local question=$1; shift
     
     # First output the question so in non-tty environments it's still shown
-    printf "$(stdout --ansi="35" --icon="Y/N" "$question ")"
-    
+    printf "$(stdout -q --ansi="35" --icon="Y/N" "$question ")"
+
     # Check if TTY is available
     if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
         # Store original terminal settings to restore later
@@ -183,11 +184,11 @@ confirm() {
             local response="n"
         fi
     fi
-
+    
     printf "\n"
     
     # In testing environments, echo the input for visibility
-    if [ "$D_ENV" = "TESTING" ]; then
+    if [ "$D_GLOBAL_ENV" = "TESTING" ]; then
         stdout -i --icon="<" "Input received (non-TTY mode): $response"
     fi
 
@@ -261,8 +262,6 @@ confirm() {
 #   - Optional vs required input modes
 #   - Terminal state preservation and restoration
 stdin() {
-    local D_GLOBAL_IS_QUIET="false"
-
     local var_name="$1"; shift
     local prompt="$1"; shift
     local default_value=""
@@ -314,7 +313,8 @@ stdin() {
             display_prompt="$default_prompt"
         fi
     fi
-    printf "$(stdout --ansi="35" --icon=">" "$display_prompt") "
+
+    printf "$(stdout -q --ansi="35" --icon=">" "$display_prompt") "
     
     # Check if input is available from redirection (<, <<, <<<, pipe)
     if [ ! -t 0 ] && [ "$D_GLOBAL_TTY_AVAILABLE" = "false" ]; then
@@ -380,10 +380,9 @@ stdin() {
     fi
     
     printf "\n"
-
     
     # In testing environments, echo the input for visibility
-    if [ "$D_ENV" = "TESTING" ]; then
+    if [ "$D_GLOBAL_ENV" = "TESTING" ]; then
         stdout -i --icon="<" "Input received (non-TTY mode): $user_input"
     fi
 
@@ -427,7 +426,7 @@ stdin() {
     fi
     
     # In testing environments, echo the input for visibility
-    if [ "$D_ENV" = "TESTING" ]; then
+    if [ "$D_GLOBAL_ENV" = "TESTING" ]; then
         stdout -i --icon="<" "Input received (non-TTY mode) (Processed): $user_input"
     fi
 
@@ -449,8 +448,6 @@ stdin() {
 #   - With --timeout: Auto-retry mode with specified pause between attempts (limited by max-attempts)
 #   - With both --manual and --timeout: First tries auto-retries up to max-attempts, then switches to manual mode
 retry() {
-    local D_GLOBAL_IS_QUIET="false"
-
     local operation_cmd=""
     local max_attempts=3  # Default max attempts for auto mode
     local timeout=5       # Default timeout in seconds for auto mode

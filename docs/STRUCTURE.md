@@ -79,7 +79,7 @@ The debugging system provides:
 - Error tracing with stack traces
 - System information collection
 - Environment variable reporting
-- Customizable log levels (`DEBUG`, `INFO`, `WARNING`, `ERROR`)
+- Customizable log levels (`VERBOSE`, `INFO`, `WARNING`, `ERROR`)
 - Custom error handlers
 
 ### 4. Hooks (bootstrap/hooks.sh)

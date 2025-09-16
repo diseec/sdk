@@ -28,10 +28,10 @@ c=$1; shift; case $c in
     api)            source "$D_SDK_DIR/api/cli.sh" "$@" ;;
     about)          sdk_cmd_opt_about "$@" ;;
 
-    # OPTIONS
-    --safely|-s)    sdk_cmd_opt_safely "$@" ;;
+    # OPTION COMMANDS
     --version)      sdk_cmd_opt_version "$@" ;;
-    --help|-h|hel|help) sdk_cmd_opt_help "$@" ;;
+    -s|--safely)    sdk_cmd_opt_safely "$@" ;;
+    -h|--help|hel|help) sdk_cmd_opt_help "$@" ;;
 
     # TEMPORARY ALIASES
     rst|run-sdk-tests|t) cli_core sdk tester run --verbose --fail-fast "$@" ;;

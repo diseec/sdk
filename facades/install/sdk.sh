@@ -2,20 +2,23 @@
 
 sdk_fac_ins_sdk_process() {
     if [ "$IS_IN_SDK_CONTAINER" != "true" ]; then
-        stdout -e "The 'patch' command works only on bench! (the $D_SDK_NAME container)"; return 1; 
+        stdout -e "The 'patch' command works only on bench! (the $D_SDK_NAME container)"
+        return 1
     fi
 
     local target_kit="$D_CONT_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH"
-
     if [ -L "$target_kit" ]; then
         stdout -w "$target_kit is a symlink, most probably to a global $D_SDK_NAME installation. Aborting patch to avoid overwriting global sdk."
         return 1
     fi
-
+     
     local version_specifier=$(_node -p "require('$D_CONT_CTX_DIR/package.json').dependencies?.['$D_SDK_NPM_PKG'] || require('$D_CONT_CTX_DIR/package.json').devDependencies['$D_SDK_NPM_PKG']")
-
-    if [ -z "$version_specifier" ]; then
-        stdout -e "$D_SDK_NPM_PKG not found in '$D_CONT_CTX_DIR/package.json'. $PWD"
+    if [ $? -ne 0 ]; then
+        stdout -e "Failed to read $D_SDK_NPM_PKG version from '$D_CONT_CTX_DIR/package.json'"
+        return 1
+    fi
+    if [ -z "$version_specifier" ] || [ "$version_specifier" = "undefined" ]; then
+        stdout -e "$D_SDK_NPM_PKG not found in '$D_CONT_CTX_DIR/package.json'"
         return 1
     fi
 
@@ -36,6 +39,11 @@ sdk_fac_ins_sdk_process() {
     rm -rf "$target_kit" 2>/dev/null 
     mkdir -p "$target_kit" 2>/dev/null
     cp -r "$_tempdir/$D_SDK_LOCAL_RELATIVE_PATH"/* "$target_kit"
+    if [ $? -ne 0 ]; then
+        stdout -e "Failed to copy $package_name to $target_kit" >&2
+        rm -rf "$_tempdir"
+        return 1
+    fi
 
     if [ ! -f "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME" ]; then
         stdout -l "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file..."
@@ -48,11 +56,21 @@ sdk_fac_ins_sdk_process() {
 }
 
 sdk_fac_ins_sdk() {
-    set -e
     # docker pull image.registry.diseec.com/kit \
     #     --disable-content-trust > /dev/null 2>&1
-    cli_core "$D_SDK_NAME" docker compose _ pull
-    cli_core "$D_SDK_NAME" stop
+
+    cli_core "$D_SDK_NAME" docker compose _ pull > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        stdout -e "Failed to pull latest $D_SDK_NAME image" >&2
+        return 1
+    fi
+
+    cli_core "$D_SDK_NAME" stop > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        stdout -e "Failed to stop running $D_SDK_NAME container" >&2
+        return 1
+    fi
+
     cli_core "$D_SDK_NAME" run --quiet "/$D_SDK_NAME/$D_SDK_NAME" install function sdk_fac_ins_sdk_process
 }
 

@@ -1,10 +1,7 @@
 #!/bin/bash
 
 # Set debug variables early
-: "${D_GLOBAL_LOG_LEVEL:=INFO}"  # DEBUG, INFO, WARNING, ERROR
-: "${DEBUG:=false}"
 : "${D_TRACE_DEPTH:=10}"  # How many stack frames to show (max)
-: "${D_TRACE_ENABLED:=true}"  # Enable/disable tracing
 
 # Original x function - preserved (using stdout as requested)
 x() {
@@ -12,10 +9,8 @@ x() {
     local line="${BASH_LINENO[0]:-0}"
     local func="${FUNCNAME[1]:-unknown}"
 
-    if [[ "${D_GLOBAL_LOG_LEVEL}" == "DEBUG" || "${DEBUG}" == "true" ]]; then
-        # Log entry to function with more context
-        stdout -e --icon="¤][$file:$line:$func" "${*:-Sunshine, rainbows and sh*t!}"
-    fi
+    # Log entry to function with more context
+    stdout -e --icon="¤][$file:$line:$func" "${*:-Sunshine, rainbows and sh*t!}"
 }
 
 # Trace function call stack and return a formatted stack trace
@@ -108,10 +103,11 @@ get_system_info() {
 # Function to display environment variables
 get_env_variables() {
     printf "\n\033[1;97mENV VARIABLES\033[0m\033[97m %s\033[0m\n" "$(printf '%*s' 58 | tr ' ' '-')"
+    printf "\033[90mD_GLOBAL_ENV    \033[0m \033[90m%s\033[0m\n" "${D_GLOBAL_ENV:-unknown}"
+    printf "\033[90mD_GLOBAL_DEBUG    \033[0m \033[90m%s\033[0m\n" "${D_GLOBAL_DEBUG:-unknown}"
     printf "\033[90mPWD            \033[0m \033[90m%s\033[0m\n" "${PWD:-unknown}"
     printf "\033[90mD_INI_PWD      \033[0m \033[90m%s\033[0m\n" "${D_INI_PWD:-unknown}"
     printf "\033[90mD_INI_ARGS     \033[0m \033[90m%s\033[0m\n" "${D_INI_ARGS:-unknown}"
-    printf "\033[90mD_GLOBAL_LOG_LEVEL    \033[0m \033[90m%s\033[0m\n" "${D_GLOBAL_LOG_LEVEL:-unknown}"
     printf "\033[90mD_SDK_DIR      \033[0m \033[90m%s\033[0m\n" "${D_SDK_DIR:-unknown}"
     printf "\033[90mD_CTX_DIR      \033[0m \033[90m%s\033[0m\n" "${D_CTX_DIR:-unknown}"
 }
@@ -164,31 +160,23 @@ trace_error_handler() {
     exit $exit_code
 }
 
-# Start tracing - can be called explicitly or will be called by sdk_boo_debug_init
-start_tracing() {
-    if [[ "$D_TRACE_ENABLED" == "true" ]]; then
-        trap trace_error_handler ERR
-    fi
-}
-
 function sdk_boo_debug_init() {
-    # Set default values for potentially unbound variables
-    : "${D_GLOBAL_LOG_LEVEL:=INFO}"
-    : "${DEBUG:=false}"
-    : "${D_EXIT_ON_ERROR:=true}"  # This is now enforced regardless
     
-    # Always exit on error - this is now enforced
-    set -e
+    # # Always exit on error - this is now enforced
+    # set -e
     
     # # Handle undefined variables
     # set -u
     
-    # Set errexit option
-    set -o errexit
+    # # Set errexit option
+    # set -o errexit
     
-    # Set pipefail option - ensures pipelines fail if any command fails
-    set -o pipefail
+    # # Set pipefail option - ensures pipelines fail if any command fails
+    # set -o pipefail
     
-    # Start the tracing system
-    start_tracing
+    # Start the tracing system and error handler if debug mode is enabled
+    if [[ "$D_GLOBAL_DEBUG" == "true" ]]; then
+        D_GLOBAL_LOG_LEVEL="VERBOSE"
+        trap trace_error_handler ERR
+    fi
 }
