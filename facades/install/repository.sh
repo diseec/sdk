@@ -136,6 +136,9 @@ sdk_fac_ins_repository() {
     if [ "$D_GLOBAL_IS_RECURSIVE" = "true" ]; then
         stdout -l "Installing dependencies in selected submodules..."
         local active_modules="$(cli_ctx --quiet submodule actives)"
+        # Normalize whitespace: convert newlines/tabs to single spaces and trim edges
+        active_modules=$(normalize $active_modules)
+        # Now active_modules will be a single-line, space-separated list (or empty)
         for module_path in $active_modules; do
             if [ -d "$D_CTX_DIR/$module_path" ]; then
                 stdout -l "Installing dependencies in $module_path..."

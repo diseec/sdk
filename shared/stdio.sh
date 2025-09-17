@@ -601,3 +601,9 @@ display_help() {
     done
     printf "\n"
 }
+
+normalize() {
+    # Convert newlines and tabs to spaces, then squeeze multiple spaces into one
+    # echo "$1" | tr '\n\t' ' ' | tr -s ' ' | sed 's/^ *//;s/ *$//'
+    printf '%s' "$1" | tr '\n\r\t' ' ' | sed 's/  */ /g' | sed 's/^ //; s/ $//'
+}
