@@ -1,12 +1,10 @@
 #!/bin/bash
 
 sdk_fac_doc_up_development() {
-    set -e
-
     handle_hook before_dev
 
     # Filter services based on workspace configuration
-    services_filter=$(cli_ctx config function sdk_fac_sub_fea_act_get_services_filter)
+    services_filter=$(cli_ctx --quiet submodule function sdk_fac_sub_fea_act_get_services_filter)
 
     if [ "$D_IS_IN_CONTAINER" = "true" ]; then
         if [ -f "$D_CTX_DIR/docker-compose.override.yaml" ]; then
@@ -17,25 +15,50 @@ sdk_fac_doc_up_development() {
     else
         # Set up a trap to ensure we stop all containers on interrupt
         cleanup() {
-            # stdout -w "CLEANUP" "Stopping all containers..."
-            cli_ctx docker compose _ down
-            exit 0
+            # remove any traps while cleaning to avoid recursion
+            trap - INT TERM EXIT
+
+            # Friendly log for users / debug
+            stdout -l "CLEANUP" "Stopping all containers and cleaning up..."
+
+            # Try a hard stop first (best-effort), then bring the compose project down
+            # Remove orphans to avoid leftover dependencies
+            cli_ctx docker compose _ kill 2>/dev/null || true
+            cli_ctx docker compose _ down --remove-orphans 2>/dev/null || true
+
+            stdout -l "CLEANUP" "Done."
+            return 0
         }
         
-        # Check if running in detached mode
+        # Determine whether user requested detached mode
         if [[ "$*" == *"-d"* ]] || [[ "$*" == *"--detach"* ]]; then
-            # Only trap SIGINT for detached mode (let script exit normally)
-            trap cleanup INT
+            is_detached=true
         else
-            # Trap both SIGINT and EXIT for interactive mode
-            trap cleanup INT EXIT
+            is_detached=false
         fi
         
         if [ -n "$services_filter" ]; then
-            stdout "Starting selected services: $services_filter"
-            cli_ctx docker compose _ up $services_filter "$@"
+            stdout -l "Starting selected services: $services_filter"
+            if [ "$is_detached" = false ]; then
+                # interactive (foreground) mode: trap interrupts while compose is running,
+                # and run cleanup immediately after compose exits.
+                trap cleanup INT TERM
+                cli_ctx docker compose _ up $services_filter "$@"
+                trap - INT TERM
+                cleanup
+            else
+                # detached: run and return immediately (no automatic cleanup)
+                cli_ctx docker compose _ up $services_filter "$@"
+            fi
         else
-            cli_ctx docker compose _ up "$@"
+            if [ "$is_detached" = false ]; then
+                trap cleanup INT TERM
+                cli_ctx docker compose _ up "$@"
+                trap - INT TERM
+                cleanup
+            else
+                cli_ctx docker compose _ up "$@"
+            fi
         fi
     fi
 

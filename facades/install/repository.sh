@@ -7,8 +7,9 @@
 
 initialize_submodule() {
     local module="$1"; local module_path="$2"
-    
-    retry --manual --auto "_git submodule update --init --remote \"$module_path\""
+
+    retry --manual "_git submodule sync"
+    retry --manual --auto "_git submodule update --recursive --init --remote $module_path"
     local cmd_status=$?
     if [ $cmd_status -ne 0 ]; then
         stdout -e "Failed to initialize submodule $module_path" >&2
@@ -26,26 +27,27 @@ sdk_fac_ins_rep_handle() {
     local rep_exit_code=0
 
     # cli_ctx sdk start;
+    if [ -d "$D_CTX_DIR/.git" ]; then
+        # Git credential helper setup
+        retry "cli_ctx git _ config --global credential.helper store"
+        if [ $? -ne 0 ]; then
+            rep_failures+=("Git credential.helper store failed")
+            rep_exit_code=1
+        fi
 
-    # Git credential helper setup
-    retry "cli_ctx git _ config --global credential.helper store"
-    if [ $? -ne 0 ]; then
-        rep_failures+=("Git credential.helper store failed")
-        rep_exit_code=1
-    fi
+        # Git branch checkout
+        retry "cli_ctx git function sdk_fac_git_cmd_checkout_branch"
+        if [ $? -ne 0 ]; then
+            rep_failures+=("Git checkout branch failed")
+            rep_exit_code=1
+        fi
 
-    # Git branch checkout
-    retry "cli_ctx git function sdk_fac_git_cmd_checkout_branch"
-    if [ $? -ne 0 ]; then
-        rep_failures+=("Git checkout branch failed")
-        rep_exit_code=1
-    fi
-
-    # Fix detached HEAD
-    retry "cli_ctx git function sdk_fac_git_cmd_checkout_if_detached"
-    if [ $? -ne 0 ]; then
-        rep_failures+=("Git common issues auto-fix failed")
-        rep_exit_code=1
+        # Fix detached HEAD
+        retry "cli_ctx git function sdk_fac_git_cmd_checkout_if_detached"
+        if [ $? -ne 0 ]; then
+            rep_failures+=("Git common issues auto-fix failed")
+            rep_exit_code=1
+        fi
     fi
 
     if [ "$D_HAS_SUBMODULES" = "true" ]; then
@@ -58,11 +60,18 @@ sdk_fac_ins_rep_handle() {
             fi
         fi
 
-        if [ -n "$(cli_ctx --quiet submodule actives)" ]; then
+        if [ -n "$(cli_ctx --quiet submodule actives)" ] && [ -d "$D_CTX_DIR/.git" ]; then
             stdout -l "Cloning selected submodules..."
-            cli_ctx submodule foreach_active initialize_submodule
+            # cli_ctx submodule foreach_active initialize_submodule
+            # if [ $? -ne 0 ]; then
+            #     rep_failures+=("Submodule initialization failed")
+            #     rep_exit_code=1
+            # fi
+            # stdout -l "Initialized submodule '$module_path'."
+            retry --manual "_git submodule sync"
+            retry --manual --auto "_git submodule update --recursive --init --remote"
             if [ $? -ne 0 ]; then
-                rep_failures+=("Submodule initialization failed")
+                stdout -e "Failed to initialize submodules" >&2
                 rep_exit_code=1
             fi
         fi
@@ -118,24 +127,15 @@ sdk_fac_ins_repository() {
         exit_code=1
     fi
 
-    if [ "$IS_IN_SDK_CONTAINER" = "true" ]; then
-        sdk_fac_ins_rep_handle
-        if [ $? -ne 0 ]; then
-            install_failures+=("Repository handling failed in SDK container")
-            exit_code=1
-        fi
-    else
-        cli_ctx --safely install function sdk_fac_ins_rep_handle
-        if [ $? -ne 0 ]; then
-            install_failures+=("Repository handling failed")
-            exit_code=1
-        fi
+    cli_ctx --safely install function sdk_fac_ins_rep_handle
+    if [ $? -ne 0 ]; then
+        install_failures+=("Repository handling failed in SDK container")
+        exit_code=1
     fi
-
 
     if [ "$D_GLOBAL_IS_RECURSIVE" = "true" ]; then
         stdout -l "Installing dependencies in selected submodules..."
-        local active_modules="$(cli_ctx --quiet submodule actives)" # sample output: "path/to/module_1 path/to/module_2"
+        local active_modules="$(cli_ctx --quiet submodule actives)"
         for module_path in $active_modules; do
             if [ -d "$D_CTX_DIR/$module_path" ]; then
                 stdout -l "Installing dependencies in $module_path..."

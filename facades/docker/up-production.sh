@@ -1,12 +1,11 @@
 #!/bin/bash
 
 sdk_fac_doc_up_production() {
-    set -e
 
     stdout "Starting services in production mode .."
 
     # Filter services based on workspace configuration
-    services_filter=$(cli_ctx config function sdk_fac_sub_fea_act_get_services_filter)
+    services_filter=$(cli_ctx --quiet submodule function sdk_fac_sub_fea_act_get_services_filter)
 
     # Set up a trap to ensure we stop all containers on exit or interrupt
     cleanup() {

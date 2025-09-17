@@ -27,7 +27,7 @@ sdk_cmd_opt_safely() {
     fi
 
     if [ $exit_code -ne 0 ]; then
-        stdout -e "Failed to run command '$@' in $D_SDK_NAME container"
+        stdout -e "Failed to run command '$*' in $D_SDK_NAME container"
     fi
 
     return $exit_code

@@ -138,14 +138,22 @@ sdk_fac_sub_fea_act_get_services_filter() {
     fi
     
     if [ -n "$selected_modules" ]; then
+        # Extract service names using yq (both compose v2 and v3 schemas use services root key)
+        # We silence errors to allow graceful fallback in case of unexpected structure.
+        local compose_services
+        compose_services=$(_yq -r '.services | keys[]?' "$docker_compose_file" 2>/dev/null)
+
         for module in $selected_modules; do
-            # Check if the module exists as a service in docker-compose file
-            if grep -q "^[[:space:]]*$module:[[:space:]]*$" "$docker_compose_file" || 
-               grep -q "^[[:space:]]*$module:" "$docker_compose_file"; then
-                services_filter="$services_filter $module"
-            fi
+            for svc in $compose_services; do
+                if [ "$module" = "$svc" ]; then
+                    services_filter="$services_filter $module"
+                    break
+                fi
+            done
         done
     fi
     
-    echo "$services_filter"
+    # Trim leading whitespace before echoing (no noisy debug unless D_DEBUG_SUBMODULE=1)
+    services_filter="${services_filter## }"
+    printf '%s' "$services_filter"
 }
