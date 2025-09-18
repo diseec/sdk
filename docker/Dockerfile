@@ -48,4 +48,4 @@ RUN chmod +x /entrypoints/*.sh
 RUN mkdir -p ${D_CONT_CTX_DIR}
 WORKDIR ${D_CONT_CTX_DIR}
 
-CMD ["D", "help"]
+CMD ["D", "--help"]

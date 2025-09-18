@@ -4,12 +4,12 @@
 # PROCESS COMMAND-LINE ARGUMENTS
 # =============================================================================
 
-export D_GLOBAL_ENV="${D_GLOBAL_ENV:-DEVELOPMENT}" # Valid environments: DEVELOPMENT, TESTING, PRODUCTION
-export D_GLOBAL_DEBUG="${D_GLOBAL_DEBUG:-false}"
-export D_GLOBAL_LOG_LEVEL="${D_GLOBAL_LOG_LEVEL:-INFO}" # VERBOSE > INFO > WARNING > ERROR > QUIET
-export D_GLOBAL_IS_RECURSIVE="${D_GLOBAL_IS_RECURSIVE:-false}"
-export D_GLOBAL_TTY_AVAILABLE="${D_GLOBAL_TTY_AVAILABLE:-true}"  # TTY availability flag, true by default
-export D_GLOBAL_SDK_PATCH_FORCE="${D_GLOBAL_SDK_PATCH_FORCE:-false}"
+export D_GLOB_ENV="${D_GLOB_ENV:-DEVELOPMENT}" # Valid environments: DEVELOPMENT, TESTING, PRODUCTION
+export D_GLOB_DEBUG="${D_GLOB_DEBUG:-false}"
+export D_GLOB_LOG_LEVEL="${D_GLOB_LOG_LEVEL:-INFO}" # VERBOSE > INFO > WARNING > ERROR > QUIET
+export D_GLOB_RECURSIVE="${D_GLOB_RECURSIVE:-false}"
+export D_GLOB_TTY="${D_GLOB_TTY:-true}"  # TTY availability flag, true by default
+export D_GLOB_PATCH="${D_GLOB_PATCH:-false}"
 
 # Support both long and short options, including grouped short options
 # Expand grouped short options (e.g., -rq -> -r -q)
@@ -31,14 +31,14 @@ _ARGS_ENVS_PROCESS=""; _found_command=false; for arg in "${_expanded_args[@]}"; 
         _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\""
     else
         case "$arg" in
-            -p|--patch)     D_GLOBAL_SDK_PATCH_FORCE="true" ;;
-            -r|--recursive) D_GLOBAL_IS_RECURSIVE="true" ;;
-            -d|--debug)     D_GLOBAL_DEBUG="true" ;;
-            -q|--quiet)     D_GLOBAL_LOG_LEVEL="QUIET" ;;
-            -v|--verbose)   D_GLOBAL_LOG_LEVEL="VERBOSE" ;;
-            --log-level=*)  D_GLOBAL_LOG_LEVEL="${arg#*=}" ;;
-            --env=*)        D_GLOBAL_ENV="${arg#*=}" ;;
-            --no-tty)       D_GLOBAL_TTY_AVAILABLE="false" ;;
+            -p|--patch)     D_GLOB_PATCH="true" ;;
+            -r|--recursive) D_GLOB_RECURSIVE="true" ;;
+            -d|--debug)     D_GLOB_DEBUG="true" ;;
+            -q|--quiet)     D_GLOB_LOG_LEVEL="QUIET" ;;
+            -v|--verbose)   D_GLOB_LOG_LEVEL="VERBOSE" ;;
+            --log-level=*)  D_GLOB_LOG_LEVEL="${arg#*=}" ;;
+            --env=*)        D_GLOB_ENV="${arg#*=}" ;;
+            --no-tty)       D_GLOB_TTY="false" ;;
             *) _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\""; _found_command=true;;
         esac
     fi

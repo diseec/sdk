@@ -137,6 +137,7 @@ sdk_fac_con_yaml_set_fallback() {
     
     # Ensure file exists
     touch "$config_file"
+    fix_permissions "$config_file"
     
     # Remove existing key and add new one
     grep -v "^${key_path}:" "$config_file" > "${config_file}.tmp" 2>/dev/null || touch "${config_file}.tmp"

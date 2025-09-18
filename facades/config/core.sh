@@ -25,6 +25,7 @@ sdk_fac_con_get_config_dir() {
     # Create directory if it doesn't exist
     if [ ! -d "$config_dir" ]; then
         mkdir -p "$config_dir"
+        fix_permissions "$config_dir"
     fi
     
     echo "$config_dir"
@@ -46,6 +47,7 @@ sdk_fac_con_get_config_file() {
     # Create empty file if it doesn't exist
     if [ ! -f "$config_file" ]; then
         touch "$config_file"
+        fix_permissions "$config_file"
     fi
     
     echo "$config_file"

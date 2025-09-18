@@ -1,12 +1,12 @@
 #!/bin/bash
 
 vars=( \
-    D_GLOBAL_ENV \
-    D_GLOBAL_DEBUG \
-    D_GLOBAL_LOG_LEVEL \
-    D_GLOBAL_IS_RECURSIVE \
-    D_GLOBAL_TTY_AVAILABLE \
-    D_GLOBAL_SDK_PATCH_FORCE \
+    D_GLOB_ENV \
+    D_GLOB_DEBUG \
+    D_GLOB_LOG_LEVEL \
+    D_GLOB_RECURSIVE \
+    D_GLOB_TTY \
+    D_GLOB_PATCH \
     D_VERSION \
     D_CTX_DIR \
     D_SDK_DIR \

@@ -133,7 +133,7 @@ sdk_fac_ins_repository() {
         exit_code=1
     fi
 
-    if [ "$D_GLOBAL_IS_RECURSIVE" = "true" ]; then
+    if [ "$D_GLOB_RECURSIVE" = "true" ]; then
         stdout -l "Installing dependencies in selected submodules..."
         local active_modules="$(cli_ctx --quiet submodule actives)"
         # Normalize whitespace: convert newlines/tabs to single spaces and trim edges

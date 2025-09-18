@@ -129,7 +129,7 @@ stdout() {
     fi
 
     # Handle logging levels
-    case $D_GLOBAL_LOG_LEVEL in
+    case $D_GLOB_LOG_LEVEL in
         VERBOSE|verbose) ;;
         INFO|info) case $_level in       VERBOSE) return 0; esac ;;
         WARNING|warning) case $_level in VERBOSE|INFO) return 0; esac ;;
@@ -157,7 +157,7 @@ confirm() {
     printf "$(stdout -q --ansi="35" --icon="Y/N" "$question ")"
 
     # Check if TTY is available
-    if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
+    if [ "$D_GLOB_TTY" = "true" ]; then
         # Store original terminal settings to restore later
         local old_settings=$(stty -g)
     
@@ -188,7 +188,7 @@ confirm() {
     printf "\n"
     
     # In testing environments, echo the input for visibility
-    if [ "$D_GLOBAL_ENV" = "TESTING" ]; then
+    if [ "$D_GLOB_ENV" = "TESTING" ]; then
         stdout -i --icon="<" "Input received (non-TTY mode): $response"
     fi
 
@@ -317,7 +317,7 @@ stdin() {
     printf "$(stdout -q --ansi="35" --icon=">" "$display_prompt") "
     
     # Check if input is available from redirection (<, <<, <<<, pipe)
-    if [ ! -t 0 ] && [ "$D_GLOBAL_TTY_AVAILABLE" = "false" ]; then
+    if [ ! -t 0 ] && [ "$D_GLOB_TTY" = "false" ]; then
         # Non-TTY mode with redirection available
         if [ "$hidden" = true ]; then
             # For hidden input, just read once
@@ -326,7 +326,7 @@ stdin() {
             # For normal input, read as usual
             read user_input
         fi
-    elif [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
+    elif [ "$D_GLOB_TTY" = "true" ]; then
         # TTY mode
         # Store original terminal settings
         local old_settings=$(stty -g)
@@ -382,7 +382,7 @@ stdin() {
     printf "\n"
     
     # In testing environments, echo the input for visibility
-    if [ "$D_GLOBAL_ENV" = "TESTING" ]; then
+    if [ "$D_GLOB_ENV" = "TESTING" ]; then
         stdout -i --icon="<" "Input received (non-TTY mode): $user_input"
     fi
 
@@ -393,7 +393,7 @@ stdin() {
     
     # Check if input is required
     if [ "$required" = true ] && [ -z "$user_input" ]; then
-        if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
+        if [ "$D_GLOB_TTY" = "true" ]; then
             stdout -e "Input is required."
             # Retry stdin in TTY mode
             stdin "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
@@ -408,7 +408,7 @@ stdin() {
     # Validate input if pattern provided
     if [ -n "$validate_pattern" ] && [ -n "$user_input" ]; then
         if ! echo "$user_input" | grep -qE "$validate_pattern"; then
-            if [ "$D_GLOBAL_TTY_AVAILABLE" = "true" ]; then
+            if [ "$D_GLOB_TTY" = "true" ]; then
                 stdout -e "$error_message"
                 # Retry input in TTY mode
                 stdin "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
@@ -426,7 +426,7 @@ stdin() {
     fi
     
     # In testing environments, echo the input for visibility
-    if [ "$D_GLOBAL_ENV" = "TESTING" ]; then
+    if [ "$D_GLOB_ENV" = "TESTING" ]; then
         stdout -i --icon="<" "Input received (non-TTY mode) (Processed): $user_input"
     fi
 

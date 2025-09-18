@@ -20,6 +20,7 @@ sdk_fac_con_get_cache_dir() {
     # Create the cache directory if it doesn't exist
     if [ ! -d "$cache_dir" ]; then
         mkdir -p "$cache_dir"
+        fix_permissions "$cache_dir"
     fi
     
     echo "$cache_dir"
@@ -37,6 +38,7 @@ sdk_fac_con_get_cache_subdir() {
     # Create the subdirectory if it doesn't exist
     if [ ! -d "$cache_subdir" ]; then
         mkdir -p "$cache_subdir"
+        fix_permissions "$cache_subdir"
     fi
     
     echo "$cache_subdir"

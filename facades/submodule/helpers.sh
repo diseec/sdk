@@ -47,6 +47,7 @@ sdk_fac_sub_parse_path_format() {
     # Ensure target directory exists if specified
     if [[ -n "$type_dir" ]]; then
         mkdir -p "$type_dir"
+        fix_permissions "$type_dir"
     fi
 
     # Return values

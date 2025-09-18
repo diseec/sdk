@@ -8,11 +8,14 @@ services:
       dockerfile: "$D_SDK_DIR/docker/Dockerfile"
     working_dir: "$D_CONT_CTX_DIR"
     environment:
-      - D_GLOBAL_ENV=$D_GLOBAL_ENV
-      - D_GLOBAL_DEBUG=$D_GLOBAL_DEBUG
-      - D_GLOBAL_LOG_LEVEL=$D_GLOBAL_LOG_LEVEL
-      - D_GLOBAL_IS_RECURSIVE=$D_GLOBAL_IS_RECURSIVE
-      - D_GLOBAL_TTY_AVAILABLE=$D_GLOBAL_TTY_AVAILABLE
-      - D_GLOBAL_SDK_PATCH_FORCE=$D_GLOBAL_SDK_PATCH_FORCE
+      # NOTE: wrapping these values in "" for some reason the qoutes merge into the values
+      - D_HOST_UID=$D_HOST_UID
+      - D_HOST_GID=$D_HOST_GID
+      - D_GLOB_ENV=$D_GLOB_ENV
+      - D_GLOB_DEBUG=$D_GLOB_DEBUG
+      - D_GLOB_LOG_LEVEL=$D_GLOB_LOG_LEVEL
+      - D_GLOB_RECURSIVE=$D_GLOB_RECURSIVE
+      - D_GLOB_TTY=$D_GLOB_TTY
+      - D_GLOB_PATCH=$D_GLOB_PATCH
     # - GIT_DISCOVERY_ACROSS_FILESYSTEM=1
     # - GIT_TERMINAL_PROMPT=0 # avoid interactive prompts

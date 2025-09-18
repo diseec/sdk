@@ -66,6 +66,7 @@ sdk_boo_env_uti_get_org_dir() {
     local org_dir="$HOME/$D_ORG_NAME"
     if [ ! -d "$org_dir" ]; then 
         mkdir -p "$org_dir"
+        fix_permissions "$org_dir"
     fi
     echo "$org_dir"
 }
@@ -74,6 +75,7 @@ sdk_boo_env_uti_get_cache_dir() {
     local org_cache_dir="$(sdk_boo_env_uti_get_org_dir)/.cache"
     if [ ! -d "$org_cache_dir" ]; then 
         mkdir -p "$org_cache_dir"
+        fix_permissions "$org_cache_dir"
     fi
     echo "$org_cache_dir"
 }

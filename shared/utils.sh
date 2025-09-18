@@ -74,3 +74,26 @@ mark_ctx_only() {
         return 1
     fi
 }
+
+fix_permissions() {
+    local target_dir="$1"
+
+    if [ -z "$target_dir" ]; then
+        stdout -e "No target directory provided to fix_permissions" >&2
+        return 1
+    fi
+
+    if [ ! -d "$target_dir" ]; then
+        stdout -e "Target directory does not exist: $target_dir" >&2
+        return 1
+    fi
+
+    stdout -l "Fixing permissions .."
+    
+    local fix_permissions_output=$(chown -R $D_HOST_UID:$D_HOST_GID "$target_dir")
+
+    if [ $? -ne 0 ]; then
+        stdout -e "Failed to fix permissions for $target_dir: $fix_permissions_output" >&2
+        return 1
+    fi
+}

@@ -38,6 +38,7 @@ sdk_fac_ins_sdk_process() {
 
     rm -rf "$target_kit" 2>/dev/null 
     mkdir -p "$target_kit" 2>/dev/null
+
     cp -r "$_tempdir/$D_SDK_LOCAL_RELATIVE_PATH"/* "$target_kit"
     if [ $? -ne 0 ]; then
         stdout -e "Failed to copy $package_name to $target_kit" >&2
@@ -45,10 +46,14 @@ sdk_fac_ins_sdk_process() {
         return 1
     fi
 
+    fix_permissions "$target_kit"
+
     if [ ! -f "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME" ]; then
         stdout -l "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file..."
         cp "/$D_SDK_NAME/templates/$D_CLI_LOCAL_NAME" "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME";
     fi
+
+    fix_permissions "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME"
 
     # if [ ! -f "$D_CONT_CTX_DIR/.gitignore" ]; then cp "/$D_SDK_NAME/templates/.gitignore" "$D_CONT_CTX_DIR/.gitignore"; fi
     local d_version="$(grep '"version"' "$D_CONT_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH/package.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"
@@ -76,7 +81,7 @@ sdk_fac_ins_sdk() {
 
 sdk_fac_ins_ensure_patched() {
     mark_ctx_only
-    local is_forced="${D_GLOBAL_SDK_PATCH_FORCE:-false}";
+    local is_forced="${D_GLOB_PATCH:-false}";
     local sdk_dir="$D_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH";
 
     # Patch operation applied only either asked to or target project is missing the sdk

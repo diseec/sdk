@@ -3,6 +3,7 @@
 source_once "$D_SDK_DIR/facades/secret/index.sh"
 
 mkdir -p "$SECRETS_DIR"
+fix_permissions "$SECRETS_DIR"
 
 c=$1; shift; case "$c" in
     kse|key-set) sdk_fac_sec_set_key "$@" ;;
