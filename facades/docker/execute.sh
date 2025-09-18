@@ -2,10 +2,14 @@
 
 sdk_fac_doc_cmd_docker_execute() {
 
+    local RUN_OPTIONS="--no-deps"
     local IS_QUIET="false"
-    ARGS=""; for arg in "$@"; do case "$arg" in
+    local ARGS=""; for arg in "$@"; do case "$arg" in
         --quiet)
             IS_QUIET="true"; RUN_OPTIONS="--quiet"
+        ;;
+        --with-deps)
+            RUN_OPTIONS=$(echo $RUN_OPTIONS | sed 's/--no-deps//g')
         ;;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
@@ -33,7 +37,7 @@ sdk_fac_doc_cmd_docker_execute() {
             cli_ctx docker compose _ exec $OPTIONS "$SERVICE_NAME" "$@"
         else
             if [ "$IS_QUIET" != "true" ]; then stdout --ansi="90" --icon="$(capitalize $SERVICE_NAME) ○" "Not running, Launching an instance, Executing '$COMMAND_STR' .."; fi
-            cli_ctx docker compose _ run --rm --no-deps $OPTIONS $RUN_OPTIONS "$SERVICE_NAME" "$@"
+            cli_ctx docker compose _ run --rm $OPTIONS $RUN_OPTIONS "$SERVICE_NAME" "$@"
         fi
     fi
 }
