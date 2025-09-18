@@ -21,8 +21,10 @@ sdk_boo_env_setup_environment() {
     readonly D_INI_PWD="$PWD"
 
     if [ "$IS_IN_SDK_CONTAINER" != "true" ]; then
-        readonly D_HOST_UID=${D_HOST_UID:-$(id -u)}
-        readonly D_HOST_GID=${D_HOST_GID:-$(id -g)}
+        : ${D_HOST_UID:=$(id -u)}
+        readonly D_HOST_UID
+        : ${D_HOST_GID:=$(id -g)}
+        readonly D_HOST_GID
     fi
 
     # =============================================================================

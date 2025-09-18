@@ -4,6 +4,8 @@ sdk_fac_doc_compose() {
     # COMPOSE_PROFILES ??? TODO
 
     env \
+    D_HOST_UID="$D_HOST_UID" \
+    D_HOST_GID="$D_HOST_GID" \
     D_CTX_DIR="$D_CTX_DIR" \
     D_REPO_NAME="$D_REPO_NAME" \
     D_SDK_DIR="$D_SDK_DIR" \

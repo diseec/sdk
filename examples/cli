@@ -43,7 +43,7 @@ c=$1; shift; case $c in
 
     dev)
         cli_ctx sdk start > /dev/null 2>&1
-        confirm "Run post dev ops?" \
+        confirm "Run pre-development options?" \
             cli_ctx status \
             confirm "Pull and merge latest changes?" cli_ctx --recursive pull
         cli_core dev "$@"

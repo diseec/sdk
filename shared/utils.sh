@@ -89,6 +89,11 @@ fix_permissions() {
     fi
 
     stdout -l "Fixing permissions .."
+
+    if [ -z "$D_HOST_UID" ] || [ -z "$D_HOST_GID" ]; then
+        stdout -e "D_HOST_UID or D_HOST_GID is not set. Cannot fix permissions." >&2
+        return 1
+    fi
     
     local fix_permissions_output=$(chown -R $D_HOST_UID:$D_HOST_GID "$target_dir")
 

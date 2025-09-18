@@ -14,7 +14,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/node_modules/@diseec/sdk/i
 c=$1; shift; case $c in
 
     dev)
-        confirm "Run post dev ops?" \
+        confirm "Run pre-development options?" \
             cli_ctx status \
             confirm "Pull and merge latest changes?" cli_ctx --recursive pull
 
