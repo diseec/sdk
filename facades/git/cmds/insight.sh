@@ -66,7 +66,7 @@ AUTHOR: $author
 DATE: $date
 CHANGES:
 $diff
----
+--- \n
 EOF
     done
 }
@@ -189,9 +189,9 @@ _show_analysis_preview() {
     if [ -n "$all_commits" ]; then
         local commits_lines=$(echo "$all_commits" | wc -l | tr -d ' ')
         echo -e "\033[97m=== COMMITS TODAY === ($commits_lines lines)\033[0m"
-        echo -e "\033[90m$(echo "$all_commits" | head -5)\033[0m"
-        if [ "$commits_lines" -gt 5 ]; then
-            echo -e "\033[2;90m... [truncated $(($commits_lines - 5)) more lines]\033[0m"
+        echo -e "\033[90m$(echo "$all_commits" | head -20)\033[0m"
+        if [ "$commits_lines" -gt 20 ]; then
+            echo -e "\033[2;90m... [truncated $(($commits_lines - 20)) more lines]\033[0m"
         fi
     else
         echo -e "\033[97m=== COMMITS TODAY === (0 lines)\033[0m"
@@ -229,9 +229,7 @@ _generate_report() {
         return
     fi
     
-    echo
     stdout -a "Writing daily insights..."
-    echo
     
     local temp_file=$(mktemp)
     echo "$analysis_data" > "$temp_file"

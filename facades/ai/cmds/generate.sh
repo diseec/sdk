@@ -33,8 +33,12 @@ sdk_fac_ai_generate_commit_message() {
         stdout -e "Missing diff summary or preview for commit message generation"
         return 1
     fi
-    
+
+    stdin work_focus "What was main changes?"
+
     local prompt="Generate a concise, descriptive commit message for the following code changes.
+User commit message:
+$work_focus
 
 Summary of changes:
 $diff_summary
@@ -86,11 +90,11 @@ Please format the response as:
 
 Example format:
 Enhanced Authentication and Performance Optimizations
-- Fixed critical authentication bug X in user-service/auth.js affecting login flow
-- Added new user dashboard feature X in frontend/components/Dashboard.tsx
-- Refactored database connection pooling in api/database.js for 40% performance improvement
+- Fixed critical authentication bug 'bug name' in path/to/file.js affecting login flow
+- Added new user dashboard feature 'feature name' in path/to/file.tsx
+- Refactored database connection pooling in path/to/file.js for 40% performance improvement
 - Updated security headers configuration in nginx.conf
-- Optimized API response caching in services/cache-service"
+- Optimized API response caching in path/to/dir"
     
     sdk_fac_ai_generate "$prompt" "$FAC_AI_MODEL_GPT4o" "$FAC_AI_DEFAULT_TEMPERATURE" "No insights available" "$FAC_AI_MAX_INPUT_TOKENS"
 }

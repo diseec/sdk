@@ -11,6 +11,11 @@ sdk_fac_doc_cmd_docker_execute() {
 
     SERVICE_NAME=$1; shift;
 
+    # always use host user:group when running commands inside containers
+    HOST_UID=${HOST_UID:-$(id -u)}
+    HOST_GID=${HOST_GID:-$(id -g)}
+    USER_FLAG="--user ${HOST_UID}:${HOST_GID}"
+
     if [ -n "$CI" ]; then
         OPTIONS="-e CI=true";
     else
@@ -25,10 +30,10 @@ sdk_fac_doc_cmd_docker_execute() {
     else
         if cli_ctx docker compose _ ps -q "$SERVICE_NAME" | grep -q .; then
             if [ "$IS_QUIET" != "true" ]; then stdout --ansi="96" --icon="$(capitalize $SERVICE_NAME) ●" "Already running, Executing '$COMMAND_STR' .."; fi
-            cli_ctx docker compose _ exec $OPTIONS "$SERVICE_NAME" "$@"
+            cli_ctx docker compose _ exec $OPTIONS $USER_FLAG "$SERVICE_NAME" "$@"
         else
             if [ "$IS_QUIET" != "true" ]; then stdout --ansi="90" --icon="$(capitalize $SERVICE_NAME) ○" "Not running, Launching an instance, Executing '$COMMAND_STR' .."; fi
-            cli_ctx docker compose _ run --rm --no-deps $OPTIONS $RUN_OPTIONS "$SERVICE_NAME" "$@"
+            cli_ctx docker compose _ run --rm --no-deps $OPTIONS $RUN_OPTIONS $USER_FLAG "$SERVICE_NAME" "$@"
         fi
     fi
 }
