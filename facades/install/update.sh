@@ -73,7 +73,7 @@ sdk_fac_ins_cmd_update() {
         exit_code=1
     fi
 
-    retry "handle_hook before_update"
+    handle_hook before_update
     if [ $? -ne 0 ]; then
         update_failures+=("Before update hook failed")
         exit_code=1
@@ -118,7 +118,7 @@ sdk_fac_ins_cmd_update() {
         fi
     fi
 
-    retry "handle_hook after_update"
+    handle_hook after_update
     if [ $? -ne 0 ]; then
         update_failures+=("After update hook failed")
         exit_code=1

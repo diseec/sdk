@@ -1,11 +1,13 @@
 #!/bin/bash
 
 sdk_fac_inf_check_for_updates_repo() {
+    processing_start "BRAILLE_AI_MIXED"
+    
     # Check if the main repository is behind
     current_branch=$(_git -C "$D_CTX_DIR" rev-parse --abbrev-ref HEAD)
 
     if [ $? -eq 0 ] && [ -n "$current_branch" ]; then
-        _git -C "$D_CTX_DIR" fetch origin
+        retry "_git -C \"$D_CTX_DIR\" fetch origin"
         local_commit=$(_git -C "$D_CTX_DIR" rev-parse @)
         remote_commit=$(_git -C "$D_CTX_DIR" rev-parse "@{u}")
         
@@ -27,6 +29,7 @@ sdk_fac_inf_check_for_updates_repo() {
                 
                 if [ $? -eq 0 ] && [ "$local_commit" != "$remote_commit" ]; then
                     modules_behind=true
+                    processing_stop
                     return 1  # Exit the loop early
                 fi
             }
@@ -34,6 +37,7 @@ sdk_fac_inf_check_for_updates_repo() {
             
             if $modules_behind; then
                 stdout --ansi="34" --icon="↓" "New commits available in one or more selected modules"
+                processing_stop
                 return 0
             fi
         fi

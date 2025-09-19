@@ -109,9 +109,9 @@ sdk_fac_git_cmd_pr_check_status() {
       local pr_data=$(_gh pr view "$pr_number" --json title,url,reviewDecision,reviews,comments)
 
       # Ensure jq is available for reliable JSON parsing
-      if ! command -v jq >/dev/null 2>&1; then
-          stdout -w "jq is required for JSON parsing. Please install jq and try again."
-          return 0
+      if ! command -v _jq >/dev/null 2>&1; then
+          stdout -e "jq is required for JSON parsing. Please install jq and try again."
+          return 1
       fi
 
       # Extract key information using jq

@@ -121,7 +121,7 @@ sdk_fac_ins_repository() {
     local install_failures=()
     local exit_code=0
 
-    retry "handle_hook before_install"
+    handle_hook before_install
     if [ $? -ne 0 ]; then
         install_failures+=("Before install hook failed")
         exit_code=1
@@ -163,7 +163,7 @@ sdk_fac_ins_repository() {
         fi
     fi
 
-    retry "handle_hook after_install"
+    handle_hook after_install
     if [ $? -ne 0 ]; then
         install_failures+=("After install hook failed")
         exit_code=1

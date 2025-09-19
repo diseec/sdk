@@ -9,7 +9,7 @@ sdk_fac_git_cmd_commit_push_pr() {
 
     sdk_fac_git_cmd_pull_merge
 
-    retry --manual "handle_hook before_push"
+    handle_hook before_push
     
     sdk_fac_git_cmd_commit
 
@@ -26,13 +26,13 @@ sdk_fac_git_cmd_commit_push_pr() {
         stdout -l --loading "Cpp for selected submodules"
         cpp_submodule() {
             local module="$1"; local module_path="$2"
-            retry --manual "bash \"$D_CTX_DIR/$module_path/$D_CLI_LOCAL_NAME\" api v1 git.commit.push.pr"
+            bash "$D_CTX_DIR/$module_path/$D_CLI_LOCAL_NAME" api v1 git.commit.push.pr
             stdout -l "Cpp done for submodule '$module'."
         }
         cli_ctx submodule foreach_active cpp_submodule
     fi
 
-    retry --manual "handle_hook after_push"
+    handle_hook after_push
 
     return 0
 }

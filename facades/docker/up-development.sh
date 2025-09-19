@@ -2,6 +2,8 @@
 
 sdk_fac_doc_up_development() {
     handle_hook before_dev
+    
+    processing_start "BRAILLE_AI_MIXED"
 
     # Filter services based on workspace configuration
     services_filter=$(cli_ctx --quiet submodule function sdk_fac_sub_fea_act_get_services_filter)
@@ -37,6 +39,8 @@ sdk_fac_doc_up_development() {
             is_detached=false
         fi
         
+        processing_stop
+
         if [ -n "$services_filter" ]; then
             stdout -l "Starting selected services: $services_filter"
             if [ "$is_detached" = false ]; then
@@ -61,6 +65,8 @@ sdk_fac_doc_up_development() {
             fi
         fi
     fi
+    
+    processing_stop
 
     handle_hook after_dev
 }
