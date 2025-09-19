@@ -30,7 +30,7 @@ sdk_fac_git_cmd_checkout_branch() {
     stdin BRANCH "Branch to checkout:" --default="$GH_USERNAME" --optional
     if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
 
-    stdout -l "Checking out to branch '$BRANCH'..."
+    stdout -l --loading "Checking out to branch '$BRANCH'"
     _git fetch && _git checkout $BRANCH || _git checkout -b $BRANCH origin/$BRANCH || _git checkout -b $BRANCH;
 }
 
@@ -48,15 +48,15 @@ sdk_fac_git_cmd_checkout_if_detached() {
             stdin TARGET_BRANCH "Branch to merge changes into:" --default="$GH_USERNAME" --optional
             if [ -z "$TARGET_BRANCH" ]; then TARGET_BRANCH="$GH_USERNAME"; fi
             TEMP_BRANCH="temp-detached-$(date +%s)"
-            stdout -l "Creating temporary branch '$TEMP_BRANCH' from detached HEAD..."
+            stdout -l --loading "Creating temporary branch '$TEMP_BRANCH' from detached HEAD"
             _git checkout -b "$TEMP_BRANCH"
-            stdout -l "Committing local changes on '$TEMP_BRANCH'..."
+            stdout -l --loading "Committing local changes on '$TEMP_BRANCH'"
             _git add . && _git commit -m "WIP: changes from detached HEAD" || true
-            stdout -l "Checking out to target branch '$TARGET_BRANCH'..."
+            stdout -l --loading "Checking out to target branch '$TARGET_BRANCH'"
             _git fetch && _git checkout "$TARGET_BRANCH" || _git checkout -b "$TARGET_BRANCH" origin/"$TARGET_BRANCH" || _git checkout -b "$TARGET_BRANCH"
-            stdout -l "Merging changes from '$TEMP_BRANCH' into '$TARGET_BRANCH'..."
+            stdout -l --loading "Merging changes from '$TEMP_BRANCH' into '$TARGET_BRANCH'"
             _git merge "$TEMP_BRANCH"
-            stdout -l "Deleting temporary branch '$TEMP_BRANCH'..."
+            stdout -l --loading "Deleting temporary branch '$TEMP_BRANCH'"
             _git branch -d "$TEMP_BRANCH"
         else
             sdk_fac_git_cmd_checkout_branch

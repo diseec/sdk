@@ -65,6 +65,7 @@ sdk_fac_git_cmd_commit() {
         stdout -e --icon="!" "Committing to main branch is forbidden, Please create a feature branch first and move your changes."
         stdin confirmation "Type 'MAIN' to confirm:"
         if [ "$confirmation" != "MAIN" ]; then
+            stdout -l "Aborting commit to main branch."
             return 1
         fi
     fi
@@ -87,7 +88,7 @@ sdk_fac_git_cmd_commit() {
     fi
 
     # Generate commit message with user confirmation
-    stdout -a "Writing commit message..."
+    stdout -a --loading "Writing commit message"
     local commit_msg=""
     local has_accepted_commit_message="false"
     while ! $has_accepted_commit_message; do
@@ -106,7 +107,7 @@ sdk_fac_git_cmd_commit() {
         if confirm "Do you want to use this commit message?"; then
             has_accepted_commit_message="true"
         else
-            stdout -a "Rewriting commit message..."
+            stdout -a --loading "Rewriting commit message"
         fi
     done
   

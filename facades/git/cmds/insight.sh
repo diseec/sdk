@@ -229,7 +229,7 @@ _generate_report() {
         return
     fi
     
-    stdout -a "Writing daily insights..."
+    stdout -a --loading "Writing daily insights"
     
     local temp_file=$(mktemp)
     echo "$analysis_data" > "$temp_file"
@@ -332,7 +332,7 @@ sdk_fac_git_cmd_daily_insight() {
     _display_commits "$all_summaries" "$stats_display"
 
     echo
-    stdout -i "Let's add your perspective to make the insight more meaningful..."
+    stdout -i --loading "Let's add your perspective to make the insight more meaningful"
     echo
     
     stdin work_focus "What was your main focus?"

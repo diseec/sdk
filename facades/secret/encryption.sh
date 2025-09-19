@@ -44,7 +44,7 @@ sdk_fac_sec_is_key_configured() {
 # Initialize encryption key if not exists
 sdk_fac_sec_ensure_encryption_key() {
     if ! sdk_fac_sec_is_key_configured; then
-        stdout -l "Generating new encryption key..."
+        stdout -l --loading "Generating new encryption key"
         local new_key=$(sdk_fac_sec_generate_encryption_key)
         sdk_fac_sec_store_encryption_key "$new_key"
         stdout --ansi="34" --icon="KEY" "$new_key"

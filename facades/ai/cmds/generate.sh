@@ -19,13 +19,13 @@ sdk_fac_ai_generate_commit_message() {
     # Check token count and truncate if necessary
     local token_count=$(sdk_fac_ai_count_tokens "$diff_summary")
     if [ "$token_count" -gt "$FAC_AI_MAX_INPUT_TOKENS" ]; then
-        stdout -w "Diff summary exceeds token limit ($token_count tokens), truncating..." >&2
+        stdout -w --loading "Diff summary exceeds token limit ($token_count tokens), truncating" >&2
         # use half of max tokens for summary and half for preview
         diff_summary=$(sdk_fac_ai_truncate_to_token_limit "$diff_summary" "$FAC_AI_MAX_INPUT_TOKENS/2")
     fi
     token_count=$(sdk_fac_ai_count_tokens "$diff_preview")
     if [ "$token_count" -gt "$FAC_AI_MAX_INPUT_TOKENS" ]; then
-        stdout -w "Diff preview exceeds token limit ($token_count tokens), truncating..." >&2
+        stdout -w --loading "Diff preview exceeds token limit ($token_count tokens), truncating" >&2
         diff_preview=$(sdk_fac_ai_truncate_to_token_limit "$diff_preview" "$FAC_AI_MAX_INPUT_TOKENS/2")
     fi
 
@@ -71,7 +71,7 @@ sdk_fac_ai_generate_daily_insight() {
     # Check token count and truncate if necessary
     local token_count=$(sdk_fac_ai_count_tokens "$analysis_data")
     if [ "$token_count" -gt "$FAC_AI_MAX_INPUT_TOKENS" ]; then
-        stdout -w "Analysis data exceeds token limit ($token_count tokens), truncating..." >&2
+        stdout -w --loading "Analysis data exceeds token limit ($token_count tokens), truncating" >&2
         analysis_data=$(sdk_fac_ai_truncate_to_token_limit "$analysis_data" "$FAC_AI_MAX_INPUT_TOKENS")
     fi
     

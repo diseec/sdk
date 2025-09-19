@@ -2,9 +2,9 @@
 
 sdk_fac_inf_summary_branch_status() {
     if cli_ctx internet is-online; then
-        _git fetch origin
+        retry "_git fetch origin"
     else
-        stdout --ansi="31" --icon="⊘" "Disconnected, cannot fetch branch status..."
+        stdout --ansi="31" --icon="⊘" "Disconnected, cannot fetch branch status!"
     fi
 
     local_commit=$(_git rev-parse @)

@@ -1,51 +1,17 @@
 #!/bin/bash
 
-capitalize() {
-    echo "$1" | tr '[:lower:]' '[:upper:]'
-}
-
-ansi() {
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-# ┃ ANSI COLOR & STYLE CHEAT SHEET FOR BASH TERMINAL OUTPUT                 ┃
-# ┃ Use: printf "\033[<codes>mYour Text\033[0m"                             ┃
-# ┃ Or: ansi "<codes>" "Your Text"                                          ┃
-# ┃ Multiple codes can be combined with semicolons (e.g. "1;31")            ┃
-# ┃                                                                         ┃
-# ┃ TEXT COLORS (FOREGROUND)                                                ┃
-# ┃   30  Black      31  Red        32  Green      33  Yellow               ┃
-# ┃   34  Blue       35  Magenta    36  Cyan       97  White                ┃
-# ┃   90  Bright Black (Gray)      91  Bright Red                           ┃
-# ┃   92  Bright Green             93  Bright Yellow                        ┃
-# ┃   94  Bright Blue              95  Bright Magenta                       ┃
-# ┃   96  Bright Cyan              97  Bright White                         ┃
-# ┃                                                                         ┃
-# ┃ BACKGROUND COLORS                                                       ┃
-# ┃   40  Black      41  Red        42  Green      43  Yellow               ┃
-# ┃   44  Blue       45  Magenta    46  Cyan       47  White                ┃
-# ┃   100 Bright Black   101 Bright Red   102 Bright Green                  ┃
-# ┃   103 Bright Yellow  104 Bright Blue  105 Bright Magenta                ┃
-# ┃   106 Bright Cyan    107 Bright White                                   ┃
-# ┃                                                                         ┃
-# ┃ TEXT STYLES                                                             ┃
-# ┃   0   Reset/Normal   1   Bold        2   Dim                            ┃
-# ┃   3   Italic         4   Underline   5   Blink                          ┃
-# ┃   7   Inverse        8   Hidden                                         ┃
-# ┃                                                                         ┃
-# ┃ EXAMPLES                                                                ┃
-# ┃   ansi 31 "Red text"                                                    ┃
-# ┃   ansi "1;32" "Bold green text"                                         ┃
-# ┃   ansi "4;34" "Underlined blue text"                                    ┃
-# ┃   printf "\033[41;97mWhite on red background\033[0m"                    ┃
-# ┃                                                                         ┃
-# ┃ Reference: https://en.wikipedia.org/wiki/ANSI_escape_code               ┃
+# ┃ STDOUT FUNCTION - Enhanced Logging with Types, Icons, Colors, Levels    ┃
+# ┃ Provides a consistent, styled way to log messages with various levels   ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-    local ansi="$1"; shift; local text="$@";
-    printf "\033[0m\033[%sm%s\033[0m" "$ansi" "$text"
-}
-
-# Usage: stdout [type] [--icon=ICON] [--ansi=CODE] [--level=LEVEL] "Your message here"
+# Usage: stdout [type] [options] "Your message here"
 # Types: -l|--log (default), -d|--debug, -f|--fail, -e|--error, -o|--okey, -w|--warning, -i|--info, -q|--question, -a|--ai, -s|--statement
+# Options:
+# --loading     (Show loading animation and keep it until next message)
+# --icon=ICON   (Custom icon to display instead of default for type)
+# --ansi=CODE   (Custom ANSI color code to use instead of default for type)
+# --level=LEVEL (Set log level: VERBOSE, INFO, WARNING, ERROR, QUIET)
 # Examples:
 #   stdout "This is a log message"
 #   stdout -i --icon="i" --ansi="34" "This is an info message"
@@ -64,6 +30,7 @@ stdout() {
     local default_ansi="90"
     local default_icon=""
     local content=""
+    local loading=false
 
     # First, check if the first argument is a valid type
     if [ $# -gt 0 ]; then
@@ -88,6 +55,10 @@ stdout() {
                 ;;
             --level=*)
                 local given_level="${1#*=}"
+                shift
+                ;;
+            --loading)
+                loading=true
                 shift
                 ;;
             *)
@@ -119,8 +90,13 @@ stdout() {
     local _level="${given_level:-$default_level}"
 
     # Prepare prompt & content
-    local prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
-    prompt="$(ansi 90 "$prompt")"
+    local prompt
+
+    if [ "$D_GLOB_LOG_LEVEL" = "VERBOSE" ]; then    
+        prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
+        prompt="$(ansi 90 "$prompt")"
+    fi
+
     if [ -n "$_icon" ]; then prompt="$prompt$(ansi $_ansi "[$_icon]")"; fi
 
     # Only colorize content if it's not empty
@@ -137,9 +113,24 @@ stdout() {
         QUIET|quiet) case $_level in     VERBOSE|INFO|WARNING|ERROR) return 0; esac ;;
     esac
 
+    # Always stop loader before printing any message
+    if [ -n "$PROCESSING_PID" ] && kill -0 "$PROCESSING_PID" 2>/dev/null; then
+        processing_stop
+        printf "\n"
+    fi
     # Output log message
-    printf "%s %b\n" "$prompt" "$content"
+    if [ "$loading" = true ]; then
+        printf "\033[0m \033[0m%s %b" "$prompt" "$content "
+        processing_start
+    else
+        printf "\033[0m \033[0m%s %b\n" "$prompt" "$content"
+    fi
 }
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ CONFIRM FUNCTION - Interactive Yes/No Prompt with Optional Action       ┃
+# ┃ Provides a consistent way to ask yes/no questions and handle responses  ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 # Function for use in if statements - returns 0 (true) or 1 (false)
 # usage:
@@ -210,8 +201,8 @@ confirm() {
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃ INPUT FUNCTION - Interactive User Input with Validation & Styling       ┃
-# ┃ Provides a consistent, user-friendly way to collect input from users     ┃
-# ┃ with optional validation, default values, and secure hidden input        ┃
+# ┃ Provides a consistent, user-friendly way to collect input from users    ┃
+# ┃ with optional validation, default values, and secure hidden input       ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 # BASIC USAGE:
 #   stdin variable "Prompt text:"
@@ -434,14 +425,21 @@ stdin() {
     eval "$var_name=\"$user_input\""
 }
 
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ RETRY FUNCTION - Retry Mechanism with Manual and Automatic Modes        ┃
+# ┃ Provides a robust way to retry commands with user prompts or automatic  ┃
+# ┃ retries including timeout and max attempts                              ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 # Retry mechanism function
-# Usage: retry [--manual] [--timeout=N] [--max-attempts=N] "complex command"
+# Usage: retry [--manual] [--timeout=N] [--max-attempts=N] "complex command" [output_var]
 # Options:
 #   --manual           Manual retry mode (default): asks user for each retry attempt with no max limit
 #   --auto             Automatic retry mode: retries automatically with a timeout between attempts
 #   --timeout=N        Auto-retry mode: wait N seconds before retrying automatically (default: 5)
 #   --max-attempts=N   Maximum number of automatic retry attempts (default: 3, only applies in auto mode)
+#   "complex command" The command to execute (in quotes if it contains spaces or special characters)
+#   [output_var]      Optional: Name of variable to store command output
 #
 # Behavior:
 #   - Default: Manual mode (asks user for each retry with no max limit)
@@ -449,12 +447,13 @@ stdin() {
 #   - With both --manual and --timeout: First tries auto-retries up to max-attempts, then switches to manual mode
 retry() {
     local operation_cmd=""
+    local output_var=""
     local max_attempts=3  # Default max attempts for auto mode
     local timeout=5       # Default timeout in seconds for auto mode
     local manual_mode=false
     local auto_mode=false
-    
-    # Parse options
+
+    # Parse options and arguments
     while [ $# -gt 0 ]; do
         case "$1" in
             --manual)
@@ -474,8 +473,11 @@ retry() {
                 shift
                 ;;
             *)
-                # The only non-option argument is the command
-                operation_cmd="$1"
+                if [ -z "$operation_cmd" ]; then
+                    operation_cmd="$1"
+                elif [ -z "$output_var" ]; then
+                    output_var="$1"
+                fi
                 shift
                 ;;
         esac
@@ -485,11 +487,12 @@ retry() {
     if [ "$auto_mode" = "false" ] && [ "$manual_mode" = "false" ]; then
         manual_mode=true
     fi
-    
+
     local attempt=1
     local success=false
     local exit_code=1  # Default to failure
-    
+    local cmd_output=""
+
     # store set -e state
     local set_e_state=$(set +o | grep errexit)
     set +e  # Disable exit on error for retries
@@ -497,68 +500,78 @@ retry() {
     # First phase: Automatic retries if auto_mode is enabled
     if [ "$auto_mode" = "true" ]; then
         # stdout -l "Auto-retry mode enabled (max $max_attempts attempts, $timeout second intervals)"
-        
+
         # Set up signal handling for auto mode
         local interrupted=false
         trap 'interrupted=true' INT
-        
+
         while [ $attempt -le $max_attempts ] && [ "$success" = "false" ] && [ "$interrupted" = "false" ]; do
-            # Execute the command
-            eval "$operation_cmd"
+            # Execute the command and capture output
+            processing_start "BRAILLE_AI_MIXED"
+            cmd_output=$(eval "$operation_cmd" 2>&1)
             exit_code=$?
-            
+            processing_stop
+
             if [ $exit_code -eq 0 ]; then
                 success=true
-                # stdout -o "Command succeeded on auto-attempt $attempt/$max_attempts"
+                if [ $attempt -gt 1 ]; then
+                    stdout -i "Command succeeded on auto-attempt $attempt/$max_attempts '$operation_cmd'"
+                fi
             else
+                echo $cmd_output  # Show command output on failure
+
                 if [ $attempt -lt $max_attempts ]; then
                     stdout -e "Unable to execute '$operation_cmd'"
-                    stdout -w "Retrying in $timeout seconds... ($attempt/$max_attempts) Press Ctrl+C to cancel"
+                    stdout -w --loading "Retrying in $timeout seconds ($attempt/$max_attempts) Press Ctrl+C to cancel"
                     sleep $timeout &
                     wait $!  # Wait for sleep to complete, but allow signal interruption
-                    
+
                     # Check if we were interrupted during sleep
                     if [ "$interrupted" = "true" ]; then
-                        # stdout -w "Operation cancelled by user (Ctrl+C)"
+                        stdout -l "Operation cancelled by user (Ctrl+C)"
                         break
                     fi
-                    
+
                     attempt=$((attempt + 1))
                 else
-                    # # stdout -w "All $max_attempts automatic retries failed."
-                    # # If manual mode is also enabled, we'll continue to manual phase
-                    # if [ "$manual_mode" = "true" ]; then
-                    #     stdout -i "Switching to manual retry..."
-                    # fi
+                    # stdout -w "All $max_attempts automatic retries failed."
+                    # If manual mode is also enabled, we'll continue to manual phase
+                    if [ "$manual_mode" = "true" ]; then
+                        stdout -l --loading "Switching to manual retry"
+                    fi
                     break
                 fi
             fi
         done
-        
+
         # Reset interrupted flag for potential manual phase
         interrupted=false
         trap - INT
     fi
-    
+
     # Second phase: Manual retries if manual_mode is enabled and command hasn't succeeded yet
     if [ "$manual_mode" = "true" ] && [ "$success" = "false" ]; then
-        # stdout -l "Manual retry mode active (unlimited attempts, user confirmation required)"
         attempt=1  # Reset attempt counter for manual mode
-        
+
         # Set up signal handling for manual mode
         local interrupted=false
         trap 'interrupted=true' INT
-        
+
         while [ "$success" = "false" ] && [ "$interrupted" = "false" ]; do
-            # If this is not the first manual attempt, run the command
+            # If this is not the first manual attempt, run the command and capture output
             if [ $attempt -gt 0 ]; then
-                eval "$operation_cmd"
+                processing_start "BRAILLE_AI_MIXED"
+                cmd_output=$(eval "$operation_cmd" 2>&1)
                 exit_code=$?
-                
+                processing_stop
+
                 if [ $exit_code -eq 0 ]; then
                     success=true
-                    # stdout -o "Command succeeded on manual attempt $attempt"
+                    stdout -l "Command succeeded on manual attempt $attempt"
                     break
+                else
+                    echo $cmd_output  # Show command output on failure
+                    stdout -e "Unable to execute '$operation_cmd'"
                 fi
             fi
 
@@ -566,17 +579,17 @@ retry() {
             if confirm "Operation failed. Retry? Failure on '$operation_cmd'"; then
                 attempt=$((attempt + 1))
             else
-                # stdout -w "User chose not to retry. Exiting retry loop."
+                stdout -l "User chose not to retry. Exiting retry loop."
                 break
             fi
-            
+
             # Check if we were interrupted during confirm
             if [ "$interrupted" = "true" ]; then
-                # stdout -w "Operation cancelled by user (Ctrl+C)"
+                stdout -l "Operation cancelled by user (Ctrl+C)"
                 break
             fi
         done
-        
+
         # Restore default signal handling
         trap - INT
     fi
@@ -585,9 +598,24 @@ retry() {
     if [[ "$set_e_state" == *"on"* ]]; then
         set -e
     fi
-    
+
+    # Store output in variable if requested
+    if [ -n "$output_var" ]; then
+        eval "$output_var=\"\$cmd_output\""
+    else
+        if [ $exit_code -eq 0 ]; then
+            echo "$cmd_output"
+        fi
+    fi
+
     return $exit_code
 }
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ HELP DISPLAY FUNCTION - Formatted Command List with Descriptions        ┃
+# ┃ Provides a clean way to display commands and their descriptions in help ┃
+# ┃ output                                                                  ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 display_help() {
     # Loop through the arguments and print them
@@ -601,10 +629,4 @@ display_help() {
         else shift; fi
     done
     printf "\n"
-}
-
-normalize() {
-    # Convert newlines and tabs to spaces, then squeeze multiple spaces into one
-    # echo "$1" | tr '\n\t' ' ' | tr -s ' ' | sed 's/^ *//;s/ *$//'
-    printf '%s' "$1" | tr '\n\r\t' ' ' | sed 's/  */ /g' | sed 's/^ //; s/ $//'
 }

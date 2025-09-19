@@ -64,8 +64,8 @@ sdk_fac_ins_cmd_update() {
     local update_failures=()
     local exit_code=0
     
-    stdout -i "Updating '$D_CTX_DIR' with sdk source '$D_SDK_DIR'..."
-    stdout -i "On branch '$D_CURRENT_BRANCH' Pulling changes for '$D_REPO_NAME'..."
+    stdout -i --loading "Updating '$D_CTX_DIR' with sdk source '$D_SDK_DIR'"
+    stdout -i --loading "On branch '$D_CURRENT_BRANCH' Pulling changes for '$D_REPO_NAME'"
 
     retry --manual --auto "cli_ctx git _ pull origin"
     if [ $? -ne 0 ]; then
@@ -92,11 +92,11 @@ sdk_fac_ins_cmd_update() {
     fi
 
     if [ "$D_GLOB_RECURSIVE" = "true" ]; then
-        stdout -l "Updating dependencies in selected submodules..."
+        stdout -l --loading "Updating dependencies in selected submodules"
         local active_modules="$(cli_ctx --quiet submodule actives)" # sample output: "path/to/module_1 path/to/module_2"
         for module_path in $active_modules; do
             if [ -d "$D_CTX_DIR/$module_path" ]; then
-                stdout -l "Updating dependencies in $module_path..."
+                stdout -l --loading "Updating dependencies in $module_path"
                 retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME api v1 update)"
                 if [ $? -ne 0 ]; then
                     install_failures+=("Dependency update failed in submodule at $module_path")

@@ -7,23 +7,23 @@ sdk_fac_git_cmd_commit_push_pr() {
 
     sdk_fac_git_cmd_checkout_if_detached
 
-    retry --auto --manual "sdk_fac_git_cmd_pull_merge"
+    sdk_fac_git_cmd_pull_merge
 
     retry --manual "handle_hook before_push"
     
     sdk_fac_git_cmd_commit
 
-    retry --auto --manual "sdk_fac_git_cmd_push"
+    sdk_fac_git_cmd_push
 
     if [ "$D_CURRENT_BRANCH" != "main" ]; then
-        retry --manual "sdk_fac_git_cmd_pr_create"
+        sdk_fac_git_cmd_pr_create
     fi
 
     stdout -l "Cpp done."
     sdk_fac_git_cmd_git_log "HEAD"
 
     if [ "$D_GLOB_RECURSIVE" = "true" ]; then
-        stdout -l "Cpp for selected submodules..."
+        stdout -l --loading "Cpp for selected submodules"
         cpp_submodule() {
             local module="$1"; local module_path="$2"
             retry --manual "bash \"$D_CTX_DIR/$module_path/$D_CLI_LOCAL_NAME\" api v1 git.commit.push.pr"

@@ -16,7 +16,7 @@ c=$1; shift; case $c in
         MODE="test"
         # Start with a header unless silent mode is enabled
         if [ "$SILENT_MODE" != "true" ]; then
-            stdout --ansi="97" --icon="⌁" "Quick internet connectivity check...\n"
+            stdout --ansi="97" --icon="⌁" "Quick internet connectivity check\n"
         fi
         
         # Run basic connectivity test
@@ -42,7 +42,7 @@ c=$1; shift; case $c in
     dia|diagnose)
         MODE="diagnose"
         SILENT_MODE=false
-        stdout --ansi="97" --icon="⚙" "Diagnosing internet connection ..."
+        stdout --ansi="97" --icon="⚙" "Diagnosing internet connection"
 
         overall_status=true
         quick_check_success=false

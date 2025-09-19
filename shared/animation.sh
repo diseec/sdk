@@ -1,0 +1,338 @@
+#!/bin/bash
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ PROCESSING ANIMATION FUNCTIONS                                          ┃
+# ┃ Shows a simple dot animation (., .., ...) while loading                 ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+# Global variables to manage loading state, PID, and prefix
+PROCESSING_PID=""
+PROCESSING_PREFIX=""
+
+# Ensure animation is stopped on parent exit or interrupt
+trap 'processing_stop' SIGINT SIGTERM EXIT
+
+processing_start() {
+    local animation_name="${1:-DOTS}"
+    animation_name="$(echo "$animation_name" | tr '[:lower:]' '[:upper:]')"
+    processing_stop # Ensure any existing loader is stopped
+
+    # Ensure the cursor is hidden robustly
+    if command -v tput > /dev/null; then
+        tput civis 2>/dev/null || printf '\033[?25l'
+    else
+        printf '\033[?25l'
+    fi
+
+    local func="sdk_sha_ani_${animation_name}"
+    if declare -f "$func" > /dev/null; then
+        "$func"
+    else
+        sdk_sha_ani_DOTS
+    fi
+}
+
+processing_stop() {
+    if [ -n "$PROCESSING_PID" ] && kill -0 "$PROCESSING_PID" 2>/dev/null; then
+        kill "$PROCESSING_PID" 2>/dev/null
+        wait "$PROCESSING_PID" 2>/dev/null
+        PROCESSING_PID=""
+
+        # Show cursor and clear only the indicator content
+        if command -v tput > /dev/null; then
+            tput cnorm 2>/dev/null || printf '\033[?25h'
+        else
+            printf '\033[?25h'
+        fi
+
+        printf "\033[s" # Save cursor position
+        printf "\033[u" # Restore cursor position
+        printf "\033[0K" # Clear from cursor to end of line
+        printf "\b \b" # Remove the last character by backspacing and overwriting with a space
+    fi
+}
+
+###### Different animation styles
+
+sdk_sha_ani_DOTS() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.15
+        local max_dots=3
+        local dots=1
+        local direction=1
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%-$max_dots"s"" "$(printf '%*s' "$dots" | tr ' ' '.')"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            if [ $dots -eq $max_dots ]; then
+                direction=-1
+            elif [ $dots -eq 1 ]; then
+                direction=1
+            fi
+            dots=$((dots + direction))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_SPINNER() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.12
+        local frames=("|" "/" "-" "\\")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % 4 ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_BOUNCE() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.09
+        local frames=("    ." "   . " "  .  " " .   " ".    " " .   " "  .  " "   . ")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % ${#frames[@]} ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_ARROW() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.13
+        local frames=("→" "⇒" "⇨" "⇾" "➔" "➙" "➛" "➜" "➝" "➞" "➟" "➠" "➡" "➢" "➣" "➤" "➥" "➦" "➧" "➨" "➩" "➪" "➫" "➬" "➭" "➮" "➯" "➱" "➲" "➳" "➴" "➵" "➶" "➷" "➸" "➹" "➺" "➻" "➼" "➽" "➾" "➿")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % ${#frames[@]} ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_DOTWAVE() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.11
+        local frames=(".    " "..   " "...  " " .... " "  ..." "   .." "    ." "     ")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % ${#frames[@]} ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_BAR() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.10
+        local frames=("[    ]" "[=   ]" "[==  ]" "[=== ]" "[ ===]" "[  ==]" "[   =]" "[    ]")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % ${#frames[@]} ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_CIRCLE() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.13
+        local frames=("◐" "◓" "◑" "◒")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % 4 ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_CLOCK() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.14
+        local frames=("🕛" "🕐" "🕑" "🕒" "🕓" "🕔" "🕕" "🕖" "🕗" "🕘" "🕙" "🕚")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % 12 ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_PULSE() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.10
+        local frames=("░" "▒" "▓" "█" "▓" "▒" "░" " ")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % ${#frames[@]} ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_TRIANGLE() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.13
+        local frames=("▲" "▶" "▼" "◀")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % 4 ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_BRAILLE() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.09
+        local frames=("⠁" "⠃" "⠇" "⡇" "⣇" "⣧" "⣷" "⣿" "⡿" "⠿" "⠯" "⠟" "⠻" "⠹" "⠸" "⠼" "⠴" "⠤" "⠄" "⠂" "⠁")
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%s" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % ${#frames[@]} ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_BRAILLE_AI() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.09
+        local frames=("⠁" "⠃" "⠇" "⡇" "⣇" "⣧" "⣷" "⣿" "⡿" "⠿" "⠯" "⠟" "⠻" "⠹" "⠸" "⠼" "⠴" "⠤" "⠄" "⠂" "⠁")
+        local colors=(30 97 94) # black, white, clay
+        local i=0
+        printf "\033[s"
+        while true; do
+            local color_idx=$((i % 3))
+            local color=${colors[$color_idx]}
+            printf "\033[u"
+            printf "\033[0m\033[%sm%s\033[0m" "$color" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % ${#frames[@]} ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+sdk_sha_ani_BRAILLE_AI_MIXED() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.05
+        local colors=(97 97 97 97 97 97 97 97 97 97 97 97 97 97 97 36 36 36 36 36 31 32 33 34 35) # black, white, clay
+        local patterns=(
+            "⠁ ⠂ ⠄ ⠤ ⠴ ⠼ ⠸ ⠹ ⠻ ⠟ ⠯ ⠿ ⡿ ⣿ ⣷ ⣧ ⣇ ⡇ ⠇ ⠃ ⠁" # forward
+            "⠁ ⠃ ⠇ ⡇ ⣇ ⣧ ⣷ ⣿ ⡿ ⠿ ⠯ ⠟ ⠻ ⠹ ⠸ ⠼ ⠴ ⠤ ⠄ ⠂ ⠁" # reverse
+            "⠁ ⠂ ⠄ ⠤ ⠴ ⠼ ⠸ ⠹ ⠸ ⠼ ⠴ ⠤ ⠄ ⠂ ⠁" # zig-zag
+            "⠁ ⠂ ⠄ ⠈ ⠀ ⠐ ⠄ ⠠ ⠠ ⠄ ⠐ ⡀ ⢀ ⠈ ⠂ ⠁" # spiral
+            "⠁ ⠃ ⠇ ⡏ ⣏ ⣟ ⣿ ⣿ ⣟ ⣏ ⡏ ⠇ ⠃ ⠁" # pulse
+            "⠁ ⠃ ⠇ ⡏ ⠐ ⠒ ⠖ ⡞ ⡞ ⠖ ⠒ ⠐ ⡏ ⠇ ⠃ ⠁" # wave horizontal
+            "⠁ ⠄ ⠔ ⡔ ⠂ ⠈ ⠘ ⡘ ⡘ ⠈ ⠂ ⡔ ⠔ ⠄ ⠁" # wave vertical
+            "⠁ ⠂ ⠄ ⠈ ⠐ ⠠ ⡀ ⢀ ⢀ ⡀ ⠠ ⠐ ⠈ ⠄ ⠂ ⠁" # zigzag diagonal
+            "⠁ ⠂ ⠄ ⠆ ⠒ ⠲ ⠶ ⡶ ⣶ ⣿ ⣷ ⣶ ⡶ ⠶ ⠲ ⠒ ⠆ ⠄ ⠂ ⠁" # ripple
+            "⠁ ⠂ ⠄ ⠆ ⠇ ⠏ ⠟ ⠿ ⡿ ⣟ ⣯ ⣷ ⣿ ⣷ ⣯ ⣟ ⡿ ⠿ ⠟ ⠏ ⠇ ⠆ ⠄ ⠂ ⠁" # vortex
+            "⠁ ⠂ ⠄ ⠆ ⠒ ⠤ ⠦ ⠶ ⡶ ⣶ ⣿ ⣷ ⣶ ⡶ ⠶ ⠦ ⠤ ⠒ ⠆ ⠄ ⠂ ⠁" # spiral wave
+            "⠁ ⠂ ⠆ ⠒ ⠤ ⠴ ⠶ ⡶ ⣶ ⣿ ⣷ ⣧ ⡇ ⠇ ⠃ ⠁" # cascade
+            "⠁ ⠂ ⠄ ⠆ ⠒ ⠲ ⠴ ⠤ ⠒ ⠆ ⠄ ⠂ ⠁" # comet
+        )
+        local pattern_count=${#patterns[@]}
+        local color_count=${#colors[@]}
+        local current_pattern=0
+        local frames=()
+        local frame_count=0
+        local i=0
+        while true; do
+            # Randomly switch pattern every full cycle
+            if [ $i -eq 0 ]; then
+                current_pattern=$((RANDOM % pattern_count))
+                IFS=' ' read -r -a frames <<< "${patterns[$current_pattern]}"
+                frame_count=${#frames[@]}
+            fi
+            local color_idx=$((RANDOM % color_count))
+            local color=${colors[$color_idx]}
+            printf "\r\033[0m\033[%sm%s\033[0m" "$color" "${frames[$i]}"
+            sleep "$delay"
+            i=$((i+1))
+            if [ $i -ge $frame_count ]; then
+                i=0
+            fi
+        done
+    ) &
+    PROCESSING_PID=$!
+}

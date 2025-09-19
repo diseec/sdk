@@ -59,7 +59,8 @@ sdk_fac_git_cmd_pr_create() {
       fi
       
       # Create PR using GitHub cli_ctx
-      local pr_url=$(_gh pr create --title "$pr_title" --body "$pr_body" --base main)
+      retry --manual "_gh pr create --title \"$pr_title\" --body \"$pr_body\" --base main" pr_url
+
       if [ $? -ne 0 ]; then
         stdout -e "Failed to create PR."
         return 1
@@ -74,7 +75,8 @@ sdk_fac_git_cmd_pr_create() {
   
   # Provide links
   if sdk_fac_git_cmd_check_gh_cli; then
-    local pr_link=$(_gh pr view "$(sdk_fac_git_cmd_has_open_pr)" --json url -q .url)
+    # local pr_link=$(_gh pr view "$(sdk_fac_git_cmd_has_open_pr)" --json url -q .url)
+    retry --manual "_gh pr view \"$(sdk_fac_git_cmd_has_open_pr)\" --json url -q .url" pr_link
   fi
   local commit_link="https://github.com/$D_ORG_NAME/$D_REPO_NAME/commit/$(_git rev-parse HEAD)"
 
@@ -84,10 +86,13 @@ sdk_fac_git_cmd_pr_create() {
 # Check PR status and show comments/issues
 sdk_fac_git_cmd_pr_check_status() {
   if ! cli_ctx internet is-online; then
-      stdout --ansi="31" --icon="⊘" "Disconnected, skipping PR status check..."
+      stdout --ansi="31" --icon="⊘" "Disconnected, skipping PR status check!"
       return 0
   fi
-  stdout -l "Checking PR status..."
+
+  stdout -l --loading "Checking PR status"
+
+  processing_start "BRAILLE_AI_MIXED"
 
   local pr_number=$(sdk_fac_git_cmd_has_open_pr)
   local branch="$D_CURRENT_BRANCH"
@@ -119,6 +124,8 @@ sdk_fac_git_cmd_pr_check_status() {
       local resolved_count=$(echo "$pr_data" | _jq -r '[.comments[]? | select(.isResolved == true)] | length')
       local unresolved_count=$(echo "$pr_data" | _jq -r '[.comments[]? | select(.isResolved != true)] | length')
       
+      processing_stop
+      
       # Display info
       stdout "PR#$pr_number" "title: $pr_title"
       stdout "PR#$pr_number" "url: $pr_url"
@@ -148,4 +155,6 @@ sdk_fac_git_cmd_pr_check_status() {
       stdout -e "PR #$pr_number exists, but detailed status check requires GitHub CLI"
       stdout -e "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
   fi
+
+  processing_stop
 }

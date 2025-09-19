@@ -21,7 +21,7 @@ sdk_fac_ai_cmd_check_availability() {
     done
     
     if [ "$quiet_flag" != "true" ]; then
-        stdout -i "Checking AI availability..."
+        stdout -i --loading "Checking AI availability"
     fi
     
     # Use the existing availability check function

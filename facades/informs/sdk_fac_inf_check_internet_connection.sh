@@ -1,8 +1,10 @@
 #!/bin/bash
 
 sdk_fac_inf_check_internet_connection() {
+    processing_start "BRAILLE_AI_MIXED"
     # X "IN sdk_fac_inf_check_internet_connection"
     if ! cli_ctx internet is-online > /dev/null; then
+        processing_stop
         # X "Internet connection appears to be down."
         if ! cli_ctx internet test; then
             # X "Internet connectivity test failed."
@@ -12,4 +14,5 @@ sdk_fac_inf_check_internet_connection() {
             fi
         fi
     fi
+    processing_stop
 }

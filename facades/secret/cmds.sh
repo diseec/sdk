@@ -177,7 +177,7 @@ sdk_fac_sec_cmd_check_availability() {
     done
     
     if [ "$quiet_flag" != "true" ]; then
-        stdout -i "Checking secrets system availability..."
+        stdout -i --loading "Checking secrets system availability"
     fi
     
     # Check OpenSSL availability

@@ -49,7 +49,7 @@ sdk_fac_ins_sdk_process() {
     fix_permissions "$target_kit"
 
     if [ ! -f "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME" ]; then
-        stdout -l "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file..."
+        stdout -l --loading "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file"
         cp "/$D_SDK_NAME/templates/$D_CLI_LOCAL_NAME" "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME";
     fi
 

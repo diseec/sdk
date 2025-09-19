@@ -19,7 +19,7 @@ sdk_fac_doc_up_development() {
             trap - INT TERM EXIT
 
             # Friendly log for users / debug
-            stdout -l "CLEANUP" "Stopping all containers and cleaning up..."
+            stdout -l --loading "Stopping all containers and cleaning up"
 
             # Try a hard stop first (best-effort), then bring the compose project down
             # Remove orphans to avoid leftover dependencies
