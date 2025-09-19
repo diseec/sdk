@@ -4,7 +4,7 @@
 
 # Setup function - runs before each test
 setup_test() {
-    TEST_SECRET_DIR="$(D secret function sdk_fac_sec_get_secrets_dir)"
+    TEST_SECRET_DIR="$(D --quiet secret function sdk_fac_sec_get_secrets_dir)"
 }
 
 # Test key-show command with no key configured

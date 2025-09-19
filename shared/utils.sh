@@ -83,12 +83,10 @@ fix_permissions() {
         return 1
     fi
 
-    if [ ! -d "$target_dir" ]; then
-        stdout -e "Target directory does not exist: $target_dir" >&2
+    if [ ! -d "$target_dir" ] && [ ! -f "$target_dir" ] ; then
+        stdout -e "Target does not exist: $target_dir" >&2
         return 1
     fi
-
-    stdout -l "Fixing permissions .."
 
     if [ -z "$D_HOST_UID" ] || [ -z "$D_HOST_GID" ]; then
         stdout -e "D_HOST_UID or D_HOST_GID is not set. Cannot fix permissions." >&2

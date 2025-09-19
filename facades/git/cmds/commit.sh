@@ -62,7 +62,7 @@ sdk_fac_git_cmd_commit() {
   
     # Don't allow commits directly to main
     if [ "$D_CURRENT_BRANCH" = "main" ]; then
-        stdout -e "Committing to main branch is forbidden.\nPlease create a feature branch first and move your changes."
+        stdout -e --icon="!" "Committing to main branch is forbidden, Please create a feature branch first and move your changes."
         stdin confirmation "Type 'MAIN' to confirm:"
         if [ "$confirmation" != "MAIN" ]; then
             return 1

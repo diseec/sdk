@@ -5,7 +5,11 @@
 # ========================================
 
 sdk_fac_sec_get_secrets_dir() {
-    echo "$(cli_ctx config function sdk_fac_con_get_scope_repo_dir)/secrets"
+    # echo "$(cli_ctx config function sdk_fac_con_get_scope_repo_dir)/secrets"
+    local secrets_dir="$D_ORG_DIR/secrets"
+    mkdir -p "$secrets_dir"
+    fix_permissions "$secrets_dir"
+    echo $secrets_dir
 }
 
 # Helper function to check if OpenSSL is available

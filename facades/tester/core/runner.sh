@@ -159,6 +159,8 @@ _sdk_tester_run_test_file() {
                 teardown_test
             fi
 
+            teardown_test_ctx
+
             set -e
 
             # Clean up test workspace and result file

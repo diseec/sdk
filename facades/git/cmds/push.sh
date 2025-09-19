@@ -1,9 +1,8 @@
 #!/bin/bash
 
 sdk_fac_git_cmd_push() {
-  set -e
   # Push to remote
-  echo "Pushing to remote..."
+  stdout -l "Pushing to remote..."
   _git push -u origin "$D_CURRENT_BRANCH"
   if [ $? -ne 0 ]; then
     stdout -e "Failed to push changes to remote."

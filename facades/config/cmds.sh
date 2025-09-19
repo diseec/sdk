@@ -29,7 +29,7 @@ sdk_fac_con_get() {
         
         # Check if config file exists
         if [ ! -f "$config_file" ]; then
-            echo "Configuration key '$key_path' not found in $specific_scope scope" >&2
+            stdout -w "Configuration key '$key_path' not found in $specific_scope scope" >&2
             return 1
         fi
         
@@ -37,7 +37,7 @@ sdk_fac_con_get() {
         
         # Check if key was not found
         if [ "$value" = "null" ] || [ -z "$value" ]; then
-            echo "Configuration key '$key_path' not found in $specific_scope scope" >&2
+            stdout -w "Configuration key '$key_path' not found in $specific_scope scope" >&2
             return 1
         fi
         
@@ -66,7 +66,7 @@ sdk_fac_con_get() {
     done
     
     # No value found in any scope
-    echo "Configuration key '$key_path' not found" >&2
+    stdout -w "Configuration key '$key_path' not found" >&2
     return 1
 }
 

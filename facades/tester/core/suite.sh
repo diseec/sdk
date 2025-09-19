@@ -45,7 +45,11 @@ setup_test() {
 teardown_test() {
     # Override this function in test files for per-test cleanup
     # This runs after each individual test function
-    rm -fr "$D_ORG_DIR"
+    return 0
+}
+
+teardown_test_ctx() {
+    rm -fr "$D_ORG_DIR" "$TEST_CTX"
     return 0
 }
 

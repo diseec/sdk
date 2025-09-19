@@ -25,13 +25,13 @@ sdk_fac_sec_decrypt_data() {
 
 # Get stored encryption key
 sdk_fac_sec_get_encryption_key() {
-    cli_ctx config --scope=repository get "secrets.key"
+    cli_ctx config --scope=user get "secrets.key"
 }
 
 # Store encryption key
 sdk_fac_sec_store_encryption_key() {
     local key="$1"
-    cli_ctx config --scope=repository set "secrets.key" "$key"
+    cli_ctx config --scope=user set "secrets.key" "$key"
     stdout -l "Encryption key stored in configuration"
 }
 

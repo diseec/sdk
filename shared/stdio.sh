@@ -512,7 +512,8 @@ retry() {
                 # stdout -o "Command succeeded on auto-attempt $attempt/$max_attempts"
             else
                 if [ $attempt -lt $max_attempts ]; then
-                    stdout -w "Operation failed. Retrying in $timeout seconds... ($attempt/$max_attempts) Press Ctrl+C to cancel"
+                    stdout -e "Unable to execute '$operation_cmd'"
+                    stdout -w "Retrying in $timeout seconds... ($attempt/$max_attempts) Press Ctrl+C to cancel"
                     sleep $timeout &
                     wait $!  # Wait for sleep to complete, but allow signal interruption
                     
@@ -560,9 +561,9 @@ retry() {
                     break
                 fi
             fi
-            
+
             # Ask for confirmation to retry
-            if confirm "Operation failed. Retry?"; then
+            if confirm "Operation failed. Retry? Failure on '$operation_cmd'"; then
                 attempt=$((attempt + 1))
             else
                 # stdout -w "User chose not to retry. Exiting retry loop."

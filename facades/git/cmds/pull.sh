@@ -1,21 +1,36 @@
 #!/bin/bash
 
 sdk_fac_git_cmd_pull_merge() {
-    set -e
+    stdout -i "Fetching latest changes from remote ..."
 
     stdout -l "Pulling latest branch '$D_CURRENT_BRANCH' changes ..."
-    _git -C "$D_CTX_DIR" pull origin
+    retry --auto --manual "_git -C \"$D_CTX_DIR\" pull origin"
+    if ! [ $? -eq 0 ]; then
+        stdout -e "Failed to pull latest changes from 'origin/$D_CURRENT_BRANCH'"
+        return 1
+    fi
+
     stdout -l "Merging latest 'origin/main' changes to branch '$D_CURRENT_BRANCH'..."
-    _git -C "$D_CTX_DIR" merge origin/main
+    retry --auto --manual "_git -C \"$D_CTX_DIR\" merge origin/main"
+    if ! [ $? -eq 0 ]; then
+        stdout -e "Failed to merge latest 'origin/main' changes to branch '$D_CURRENT_BRANCH'"
+        return 1
+    fi
+
 
     stdout -l "Pull and merge complete."
 
     if [ "$D_GLOB_RECURSIVE" = "true" ]; then
-        stdout -l "Pull and merging in submodules..."
         pull_submodule() {
+            stdout -l "Pull and merging in submodule '$module'..."
             local module="$1"
             local module_path="$2"
-            cd "$D_CTX_DIR/$module_path" && $D_CLI_GLOBAL_NAME api v1 pull
+            retry --auto --manual "bash \"$D_CTX_DIR/$module_path/$D_CLI_LOCAL_NAME\" api v1 pull"
+            if ! [ $? -eq 0 ]; then
+                stdout -e "Failed to pull latest changes in submodule '$module' at '$module_path'"
+                return 1
+            fi
+            return 0
         }
         cli_ctx submodule foreach_active pull_submodule
     fi

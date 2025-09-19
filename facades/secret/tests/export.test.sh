@@ -4,7 +4,7 @@
 _export_test_key="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
 # Setup function - runs before each test
 setup_test() {
-    TEST_SECRET_DIR="$(D secret function sdk_fac_sec_get_secrets_dir)"
+    TEST_SECRET_DIR="$(D --quiet secret function sdk_fac_sec_get_secrets_dir)"
 }
 
 helper_create_secret() {
@@ -25,6 +25,8 @@ EOF
 
 # Test export command requires secret name
 test_secret_export_requires_name() {
+    D secret key-set <<< "$_export_test_key" >/dev/null 2>&1
+
     local output
     output=$(D secret export)
     
@@ -268,7 +270,7 @@ test_secret_export_multiple_times_with_intermediate_commands() {
     export3=$(D secret export "$test_secret")   
     assert_equals "0" "$?" "Third export should succeed"
     # Verify current key not empty and still same
-    local current_key=$(D config get --scope=repository "secrets.key")
+    local current_key=$(D config get --scope=user "secrets.key")
     assert_not_equals "" "$current_key" "Secret key should still be configured"
     assert_equals "$initial_key" "$current_key" "Secret key should remain unchanged after multiple exports and intermediate commands"
     # Verify all exports match the original value
