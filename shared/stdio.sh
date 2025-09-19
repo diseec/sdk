@@ -31,6 +31,7 @@ stdout() {
     local default_icon=""
     local content=""
     local loading=false
+    local unique_id="stdout" # Unique identifier for this stdout instance
 
     # First, check if the first argument is a valid type
     if [ $# -gt 0 ]; then
@@ -41,7 +42,7 @@ stdout() {
                 ;;
         esac
     fi
-    
+
     # Now process the rest of the arguments
     while [ $# -gt 0 ]; do
         case "$1" in
@@ -113,15 +114,15 @@ stdout() {
         QUIET|quiet) case $_level in     VERBOSE|INFO|WARNING|ERROR) return 0; esac ;;
     esac
 
-    # Always stop loader before printing any message
+    # Always stop loader for this instance before printing any message
     if [ -n "$PROCESSING_PID" ] && kill -0 "$PROCESSING_PID" 2>/dev/null; then
-        processing_stop
+        processing_stop "$unique_id"
         printf "\n"
     fi
     # Output log message
     if [ "$loading" = true ]; then
         printf "\033[0m \033[0m%s %b" "$prompt" "$content "
-        processing_start
+        processing_start "$unique_id"
     else
         printf "\033[0m \033[0m%s %b\n" "$prompt" "$content"
     fi

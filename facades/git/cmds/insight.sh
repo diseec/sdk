@@ -233,7 +233,10 @@ _generate_report() {
     
     local temp_file=$(mktemp)
     echo "$analysis_data" > "$temp_file"
+
+    processing_start "AI_WRITING" ai_insight
     local ai_insight=$(cli_ctx ai generate insight "$temp_file")
+    processing_stop ai_insight
     rm -f "$temp_file"
     
     if [ -n "$ai_insight" ]; then

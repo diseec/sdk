@@ -17,8 +17,8 @@ sdk_fac_ai_extract_response() {
     local response="$1"
     
     # Try jq first (preferred method)
-    if command -v jq >/dev/null 2>&1; then
-        echo "$response" | jq -r '.choices[0].message.content' 2>/dev/null
+    if command -v _jq >/dev/null 2>&1; then
+        echo "$response" | _jq -r '.choices[0].message.content' 2>/dev/null
     else
         # Fallback to grep/sed if jq is not available
         echo "$response" | grep -o '"content":"[^"]*"' | sed 's/"content":"//g' | sed 's/"$//g' | sed 's/\\n/\n/g'

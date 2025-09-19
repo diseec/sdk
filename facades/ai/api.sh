@@ -49,16 +49,19 @@ sdk_fac_ai_generate() {
     # Check token count for logging
     local token_count=$(sdk_fac_ai_count_tokens "$prompt")
     stdout -i "Sending prompt with ~$token_count tokens to model $model" >&2
-    
-    retry --manual "sdk_fac_ai_call_openai \"$prompt\" \"$model\" \"$temperature\" \"$max_tokens\"" response
+
+
+    processing_start "AI_WRITING"
+    local response="$(sdk_fac_ai_call_openai "$prompt" "$model" "$temperature" "$max_tokens")"
     
     if ! [ $? -eq 0 ] || sdk_fac_ai_has_error "$response"; then
         stdout -e "AI API call error occurred" >&2
         echo "$fallback"
         return 1
     fi
-    
+
     local content=$(sdk_fac_ai_extract_response "$response")
+    processing_stop
     
     if [ -n "$content" ] && [ "$content" != "null" ]; then
         echo "$content"

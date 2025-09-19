@@ -34,8 +34,6 @@ sdk_fac_ai_generate_commit_message() {
         return 1
     fi
 
-    stdin work_focus "What was main changes?"
-
     local prompt="Generate a concise, descriptive commit message for the following code changes.
 User commit message:
 $work_focus

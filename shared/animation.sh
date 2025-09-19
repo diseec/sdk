@@ -16,8 +16,9 @@ processing_start() {
     if [ "$D_GLOB_TTY" != "true" ]; then return 0; fi
 
     local animation_name="${1:-DOTS}"
+    local unique_id="${2:-default}" # Optional unique identifier, defaults to 'default'
     animation_name="$(echo "$animation_name" | tr '[:lower:]' '[:upper:]')"
-    processing_stop # Ensure any existing loader is stopped
+    processing_stop "$unique_id" # Ensure any existing loader with the same ID is stopped
 
     # Ensure the cursor is hidden robustly
     if command -v tput > /dev/null; then
@@ -28,15 +29,17 @@ processing_start() {
 
     local func="sdk_sha_ani_${animation_name}"
     if declare -f "$func" > /dev/null; then
-        "$func"
+        "$func" "$unique_id"
     else
-        sdk_sha_ani_DOTS
+        sdk_sha_ani_DOTS "$unique_id"
     fi
 }
 
 processing_stop() {
     if [ "$D_GLOB_TTY" != "true" ]; then return 0; fi
-    
+
+    local unique_id="${1:-default}" # Optional unique identifier, defaults to 'default'
+
     if [ -n "$PROCESSING_PID" ] && kill -0 "$PROCESSING_PID" 2>/dev/null; then
         kill "$PROCESSING_PID" 2>/dev/null
         wait "$PROCESSING_PID" 2>/dev/null
@@ -346,3 +349,62 @@ sdk_sha_ani_BRAILLE_AI_MIXED() {
     ) &
     PROCESSING_PID=$!
 }
+
+sdk_sha_ani_AI_WRITING() {
+    (
+    trap "exit" SIGTERM SIGHUP SIGINT
+        local delay=0.05
+        local frames=(
+            "\033[0;107m \033[0m\033[0m" # Outline reverse
+            "\033[7;97m✧\033[0m\033[0m" # Reverse and outline icon
+            "\033[7;97m✦\033[0m\033[0m" # Reverse and filled icon
+            "\033[1;97m✦\033[0m\033[0m" # Filled icon
+            "\033[1;97m✧\033[0m\033[0m" # Outline icon
+            "\033[1;90m✧\033[0m\033[0m" # Outline icon
+            # "\033[2;97m✧\033[0m\033[0m" # Outline icon
+            "\033[2;90m✧\033[0m\033[0m" # Outline icon
+            "\033[1;97m \033[0m\033[0m" # Outline icon
+            "\033[2;90m✧\033[0m\033[0m" # Outline icon
+            # "\033[2;97m✧\033[0m\033[0m" # Outline icon
+            "\033[1;90m✧\033[0m\033[0m" # Outline icon
+            "\033[1;97m✧\033[0m\033[0m" # Outline icon
+            "\033[1;97m✦\033[0m\033[0m" # Filled icon
+            "\033[1;97m✧\033[0m\033[0m" # Outline icon
+            "\033[7;97m✦\033[0m\033[0m" # Filled reverse
+            "\033[7;97m✧\033[0m\033[0m" # Outline reverse
+            "\033[0;107m \033[0m\033[0m" # Outline reverse
+        )
+        local i=0
+        printf "\033[s"
+        while true; do
+            printf "\033[u"
+            printf "%b" "${frames[$i]}"
+            printf " "
+            printf "\033[u"
+            sleep "$delay"
+            i=$(( (i+1) % ${#frames[@]} ))
+        done
+    ) &
+    PROCESSING_PID=$!
+}
+
+
+# sdk_sha_ani_AI_WRITING() {
+#     (
+#     trap "exit" SIGTERM SIGHUP SIGINT
+#         local delay=0.08
+#         local frames=(
+#         )
+#         local i=0
+#         printf "\033[s"
+#         while true; do
+#             printf "\033[u"
+#             printf "%b" "${frames[$i]}"
+#             printf " "
+#             printf "\033[u"
+#             sleep "$delay"
+#             i=$(( (i+1) % ${#frames[@]} ))
+#         done
+#     ) &
+#     PROCESSING_PID=$!
+# }

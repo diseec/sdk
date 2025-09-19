@@ -2,7 +2,10 @@
 
 # Generate commit message using AI
 sdk_fac_git_cmd_generate_commit_message() {
+    local work_focus="$1"
+    local commit_message=""
     local diff_output="$(_git diff --staged)"
+    local exit_code=0
   
     if [ -z "$diff_output" ]; then
         # stdout -w "No staged changes found. Staging all changes..."
@@ -29,13 +32,17 @@ sdk_fac_git_cmd_generate_commit_message() {
 
         echo "$diff_summary" > "$diff_summary_file"
         echo "$diff_preview" > "$diff_preview_file"
-
-        cli_ctx ai generate commit "$diff_summary_file" "$diff_preview_file"
+        
+        commit_message="$(cli_ctx ai generate commit "$diff_summary_file" "$diff_preview_file" "$work_focus")"
+        exit_code=$?
     else
         # Fallback: generate simple commit message based on modified files
         local files_changed=$(_git diff --staged --name-only | sort | uniq)
-        cli_ctx ai function sdk_fac_ai_fallback_commit_message "$files_changed"
+        commit_message="$(cli_ctx ai function sdk_fac_ai_fallback_commit_message "$files_changed")"
     fi
+
+    echo "$commit_message"
+    return $exit_code
 }
 
 # Handle detached HEAD state
@@ -91,8 +98,11 @@ sdk_fac_git_cmd_commit() {
     stdout -a --loading "Writing commit message"
     local commit_msg=""
     local has_accepted_commit_message="false"
+    stdin work_focus "What was main changes?"
+
     while ! $has_accepted_commit_message; do
-        commit_msg=$(sdk_fac_git_cmd_generate_commit_message)
+        commit_msg="$(sdk_fac_git_cmd_generate_commit_message "$work_focus")"
+
         if [ -z "$commit_msg" ]; then
             stdout -e "Failed to generate commit message."
             return 1
@@ -107,7 +117,10 @@ sdk_fac_git_cmd_commit() {
         if confirm "Do you want to use this commit message?"; then
             has_accepted_commit_message="true"
         else
-            stdout -a --loading "Rewriting commit message"
+            if ! confirm "Rewriting commit message?"; then
+                stdout -l "Aborting commit."
+                return 1
+            fi
         fi
     done
   
