@@ -13,6 +13,8 @@ PROCESSING_PREFIX=""
 trap 'processing_stop' SIGINT SIGTERM EXIT
 
 processing_start() {
+    if [ "$D_GLOB_TTY" != "true" ]; then return 0; fi
+
     local animation_name="${1:-DOTS}"
     animation_name="$(echo "$animation_name" | tr '[:lower:]' '[:upper:]')"
     processing_stop # Ensure any existing loader is stopped
@@ -33,6 +35,8 @@ processing_start() {
 }
 
 processing_stop() {
+    if [ "$D_GLOB_TTY" != "true" ]; then return 0; fi
+    
     if [ -n "$PROCESSING_PID" ] && kill -0 "$PROCESSING_PID" 2>/dev/null; then
         kill "$PROCESSING_PID" 2>/dev/null
         wait "$PROCESSING_PID" 2>/dev/null
@@ -269,47 +273,53 @@ sdk_sha_ani_BRAILLE() {
     PROCESSING_PID=$!
 }
 
-sdk_sha_ani_BRAILLE_AI() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.09
-        local frames=("⠁" "⠃" "⠇" "⡇" "⣇" "⣧" "⣷" "⣿" "⡿" "⠿" "⠯" "⠟" "⠻" "⠹" "⠸" "⠼" "⠴" "⠤" "⠄" "⠂" "⠁")
-        local colors=(30 97 94) # black, white, clay
-        local i=0
-        printf "\033[s"
-        while true; do
-            local color_idx=$((i % 3))
-            local color=${colors[$color_idx]}
-            printf "\033[u"
-            printf "\033[0m\033[%sm%s\033[0m" "$color" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % ${#frames[@]} ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
 sdk_sha_ani_BRAILLE_AI_MIXED() {
     (
     trap "exit" SIGTERM SIGHUP SIGINT
         local delay=0.05
-        local colors=(97 97 97 97 97 97 97 97 97 97 97 97 97 97 97 36 36 36 36 36 31 32 33 34 35) # black, white, clay
+
+        # Cache the generated colors array
+        if [ -z "${BRAILLE_ANIME_CACHED_COLORS+x}" ]; then
+            # Define the colors and their repetition counts
+            local color_repeats=(
+                97:75  # white
+                36:15  # clay
+                31:3   # red
+                32:1   # green
+                33:1   # yellow
+                34:10   # blue
+                35:5   # magenta
+            )
+
+            # Generate the colors array dynamically
+            local colors=()
+            for entry in "${color_repeats[@]}"; do
+                IFS=':' read -r color count <<< "$entry"
+                for ((i = 0; i < count; i++)); do
+                    colors+=("$color")
+                done
+            done
+
+            # Cache the result
+            BRAILLE_ANIME_CACHED_COLORS=("${colors[@]}")
+        else
+            # Use the cached colors
+            local colors=("${BRAILLE_ANIME_CACHED_COLORS[@]}")
+        fi
+
         local patterns=(
             "⠁ ⠂ ⠄ ⠤ ⠴ ⠼ ⠸ ⠹ ⠻ ⠟ ⠯ ⠿ ⡿ ⣿ ⣷ ⣧ ⣇ ⡇ ⠇ ⠃ ⠁" # forward
             "⠁ ⠃ ⠇ ⡇ ⣇ ⣧ ⣷ ⣿ ⡿ ⠿ ⠯ ⠟ ⠻ ⠹ ⠸ ⠼ ⠴ ⠤ ⠄ ⠂ ⠁" # reverse
             "⠁ ⠂ ⠄ ⠤ ⠴ ⠼ ⠸ ⠹ ⠸ ⠼ ⠴ ⠤ ⠄ ⠂ ⠁" # zig-zag
-            "⠁ ⠂ ⠄ ⠈ ⠀ ⠐ ⠄ ⠠ ⠠ ⠄ ⠐ ⡀ ⢀ ⠈ ⠂ ⠁" # spiral
             "⠁ ⠃ ⠇ ⡏ ⣏ ⣟ ⣿ ⣿ ⣟ ⣏ ⡏ ⠇ ⠃ ⠁" # pulse
-            "⠁ ⠃ ⠇ ⡏ ⠐ ⠒ ⠖ ⡞ ⡞ ⠖ ⠒ ⠐ ⡏ ⠇ ⠃ ⠁" # wave horizontal
-            "⠁ ⠄ ⠔ ⡔ ⠂ ⠈ ⠘ ⡘ ⡘ ⠈ ⠂ ⡔ ⠔ ⠄ ⠁" # wave vertical
             "⠁ ⠂ ⠄ ⠈ ⠐ ⠠ ⡀ ⢀ ⢀ ⡀ ⠠ ⠐ ⠈ ⠄ ⠂ ⠁" # zigzag diagonal
             "⠁ ⠂ ⠄ ⠆ ⠒ ⠲ ⠶ ⡶ ⣶ ⣿ ⣷ ⣶ ⡶ ⠶ ⠲ ⠒ ⠆ ⠄ ⠂ ⠁" # ripple
             "⠁ ⠂ ⠄ ⠆ ⠇ ⠏ ⠟ ⠿ ⡿ ⣟ ⣯ ⣷ ⣿ ⣷ ⣯ ⣟ ⡿ ⠿ ⠟ ⠏ ⠇ ⠆ ⠄ ⠂ ⠁" # vortex
             "⠁ ⠂ ⠄ ⠆ ⠒ ⠤ ⠦ ⠶ ⡶ ⣶ ⣿ ⣷ ⣶ ⡶ ⠶ ⠦ ⠤ ⠒ ⠆ ⠄ ⠂ ⠁" # spiral wave
             "⠁ ⠂ ⠆ ⠒ ⠤ ⠴ ⠶ ⡶ ⣶ ⣿ ⣷ ⣧ ⡇ ⠇ ⠃ ⠁" # cascade
             "⠁ ⠂ ⠄ ⠆ ⠒ ⠲ ⠴ ⠤ ⠒ ⠆ ⠄ ⠂ ⠁" # comet
+            "⠁ ⠃ ⠇ ⡏ ⠐ ⠒ ⠖ ⡞ ⡞ ⠖ ⠒ ⠐ ⡏ ⠇ ⠃ ⠁" # wave horizontal
+            "⠁ ⠂ ⠄ ⠈ ⠐ ⠄ ⠠ ⠠ ⠄ ⠐ ⡀ ⢀ ⠈ ⠂ ⠁" # spiral
         )
         local pattern_count=${#patterns[@]}
         local color_count=${#colors[@]}

@@ -155,16 +155,16 @@ sdk_fac_int_log_status() {
     if [ "$SILENT_MODE" != "true" ]; then
         case "$status" in
             SUCCESS)
-                printf "${GRAY}[✓]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf " ${GRAY}[✓]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
             FAIL)
-                printf "${RED}[✖]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf " ${RED}[✖]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
             WARNING)
-                printf "${YELLOW}[!]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf " ${YELLOW}[!]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
             INFO)
-                printf "${GRAY}[i]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
+                printf " ${GRAY}[i]${GRAY} %-25s %s ${WHITE}%s${NC}\n" "$test_name" "$details" "$timing"
                 ;;
         esac
     fi
