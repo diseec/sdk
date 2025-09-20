@@ -8,7 +8,7 @@ export D_GLOB_ENV="${D_GLOB_ENV:-DEVELOPMENT}" # Valid environments: DEVELOPMENT
 export D_GLOB_DEBUG="${D_GLOB_DEBUG:-false}"
 export D_GLOB_LOG_LEVEL="${D_GLOB_LOG_LEVEL:-INFO}" # VERBOSE > INFO > WARNING > ERROR > QUIET
 export D_GLOB_RECURSIVE="${D_GLOB_RECURSIVE:-false}"
-export D_GLOB_TTY="${D_GLOB_TTY:-true}"  # TTY availability flag, true by default
+export D_GLOB_TTY="${D_GLOB_TTY:-$([ -z "$CI" ] && [ -t 0 ] && echo true || echo false)}"  # TTY availability flag, true by default
 export D_GLOB_PATCH="${D_GLOB_PATCH:-false}"
 
 # Support both long and short options, including grouped short options
