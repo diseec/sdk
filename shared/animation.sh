@@ -2,284 +2,108 @@
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃ PROCESSING ANIMATION FUNCTIONS                                          ┃
-# ┃ Shows a simple dot animation (., .., ...) while loading                 ┃
+# ┃ Shows an animation in the first slot of stdout that auto-stops          ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-# Global variables to manage loading state, PID, and prefix
+# Global variables to manage loading state and animation
 PROCESSING_PID=""
-PROCESSING_PREFIX=""
+PROCESSING_DETECTOR_PID=""
+PROCESSING_ANIMATION_RUNNING=false
+PROCESSING_ACTIVE=false
 
 # Ensure animation is stopped on parent exit or interrupt
 trap 'processing_stop' SIGINT SIGTERM EXIT
 
+# Main public function - Start an animation that auto-stops on output
+# Usage: processing_start [ANIMATION_TYPE]
 processing_start() {
-    if [ "$D_GLOB_TTY" != "true" ]; then return 0; fi
-
-    local animation_name="${1:-DOTS}"
-    local unique_id="${2:-default}" # Optional unique identifier, defaults to 'default'
-    animation_name="$(echo "$animation_name" | tr '[:lower:]' '[:upper:]')"
-    processing_stop "$unique_id" # Ensure any existing loader with the same ID is stopped
-
-    # Ensure the cursor is hidden robustly
-    if command -v tput > /dev/null; then
-        tput civis 2>/dev/null || printf '\033[?25l'
-    else
-        printf '\033[?25l'
-    fi
-
-    local func="sdk_sha_ani_${animation_name}"
+    if [ "$D_GLOB_TTY" != "true" ] || [ "$D_GLOB_LOG_LEVEL" = "QUIET" ]; then return 0; fi
+    
+    # Clean up any existing animation first
+    processing_stop
+    
+    # Mark animation as active
+    PROCESSING_ACTIVE=true
+    PROCESSING_ANIMATION_RUNNING=true
+    
+    # Get animation type
+    local animation_type="${1:-BRAILLE_MIXED}"
+    animation_type="$(echo "$animation_type" | tr '[:lower:]' '[:upper:]')"
+    
+    # # Hide cursor - multiple methods for reliability
+    # printf "\033[?25l" # ANSI escape sequence
+    
+    # Start the animation in background - we'll create a new animation line
+    local func="sdk_sha_ani_${animation_type}"
     if declare -f "$func" > /dev/null; then
-        "$func" "$unique_id"
+        "$func"
     else
-        sdk_sha_ani_DOTS "$unique_id"
+        sdk_sha_ani_BRAILLE_MIXED
     fi
+    
+    # Setup auto-stop detector in background
+    (
+        trap "exit" SIGTERM SIGHUP SIGINT
+        while [ "$PROCESSING_ANIMATION_RUNNING" = true ]; do
+            sleep 0.2
+            
+            # Check if parent process has terminated
+            if ! ps | grep -q " $$ "; then
+                PROCESSING_ANIMATION_RUNNING=false
+                processing_stop
+                break
+            fi
+        done
+    ) &
+    
+    PROCESSING_DETECTOR_PID=$!
 }
 
+# Internal function to stop any running animation
+# Usage: processing_stop
 processing_stop() {
-    if [ "$D_GLOB_TTY" != "true" ]; then return 0; fi
-
-    local unique_id="${1:-default}" # Optional unique identifier, defaults to 'default'
-
+    if [ "$D_GLOB_TTY" != "true" ] || [ "$D_GLOB_LOG_LEVEL" = "QUIET" ]; then return 0; fi
+    
+    # Set flags first to prevent race conditions
+    PROCESSING_ANIMATION_RUNNING=false
+    PROCESSING_ACTIVE=false
+    
+    # Kill animation process
     if [ -n "$PROCESSING_PID" ] && kill -0 "$PROCESSING_PID" 2>/dev/null; then
-        kill "$PROCESSING_PID" 2>/dev/null
-        wait "$PROCESSING_PID" 2>/dev/null
+        kill -TERM "$PROCESSING_PID" 2>/dev/null
+        wait "$PROCESSING_PID" 2>/dev/null || true
         PROCESSING_PID=""
-
-        # Show cursor and clear only the indicator content
-        if command -v tput > /dev/null; then
-            tput cnorm 2>/dev/null || printf '\033[?25h'
-        else
-            printf '\033[?25h'
-        fi
-
-        printf "\033[s" # Save cursor position
-        printf "\033[u" # Restore cursor position
-        printf "\033[0K" # Clear from cursor to end of line
-        printf "\b \b" # Remove the last character by backspacing and overwriting with a space
     fi
+    
+    # Kill detector process
+    if [ -n "$PROCESSING_DETECTOR_PID" ] && kill -0 "$PROCESSING_DETECTOR_PID" 2>/dev/null; then
+        kill -TERM "$PROCESSING_DETECTOR_PID" 2>/dev/null
+        wait "$PROCESSING_DETECTOR_PID" 2>/dev/null || true
+        PROCESSING_DETECTOR_PID=""
+    fi
+    
+    # # More aggressive cleanup to prevent leftover characters
+    # sleep 0.05  # Small delay to ensure processes are stopped
+    
+    # # Clear only the animation character at current position
+    # printf " \b"
+    
+    # # Restore cursor visibility with multiple methods for redundancy
+    # printf "\033[?25h"         # ANSI escape sequence
+    # printf "\033[34h\033[?25h" # Alternative sequence
+    # echo -en "\e[?12l\e[?25h"  # Another alternative
+    
+    # # Force cursor visibility on exit
+    # trap 'printf "\033[?25h"' EXIT
 }
 
 ###### Different animation styles
 
-sdk_sha_ani_DOTS() {
+sdk_sha_ani_BRAILLE_MIXED() {
     (
     trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.15
-        local max_dots=3
-        local dots=1
-        local direction=1
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%-$max_dots"s"" "$(printf '%*s' "$dots" | tr ' ' '.')"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            if [ $dots -eq $max_dots ]; then
-                direction=-1
-            elif [ $dots -eq 1 ]; then
-                direction=1
-            fi
-            dots=$((dots + direction))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_SPINNER() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.12
-        local frames=("|" "/" "-" "\\")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % 4 ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_BOUNCE() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.09
-        local frames=("    ." "   . " "  .  " " .   " ".    " " .   " "  .  " "   . ")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % ${#frames[@]} ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_ARROW() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.13
-        local frames=("→" "⇒" "⇨" "⇾" "➔" "➙" "➛" "➜" "➝" "➞" "➟" "➠" "➡" "➢" "➣" "➤" "➥" "➦" "➧" "➨" "➩" "➪" "➫" "➬" "➭" "➮" "➯" "➱" "➲" "➳" "➴" "➵" "➶" "➷" "➸" "➹" "➺" "➻" "➼" "➽" "➾" "➿")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % ${#frames[@]} ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_DOTWAVE() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.11
-        local frames=(".    " "..   " "...  " " .... " "  ..." "   .." "    ." "     ")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % ${#frames[@]} ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_BAR() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.10
-        local frames=("[    ]" "[=   ]" "[==  ]" "[=== ]" "[ ===]" "[  ==]" "[   =]" "[    ]")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % ${#frames[@]} ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_CIRCLE() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.13
-        local frames=("◐" "◓" "◑" "◒")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % 4 ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_CLOCK() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.14
-        local frames=("🕛" "🕐" "🕑" "🕒" "🕓" "🕔" "🕕" "🕖" "🕗" "🕘" "🕙" "🕚")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % 12 ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_PULSE() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.10
-        local frames=("░" "▒" "▓" "█" "▓" "▒" "░" " ")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % ${#frames[@]} ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_TRIANGLE() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.13
-        local frames=("▲" "▶" "▼" "◀")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % 4 ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_BRAILLE() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.09
-        local frames=("⠁" "⠃" "⠇" "⡇" "⣇" "⣧" "⣷" "⣿" "⡿" "⠿" "⠯" "⠟" "⠻" "⠹" "⠸" "⠼" "⠴" "⠤" "⠄" "⠂" "⠁")
-        local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%s" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
-            sleep "$delay"
-            i=$(( (i+1) % ${#frames[@]} ))
-        done
-    ) &
-    PROCESSING_PID=$!
-}
-
-sdk_sha_ani_BRAILLE_AI_MIXED() {
-    (
-    trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.05
+        local delay=0.1
+        local animationLine=""
 
         # Cache the generated colors array
         if [ -z "${BRAILLE_ANIME_CACHED_COLORS+x}" ]; then
@@ -330,22 +154,35 @@ sdk_sha_ani_BRAILLE_AI_MIXED() {
         local frames=()
         local frame_count=0
         local i=0
-        while true; do
+        
+        while [ "$PROCESSING_ANIMATION_RUNNING" = true ]; do
             # Randomly switch pattern every full cycle
             if [ $i -eq 0 ]; then
                 current_pattern=$((RANDOM % pattern_count))
                 IFS=' ' read -r -a frames <<< "${patterns[$current_pattern]}"
                 frame_count=${#frames[@]}
             fi
+            
             local color_idx=$((RANDOM % color_count))
             local color=${colors[$color_idx]}
-            printf "\r\033[0m\033[%sm%s\033[0m" "$color" "${frames[$i]}"
+            
+            # Write animation character, then backspace to overwrite next time
+            printf "\033[%sm%s\033[0m\b" "$color" "${frames[$i]}"
+            
             sleep "$delay"
             i=$((i+1))
             if [ $i -ge $frame_count ]; then
                 i=0
             fi
+            
+            # Check if we need to exit
+            if [ "$PROCESSING_ANIMATION_RUNNING" != "true" ]; then
+                # Just stop, don't clear - parent will handle cleanup
+                break
+            fi
         done
+        
+        # No cleanup needed - parent handles it
     ) &
     PROCESSING_PID=$!
 }
@@ -353,7 +190,8 @@ sdk_sha_ani_BRAILLE_AI_MIXED() {
 sdk_sha_ani_AI_WRITING() {
     (
     trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.05
+        local delay=0.1
+        
         local frames=(
             "\033[0;107m \033[0m\033[0m" # Outline reverse
             "\033[7;97m✧\033[0m\033[0m" # Reverse and outline icon
@@ -361,11 +199,11 @@ sdk_sha_ani_AI_WRITING() {
             "\033[1;97m✦\033[0m\033[0m" # Filled icon
             "\033[1;97m✧\033[0m\033[0m" # Outline icon
             "\033[1;90m✧\033[0m\033[0m" # Outline icon
-            # "\033[2;97m✧\033[0m\033[0m" # Outline icon
+            "\033[2;97m✧\033[0m\033[0m" # Outline icon
             "\033[2;90m✧\033[0m\033[0m" # Outline icon
             "\033[1;97m \033[0m\033[0m" # Outline icon
             "\033[2;90m✧\033[0m\033[0m" # Outline icon
-            # "\033[2;97m✧\033[0m\033[0m" # Outline icon
+            "\033[2;97m✧\033[0m\033[0m" # Outline icon
             "\033[1;90m✧\033[0m\033[0m" # Outline icon
             "\033[1;97m✧\033[0m\033[0m" # Outline icon
             "\033[1;97m✦\033[0m\033[0m" # Filled icon
@@ -375,15 +213,22 @@ sdk_sha_ani_AI_WRITING() {
             "\033[0;107m \033[0m\033[0m" # Outline reverse
         )
         local i=0
-        printf "\033[s"
-        while true; do
-            printf "\033[u"
-            printf "%b" "${frames[$i]}"
-            printf " "
-            printf "\033[u"
+        
+        while [ "$PROCESSING_ANIMATION_RUNNING" = true ]; do
+            # Write animation character, then backspace to overwrite next time
+            printf "%b\b" "${frames[$i]}"
+            
             sleep "$delay"
             i=$(( (i+1) % ${#frames[@]} ))
+            
+            # Check if we need to exit
+            if [ "$PROCESSING_ANIMATION_RUNNING" != "true" ]; then
+                # Just stop, don't clear - parent will handle cleanup
+                break
+            fi
         done
+        
+        # No cleanup needed - parent handles it
     ) &
     PROCESSING_PID=$!
 }

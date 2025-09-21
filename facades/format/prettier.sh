@@ -14,7 +14,7 @@ sdk_fac_for_prettier() {
         set -- "**/*.{js,jsx,ts,tsx,json,css,scss,md}"
     fi
 
-    stdout -i --ansi="34" --icon="❄︎" --loading "Formatting using Prettier"
+    stdout -i --ansi="34" --icon="❄︎" --processing "Formatting using Prettier"
 
     if [ "$CI" = "true" ]; then 
         _prettier --check --log-level=warn "$@";

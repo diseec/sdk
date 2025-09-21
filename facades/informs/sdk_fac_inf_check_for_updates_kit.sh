@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sdk_fac_inf_check_for_updates_kit() {
-    processing_start "BRAILLE_AI_MIXED"
+    processing_start "BRAILLE_MIXED"
 
     # Check if version changed or if repo/modules are behind
     if cli_ctx install function sdk_fac_ins_has_version_changed; then

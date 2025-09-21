@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sdk_fac_inf_check_for_updates_repo() {
-    processing_start "BRAILLE_AI_MIXED"
+    processing_start "BRAILLE_MIXED"
     
     # Check if the main repository is behind
     current_branch=$(_git -C "$D_CTX_DIR" rev-parse --abbrev-ref HEAD)

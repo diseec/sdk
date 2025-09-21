@@ -23,7 +23,7 @@ sdk_fac_git_cmd_commit_push_pr() {
     sdk_fac_git_cmd_git_log "HEAD"
 
     if [ "$D_GLOB_RECURSIVE" = "true" ]; then
-        stdout -l --loading "Cpp for selected submodules"
+        stdout -l --processing "Cpp for selected submodules"
         cpp_submodule() {
             local module="$1"; local module_path="$2"
             bash "$D_CTX_DIR/$module_path/$D_CLI_LOCAL_NAME" api v1 git.commit.push.pr

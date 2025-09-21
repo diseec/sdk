@@ -3,7 +3,7 @@
 sdk_fac_doc_up_development() {
     handle_hook before_dev
     
-    processing_start "BRAILLE_AI_MIXED"
+    processing_start "BRAILLE_MIXED"
 
     # # Filter services based on workspace configuration
     services_filter=$(cli_ctx --quiet submodule function sdk_fac_sub_fea_act_get_services_filter)
@@ -21,7 +21,7 @@ sdk_fac_doc_up_development() {
             trap - INT TERM EXIT
 
             # Friendly log for users / debug
-            stdout -l --loading "Stopping all containers and cleaning up"
+            stdout -l --processing "Stopping all containers and cleaning up"
 
             # Try a hard stop first (best-effort), then bring the compose project down
             # Remove orphans to avoid leftover dependencies

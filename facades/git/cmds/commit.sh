@@ -95,7 +95,7 @@ sdk_fac_git_cmd_commit() {
     fi
 
     # Generate commit message with user confirmation
-    stdout -a --loading "Writing commit message"
+    stdout -a --processing "Writing commit message"
     local commit_msg=""
     local has_accepted_commit_message="false"
     stdin work_focus "What was main changes?"

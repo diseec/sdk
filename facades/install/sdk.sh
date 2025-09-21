@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sdk_fac_ins_sdk_process() {
-    processing_start "BRAILLE_AI_MIXED"
+    processing_start "BRAILLE_MIXED"
 
     if [ "$IS_IN_SDK_CONTAINER" != "true" ]; then
         stdout -e "The 'patch' command works only on bench! (the $D_SDK_NAME container)"
@@ -26,7 +26,7 @@ sdk_fac_ins_sdk_process() {
 
     local package_name="$D_SDK_NPM_PKG@$version_specifier"
 
-    stdout -l --loading "Fetching $package_name to $D_CONT_CTX_DIR"
+    stdout -l --processing "Fetching $package_name to $D_CONT_CTX_DIR"
     
     local _tempdir=$(mktemp -d)
     local npm_output=$(cd $_tempdir && _npm install "$package_name")
@@ -51,7 +51,7 @@ sdk_fac_ins_sdk_process() {
     fix_permissions "$target_kit"
 
     if [ ! -f "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME" ]; then
-        stdout -l --loading "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file"
+        stdout -l --processing "No '$D_CLI_LOCAL_NAME' found in repo root. Applying template file"
         cp "/$D_SDK_NAME/templates/$D_CLI_LOCAL_NAME" "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME";
     fi
 
@@ -64,7 +64,7 @@ sdk_fac_ins_sdk_process() {
 }
 
 sdk_fac_ins_sdk() {
-    processing_start "BRAILLE_AI_MIXED"
+    processing_start "BRAILLE_MIXED"
 
     # docker pull image.registry.diseec.com/kit \
     #     --disable-content-trust > /dev/null 2>&1
@@ -89,8 +89,6 @@ sdk_fac_ins_sdk() {
 sdk_fac_ins_ensure_patched() {
     mark_ctx_only
 
-    processing_start "BRAILLE_AI_MIXED"
-
     local is_forced="${D_GLOB_PATCH:-false}";
     local sdk_dir="$D_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH";
 
@@ -107,8 +105,6 @@ sdk_fac_ins_ensure_patched() {
             echo "$npm_update_sdk_global"
             stdout -e "Patching global $D_SDK_NAME failed" >&2; return 1
         fi
-
-        processing_stop
         
         _D_SDK_HAS_PATCHED="true"
         sdk_fac_ins_sdk
@@ -118,6 +114,4 @@ sdk_fac_ins_ensure_patched() {
             stdout -e "Patching $D_SDK_NAME failed" >&2; return 1
         fi
     fi
-    
-    processing_stop
 }

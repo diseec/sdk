@@ -8,7 +8,7 @@ sdk_fac_sec_test_key_with_secrets() {
         return 0
     fi
     
-    stdout -l --loading "Testing key with existing secrets"
+    stdout -l --processing "Testing key with existing secrets"
     for secret_file in "$SECRETS_DIR"/*; do
         if [ -f "$secret_file" ]; then
             local secret_name=$(basename "$secret_file")
@@ -32,7 +32,7 @@ sdk_fac_sec_reencrypt_all_secrets() {
     local old_key="$1"
     local new_key="$2"
     
-    stdout -l --loading "Re-encrypting existing secrets with new key"
+    stdout -l --processing "Re-encrypting existing secrets with new key"
     for secret_file in "$SECRETS_DIR"/*; do
         if [ -f "$secret_file" ]; then
             local secret_name=$(basename "$secret_file")

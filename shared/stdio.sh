@@ -8,7 +8,7 @@
 # Usage: stdout [type] [options] "Your message here"
 # Types: -l|--log (default), -d|--debug, -f|--fail, -e|--error, -o|--okey, -w|--warning, -i|--info, -q|--question, -a|--ai, -s|--statement
 # Options:
-# --loading     (Show loading animation and keep it until next message)
+# --processing     (Show processing animation and keep it until next message)
 # --icon=ICON   (Custom icon to display instead of default for type)
 # --ansi=CODE   (Custom ANSI color code to use instead of default for type)
 # --level=LEVEL (Set log level: VERBOSE, INFO, WARNING, ERROR, QUIET)
@@ -29,8 +29,9 @@ stdout() {
     local default_level="VERBOSE"
     local default_ansi="90"
     local default_icon=""
+    local default_animation="BRAILLE_MIXED"
     local content=""
-    local loading=false
+    local processing=false
     local unique_id="stdout" # Unique identifier for this stdout instance
 
     # First, check if the first argument is a valid type
@@ -58,8 +59,8 @@ stdout() {
                 local given_level="${1#*=}"
                 shift
                 ;;
-            --loading)
-                loading=true
+            --processing)
+                processing=true
                 shift
                 ;;
             *)
@@ -72,23 +73,24 @@ stdout() {
 
     # Parse type config
     case $type in
-        -l|--log)       default_ansi="90"; default_icon="";  default_level="VERBOSE" ;;
-        -d|--debug)     default_ansi="31"; default_icon="¤"; default_level="VERBOSE" ;;
-        -f|--fail)      default_ansi="31"; default_icon="✖"; default_level="ERROR"   ;; # ✗
-        -e|--error)     default_ansi="31"; default_icon="E"; default_level="ERROR"   ;;
-        -o|--okey)      default_ansi="32"; default_icon="✓"; default_level="INFO"    ;; # ✔
-        -w|--warning)   default_ansi="33"; default_icon="!"; default_level="WARNING" ;;
-        -i|--info)      default_ansi="34"; default_icon="i"; default_level="INFO"    ;;
-        -q|--question)  default_ansi="35"; default_icon="?"; default_level="ERROR"    ;;
-        -a|--ai)        default_ansi="96"; default_icon="✦"; default_level="INFO"    ;;
-        -s|--statement) default_ansi="97"; default_icon="";  default_level="INFO"    ;;
-        *)                                                   default_level="VERBOSE" ;;
+        -l|--log)       default_ansi="90"; default_icon="";  default_level="VERBOSE"; default_animation="BRAILLE_MIXED" ;;
+        -d|--debug)     default_ansi="31"; default_icon="¤"; default_level="VERBOSE"; default_animation="BRAILLE_MIXED" ;;
+        -f|--fail)      default_ansi="31"; default_icon="✖"; default_level="ERROR";   default_animation="BRAILLE_MIXED" ;; # ✗
+        -e|--error)     default_ansi="31"; default_icon="E"; default_level="ERROR";   default_animation="BRAILLE_MIXED" ;;
+        -o|--okey)      default_ansi="32"; default_icon="✓"; default_level="INFO";    default_animation="BRAILLE_MIXED" ;; # ✔
+        -w|--warning)   default_ansi="33"; default_icon="!"; default_level="WARNING"; default_animation="BRAILLE_MIXED" ;;
+        -i|--info)      default_ansi="34"; default_icon="i"; default_level="INFO";    default_animation="BRAILLE_MIXED" ;;
+        -q|--question)  default_ansi="35"; default_icon="?"; default_level="ERROR";   default_animation="BRAILLE_MIXED" ;;
+        -a|--ai)        default_ansi="96"; default_icon="✦"; default_level="INFO";    default_animation="AI_WRITING"    ;;
+        -s|--statement) default_ansi="97"; default_icon="";  default_level="INFO";    default_animation="BRAILLE_MIXED" ;;
+        *) stdout -e "No such log type: $type"; return 1 ;;
     esac
 
     # Prepare icon and ANSI color and level
     local _ansi="${given_ansi:-$default_ansi}"
     local _icon="${given_icon:-$default_icon}"
     local _level="${given_level:-$default_level}"
+    local _animation="${given_animation:-$default_animation}"
 
     # Prepare prompt & content
     local prompt
@@ -114,17 +116,20 @@ stdout() {
         QUIET|quiet) case $_level in     VERBOSE|INFO|WARNING|ERROR) return 0; esac ;;
     esac
 
-    # Always stop loader for this instance before printing any message
-    if [ -n "$PROCESSING_PID" ] && kill -0 "$PROCESSING_PID" 2>/dev/null; then
-        processing_stop "$unique_id"
-        printf "\n"
-    fi
-    # Output log message
-    if [ "$loading" = true ]; then
-        printf "\033[0m \033[0m%s %b" "$prompt" "$content "
-        processing_start "$unique_id"
+    # Output log message with optional processing animation
+    if [ "$processing" = true ]; then
+        # First ensure any previous animation is stopped
+        processing_stop
+        
+        # Print message without newline - leave space for the animation
+        printf "%s %b\n" "$prompt" "$content"
+        
+        # Start animation (will auto-stop on next output)
+        processing_start "$_animation"
     else
-        printf "\033[0m \033[0m%s %b\n" "$prompt" "$content"
+        # Regular output with newline - explicitly stop any running animation first
+        processing_stop
+        printf "%s %b\n" "$prompt" "$content"
     fi
 }
 
@@ -508,10 +513,8 @@ retry() {
 
         while [ $attempt -le $max_attempts ] && [ "$success" = "false" ] && [ "$interrupted" = "false" ]; do
             # Execute the command and capture output
-            processing_start "BRAILLE_AI_MIXED"
             cmd_output=$(eval "$operation_cmd" 2>&1)
             exit_code=$?
-            processing_stop
 
             if [ $exit_code -eq 0 ]; then
                 success=true
@@ -523,7 +526,7 @@ retry() {
 
                 if [ $attempt -lt $max_attempts ]; then
                     stdout -e "Unable to execute '$operation_cmd'"
-                    stdout -w --loading "Retrying in $timeout seconds ($attempt/$max_attempts) Press Ctrl+C to cancel"
+                    stdout -w --processing "Retrying in $timeout seconds ($attempt/$max_attempts) Press Ctrl+C to cancel"
                     sleep $timeout &
                     wait $!  # Wait for sleep to complete, but allow signal interruption
 
@@ -538,7 +541,7 @@ retry() {
                     # stdout -w "All $max_attempts automatic retries failed."
                     # If manual mode is also enabled, we'll continue to manual phase
                     if [ "$manual_mode" = "true" ]; then
-                        stdout -l --loading "Switching to manual retry"
+                        stdout -l --processing "Switching to manual retry"
                     fi
                     break
                 fi
@@ -561,10 +564,9 @@ retry() {
         while [ "$success" = "false" ] && [ "$interrupted" = "false" ]; do
             # If this is not the first manual attempt, run the command and capture output
             if [ $attempt -gt 0 ]; then
-                processing_start "BRAILLE_AI_MIXED"
+                # Execute the command and capture output
                 cmd_output=$(eval "$operation_cmd" 2>&1)
                 exit_code=$?
-                processing_stop
 
                 if [ $exit_code -eq 0 ]; then
                     success=true

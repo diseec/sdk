@@ -61,7 +61,7 @@ sdk_fac_ins_rep_handle() {
         fi
 
         if [ -n "$(cli_ctx --quiet submodule actives)" ] && [ -d "$D_CTX_DIR/.git" ]; then
-            stdout -l --loading "Cloning selected submodules"
+            stdout -l --processing "Cloning selected submodules"
             # cli_ctx submodule foreach_active initialize_submodule
             # if [ $? -ne 0 ]; then
             #     rep_failures+=("Submodule initialization failed")
@@ -134,14 +134,14 @@ sdk_fac_ins_repository() {
     fi
 
     if [ "$D_GLOB_RECURSIVE" = "true" ]; then
-        stdout -l --loading "Installing dependencies in selected submodules"
+        stdout -l --processing "Installing dependencies in selected submodules"
         local active_modules="$(cli_ctx --quiet submodule actives)"
         # Normalize whitespace: convert newlines/tabs to single spaces and trim edges
         active_modules=$(normalize $active_modules)
         # Now active_modules will be a single-line, space-separated list (or empty)
         for module_path in $active_modules; do
             if [ -d "$D_CTX_DIR/$module_path" ]; then
-                stdout -l --loading "Installing dependencies in $module_path"
+                stdout -l --processing "Installing dependencies in $module_path"
                 retry "(cd \"$D_CTX_DIR/$module_path\" && $D_CLI_GLOBAL_NAME api v1 install)"
                 if [ $? -ne 0 ]; then
                     install_failures+=("Dependency installation failed in submodule at $module_path")

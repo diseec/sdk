@@ -90,9 +90,9 @@ sdk_fac_git_cmd_pr_check_status() {
       return 0
   fi
 
-  stdout -l --loading "Checking PR status"
+  stdout -l --processing "Checking PR status"
 
-  processing_start "BRAILLE_AI_MIXED"
+  processing_start "BRAILLE_MIXED"
 
   local pr_number=$(sdk_fac_git_cmd_has_open_pr)
   local branch="$D_CURRENT_BRANCH"

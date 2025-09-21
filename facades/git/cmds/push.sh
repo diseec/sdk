@@ -2,7 +2,7 @@
 
 sdk_fac_git_cmd_push() {
     # Push to remote
-    stdout -l --loading "Pushing to remote"
+    stdout -l --processing "Pushing to remote"
     
     retry --auto --manual "_git push -u origin \"$D_CURRENT_BRANCH\""
     if [ $? -ne 0 ]; then

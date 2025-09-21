@@ -1,9 +1,9 @@
 #!/bin/bash
 
 sdk_fac_git_cmd_pull_merge() {
-    stdout -i --loading "Fetching latest changes from remote"
+    stdout -i --processing "Fetching latest changes from remote"
 
-    stdout -l --loading "Pulling latest branch '$D_CURRENT_BRANCH' changes"
+    stdout -l --processing "Pulling latest branch '$D_CURRENT_BRANCH' changes"
     retry --auto --manual "_git -C \"$D_CTX_DIR\" pull origin" pull_output
     if ! [ $? -eq 0 ]; then
         echo $pull_output
@@ -11,7 +11,7 @@ sdk_fac_git_cmd_pull_merge() {
         return 1
     fi
 
-    stdout -l --loading "Merging latest 'origin/main' changes to branch '$D_CURRENT_BRANCH'"
+    stdout -l --processing "Merging latest 'origin/main' changes to branch '$D_CURRENT_BRANCH'"
     retry --auto --manual "_git -C \"$D_CTX_DIR\" merge origin/main" merge_output
     if ! [ $? -eq 0 ]; then
         echo $merge_output
@@ -24,7 +24,7 @@ sdk_fac_git_cmd_pull_merge() {
 
     if [ "$D_GLOB_RECURSIVE" = "true" ]; then
         pull_submodule() {
-            stdout -l --loading "Pull and merging in submodule '$module'"
+            stdout -l --processing "Pull and merging in submodule '$module'"
             local module="$1"
             local module_path="$2"
             retry --auto --manual "bash \"$D_CTX_DIR/$module_path/$D_CLI_LOCAL_NAME\" api v1 pull" submodule_pull_output

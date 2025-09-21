@@ -19,7 +19,7 @@ sdk_fac_ai_call_openai() {
     # Ensure the prompt doesn't exceed token limit
     local token_count=$(sdk_fac_ai_count_tokens "$prompt")
     if [ "$token_count" -gt "$max_tokens" ]; then
-        stdout -w --loading "Prompt exceeds token limit ($token_count > $max_tokens), truncating" >&2
+        stdout -w --processing "Prompt exceeds token limit ($token_count > $max_tokens), truncating" >&2
         prompt=$(sdk_fac_ai_truncate_to_token_limit "$prompt" "$max_tokens")
     fi
     
@@ -51,7 +51,6 @@ sdk_fac_ai_generate() {
     stdout -i "Sending prompt with ~$token_count tokens to model $model" >&2
 
 
-    processing_start "AI_WRITING"
     local response="$(sdk_fac_ai_call_openai "$prompt" "$model" "$temperature" "$max_tokens")"
     
     if ! [ $? -eq 0 ] || sdk_fac_ai_has_error "$response"; then
@@ -61,7 +60,6 @@ sdk_fac_ai_generate() {
     fi
 
     local content=$(sdk_fac_ai_extract_response "$response")
-    processing_stop
     
     if [ -n "$content" ] && [ "$content" != "null" ]; then
         echo "$content"
