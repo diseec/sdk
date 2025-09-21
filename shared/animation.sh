@@ -387,24 +387,3 @@ sdk_sha_ani_AI_WRITING() {
     ) &
     PROCESSING_PID=$!
 }
-
-
-# sdk_sha_ani_AI_WRITING() {
-#     (
-#     trap "exit" SIGTERM SIGHUP SIGINT
-#         local delay=0.08
-#         local frames=(
-#         )
-#         local i=0
-#         printf "\033[s"
-#         while true; do
-#             printf "\033[u"
-#             printf "%b" "${frames[$i]}"
-#             printf " "
-#             printf "\033[u"
-#             sleep "$delay"
-#             i=$(( (i+1) % ${#frames[@]} ))
-#         done
-#     ) &
-#     PROCESSING_PID=$!
-# }

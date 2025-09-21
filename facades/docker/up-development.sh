@@ -6,7 +6,7 @@ sdk_fac_doc_up_development() {
     processing_start "BRAILLE_AI_MIXED"
 
     # # Filter services based on workspace configuration
-    # services_filter=$(cli_ctx --quiet submodule function sdk_fac_sub_fea_act_get_services_filter)
+    services_filter=$(cli_ctx --quiet submodule function sdk_fac_sub_fea_act_get_services_filter)
 
     if [ "$D_IS_IN_CONTAINER" = "true" ]; then
         if [ -f "$D_CTX_DIR/docker-compose.override.yaml" ]; then
