@@ -7,6 +7,8 @@ c=$1; shift; case "$c" in
     kre|key-reset) sdk_fac_sec_reset_key "$@" ;;
     ksh|key-show) sdk_fac_sec_show_key "$@" ;;
     add) sdk_fac_sec_add_secret "$@" ;;
+    # add-multiline|addm) sdk_fac_sec_add_multiline_secret "$@" ;;
+    # add-from-file|addf) sdk_fac_sec_add_secret_from_file "$@" ;;
     exp|export) sdk_fac_sec_export "$@" ;;
     pri|print) sdk_fac_sec_show_secrets "$@" ;;
     cle|clear) sdk_fac_sec_clear_secrets "$@" ;;
@@ -19,9 +21,11 @@ c=$1; shift; case "$c" in
         "$(ansi 97 'Secrets Commands')" "" \
         "$(ansi 97 'Usage:    cli secret <command> [options]')" "" "" "" \
         "$(ansi "1;90" "$(capitalize 'Core Commands')")" "" \
-        "    add                    " "Add a new secret interactively" \
+        "    add <name> <value>     " "Add a new secret interactively" \
+        "                           " "$(ansi "2;90" "Options: [--file <file_path>]")" \
         "    exp|export <name>      " "Export a secret value (non-interactive)" \
         "    pri|print              " "Display all secrets in readable format" \
+        "                           " "$(ansi "2;90" "--unmask reveal actual values to visible colors")" \
         "    rem|remove <name>      " "Remove a specific secret" \
         "    cle|clear              " "Remove all secrets (requires confirmation)" \
         "" "" "$(ansi "1;90" "$(capitalize 'Key Management')")" "" \

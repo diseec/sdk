@@ -18,9 +18,44 @@ sdk_fac_sec_add_secret() {
         return 1
     fi
 
-    local secret_name secret_value
-    
-    stdin secret_name "Enter secret name (will be used as environment variable)" --optional
+    local secret_name secret_value file_path=""
+
+    # Parse arguments for flags
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -f|--file)
+                if [ -z "$2" ]; then
+                    stdout -e "Flag $1 requires a file path"
+                    return 1
+                fi
+                file_path="$2"
+                shift 2
+                ;;
+            -*)
+                stdout -e "Unknown flag: $1"
+                stdout -i "Usage: D secret add [secret_name] [secret_value] [-f|--file <file_path>]"
+                return 1
+                ;;
+            *)
+                if [ -z "$secret_name" ]; then
+                    secret_name="$1"
+                    shift
+                elif [ -z "$file_path" ]; then
+                    # Only collect remaining args as secret_value if no file flag
+                    secret_value="$*"
+                    break
+                else
+                    shift
+                fi
+                ;;
+        esac
+    done
+
+    # Get secret name if not provided
+    if [ -z "$secret_name" ]; then
+        stdin secret_name "Enter secret name (will be used as environment variable)" --optional
+    fi
+
     sdk_fac_sec_validate_secret_name "$secret_name" || return 1
     
     if sdk_fac_sec_secret_exists "$secret_name"; then
@@ -31,7 +66,28 @@ sdk_fac_sec_add_secret() {
         fi
     fi
     
-    stdin secret_value "Enter secret value" --hidden
+    # Get secret value from file or input
+    if [ -n "$file_path" ]; then
+        if [ ! -f "$file_path" ]; then
+            stdout -e "File not found: $file_path"
+            return 1
+        fi
+        
+        # Read the entire file content
+        if ! secret_value=$(cat "$file_path"); then
+            stdout -e "Failed to read file: $file_path"
+            return 1
+        fi
+        
+        if [ -z "$secret_value" ]; then
+            stdout -e "File is empty: $file_path"
+            return 1
+        fi
+        
+        stdout -i "Reading secret value from file: $file_path"
+    elif [ -z "$secret_value" ]; then
+        stdin secret_value "Enter secret value" --hidden
+    fi
     
     if [ -z "$secret_value" ]; then
         stdout -e "Secret value cannot be empty"
@@ -39,7 +95,11 @@ sdk_fac_sec_add_secret() {
     fi
     
     sdk_fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
-    stdout -o "Secret '$secret_name' added successfully"
+    if [ -n "$file_path" ]; then
+        stdout -l "Secret '$secret_name' added successfully from file: $file_path"
+    else
+        stdout -l "Secret '$secret_name' added successfully"
+    fi
 }
 
 # Export a single secret by name (returns just the value)
@@ -99,6 +159,28 @@ sdk_fac_sec_show_secrets() {
     sdk_fac_sec_check_openssl || return 1
     sdk_fac_sec_validate_key_for_operation || return 1
 
+    local show_values=false
+    
+    # Parse arguments for flags
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --unmask)
+                show_values=true
+                shift
+                ;;
+            -*)
+                stdout -e "Unknown flag: $1"
+                stdout -i "Usage: D secret show [--unmask]"
+                return 1
+                ;;
+            *)
+                stdout -e "Unexpected argument: $1"
+                stdout -i "Usage: D secret show [--unmask]"
+                return 1
+                ;;
+        esac
+    done
+
     if ! sdk_fac_sec_secrets_exist; then
         stdout -w "No secrets found"
         return 0
@@ -107,28 +189,44 @@ sdk_fac_sec_show_secrets() {
     local key=$(sdk_fac_sec_get_encryption_key)
     local secret_count=0
     
+    echo
+    
+    # Process and display each secret directly
     for secret_file in "$SECRETS_DIR"/*; do
         if [ -f "$secret_file" ]; then
             local secret_name=$(basename "$secret_file")
             local encrypted_value=$(sdk_fac_sec_read_secret_file "$secret_name")
             local decrypted_value=$(sdk_fac_sec_decrypt_data "$encrypted_value" "$key")
 
-            echo ""
             if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
-                stdout --ansi="34" --icon="$secret_name" "$decrypted_value"
+                # Display secret name in white
+                printf "$(ansi "97" "%s")\n" "$secret_name"
+                
+                # Display secret value based on show_values flag
+                if [ "$show_values" = true ]; then
+                    # Show actual value in darker gray
+                    printf "$(ansi "2;30" "%s")\n\n" "$decrypted_value"
+                else
+                    # Hide value with asterisks in light gray
+                    printf "$(ansi "8;30" "%s")\n\n" "********"
+                fi
+                
                 secret_count=$((secret_count + 1))
             else
-                stdout --ansi="34" --icon="$secret_name" "⚠️ FAILED TO DECRYPT"
+                stdout -w "Failed to decrypt secret '$secret_name'"
             fi
         fi
     done
-    
-    echo ""
-    
+
+    # Display summary if we have any secrets
     if [ $secret_count -gt 0 ]; then
-        echo "Total: $secret_count secrets"
-        echo "To export a secret as environment variables:"
-        echo "export SECRET_NAME=\"\$(\$D_CLI_STUB secret export 'SECRET_NAME')\""
+        printf "\n"
+        printf "$(ansi "2;90" "Total: %d secrets")\n" "$secret_count"
+        if [ "$show_values" = false ]; then
+            printf "$(ansi "2;90" "Use --unmask to display actual values")\n"
+        fi
+        printf "$(ansi "2;90" "To export a secret as environment variables:")\n"
+        printf "$(ansi "2;90" "export SECRET_NAME=\"\$(\$D_CLI_STUB secret export 'SECRET_NAME')\"")\n"
     else
         stdout -w "No secrets were displayed"
     fi

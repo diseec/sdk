@@ -44,7 +44,7 @@ test_secret_print_single_secret() {
     # Now print all secrets
     local print_output
     print_output=$(D secret print)
-    
+
     # Should succeed and contain the secret
     assert_equals "0" "$?" "Print command should succeed with single secret"
     assert_contains "$print_output" "PRINT_TEST_SECRET" "Should show secret name"
