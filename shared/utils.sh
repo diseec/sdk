@@ -93,10 +93,23 @@ fix_permissions() {
         return 1
     fi
     
+    # Check if target already has correct ownership
+    local current_stat=$(stat -c "%u:%g" "$target_dir" 2>/dev/null)
+    local expected_ownership="$D_HOST_UID:$D_HOST_GID"
+    
+    if [ "$current_stat" = "$expected_ownership" ]; then
+        # Already has correct permissions, skip chown
+        return 0
+    fi
+    
+    stdout -d "Fixing permissions for $target_dir to $D_HOST_UID:$D_HOST_GID"
+
     local fix_permissions_output=$(chown -R $D_HOST_UID:$D_HOST_GID "$target_dir")
 
     if [ $? -ne 0 ]; then
         stdout -e "Failed to fix permissions for $target_dir: $fix_permissions_output" >&2
         return 1
     fi
+
+    stdout -d "Fixing permissions for $target_dir to $D_HOST_UID:$D_HOST_GID done"
 }

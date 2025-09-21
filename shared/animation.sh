@@ -102,7 +102,7 @@ processing_stop() {
 sdk_sha_ani_BRAILLE_MIXED() {
     (
     trap "exit" SIGTERM SIGHUP SIGINT
-        local delay=0.1
+        local delay=0.05
         local animationLine=""
 
         # Cache the generated colors array

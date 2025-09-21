@@ -33,7 +33,7 @@ _ARGS_ENVS_PROCESS=""; _found_command=false; for arg in "${_expanded_args[@]}"; 
         case "$arg" in
             -p|--patch)     D_GLOB_PATCH="true" ;;
             -r|--recursive) D_GLOB_RECURSIVE="true" ;;
-            -d|--debug)     D_GLOB_DEBUG="true" ;;
+            -d|--debug)     D_GLOB_LOG_LEVEL="DEBUG"; D_GLOB_DEBUG="true" ;;
             -q|--quiet)     D_GLOB_LOG_LEVEL="QUIET" ;;
             -v|--verbose)   D_GLOB_LOG_LEVEL="VERBOSE" ;;
             --log-level=*)  D_GLOB_LOG_LEVEL="${arg#*=}" ;;

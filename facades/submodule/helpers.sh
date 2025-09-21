@@ -32,7 +32,7 @@ sdk_fac_sub_parse_path_format() {
     done
     
     # Join the path components for the target directory
-    local type_dir=$(IFS='/'; echo "${path_prefix[*]}")
+    local type_dir="$D_CTX_DIR/$(IFS='/'; echo "${path_prefix[*]}")"
 
     if [[ -z "$type" ]]; then
         stdout -e "Type is required, please specify as type/path/to/reponame"
@@ -52,6 +52,7 @@ sdk_fac_sub_parse_path_format() {
 
     # Return values
     echo "$type" "$repo_name" "$type_dir"
+
     return 0
 }
 

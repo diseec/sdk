@@ -11,6 +11,7 @@ sdk_fac_doc_cmd_docker_execute() {
         --with-deps)
             RUN_OPTIONS=$(echo $RUN_OPTIONS | sed 's/--no-deps//g')
         ;;
+        --entrypoint=*) RUN_OPTIONS="$RUN_OPTIONS $arg" ;;
     *) ARGS="$ARGS \"$arg\"";; esac; done; eval set -- $(eval echo $ARGS);
 
     SERVICE_NAME=$1; shift;

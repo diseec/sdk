@@ -176,7 +176,6 @@ function sdk_boo_debug_init() {
     
     # Start the tracing system and error handler if debug mode is enabled
     if [[ "$D_GLOB_DEBUG" == "true" ]]; then
-        D_GLOB_LOG_LEVEL="VERBOSE"
         trap trace_error_handler ERR
     fi
 }

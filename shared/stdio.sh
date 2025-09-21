@@ -11,7 +11,7 @@
 # --processing     (Show processing animation and keep it until next message)
 # --icon=ICON   (Custom icon to display instead of default for type)
 # --ansi=CODE   (Custom ANSI color code to use instead of default for type)
-# --level=LEVEL (Set log level: VERBOSE, INFO, WARNING, ERROR, QUIET)
+# --level=LEVEL (Set log level: DEBUG, VERBOSE, INFO, WARNING, ERROR, QUIET)
 # Examples:
 #   stdout "This is a log message"
 #   stdout -i --icon="i" --ansi="34" "This is an info message"
@@ -74,7 +74,7 @@ stdout() {
     # Parse type config
     case $type in
         -l|--log)       default_ansi="90"; default_icon="";  default_level="VERBOSE"; default_animation="BRAILLE_MIXED" ;;
-        -d|--debug)     default_ansi="31"; default_icon="¤"; default_level="VERBOSE"; default_animation="BRAILLE_MIXED" ;;
+        -d|--debug)     default_ansi="31"; default_icon="¤"; default_level="DEBUG";   default_animation="BRAILLE_MIXED" ;;
         -f|--fail)      default_ansi="31"; default_icon="✖"; default_level="ERROR";   default_animation="BRAILLE_MIXED" ;; # ✗
         -e|--error)     default_ansi="31"; default_icon="E"; default_level="ERROR";   default_animation="BRAILLE_MIXED" ;;
         -o|--okey)      default_ansi="32"; default_icon="✓"; default_level="INFO";    default_animation="BRAILLE_MIXED" ;; # ✔
@@ -109,8 +109,9 @@ stdout() {
 
     # Handle logging levels
     case $D_GLOB_LOG_LEVEL in
-        VERBOSE|verbose) ;;
-        INFO|info) case $_level in       VERBOSE) return 0; esac ;;
+        DEBUG|debug) ;;
+        VERBOSE|verbose) case $_level in DEBUG) return 0; esac ;;
+        INFO|info) case $_level in       DEBUG|VERBOSE) return 0; esac ;;
         WARNING|warning) case $_level in VERBOSE|INFO) return 0; esac ;;
         ERROR|error) case $_level in     VERBOSE|INFO|WARNING) return 0; esac ;;
         QUIET|quiet) case $_level in     VERBOSE|INFO|WARNING|ERROR) return 0; esac ;;

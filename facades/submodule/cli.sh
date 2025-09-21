@@ -19,9 +19,9 @@ c=$1; shift; case $c in
     add)
         local submodule_path="$1"
         read type repo_name type_dir <<< "$(sdk_fac_sub_parse_path_format "$submodule_path")"
-        stdout "Adding repository '$repo_name' to $type_dir/ as type '$type'"
+        stdout -l --processing "Adding repository '$repo_name' to $type_dir/ as type '$type'"
         set -e
-        _git submodule add https://$D_REPOSITORY_URL/$repo_name.git "$submodule_path"
+        _git submodule add --force "https://$D_REPOSITORY_URL/$repo_name.git" "$submodule_path"
         _git submodule update --init --recursive
         ;;
 
@@ -40,12 +40,12 @@ c=$1; shift; case $c in
         local submodule_path="$1"
         read type repo_name type_dir <<< "$(sdk_fac_sub_parse_path_format "$submodule_path")"
         if [[ -n "$repo_name" ]]; then
-            stdout "Updating submodule at $submodule_path"
+            stdout -l --processing "Updating submodule at $submodule_path"
             _git submodule update --remote -- "$submodule_path"
         else
             # todo
             target_to_update=${type_dir:-"."}
-            stdout "Updating all submodules in $target_to_update"
+            stdout -l --processing "Updating all submodules in $target_to_update"
             _git submodule update --remote --merge -- "$target_to_update"
         fi
         ;;
@@ -73,7 +73,7 @@ c=$1; shift; case $c in
         fi
         
         if [[ -d "$submodule_path" ]]; then
-            stdout "Linking package at $submodule_path"
+            stdout -l --processing "Linking package at $submodule_path"
             _npm link ./$submodule_path
         else
             stdout -e "Directory $submodule_path does not exist"
