@@ -95,7 +95,7 @@ stdout() {
     # Prepare prompt & content
     local prompt
 
-    if [ "$D_GLOB_LOG_LEVEL" = "VERBOSE" ]; then    
+    if [ "$D_GLOB_LOG_LEVEL" = "VERBOSE" ] || [ "$D_GLOB_LOG_LEVEL" = "DEBUG" ]; then    
         prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
         prompt="$(ansi 90 "$prompt")"
     fi
@@ -121,16 +121,25 @@ stdout() {
     if [ "$processing" = true ]; then
         # First ensure any previous animation is stopped
         processing_stop
+
+        if [ -n "$prompt" ]; then
+            printf "%s " "$prompt"
+        fi
         
         # Print message without newline - leave space for the animation
-        printf "%s %b\n" "$prompt" "$content"
+        printf "%b\n" "$content"
         
         # Start animation (will auto-stop on next output)
         processing_start "$_animation"
     else
         # Regular output with newline - explicitly stop any running animation first
         processing_stop
-        printf "%s %b\n" "$prompt" "$content"
+
+        if [ -n "$prompt" ]; then
+            printf "%s " "$prompt"
+        fi
+ 
+        printf "%b\n" "$content"
     fi
 }
 

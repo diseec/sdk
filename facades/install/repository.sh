@@ -20,8 +20,6 @@ initialize_submodule() {
 }
 
 sdk_fac_ins_rep_handle() {
-    # Early return in CI environment - silent skip
-    [ -n "$CI" ] && { stdout -w "Skipping interactive installation in CI environment"; return 0; }
 
     local rep_failures=()
     local rep_exit_code=0
@@ -127,7 +125,13 @@ sdk_fac_ins_repository() {
         exit_code=1
     fi
 
-    cli_ctx --safely install function sdk_fac_ins_rep_handle
+    # Early return in CI environment - silent skip
+    if [ -n "$CI" ]; then
+        stdout -w "Skipping interactive installation in CI environment";
+    else
+        cli_ctx --safely install function sdk_fac_ins_rep_handle
+    fi
+
     if [ $? -ne 0 ]; then
         install_failures+=("Repository handling failed in SDK container")
         exit_code=1

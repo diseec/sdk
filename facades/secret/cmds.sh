@@ -207,8 +207,8 @@ sdk_fac_sec_show_secrets() {
                     # Show actual value in darker gray
                     printf "$(ansi "2;30" "%s")\n\n" "$decrypted_value"
                 else
-                    # Hide value with asterisks in light gray
-                    printf "$(ansi "8;30" "%s")\n\n" "********"
+                    # Hide value
+                    printf "$(ansi "8;30" "%s")\n\n" "$decrypted_value"
                 fi
                 
                 secret_count=$((secret_count + 1))

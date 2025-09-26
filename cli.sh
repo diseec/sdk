@@ -26,7 +26,7 @@ c=$1; shift; case $c in
     env|envs)       source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
     sdk)            (env D_HOST_CTX_DIR="$D_CTX_DIR" "$D_CLI_SDK" "$@") ;;
     api)            source "$D_SDK_DIR/api/cli.sh" "$@" ;;
-    about)          sdk_cmd_opt_about "$@" ;;
+    abo|about)      sdk_cmd_opt_about "$@" ;;
 
     # OPTION COMMANDS
     --version)      sdk_cmd_opt_version "$@" ;;
