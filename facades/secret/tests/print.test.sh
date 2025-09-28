@@ -16,7 +16,7 @@ test_secret_print_no_secrets() {
     assert_equals "0" "$?" "OpenSSL should be available for this test"
     
     # Ensure no secrets exist
-    D secret key-reset --force > /dev/null 2>&1 || true
+    D secret key-reset --force 2>&1 || true
     
     local output
     output=$(D secret print 2>&1)
@@ -36,7 +36,7 @@ test_secret_print_single_secret() {
     assert_equals "0" "$?" "OpenSSL should be available for this test"
     
     # First add a secret
-    D secret add <<< $'PRINT_TEST_SECRET\nprint_test_value' > /dev/null
+    D secret add <<< $'PRINT_TEST_SECRET\nprint_test_value'
     
     # Verify secret was added successfully
     assert_equals "0" "$?" "Should be able to add a secret for testing"
@@ -62,10 +62,10 @@ test_secret_print_multiple_secrets() {
     assert_equals "0" "$?" "OpenSSL should be available for this test"
     
     # Add multiple secrets
-    D secret add <<< $'MULTI_SECRET_1\nvalue_one' > /dev/null
+    D secret add <<< $'MULTI_SECRET_1\nvalue_one'
     assert_equals "0" "$?" "Should be able to add first secret"
     
-    D secret add <<< $'MULTI_SECRET_2\nvalue_two' > /dev/null
+    D secret add <<< $'MULTI_SECRET_2\nvalue_two'
     assert_equals "0" "$?" "Should be able to add second secret"
     
     # Print all secrets
@@ -93,7 +93,7 @@ test_secret_print_shows_usage_instructions() {
     assert_equals "0" "$?" "OpenSSL should be available for this test"
     
     # Add a secret to trigger usage instructions
-    D secret add <<< $'USAGE_TEST_SECRET\nusage_test_value' > /dev/null 2>&1
+    D secret add <<< $'USAGE_TEST_SECRET\nusage_test_value' 2>&1
     assert_equals "0" "$?" "Should be able to add a secret for testing"
     
     # Print secrets and check for usage instructions
@@ -116,17 +116,17 @@ test_secret_print_shows_usage_instructions() {
 #     assert_equals "0" "$?" "OpenSSL should be available for this test"
     
 #     # Create a test key first to ensure encryption is set up
-#     D secret key-set <<< "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890" > /dev/null 2>&1
+#     D secret key-set <<< "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890" 2>&1
     
 #     # Add a normal secret
-#     D secret add <<< $'NORMAL_SECRET\nnormal_value' > /dev/null 2>&1
+#     D secret add <<< $'NORMAL_SECRET\nnormal_value' 2>&1
 
 #     # Then intentionally invalidate the key but keep a secret file by setting a different key
-#     D secret key-reset --force > /dev/null 2>&1
-#     D secret key-set <<< "different1234567890different1234567890different1234567890different1234" > /dev/null 2>&1
+#     D secret key-reset --force 2>&1
+#     D secret key-set <<< "different1234567890different1234567890different1234567890different1234" 2>&1
     
 #     # Add another secret with the new key
-#     D secret add <<< $'NEW_KEY_SECRET\nnew_key_value' > /dev/null 2>&1
+#     D secret add <<< $'NEW_KEY_SECRET\nnew_key_value' 2>&1
 
 #     # Try to print secrets - should show one decryption failure and one success
 #     local print_output

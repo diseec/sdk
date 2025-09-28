@@ -118,18 +118,39 @@ _sdk_tester_run_test_file() {
             fi
             
             setup_test_ctx
+            
+            # Ensure TESTER_LOG_FILE is properly initialized
+            TESTER_LOG_FILE="${TEST_CTX}/test_output.log"
+            touch "$TESTER_LOG_FILE"
 
             set +e
 
             # Run test setup if defined
             if declare -f setup_test >/dev/null 2>&1; then
-                setup_test
+                setup_test &> /dev/null
             fi
 
-            # Execute the test function
-            "$test_function"
+            # Execute the test function, capturing all output to a variable
+            # First create a copy of stdout on fd 3 for assertions to use
+            exec 3>&1
+            
+            # Create temporary files to store stdout and stderr
+            local stdout_tmp="${TEST_CTX}/stdout.tmp"
+            local stderr_tmp="${TEST_CTX}/stderr.tmp"
+            
+            # Execute test function, capturing stdout and stderr separately
+            # but fd 3 remains connected to original stdout for assertions
+            "$test_function" > "$stdout_tmp" 2> "$stderr_tmp"
+            
             local cmd_exit_code=$?
             
+            # Restore stdout
+            exec 3>&-
+            
+            # Now append the captured output to the log file (preserving any existing content)
+            cat "$stdout_tmp" "$stderr_tmp" >> "$TESTER_LOG_FILE"
+            echo >>"$TESTER_LOG_FILE"
+
             # Check the test result file to determine actual test status
             # even if the command exit code is 0 (passed), the test might have failed assertions
             local test_exit_code=$cmd_exit_code
@@ -139,6 +160,9 @@ _sdk_tester_run_test_file() {
                     test_exit_code=1
                 fi
             fi
+            
+            # Clean up temporary files
+            rm -f "$stdout_tmp" "$stderr_tmp" 2>/dev/null || true
             
             # If the test failed, display the logs
             if [ $test_exit_code -ne 0 ]; then
@@ -156,7 +180,7 @@ _sdk_tester_run_test_file() {
             
             # Run test teardown if defined
             if declare -f teardown_test >/dev/null 2>&1; then
-                teardown_test
+                teardown_test &> /dev/null
             fi
 
             teardown_test_ctx
@@ -176,14 +200,13 @@ _sdk_tester_run_test_file() {
             
             # Check if we should fail fast
             if [ $test_exit_code -ne 0 ] && [ "$TESTER_FAIL_FAST" = "true" ]; then
-                printf "\033[33m[!]\033[0m \033[90mFail-fast mode enabled, stopping\033[0m\n"
-                return 1
+                break
             fi
         done
 
         # Run suite teardown if defined (always run)
         if declare -f suite_teardown >/dev/null 2>&1; then
-            suite_teardown
+            suite_teardown &> /dev/null
             # Unset the suite_setup and suite_teardown functions to avoid carrying them to the next file
             unset -f suite_setup 2>/dev/null || true
             unset -f suite_teardown 2>/dev/null || true
@@ -196,11 +219,6 @@ _sdk_tester_run_test_file() {
         
         if declare -f teardown_test >/dev/null 2>&1; then
             unset -f teardown_test 2>/dev/null || true
-        fi
-        
-        local exit_code=$?
-        if [ $exit_code -ne 0 ] && [ "$TESTER_FAIL_FAST" = "true" ]; then
-            return $exit_code
         fi
     else
         printf "\033[31m✖\033[0m \033[90mnot found\033[0m\n"
@@ -215,8 +233,8 @@ _sdk_tester_run_test_file() {
     
     # Show compact results on same line as file header
     sdk_tester_show_file_results "$file_passed" "$file_failed" "$file_skipped" "$file_total"
-    
-    return 0
+      
+    return $test_exit_code
 }
 
 # Main test runner function
@@ -279,6 +297,12 @@ sdk_tester_run_tests() {
     # Clean up temp files
     if [ -n "$TESTER_ONLY_FLAG_FILE" ] && [ -f "$TESTER_ONLY_FLAG_FILE" ]; then
         rm -f "$TESTER_ONLY_FLAG_FILE"
+    fi
+
+    # Check if we should fail fast
+    if [ "$TESTER_FAIL_FAST" = "true" ]; then
+        echo ""
+        printf "\033[33m[!]\033[0m \033[90mFail-fast mode enable\033[0m\n"
     fi
 
     echo ""

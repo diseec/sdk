@@ -39,6 +39,7 @@ COPY . .
 
 RUN npm install -g /${D_SDK_NAME}
 
+COPY docker/.bashrc /root/.bashrc
 COPY docker/entrypoints /entrypoints
 RUN chmod +x /entrypoints/*.sh
 # COPY entrypoint.sh /entrypoint.sh

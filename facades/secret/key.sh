@@ -102,7 +102,7 @@ sdk_fac_sec_clear_secrets() {
         return 0
     fi
 
-    stdout --ansi="43" --icon="WARNING" "This will permanently delete ALL secrets!"
+    stdout -w "This will permanently delete ALL secrets!"
     stdin confirmation "Are you sure? Type 'DELETE' to confirm:"
 
     if [ "$confirmation" = "DELETE" ]; then

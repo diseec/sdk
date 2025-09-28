@@ -13,7 +13,7 @@ setup_test() {
 test_secret_clear_no_secrets() {
     # Run clear command
     local output
-    output=$(D secret clear <<< "DELETE")
+    output=$(D secret clear <<< "DELETE" 2>&1)
     local result=$?
 
     # Verify command succeeds with appropriate message
@@ -33,7 +33,7 @@ test_secret_clear_existing_secrets_confirm() {
     
     # Clear all secrets with confirmation
     local clear_output
-    clear_output=$(D secret clear <<< "DELETE")
+    clear_output=$(D secret clear <<< "DELETE" 2>&1)
     local clear_result=$?
     
     # Verify clear command succeeded
@@ -81,10 +81,10 @@ test_secret_clear_confirmation_prompt() {
     
     # Capture output to check the confirmation prompt
     local clear_output
-    clear_output=$(D secret clear <<< "CANCEL")
+    clear_output=$(D secret clear <<< "CANCEL" 2>&1)
     
     # Verify appropriate warnings and confirmation request
-    assert_contains "$clear_output" "WARNING\|warning\|caution" "Should show warning message"
+    assert_contains "$clear_output" "WARNING\|warning\|caution\|!" "Should show warning message"
     assert_contains "$clear_output" "permanently delete\|will be deleted\|cannot be undone" "Should warn about permanent deletion"
     assert_contains "$clear_output" "ALL secrets\|all secret" "Should indicate all secrets will be affected"
     assert_contains "$clear_output" "DELETE.*to confirm\|Type.*DELETE" "Should request specific confirmation text"

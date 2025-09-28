@@ -6,8 +6,17 @@ capitalize() {
 
 normalize() {
     # Convert newlines and tabs to spaces, then squeeze multiple spaces into one
-    # echo "$1" | tr '\n\t' ' ' | tr -s ' ' | sed 's/^ *//;s/ *$//'
-    printf '%s' "$1" | tr '\n\r\t' ' ' | sed 's/  */ /g' | sed 's/^ //; s/ $//'
+    # Check if input contains literal \t or \n sequences and handle them
+    local input="$1"
+    
+    # Handle literal \t and \n if they appear in the input
+    if [[ "$input" == *'\t'* || "$input" == *'\n'* ]]; then
+        # Convert literal escape sequences to actual characters using printf
+        input=$(printf "%b" "$input")
+    fi
+    
+    # Process with the normal whitespace normalization
+    printf '%s' "$input" | tr '\n\r\t' ' ' | sed 's/  */ /g' | sed 's/^ //; s/ $//'
 }
 
 ansi() {

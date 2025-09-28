@@ -5,24 +5,24 @@
 # Suite setup - runs once before all tests in this file
 setup_test() {
     # Set up some test configurations in different scopes
-    D config --scope=user set test.key "user_value" > /dev/null
-    D config --scope=repository set test.key "repo_value" > /dev/null
-    D config --scope=context set test.key "context_value" > /dev/null
+    D config --scope=user set test.key "user_value"
+    D config --scope=repository set test.key "repo_value"
+    D config --scope=context set test.key "context_value"
     
     # Add some nested configurations
-    D config --scope=user set nested.config.key "nested_value" > /dev/null
+    D config --scope=user set nested.config.key "nested_value"
     
     # Add some arrays
-    D config --scope=user set array.test 'item1,item2' > /dev/null
+    D config --scope=user set array.test 'item1,item2'
 }
 
 
 # Test basic get functionality with scope
 test_config_get_with_scope() {
     # Set up fresh values for this test (in case other tests modified them)
-    D config --scope=user set test.key "user_value" > /dev/null
-    D config --scope=repository set test.key "repo_value" > /dev/null
-    D config --scope=context set test.key "context_value" > /dev/null
+    D config --scope=user set test.key "user_value"
+    D config --scope=repository set test.key "repo_value"
+    D config --scope=context set test.key "context_value"
     
     # Get value from user scope
     local user_value
@@ -51,7 +51,7 @@ test_config_get_nested_values() {
 test_config_get_nonexistent_key() {
     # Try to get a non-existent key
     local result
-    result=$(D config --scope=user get nonexistent.key)
+    result=$(D config --scope=user get nonexistent.key 2>&1)
     
     # Check that the command indicates key not found
     assert_not_equals "0" "$?" "Command should indicate failure for non-existent key"
@@ -69,12 +69,12 @@ test_config_get_hierarchy_resolution() {
     assert_equals "context_value" "$resolved_value" "Hierarchy resolution should return context value"
     
     # If we delete from context, it should fall back to repository
-    D config --scope=context remove test.key > /dev/null
+    D config --scope=context remove test.key
     resolved_value=$(D config get test.key)
     assert_equals "repo_value" "$resolved_value" "Hierarchy resolution should fall back to repository"
     
     # If we delete from repository, it should fall back to user
-    D config --scope=repository remove test.key > /dev/null
+    D config --scope=repository remove test.key
     resolved_value=$(D config get test.key)
     assert_equals "user_value" "$resolved_value" "Hierarchy resolution should fall back to user"
 }

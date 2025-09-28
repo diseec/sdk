@@ -18,6 +18,7 @@ trap "stdout -w 'Sync server stopped.'; exit" SIGINT
 
 stdout -s "Started development server"
 stdout -s "Watching for changes in '$WATCH_DIR'"
+
 while true; do
     sleep 1
     new_checksum=$(get_checksum)

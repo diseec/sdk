@@ -12,7 +12,7 @@ PROCESSING_ANIMATION_RUNNING=false
 PROCESSING_ACTIVE=false
 
 # Ensure animation is stopped on parent exit or interrupt
-trap 'processing_stop' SIGINT SIGTERM EXIT
+trap 'processing_stop >&2' SIGINT SIGTERM EXIT
 
 # Main public function - Start an animation that auto-stops on output
 # Usage: processing_start [ANIMATION_TYPE]
@@ -20,7 +20,7 @@ processing_start() {
     if [ "$D_GLOB_TTY" != "true" ] || [ "$D_GLOB_LOG_LEVEL" = "QUIET" ]; then return 0; fi
     
     # Clean up any existing animation first
-    processing_stop
+    processing_stop >&2
     
     # Mark animation as active
     PROCESSING_ACTIVE=true
@@ -36,9 +36,9 @@ processing_start() {
     # Start the animation in background - we'll create a new animation line
     local func="sdk_sha_ani_${animation_type}"
     if declare -f "$func" > /dev/null; then
-        "$func"
+        "$func" >&2
     else
-        sdk_sha_ani_BRAILLE_MIXED
+        sdk_sha_ani_BRAILLE_MIXED >&2
     fi
     
     # Setup auto-stop detector in background
@@ -50,7 +50,7 @@ processing_start() {
             # Check if parent process has terminated
             if ! ps | grep -q " $$ "; then
                 PROCESSING_ANIMATION_RUNNING=false
-                processing_stop
+                processing_stop >&2
                 break
             fi
         done

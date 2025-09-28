@@ -20,6 +20,7 @@ helper_create_secret() {
 $test_secret
 $test_value
 EOF
+2>&1
 )
 }
 
@@ -28,7 +29,7 @@ test_secret_export_requires_name() {
     D secret key-set <<< "$_export_test_key" >/dev/null 2>&1
 
     local output
-    output=$(D secret export)
+    output=$(D secret export 2>&1)
     
     # Verify command fails without secret name
     assert_not_equals "0" "$?" "Export should fail without secret name"
@@ -43,7 +44,7 @@ test_secret_export_requires_name() {
 test_secret_export_nonexistent_secret() {
     # Attempt to export the non-existent secret
     local output
-    output=$(D secret export NONEXISTENT_SECRET)
+    output=$(D secret export NONEXISTENT_SECRET 2>&1)
     
     # Verify command fails with appropriate error message
     assert_not_equals "0" "$?" "Export should fail with non-existent secret"
@@ -67,6 +68,7 @@ test_secret_export_existing_key_existing_secret() {
 $test_secret
 $test_value
 EOF
+2>&1
 )
     
     # Verify secret was added successfully
@@ -75,7 +77,7 @@ EOF
     
     # Now try to export it
     local export_output
-    export_output=$(D secret export "$test_secret")
+    export_output=$(D secret export "$test_secret" 2>&1)
 
     # Verify export succeeded and returned the correct value
     assert_equals "0" "$?" "Export should succeed with existing valid secret"
@@ -97,6 +99,7 @@ test_secret_export_existing_secret() {
 $test_secret
 $test_value
 EOF
+2>&1
 )
     
     # Verify secret was added successfully
@@ -105,7 +108,7 @@ EOF
     
     # Now try to export it
     local export_output
-    export_output=$(D secret export "$test_secret")
+    export_output=$(D secret export "$test_secret" 2>&1)
 
     # Verify export succeeded and returned the correct value
     assert_equals "0" "$?" "Export should succeed with existing valid secret"
@@ -123,13 +126,13 @@ test_secret_export_no_key_configured() {
     local test_value="test_value_for_no_key"
     
     # Directly create an encrypted secret file
-    local key=$(D secret function sdk_fac_sec_get_encryption_key)
+    local key=$(D secret function sdk_fac_sec_get_encryption_key 2>&1)
     local encrypted_value=$(echo "$test_value" | _openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass pass:"$key" | base64)
     echo "$encrypted_value" > "$TEST_CTX/$mock_secret"
     
     # Try to export without key
     local output
-    output=$(D secret export "$mock_secret" <<< y)
+    output=$(D secret export "$mock_secret" <<< y 2>&1)
 
     # Verify failure due to missing key
     assert_contains "$output" "key\|configured\|encryption\|decrypt\|not found" "Should indicate key configuration issue"
@@ -182,7 +185,7 @@ test_secret_export_special_characters() {
     
     # Export and verify special characters are preserved
     local export_output
-    export_output=$(D secret export "$test_secret")
+    export_output=$(D secret export "$test_secret" 2>&1)
     
     # Verify export succeeded
     assert_equals "0" "$?" "Export should succeed with special characters"
@@ -236,11 +239,11 @@ test_secret_export_multiple_times() {
     assert_equals "0" "$?" "Should be able to initialize the secret for multiple exports testing"
     # Export multiple times and verify consistency
     local export1 export2 export3
-    export1=$(D secret export "$test_secret")
+    export1=$(D secret export "$test_secret" 2>&1)
     assert_equals "0" "$?" "First export should succeed"
-    export2=$(D secret export "$test_secret")
+    export2=$(D secret export "$test_secret" 2>&1)
     assert_equals "0" "$?" "Second export should succeed"
-    export3=$(D secret export "$test_secret")
+    export3=$(D secret export "$test_secret" 2>&1)
     assert_equals "0" "$?" "Third export should succeed"
     # Verify all exports match the original value
     assert_equals "$test_value" "$export1" "First export should match original value"
@@ -259,15 +262,15 @@ test_secret_export_multiple_times_with_intermediate_commands() {
     assert_equals "0" "$?" "Should be able to initialize the secret for multiple exports testing"
     # Export multiple times with intermediate commands and verify consistency
     local export1 export2 export3
-    export1=$(D secret export "$test_secret")
+    export1=$(D secret export "$test_secret" 2>&1)
     assert_equals "0" "$?" "First export should succeed"
     D secret validate "$test_secret" >/dev/null 2>&1
     assert_equals "0" "$?" "Validation should succeed"
-    export2=$(D secret export "$test_secret")
+    export2=$(D secret export "$test_secret" 2>&1)
     assert_equals "0" "$?" "Second export should succeed"
-    D secret print "$test_secret" >/dev/null 2>&1
+    D secret print >/dev/null 2>&1
     assert_equals "0" "$?" "Print should succeed"
-    export3=$(D secret export "$test_secret")   
+    export3=$(D secret export "$test_secret" 2>&1)   
     assert_equals "0" "$?" "Third export should succeed"
     # Verify current key not empty and still same
     local current_key=$(D config get --scope=user "secrets.key")

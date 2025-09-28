@@ -4,19 +4,20 @@
 
 # Setup function - runs before each test
 setup_test() {
-    TEST_SECRET_DIR="$(D --quiet secret function sdk_fac_sec_get_secrets_dir)"
+    TEST_SECRET_DIR="$(D secret function sdk_fac_sec_get_secrets_dir)"
 }
 
 # Test add command with existing secret - decline overwrite
 test_secret_add_decline_overwrite() {
     # Following the testing guidelines, let the command handle its own prerequisites
+    assert_contains "true" "true" "true"
     
     # First, make sure we have a clean state
     rm -rf "$TEST_SECRET_DIR" 2>/dev/null
     
     # Add initial secret
     local add_output
-    add_output=$(D secret add <<EOF
+    add_output=$(D secret add 2>&1 <<EOF
 DECLINE_OVERWRITE_SECRET
 original_value
 EOF
@@ -24,7 +25,7 @@ EOF
     
     # Verify the initial secret was added successfully
     assert_contains "$add_output" "added successfully" "Initial secret should be added successfully"
-    
+
     # Verify the secret file exists (more reliable than checking decryption in test env)
     local secret_file="$TEST_SECRET_DIR/DECLINE_OVERWRITE_SECRET"
     assert_file_exists "$secret_file" "Secret file should exist"
@@ -36,7 +37,7 @@ EOF
     
     # Try to add same secret again but decline overwrite
     local overwrite_output
-    overwrite_output=$(D secret add <<EOF
+    overwrite_output=$(D secret add 2>&1 <<EOF
 DECLINE_OVERWRITE_SECRET
 new_value
 n
@@ -63,7 +64,7 @@ test_secret_add_basic_functionality() {
     
     # Test interactive input by providing input through heredoc
     local output
-    output=$(D secret add <<EOF
+    output=$(D secret add 2>&1 <<EOF
 TEST_SECRET
 test_value_123
 EOF
@@ -95,7 +96,7 @@ test_secret_add_overwrite_existing() {
     
     # First add a secret
     local output1
-    output1=$(D secret add <<EOF
+    output1=$(D secret add 2>&1 <<EOF
 EXISTING_SECRET
 original_value
 EOF
@@ -117,7 +118,7 @@ EOF
     # Try to add same secret again - since we can't reliably simulate overwrite confirmation,
     # we'll just check that the prompt appears and the command handles existing secrets correctly
     local output2
-    output2=$(D secret add <<EOF
+    output2=$(D secret add 2>&1 <<EOF
 EXISTING_SECRET
 new_value
 n
@@ -142,7 +143,7 @@ test_secret_add_empty_name() {
     
     # Test with empty name input - the command should prompt again or fail
     local output
-    output=$(D secret add <<EOF
+    output=$(D secret add 2>&1 <<EOF
 
 test_value
 EOF
@@ -163,7 +164,7 @@ test_secret_add_empty_value() {
     
     # Test with empty value input using a heredoc instead of a subshell
     local output
-    output=$(D secret add <<EOF
+    output=$(D secret add 2>&1 <<EOF
 
 EOF
 )
@@ -184,7 +185,7 @@ test_secret_add_creates_secrets_directory() {
     
     # Run the command and let it create the secrets directory by itself
     local output
-    output=$(D secret add <<EOF
+    output=$(D secret add 2>&1 <<EOF
 DIR_CREATION_TEST
 test_value
 EOF

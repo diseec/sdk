@@ -161,7 +161,7 @@ test_secret_key_show_displays_complete_key() {
 # Test key-show command does not show sensitive data in error cases
 test_secret_key_show_error_handling() {
     # First ensure no key exists to test error handling
-    D secret key-reset --force > /dev/null 2>&1
+    D secret key-reset --force 2>&1
     
     # Test the error message when no key is configured
     local output

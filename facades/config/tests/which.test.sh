@@ -5,14 +5,14 @@
 # Suite setup - runs once before all tests in this file
 setup_test() {
     # Set up some test configurations in different scopes
-    D config --scope=user set test.key "user_value" > /dev/null
-    D config --scope=repository set test.key "repo_value" > /dev/null
-    D config --scope=context set test.key "context_value" > /dev/null
+    D config --scope=user set test.key "user_value"
+    D config --scope=repository set test.key "repo_value"
+    D config --scope=context set test.key "context_value"
     
     # Set up unique keys in each scope
-    D config --scope=user set user.only "user_only_value" > /dev/null
-    D config --scope=repository set repo.only "repo_only_value" > /dev/null
-    D config --scope=context set context.only "context_only_value" > /dev/null
+    D config --scope=user set user.only "user_only_value"
+    D config --scope=repository set repo.only "repo_only_value"
+    D config --scope=context set context.only "context_only_value"
 }
 
 # Test which shows config resolution path for shared key

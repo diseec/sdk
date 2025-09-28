@@ -5,20 +5,20 @@
 # Suite setup - runs once before all tests in this file
 setup_test() {
     # Set up some test configurations in different scopes
-    D config --scope=user set user.key "user_value" > /dev/null
-    D config --scope=user set shared.key "user_shared" > /dev/null
+    D config --scope=user set user.key "user_value"
+    D config --scope=user set shared.key "user_shared"
     
-    D config --scope=repository set repo.key "repo_value" > /dev/null
-    D config --scope=repository set shared.key "repo_shared" > /dev/null
+    D config --scope=repository set repo.key "repo_value"
+    D config --scope=repository set shared.key "repo_shared"
     
-    D config --scope=context set context.key "context_value" > /dev/null
-    D config --scope=context set shared.key "context_shared" > /dev/null
+    D config --scope=context set context.key "context_value"
+    D config --scope=context set shared.key "context_shared"
     
     # Set up nested configurations
-    D config --scope=user set nested.config.key "nested_value" > /dev/null
+    D config --scope=user set nested.config.key "nested_value"
     
     # Set up arrays
-    D config --scope=user set array.test 'item1,item2,item3' > /dev/null
+    D config --scope=user set array.test 'item1,item2,item3'
 }
 
 # Test printing a specific scope

@@ -20,9 +20,9 @@ test_config_set_basic() {
 # Test setting values in different scopes
 test_config_set_different_scopes() {
     # Set values in different scopes
-    D config --scope=user set scope.test "user_scope" > /dev/null
-    D config --scope=repository set scope.test "repo_scope" > /dev/null
-    D config --scope=context set scope.test "context_scope" > /dev/null
+    D config --scope=user set scope.test "user_scope"
+    D config --scope=repository set scope.test "repo_scope"
+    D config --scope=context set scope.test "context_scope"
     
     # Verify values were set correctly
     local user_value repo_value context_value
@@ -38,7 +38,7 @@ test_config_set_different_scopes() {
 # Test setting nested values
 test_config_set_nested_values() {
     # Set a deeply nested value
-    D config --scope=user set deep.nested.config.key "deep_value" > /dev/null
+    D config --scope=user set deep.nested.config.key "deep_value"
     
     # Verify it was set correctly
     local value
@@ -55,7 +55,7 @@ test_config_set_nested_values() {
 # Test setting complex values (JSON) - temporarily disabled due to JSON parsing issues
 # test_config_set_complex_values() {
 #     # Set a JSON object
-#     D config --scope=user set complex.object '{"name": "test", "value": 123}' > /dev/null
+#     D config --scope=user set complex.object '{"name": "test", "value": 123}'
     
 #     # Verify we can retrieve it properly
 #     local json_content
@@ -73,10 +73,10 @@ test_config_set_nested_values() {
 # Test overwriting existing values
 test_config_set_overwrite() {
     # Set an initial value
-    D config --scope=repository set overwrite.test "initial_value" > /dev/null
+    D config --scope=repository set overwrite.test "initial_value"
     
     # Overwrite it
-    D config --scope=repository set overwrite.test "new_value" > /dev/null
+    D config --scope=repository set overwrite.test "new_value"
     
     # Verify it was overwritten
     local value
@@ -112,7 +112,7 @@ test_config_set_new_array() {
 # Test adding multiple items to an array using set with comma-separated format
 test_config_set_multiple_items_array() {
     # Add multiple items to an array using comma-separated format
-    D config --scope=repository set multiple.array '[item1,item2,item3]' > /dev/null
+    D config --scope=repository set multiple.array '[item1,item2,item3]'
     
     # Get the full array output for verification
     local array_value
@@ -139,7 +139,7 @@ test_config_set_multiple_items_array() {
 # Test adding duplicate items using set with comma-separated format
 test_config_set_duplicate_items_array() {
     # Add an item twice using comma-separated format
-    D config --scope=repository set duplicate.array '[item1,item1]' > /dev/null
+    D config --scope=repository set duplicate.array '[item1,item1]'
     
     # Get the array value for verification
     local array_value
@@ -153,9 +153,9 @@ test_config_set_duplicate_items_array() {
 # Test adding to arrays in different scopes using set with comma-separated format
 test_config_set_different_scopes_array() {
     # Add items to arrays in different scopes using comma-separated format
-    D config --scope=user set scope.array 'user_item' > /dev/null
-    D config --scope=repository set scope.array 'repo_item' > /dev/null
-    D config --scope=context set scope.array 'context_item' > /dev/null
+    D config --scope=user set scope.array 'user_item'
+    D config --scope=repository set scope.array 'repo_item'
+    D config --scope=context set scope.array 'context_item'
     
     # Verify items were added to the correct arrays
     local user_array repo_array context_array
@@ -177,7 +177,7 @@ test_config_set_different_scopes_array() {
 # Test adding to a nested array using set with comma-separated format
 test_config_set_nested_array() {
     # Add an item to a nested array using comma-separated format
-    D config --scope=user set nested.config.array 'nested_item' > /dev/null
+    D config --scope=user set nested.config.array 'nested_item'
     
     # Verify it was added correctly
     local array_value
@@ -208,7 +208,7 @@ test_config_set_nested_array() {
 test_config_set_array_from_comma_separated() {
     # Add multiple items to an array using standard YAML array syntax
     # Note: Double quotes are needed to prevent the shell from interpreting brackets
-    D config --scope=repository set submodules "[item1,item2,item3]" > /dev/null
+    D config --scope=repository set submodules "[item1,item2,item3]"
     
     # Get the full array output for verification
     local array_value

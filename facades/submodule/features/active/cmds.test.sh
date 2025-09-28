@@ -76,7 +76,7 @@ test_submodule_select_all() {
 # Test interactive submodule selection with empty input
 test_submodule_select_empty() {
     # First set up some initial submodules
-    D submodule select <<< $'1,2' > /dev/null
+    D submodule select <<< $'1,2'
     
     # Run the command with empty input
     # If a config exists, we'll first need 'y' to confirm overwrite, then '' for empty selection
@@ -93,7 +93,7 @@ test_submodule_select_empty() {
 # Test confirmation dialog with "no" response
 test_submodule_select_confirmation_no() {
     # First set up some initial submodules
-    D submodule select <<< $'1,2' > /dev/null
+    D submodule select <<< $'1,2'
     
     # Now run the command but respond "n" to the confirmation prompt
     local output

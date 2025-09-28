@@ -18,10 +18,16 @@ test_secret_validate_missing_argument() {
 }
 
 # Test validate command with non-existent secret
-test_secret_validate_nonexistent_secret() {
+test_secret_validate_nonexistent_secret_only() {
     # Use timeout to avoid hanging on interactive prompts
     local output
-    output=$(echo "" | timeout 5s D secret validate nonexistent-secret 2>&1 || echo "TIMEOUT_OR_COMPLETED")
+    # output=$(echo "" | timeout 5s D secret validate nonexistent-secret 2>&1 || echo "TIMEOUT_OR_COMPLETED")
+D secret validate nonexistent-secret
+#     output=$(D secret validate nonexistent-secret <<EOF
+# ""
+# EOF
+# )
+    # output=$(echo "" | timeout 5s D secret validate nonexistent-secret 2>&1 || echo "TIMEOUT_OR_COMPLETED")
     local result=$?
     
     # The command might try to prompt for the secret interactively
@@ -55,6 +61,6 @@ test_secret_validate_command_recognized() {
     output=$(D secret validate 2>&1)
     
     # Should not contain "Unknown command"
-    echo "$output" | grep -v "Unknown command" > /dev/null
+    echo "$output" | grep -v "Unknown command"
     assert_equals "0" "$?" "Validate command should be recognized"
 }

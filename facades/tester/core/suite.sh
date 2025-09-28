@@ -245,29 +245,43 @@ capture_test_log() {
         return 0
     fi
     
-    local command_output
+    local command_stdout
+    local command_stderr
+    local command_output_combined
     local cmd
     local timestamp=$(date "+%H:%M:%S")
     local exit_code
+    local stderr_file=$(mktemp)
     
     # Handle command as string or as arguments
     if [ $# -eq 1 ] && [[ "$1" == *" "* ]]; then
         # Command is passed as a single string
         cmd="$1"
-        # Use eval to execute the command string directly
-        command_output=$(set -o pipefail; eval "$cmd" 2>&1)
+        # Use eval to execute the command string directly, capturing stdout and stderr separately
+        command_stdout=$(set -o pipefail; eval "$cmd" 2>"$stderr_file")
         exit_code=$?
+        command_stderr=$(<"$stderr_file")
     else
         # Command is passed as arguments
         cmd="$*"
         # For single commands without spaces, execute directly
-        command_output=$("$@" 2>&1)
+        command_stdout=$("$@" 2>"$stderr_file")
         exit_code=$?
+        command_stderr=$(<"$stderr_file")
     fi
+    
+    # Combine outputs for logging purposes
+    command_output_combined="$command_stdout"
+    if [ -n "$command_stderr" ]; then
+        command_output_combined="${command_output_combined}${command_output_combined:+$'\n'}${command_stderr}"
+    fi
+    
+    # Clean up temp file
+    rm -f "$stderr_file"
     
     # Strip ANSI color codes from command output
     local command_output_clean
-    command_output_clean=$(echo "$command_output" | sed 's/\x1b\[[0-9;]*m//g')
+    command_output_clean=$(echo "$command_output_combined" | sed 's/\x1b\[[0-9;]*m//g')
     
     # If TESTER_LOG_FILE is set, write to the log file with styled format
     if [ -n "$TESTER_LOG_FILE" ]; then
@@ -288,12 +302,21 @@ capture_test_log() {
                 echo -e "\033[2;90m$command_output_clean\033[0m"
             fi
             
+            # # If there was stderr and exit code indicates error, log it with red color
+            # if [ -n "$command_stderr" ] && [ $exit_code -ne 0 ]; then
+            #     echo -e "\033[31mSTDERR:\033[0m"
+            #     echo -e "\033[2;31m$command_stderr\033[0m"
+            # fi
+            
             echo -e "\033[2;90m-------------------------------------------------------------------------------\033[0m"
         } >> "$TESTER_LOG_FILE"
     fi
     
-    # Return the original command output (with colors)
-    echo "$command_output"
+    
+    # Return only the output (with original colors)
+    echo "$command_stdout"
+    printf "$command_stderr" >&2  # Redirect stderr to the actual stderr stream
+
     return $exit_code
 }
 

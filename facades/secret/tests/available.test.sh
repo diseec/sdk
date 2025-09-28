@@ -9,7 +9,7 @@ setup_test() {
 # Test availability check basic functionality
 test_secret_available_basic() {
     local output
-    output=$(D secret available)
+    output=$(D secret available 2>&1)
     local result=$?
     
     # Command should succeed regardless of OpenSSL availability
@@ -32,7 +32,7 @@ test_secret_available_quiet() {
     
     # Test with quiet flag
     local output
-    output=$(D secret available --quiet)
+    output=$(D secret available --quiet 2>&1)
     local result=$?
     
     # Verify exit code based on actual OpenSSL availability
@@ -47,6 +47,6 @@ test_secret_available_quiet() {
     
     # Double-check the regular command output for comparison
     local verbose_output
-    verbose_output=$(D secret available)
+    verbose_output=$(D secret available 2>&1)
     assert_not_equals "" "$verbose_output" "Regular mode should produce output unlike quiet mode"
 }

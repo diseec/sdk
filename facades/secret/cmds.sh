@@ -315,7 +315,6 @@ sdk_fac_sec_cmd_validate_secret() {
     fi
     shift
     
-    
     # Use the existing validation function
     if sdk_fac_sec_validate_and_prepare_secret_interactive "$secret_name"; then
         return 0

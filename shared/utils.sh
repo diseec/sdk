@@ -2,7 +2,7 @@
 
 cli_ctx() {
     if [ -z "$D_CTX_DIR" ]; then
-        stdout -e "calling cli_ctx in a undefined context. Cannot proceed." >&2
+        stdout -e "calling cli_ctx in a undefined context. Cannot proceed."
         return 1
     fi
     source "$D_CLI_STUB" "$@"
@@ -70,7 +70,7 @@ mark_ctx_only() {
         local line_number=$(echo "$caller_info" | cut -d ' ' -f 1)
         local calling_function=$(echo "$caller_info" | cut -d ' ' -f 2)
         local calling_file=$(echo "$caller_info" | cut -d ' ' -f 3-)
-        stdout -e --icon="E:OOC" "Command forbidden: '$D_INI_ARGS': Called in '$calling_function'() at $calling_file:$line_number" >&2
+        stdout -e --icon="E:OOC" "Command forbidden: '$D_INI_ARGS': Called in '$calling_function'() at $calling_file:$line_number"
         return 1
     fi
 }
@@ -79,17 +79,17 @@ fix_permissions() {
     local target_dir="$1"
 
     if [ -z "$target_dir" ]; then
-        stdout -e "No target directory provided to fix_permissions" >&2
+        stdout -e "No target directory provided to fix_permissions"
         return 1
     fi
 
     if [ ! -d "$target_dir" ] && [ ! -f "$target_dir" ] ; then
-        stdout -e "Target does not exist: $target_dir" >&2
+        stdout -e "Target does not exist: $target_dir"
         return 1
     fi
 
     if [ -z "$D_HOST_UID" ] || [ -z "$D_HOST_GID" ]; then
-        stdout -e "D_HOST_UID or D_HOST_GID is not set. Cannot fix permissions." >&2
+        stdout -e "D_HOST_UID or D_HOST_GID is not set. Cannot fix permissions."
         return 1
     fi
     
@@ -107,9 +107,29 @@ fix_permissions() {
     local fix_permissions_output=$(chown -R $D_HOST_UID:$D_HOST_GID "$target_dir")
 
     if [ $? -ne 0 ]; then
-        stdout -e "Failed to fix permissions for $target_dir: $fix_permissions_output" >&2
+        stdout -e "Failed to fix permissions for $target_dir: $fix_permissions_output"
         return 1
     fi
 
     stdout -d "Fixing permissions for $target_dir to $D_HOST_UID:$D_HOST_GID done"
+}
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ HELP DISPLAY FUNCTION - Formatted Command List with Descriptions        ┃
+# ┃ Provides a clean way to display commands and their descriptions in help ┃
+# ┃ output                                                                  ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+display_help() {
+    # Loop through the arguments and print them
+    while [ "$#" -gt 0 ]; do
+        local command=$1
+        local description=$2
+        ansi 97 "$command"
+        ansi 90 "$description"
+        printf "\n"
+        if [ "$#" -ge 2 ]; then shift 2
+        else shift; fi
+    done
+    printf "\n"
 }

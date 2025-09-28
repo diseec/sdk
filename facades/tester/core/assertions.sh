@@ -21,13 +21,13 @@ _tester_assert_result() {
     
     if [ "$success" = "true" ]; then
         TESTER_PASSED_TESTS=$((TESTER_PASSED_TESTS + 1))
-        # Always call the reporter function for consistent handling
-        sdk_tester_show_assertion_result "true" "$prefixed_message" "$test_name"
+        # Always call the reporter function for consistent handling and use fd 3
+        sdk_tester_show_assertion_result "true" "$prefixed_message" "$test_name" >&3
         return 0
     else
         TESTER_FAILED_TESTS=$((TESTER_FAILED_TESTS + 1))
-        # Always call the reporter function for consistent handling
-        sdk_tester_show_assertion_result "false" "$prefixed_message" "$test_name"
+        # Always call the reporter function for consistent handling and use fd 3
+        sdk_tester_show_assertion_result "false" "$prefixed_message" "$test_name" >&3
         
         # Record the assertion failure in the test result file
         if [ -n "$TEST_CTX" ] && [ -d "$TEST_CTX" ]; then
@@ -47,15 +47,15 @@ _tester_assert_result() {
             local actual_clean=$(echo "$actual" | sed 's/\x1b\[[0-9;]*m//g')
             
             # Format in a diff-like style with + and - prefixes
-            printf "\n"
+            printf "\n" >&3
             # Handle each line of expected output with + prefix (green)
             echo "$expected_clean" | while IFS= read -r line || [ -n "$line" ]; do
-                printf "      \033[32m+\033[0m %s\n" "$line"
+                printf "      \033[32m+\033[0m %s\n" "$line" >&3
             done
             
             # Handle each line of actual output with - prefix (red)
             echo "$actual_clean" | while IFS= read -r line || [ -n "$line" ]; do
-                printf "      \033[31m-\033[0m %s\n" "$line"
+                printf "      \033[31m-\033[0m %s\n" "$line" >&3
             done
         fi
         

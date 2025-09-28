@@ -13,7 +13,7 @@ setup_test() {
 test_secret_exists_missing_argument() {
     local output
     # Use the capture function instead of command substitution to preserve exit code
-    output=$(capture_test_log D secret exists)
+    output=$(capture_test_log D secret exists 2>&1)
     local result=$?
     
     # Verify command fails without secret name
@@ -32,7 +32,7 @@ test_secret_exists_nonexistent_secret() {
     
     # Check if the secret exists
     local output
-    output=$(D secret exists $nonexistent)
+    output=$(D secret exists $nonexistent 2>&1)
     local result=$?
     
     # Verify command returns false for non-existent secret
@@ -49,7 +49,7 @@ test_secret_exists_quiet_nonexistent() {
     
     # Check with quiet flag
     local output
-    output=$(D secret exists $nonexistent --quiet)
+    output=$(D secret exists $nonexistent --quiet 2>&1)
     local result=$?
 
     # Verify quiet mode behavior for non-existent secret
@@ -58,14 +58,14 @@ test_secret_exists_quiet_nonexistent() {
     
     # Compare with normal (non-quiet) output
     local normal_output
-    normal_output=$(D secret exists $nonexistent)
+    normal_output=$(D secret exists $nonexistent 2>&1)
     assert_not_equals "" "$normal_output" "Normal mode should produce output unlike quiet mode"
 }
 
 # Test exists command with invalid arguments
 test_secret_exists_invalid_args() {
     local output
-    output=$(D secret exists TEST_SECRET --invalid-arg)
+    output=$(D secret exists TEST_SECRET --invalid-arg 2>&1)
     local result=$?
     
     # Verify command fails with invalid argument
@@ -75,7 +75,7 @@ test_secret_exists_invalid_args() {
     
     # Test with multiple invalid arguments
     local output2
-    output2=$(D secret exists TEST_SECRET --bad1 --bad2)
+    output2=$(D secret exists TEST_SECRET --bad1 --bad2 2>&1)
     local result2=$?
     
     # Verify command fails with multiple invalid arguments
@@ -90,7 +90,7 @@ test_secret_exists_with_existing_secret() {
 
     # Check if secret exists
     local output
-    output=$(D secret exists EXISTING_SECRET)
+    output=$(D secret exists EXISTING_SECRET 2>&1)
     local result=$?
     
     # Verify command returns true for existing secret
@@ -106,7 +106,7 @@ test_secret_exists_quiet_existing() {
     
     # Check with quiet flag
     local output
-    output=$(D secret exists QUIET_EXISTING_SECRET --quiet)
+    output=$(D secret exists QUIET_EXISTING_SECRET --quiet 2>&1)
     local result=$?
     
     # Verify quiet mode behavior for existing secret

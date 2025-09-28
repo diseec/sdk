@@ -5,9 +5,9 @@
 # Suite setup - runs once before all tests in this file
 setup_test() {
     # Set up some test configurations in different scopes
-    D config --scope=user set user.key "user_value" > /dev/null
-    D config --scope=repository set repo.key "repo_value" > /dev/null
-    D config --scope=context set context.key "context_value" > /dev/null
+    D config --scope=user set user.key "user_value"
+    D config --scope=repository set repo.key "repo_value"
+    D config --scope=context set context.key "context_value"
 }
 
 
