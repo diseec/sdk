@@ -27,7 +27,7 @@ sdk_fac_git_cmd_checkout_branch() {
     fi
 
     GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-    stdin BRANCH "Branch to checkout:" --default="$GH_USERNAME" --optional
+    stdin BRANCH "Branch to checkout:" --default="$GH_USERNAME"
     if [ -z "$BRANCH" ]; then BRANCH="$GH_USERNAME"; fi
 
     stdout -l --processing "Checking out to branch '$BRANCH'"
@@ -45,7 +45,7 @@ sdk_fac_git_cmd_checkout_if_detached() {
             stdout -e "You have local changes in detached HEAD."
             # Prompt for branch to merge changes into
             GH_USERNAME=$(printf '%s' "$(_git config user.email)" | cut -d'+' -f2 | cut -d'@' -f1)
-            stdin TARGET_BRANCH "Branch to merge changes into:" --default="$GH_USERNAME" --optional
+            stdin TARGET_BRANCH "Branch to merge changes into:" --default="$GH_USERNAME"
             if [ -z "$TARGET_BRANCH" ]; then TARGET_BRANCH="$GH_USERNAME"; fi
             TEMP_BRANCH="temp-detached-$(date +%s)"
             stdout -l --processing "Creating temporary branch '$TEMP_BRANCH' from detached HEAD"

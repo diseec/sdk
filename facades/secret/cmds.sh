@@ -53,7 +53,7 @@ sdk_fac_sec_add_secret() {
 
     # Get secret name if not provided
     if [ -z "$secret_name" ]; then
-        stdin secret_name "Enter secret name (will be used as environment variable)" --optional
+        stdin secret_name "Enter secret name (will be used as environment variable)" --required
     fi
 
     sdk_fac_sec_validate_secret_name "$secret_name" || return 1

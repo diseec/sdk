@@ -45,7 +45,6 @@ display_help "" "" \
 "    sub|submodule            " "Unified submodule management (packages & services)" \
 "    sec|secret               " "Encrypted secrets management" \
 "" "" "$(ansi "1;90" "$(capitalize 'Utilities')")" "" \
-"    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \
 "    api                      " "API operations" \
 "    $D_SDK_NAME                      " "$(capitalize $D_SDK_NAME) internal operations" \
 "    env|envs                 " "Manage environment variables. Examples:" \
@@ -55,3 +54,4 @@ display_help "" "" \
 "    abo|about                " "About $D_SDK_NAME, authors, $D_ORG_NAME, policies and licensing" \
 "$@"
 }
+# "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \

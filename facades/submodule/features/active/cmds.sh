@@ -63,7 +63,7 @@ sdk_fac_sub_fea_act_select() {
     done
     
     
-    stdin selection "Select modules:" --type="select" --options="$options" --optional
+    stdin selection "Select modules:" --type="select" --options="$options"
     
     local selected_modules=""
     if [ "$selection" = "all" ]; then

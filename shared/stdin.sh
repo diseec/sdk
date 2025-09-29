@@ -17,7 +17,7 @@
 #   --validate=REG  Regex pattern for input validation
 #   --error=MSG     Custom error message for validation failures
 #   --hidden        Hide input (for passwords, no echo to terminal)
-#   --optional      Allow empty input (default: input is required)
+#   --required      Do not allow empty input (default: input is not required)
 #   --type=TYPE     Input type: 'input' (default), 'radio', or 'select'
 #   --options=LIST  Comma-separated options for radio/select types
 #
@@ -36,10 +36,6 @@
 #   # Secure password input (hidden)
 #   stdin password "Enter password:" --hidden
 #   stdin token "API token:" --hidden --validate="^[a-zA-Z0-9]{20,}$"
-#
-#   # Optional input (can be empty)
-#   stdin comment "Any comments:" --optional
-#   stdin description "Description:" --optional --default="No description"
 #
 #   # Complex validation examples
 #   stdin username "Username:" --validate="^[a-zA-Z0-9_]{3,20}$" \
@@ -70,7 +66,7 @@ stdin() {
     local validate_pattern=""
     local error_message="Invalid input. Please try again."
     local hidden=false
-    local required=true
+    local required=false  # Changed to false by default
     local input_type="input"  # Default input type
     local options=""          # Options for radio/select
 
@@ -97,8 +93,8 @@ stdin() {
                 hidden=true
                 shift
                 ;;
-            --optional)
-                required=false
+            --required)
+                required=true
                 shift
                 ;;
             --type=*)

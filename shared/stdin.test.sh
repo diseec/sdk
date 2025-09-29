@@ -3,8 +3,23 @@
 # Focusing on edge cases, CI issues, and hanging prevention
 
 # Test stdin function
-test_stdin_basic_input() {
-    # Test basic input
+test_stdin_basic_input(test_stdin_empty_handling() {
+    # Test various empty input scenarios
+    export D_GLOB_TTY="false"
+    local test_var=""
+    
+    # Test empty input (should be allowed by default)
+    stdin test_var "Enter optional:" <<< ""
+    assert_equals "" "$test_var" "stdin should allow empty input by default"
+    
+    # Test empty input with default
+    stdin test_var "Enter value:" --default="default_value" <<< ""
+    assert_equals "default_value" "$test_var" "stdin should use default on empty input"
+    
+    # Test empty input with required flag
+    stdin test_var "Enter value:" --required <<< ""
+    assert_equals "__MISSING_REQUIRED_INPUT__" "$test_var" "stdin should fail on empty required input"
+}t basic input
     export D_GLOB_TTY="false"  # Non-TTY mode for testing
     
     # Initialize the variable
@@ -43,16 +58,20 @@ test_stdin_validation_success() {
 }
 
 test_stdin_optional_input() {
-    # Test optional input
+    # Test required vs optional input
     export D_GLOB_TTY="false"  # Non-TTY mode for testing
     
     # Initialize the variable
     local test_var=""
     
-    # Simulate empty input for optional field
-    stdin test_var "Enter optional:" --optional <<< ""
+    # Simulate empty input (should be accepted by default)
+    stdin test_var "Enter optional:" <<< ""
+    assert_equals "" "$test_var" "stdin should allow empty input by default"
     
-    assert_equals "" "$test_var" "stdin should allow empty input for optional fields"
+    # Test with explicit --required flag
+    local test_var_required=""
+    stdin test_var_required "Enter required:" --required --default="default_value" <<< ""
+    assert_equals "default_value" "$test_var_required" "stdin should use default for empty required input"
 }
 
 test_stdin_non_tty_timeout() {
@@ -113,8 +132,8 @@ test_stdin_empty_handling() {
     export D_GLOB_TTY="false"
     local test_var=""
     
-    # Test empty input with optional flag
-    stdin test_var "Enter optional:" --optional <<< ""
+    # Test empty input 
+    stdin test_var "Enter optional:" <<< ""
     assert_equals "" "$test_var" "stdin should allow empty input when optional"
     
     # Test empty input with default
@@ -210,10 +229,10 @@ test_stdin_complex_options() {
     local test_var=""
     
     # Test options similar to the issue pattern with dashes and complex names
-    stdin test_var "Select submodule:" --type="select" --optional \
+    stdin test_var "Select submodule:" --type="select" \
           --options="test-submodule,submodule1,submodule2,submodule3,duplicate-submodule,scope-test-submodule" <<< "1"
     assert_equals "test-submodule" "$test_var" "stdin should handle options with dashes"
-    
+
     # Test selecting a different option from the complex list
     stdin test_var "Select submodule:" --type="select" \
           --options="test-submodule,submodule1,submodule2,submodule3,duplicate-submodule,scope-test-submodule" <<< "5"

@@ -22,7 +22,7 @@ c=$1; shift; case $c in
     doc|docker)     source "$D_SDK_DIR/facades/docker/cli.sh" "$@" ;;
     git)            source_safely "$D_SDK_DIR/facades/git/cli.sh" "$@" ;;
     int|internet)   source_safely "$D_SDK_DIR/facades/internet/cli.sh" "$@" ;;
-    ain|ai)         source_safely "$D_SDK_DIR/facades/ai/cli.sh" "$@" ;;
+    # ain|ai)         source_safely "$D_SDK_DIR/facades/ai/cli.sh" "$@" ;;
     env|envs)       source "$D_SDK_DIR/bootstrap/environment/exports.sh" "$@" ;;
     sdk)            (env D_HOST_CTX_DIR="$D_CTX_DIR" "$D_CLI_SDK" "$@") ;;
     api)            source "$D_SDK_DIR/api/cli.sh" "$@" ;;

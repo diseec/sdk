@@ -19,8 +19,8 @@ sdk_fac_git_cmd_commit_push_pr() {
         sdk_fac_git_cmd_pr_create
     fi
 
-    stdout -l "Cpp done."
-    sdk_fac_git_cmd_git_log "HEAD"
+    stdout -l "CPP done."
+    # sdk_fac_git_cmd_git_log "HEAD"
 
     if [ "$D_GLOB_RECURSIVE" = "true" ]; then
         stdout -l --processing "Cpp for selected submodules"
