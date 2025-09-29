@@ -7,3 +7,6 @@ services:
     image: "$D_REGISTRY_URL/$D_SDK_NAME"
     volumes:
       - "$D_HOST_CTX_DIR:$D_CONT_CTX_DIR:ro"
+    environment:
+      # NOTE: wrapping these values in "" for some reason the qoutes merge into the values
+      - IS_TESTING_COMPOSE_FILE=true

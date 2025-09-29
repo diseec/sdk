@@ -23,6 +23,12 @@ source_once "$D_SDK_DIR/facades/tester/core/suite.sh"
 
 # Initialize tester framework
 sdk_tester_initialize() { 
+    
+    if [ "$IS_TESTING_COMPOSE_FILE" != "true" ]; then
+        stdout -e "Test runner requires test compose file"
+        exit 1
+    fi
+
     # Disable TTY functionality during tests
     export D_GLOB_TTY="false"
     export D_GLOB_LOG_LEVEL="VERBOSE"

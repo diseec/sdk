@@ -16,12 +16,7 @@ helper_create_secret() {
 
     # Use the add command to create the secret
     local add_output
-    add_output=$(D secret add <<EOF
-$test_secret
-$test_value
-EOF
-2>&1
-)
+    add_output=$(printf '%s\n%s\n' "$test_secret" "$test_value" | D secret add 2>&1)
 }
 
 # Test export command requires secret name
@@ -64,12 +59,7 @@ test_secret_export_existing_key_existing_secret() {
 
     # Use the add command to create the secret
     local add_output
-    add_output=$(D secret add <<EOF
-$test_secret
-$test_value
-EOF
-2>&1
-)
+    add_output=$(printf '%s\n%s\n' "$test_secret" "$test_value" | D secret add 2>&1)
     
     # Verify secret was added successfully
     assert_equals "0" "$?" "Should be able to initialize the secret for export testing"
@@ -95,12 +85,7 @@ test_secret_export_existing_secret() {
 
     # Use the add command to create the secret
     local add_output
-    add_output=$(D secret add <<EOF
-$test_secret
-$test_value
-EOF
-2>&1
-)
+    add_output=$(printf '%s\n%s\n' "$test_secret" "$test_value" | D secret add 2>&1)
     
     # Verify secret was added successfully
     assert_equals "0" "$?" "Should be able to initialize the secret for export testing"

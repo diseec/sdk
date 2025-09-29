@@ -12,7 +12,7 @@ c=$1; shift; case $c in
 
     run)        cli_ctx docker compose execute $D_SDK_NAME "$@" ;;
 
-    dev) source "$D_SDK_DIR/utils/dev.sh" "$@" ;;
+    dev) source "$D_SDK_DIR/utils/dev.sh" "$@" ;; 
 
     bui|build)
         cli_ctx docker compose _ build \

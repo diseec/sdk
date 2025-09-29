@@ -36,20 +36,17 @@ confirm() {
         stty "$old_settings"
         trap - INT TERM
     else
-        # Non-TTY mode: Try to use redirected input if available
-        if [ -t 0 ] || [ -p /dev/stdin ]; then
-            # Use read instead of head -c1 to read the full line but only use first character
-            # This properly consumes the newline that follows
-            local full_line
-            read full_line
+        # Try to read input even in non-TTY environment for test automation
+        local full_line
+        read -t 1 full_line || true
+        if [ -n "$full_line" ]; then
             local response=${full_line:0:1}
         else
             # Default to no in fully automated environments with no input
+            stdout -w "No TTY available and no input received, denying"
             local response="n"
         fi
     fi
-    
-    printf "\n"
     
     # In testing environments, echo the input for visibility
     if [ "$D_GLOB_ENV" = "TESTING" ]; then

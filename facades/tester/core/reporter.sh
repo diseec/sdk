@@ -50,7 +50,21 @@ sdk_tester_show_summary() {
             success_rate=$(( (TESTER_PASSED_TESTS * 100) / TESTER_TOTAL_TESTS ))
         fi
         
-        printf " \033[90m|\033[0m \033[97m%d%%\033[0m\033[90m success\033[0m \033[90m|\033[0m \033[97m%s\033[0m\n" "$success_rate" "$duration"
+        # Get coverage statistics
+        local coverage_stats
+        coverage_stats=$(sdk_tester_calculate_coverage)
+        local coverage_percent=$(echo "$coverage_stats" | cut -d':' -f1)
+        local covered_files=$(echo "$coverage_stats" | cut -d':' -f2)
+        local total_files=$(echo "$coverage_stats" | cut -d':' -f3)
+        local orphaned_tests=$(echo "$coverage_stats" | cut -d':' -f4)
+        
+        printf " \033[90m|\033[0m \033[97m%d%%\033[0m\033[90m success\033[0m \033[90m|\033[0m \033[97m%s\033[0m \033[90m|\033[0m \033[97m%d%%\033[0m\033[90m coverage\033[0m \033[90m(%d/%d files" \
+            "$success_rate" "$duration" "$coverage_percent" "$covered_files" "$total_files"
+        
+        if [ "$orphaned_tests" -gt 0 ]; then
+            printf ", %d orphaned" "$orphaned_tests"
+        fi
+        printf ")\033[0m\n"
         
     else
         printf "\033[33m[!]\033[0m \033[90mNo tests executed\033[0m\n"

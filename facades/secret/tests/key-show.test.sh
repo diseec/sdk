@@ -115,7 +115,7 @@ test_secret_key_show_after_auto_generated_key() {
     assert_contains "$show_output" "Current encryption key" "Should show header for auto-generated key"
     
     # Extract the key from the last line
-    local key_line=$(echo "$show_output" | tail -n 1)
+    local key_line=$(D secret key-show)
     
     # Key should be a valid 64-character hex string
     assert_valid_hex_key "$key_line" 64 "Auto-generated key should be valid 64-character hex"

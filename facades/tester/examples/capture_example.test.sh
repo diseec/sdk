@@ -21,7 +21,7 @@ test_command_capture() {
 test_command_error_capture() {
     # Run a command that will likely fail and capture_test_log its error output
     # Using a clearly non-existent command to guarantee failure
-    local output=$(capture_test_log "command_that_does_not_exist_at_all" || true)
+    local output=$(capture_test_log "command_that_does_not_exist_at_all" 2>&1 || true)
     
     # Make assertions on the error output - check for "command not found" which is what bash typically returns
     assert_contains "$output" "not found" "Error message should indicate command not found"
@@ -29,7 +29,7 @@ test_command_error_capture() {
 
 test_capture_with_complex_command() {
     # Run a more complex command chain using string syntax
-    local output=$(capture_test_log "echo 'Starting complex command' && ls -la | grep test || echo 'No test files found' && echo 'Command completed'")
+    local output=$(capture_test_log "echo 'Starting complex command' && ls -la | grep test || echo 'No test files found' && echo 'Command completed'" 2>&1)
     
     # Make targeted assertions
     assert_contains "$output" "Starting complex command" "Starting message should be present"

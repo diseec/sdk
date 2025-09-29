@@ -51,42 +51,28 @@ sdk_fac_sub_fea_act_select() {
         return 1
     fi
     
-    # Display available submodules and let user select them
-    stdout -q "Select module numbers to activate"
-    i=1
+    # Display available submodules and let user select using the select input type
+    # Process available modules into proper comma-separated list
+    local options=""
     for module in $available_modules; do
-        echo ""$(ansi 35 $i)" $module"
-        i=$((i+1))
+        if [ -n "$options" ]; then
+            options="$options,$module"
+        else
+            options="$module"
+        fi
     done
-
-    stdin selection "Enter comma-separated (e.g. 1,3) or 'all'" --default="none" --optional
-
-    selected_modules=""
     
+    
+    stdin selection "Select modules:" --type="select" --options="$options" --optional
+    
+    local selected_modules=""
     if [ "$selection" = "all" ]; then
         selected_modules="$available_modules"
     elif [ "$selection" = "none" ] || [ -z "$selection" ]; then
         selected_modules=""
     else
-        # Parse comma-separated selection
-        save_IFS="$IFS"
-        IFS=','
-        set -- $selection
-        IFS="$save_IFS"
-        i=1
-        for module in $available_modules; do
-            for index in "$@"; do
-                if [ "$i" -eq "$index" ]; then
-                    if [ -n "$selected_modules" ]; then
-                        selected_modules="$selected_modules $module"
-                    else
-                        selected_modules="$module"
-                    fi
-                    break
-                fi
-            done
-            i=$((i+1))
-        done
+        # With the select type, selection is the actual module name
+        selected_modules="$selection"
     fi
 
     # Create YAML array from selected modules

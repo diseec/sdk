@@ -18,17 +18,14 @@ test_secret_validate_missing_argument() {
 }
 
 # Test validate command with non-existent secret
-test_secret_validate_nonexistent_secret_only() {
+test_secret_validate_nonexistent_secret() {
     # Use timeout to avoid hanging on interactive prompts
     local output
-    # output=$(echo "" | timeout 5s D secret validate nonexistent-secret 2>&1 || echo "TIMEOUT_OR_COMPLETED")
-D secret validate nonexistent-secret
-#     output=$(D secret validate nonexistent-secret <<EOF
-# ""
-# EOF
-# )
-    # output=$(echo "" | timeout 5s D secret validate nonexistent-secret 2>&1 || echo "TIMEOUT_OR_COMPLETED")
+    output=$(D secret validate nonexistent-secret <<EOF 2>&1
+EOF
+)
     local result=$?
+    assert_equals "1" "$result" "Should fail for non-existent secret"
     
     # The command might try to prompt for the secret interactively
     # We expect either failure or timeout behavior

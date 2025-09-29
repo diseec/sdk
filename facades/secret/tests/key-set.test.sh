@@ -40,7 +40,7 @@ EOF
 }
 
 # Test key-set command with invalid key format
-test_secret_key_set_invalid_key_format() {
+test_secret_key_set_invalid_key_format_only() {
     # Try to set an invalid key (too short, non-hex characters)
     local invalid_key="invalid_key_123"
     local output

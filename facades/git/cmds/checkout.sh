@@ -63,11 +63,10 @@ sdk_fac_git_cmd_checkout_if_detached() {
             # After branch checkout, check for uncommitted changes left behind
             if [ -n "$(_git status --porcelain)" ]; then
                 stdout -e "You have uncommitted changes that may have been left behind after switching from detached HEAD."
-                stdout -q "Choose how to handle these changes:"
-                echo "1) Stash them"
-                echo "2) Commit to a temporary branch"
-                echo "3) Merge into current branch"
-                stdin DANGER_CHOICE "Enter choice [1/2/3]:"
+                echo "$(ansi 35 "[1]") $(ansi 97 "Stash them")"
+                echo "$(ansi 35 "[2]") $(ansi 97 "Commit to a temporary branch")"
+                echo "$(ansi 35 "[3]") $(ansi 97 "Merge into current branch")"
+                stdin DANGER_CHOICE "Choose how to handle these changes [1/2/3]:"
                 case "$DANGER_CHOICE" in
                     1)
                         _git stash

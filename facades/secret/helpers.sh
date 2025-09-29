@@ -21,7 +21,7 @@ sdk_fac_sec_validate_and_prepare_secret_interactive() {
     
     # Validate key configuration and prompt to set if missing
     if ! sdk_fac_sec_is_key_configured; then
-        stdout -e "No encryption key configured" >&2
+        stdout -e "No encryption key configured"
         if confirm "Would you like to set the encryption key now?"; then
             sdk_fac_sec_set_key
             if [ $? -ne 0 ]; then
@@ -51,13 +51,14 @@ sdk_fac_sec_prompt_add_missing_secret() {
     local secret_name="$1"
     local secret_value
 
-    stdout -w "Secret '$secret_name' not found" >&2
+    stdout -w "Secret '$secret_name' not found"
 
     if confirm "Would you like to add this secret now?"; then
-        stdin secret_value "Enter secret value for '$secret_name'" --hidden >&2
+    # x $something; exit 1
+        stdin secret_value "Enter secret value for '$secret_name'" --hidden
         
         if [ -z "$secret_value" ]; then
-            stdout -e "Secret value cannot be empty" >&2
+            stdout -e "Secret value cannot be empty"
             return 1
         fi
         
@@ -67,7 +68,7 @@ sdk_fac_sec_prompt_add_missing_secret() {
         local key=$(sdk_fac_sec_get_encryption_key)
         sdk_fac_sec_encrypt_and_store_secret "$secret_name" "$secret_value" "$key"
         
-        stdout -o "Secret '$secret_name' added successfully" >&2
+        stdout -o "Secret '$secret_name' added successfully"
         echo "$secret_value"
         return 0
     else
@@ -80,19 +81,12 @@ sdk_fac_sec_handle_decryption_failure() {
     local secret_name="$1"
     local encrypted_value="$2"
     
-    stdout -e "Failed to decrypt secret: $secret_name" >&2
-    stdout -e "The encryption key might be incorrect" >&2
-    stdout -w "If you've lost the original key, this data cannot be recovered" >&2
-    
-    echo "Options:" >&2
-    echo "1. Try entering the correct key" >&2
-    echo "2. Remove this secret and add a new one" >&2
-    echo "3. Cancel operation" >&2
-    
-    stdin choice "Choose option (1-3)" >&2
+    stdout -e "Failed to decrypt secret: $secret_name"
+    stdout -s "The encryption key might be incorrect"
+    stdin choice "What to do now?" --type=radio --options="Enter key,Re-add secret,Cancel"
     
     case "$choice" in
-        "1")
+        "Enter key")
             if confirm "Would you like to re-enter the encryption key?"; then
                 sdk_fac_sec_set_key
                 if [ $? -eq 0 ]; then
@@ -102,13 +96,13 @@ sdk_fac_sec_handle_decryption_failure() {
                         echo "$decrypted_value"
                         return 0
                     else
-                        stdout -e "Still unable to decrypt - key may be permanently lost" >&2
+                        stdout -e "Still unable to decrypt - key may be permanently lost"
                         return 1
                     fi
                 fi
             fi
             ;;
-        "2")
+        "Re-add secret")
             if confirm "Remove '$secret_name' and add a new value?"; then
                 rm "$(sdk_fac_sec_secret_file_path "$secret_name")" 2>/dev/null
                 sdk_fac_sec_prompt_add_missing_secret "$secret_name"

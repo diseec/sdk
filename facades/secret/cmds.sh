@@ -307,7 +307,7 @@ sdk_fac_sec_cmd_check_availability() {
 # Usage: sdk_fac_sec_cmd_validate_secret <secret_name>
 sdk_fac_sec_cmd_validate_secret() {
     local secret_name="$1"
-    
+
     if [ -z "$secret_name" ]; then
         stdout -e "Secret name required"
         stdout -i "Usage: secret validate <secret_name>"

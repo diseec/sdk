@@ -92,6 +92,57 @@ sdk_tester_list_tests() {
     sdk_tester_discover_tests "$pattern" "true"
 }
 
+# Calculate test coverage statistics
+sdk_tester_calculate_coverage() {
+    local search_root="${D_CTX_DIR:-$(pwd)}"
+    
+    # Create temporary files to store results
+    local temp_sh_files=$(mktemp)
+    local temp_test_files=$(mktemp)
+    
+    # Find all non-test .sh files and test files
+    find "$search_root" -type f -name "*.sh" ! -name "*.test.sh" 2>/dev/null | sort > "$temp_sh_files"
+    find "$search_root" -type f -name "*.test.sh" 2>/dev/null | sort > "$temp_test_files"
+    
+    # Count files
+    local total_sh_files=$(grep -c "." "$temp_sh_files" || echo 0)
+    local total_test_files=$(grep -c "." "$temp_test_files" || echo 0)
+    
+    # Count covered files (both ways)
+    local covered_files=0
+    while IFS= read -r file; do
+        if [ -n "$file" ]; then
+            local test_file="${file%.sh}.test.sh"
+            if [ -f "$test_file" ]; then
+                covered_files=$((covered_files + 1))
+            fi
+        fi
+    done < "$temp_sh_files"
+    
+    local orphaned_tests=0
+    while IFS= read -r test_file; do
+        if [ -n "$test_file" ]; then
+            local source_file="${test_file%.test.sh}.sh"
+            if [ ! -f "$source_file" ]; then
+                orphaned_tests=$((orphaned_tests + 1))
+            fi
+        fi
+    done < "$temp_test_files"
+    
+    # Calculate coverage percentage based on total files that should have tests
+    local total_files=$((total_sh_files + orphaned_tests))
+    local coverage_percent=0
+    if [ $total_files -gt 0 ]; then
+        coverage_percent=$(( (covered_files + orphaned_tests) * 100 / total_files ))
+    fi
+    
+    # Cleanup temp files
+    rm -f "$temp_sh_files" "$temp_test_files"
+    
+    # Return coverage stats with additional orphaned test count
+    echo "$coverage_percent:$((covered_files + orphaned_tests)):$total_files:$orphaned_tests"
+}
+
 # Get test files for running (internal function)
 _sdk_tester_get_test_files() {
     local pattern="${1:-}"
