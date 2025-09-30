@@ -47,7 +47,7 @@ sdk_fac_sec_ensure_encryption_key() {
         stdout -l --processing "Generating new encryption key"
         local new_key=$(sdk_fac_sec_generate_encryption_key)
         sdk_fac_sec_store_encryption_key "$new_key"
-        stdout --ansi="34" --icon="KEY" "$new_key"
+        stdout -i --icon="🔑" "$new_key"
         stdout -w "Store this key safely - it's needed to decrypt your secrets!"
         return 0
     fi

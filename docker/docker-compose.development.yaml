@@ -9,6 +9,6 @@ services:
       # - "$HOME/.gitconfig:$D_CONT_HOME_DIR/.gitconfig"
       # - "$HOME/.config:$D_CONT_HOME_DIR/.config"
       - "$HOME/.git-credentials:$D_CONT_HOME_DIR/.git-credentials"
-      - "$D_HOST_CTX_DIR:$D_CONT_CTX_DIR"
+      - "$D_TARGET_CTX_DIR:$D_CONT_CTX_DIR"
       - "$D_ORG_DIR:$D_CONT_ORG_DIR"
       - "$D_GIT_DIR:$D_CONT_GIT_DIR"

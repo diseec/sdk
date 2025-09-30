@@ -62,7 +62,7 @@ sdk_boo_env_setup_environment() {
     readonly D_CONT_HOME_DIR="/root"
     readonly D_CONT_GIT_DIR="/.git"
     readonly D_CONT_CTX_DIR="/ctx"
-    readonly D_CONT_ORG_DIR="/$D_ORG_NAME"
+    readonly D_CONT_ORG_DIR="$D_CONT_HOME_DIR/$D_ORG_NAME"
 
     # =============================================================================
     # COMPUTED PATHS AND DIRECTORIES
@@ -88,7 +88,7 @@ sdk_boo_env_setup_environment() {
         fi
     fi
 
-    D_HOST_CTX_DIR="$(sdk_boo_env_uti_get_kit_target_dir)"
+    D_TARGET_CTX_DIR="$(sdk_boo_env_uti_get_kit_target_dir)"
 
     # Organization directories
     D_ORG_DIR="$(sdk_boo_env_uti_get_org_dir)"

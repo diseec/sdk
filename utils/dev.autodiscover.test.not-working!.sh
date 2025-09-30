@@ -12,7 +12,7 @@ setup_suite() {
     create_test_dir "$TEST_CTX/workspace/.git"
     create_test_dir "$TEST_CTX/workspace/packages/sdk"
     create_test_dir "$TEST_CTX/workspace/services/app1"
-    create_test_dir "$TEST_CTX/workspace/services/app2"
+    create_test_dir "$TEST_CTX/workspace/services/app2" 
     
     # Create package.json files
     create_test_file "$TEST_CTX/workspace/package.json" '{

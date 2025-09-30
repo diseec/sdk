@@ -102,7 +102,7 @@ fix_permissions() {
         return 0
     fi
     
-    stdout -d "Fixing permissions for $target_dir to $D_HOST_UID:$D_HOST_GID"
+    stdout -d --processing "Fixing permissions for $target_dir to $D_HOST_UID:$D_HOST_GID"
 
     local fix_permissions_output=$(chown -R $D_HOST_UID:$D_HOST_GID "$target_dir")
 
@@ -111,7 +111,7 @@ fix_permissions() {
         return 1
     fi
 
-    stdout -d "Fixing permissions for $target_dir to $D_HOST_UID:$D_HOST_GID done"
+    stdout -d "Fixed permissions for $target_dir to $D_HOST_UID:$D_HOST_GID"
 }
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓

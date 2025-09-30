@@ -97,9 +97,9 @@ sdk_fac_con_set() {
     # Ensure config file exists
     local config_file="$(sdk_fac_con_get_config_file "$scope")"
     
-    sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
+    stdout -l "Setting '$key_path' in '$scope' scope, config file: $config_file"
 
-    stdout -l "Set '$key_path' in '$scope' scope with value: $value"
+    sdk_fac_con_yaml_set "$config_file" "$key_path" "$value"
     
     return 0
 }

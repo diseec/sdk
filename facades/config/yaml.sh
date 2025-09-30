@@ -194,6 +194,8 @@ sdk_fac_con_yaml_set() {
     else
         sdk_fac_con_yaml_set_fallback "$config_file" "$key_path" "$value"
     fi
+
+    stdout -l "setting '$key_path' → '$value' done"
 }
 
 # Delete key from YAML file

@@ -17,7 +17,7 @@ vars=( \
     D_REGISTRY_URL \
     D_CONT_CTX_DIR \
     D_CONT_GIT_DIR \
-    D_HOST_CTX_DIR \
+    D_TARGET_CTX_DIR \
 )
 
 # export "${vars[@]}" # reduces control

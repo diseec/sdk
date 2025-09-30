@@ -6,7 +6,7 @@
 # Git-related functions and operations
 
 sdk_boo_env_uti_get_git_dir() {
-    if [ "$D_SDK_CLI_EXECUTED" = "true" ] && [ -z "$D_HOST_CTX_DIR" ]; then return 0; fi
+    if [ "$D_SDK_CLI_EXECUTED" = "true" ] && [ -z "$D_TARGET_CTX_DIR" ]; then return 0; fi
 
     find_git_dir_for() {
         local target="$1"
@@ -47,8 +47,8 @@ sdk_boo_env_uti_get_git_dir() {
         echo "error: no git reference found"
     }
 
-    if [ "$D_HOST_CTX_DIR" != "$D_SDK_DIR" ]; then
-        find_git_dir_for "$D_HOST_CTX_DIR"
+    if [ "$D_TARGET_CTX_DIR" != "$D_SDK_DIR" ]; then
+        find_git_dir_for "$D_TARGET_CTX_DIR"
         return
     else
         find_git_dir_for "$D_CTX_DIR"

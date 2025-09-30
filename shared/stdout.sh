@@ -74,7 +74,7 @@ stdout() {
     # Parse type config
     case $type in
         -l|--log)       default_ansi="90"; default_icon="";  default_level="VERBOSE"; default_animation="BRAILLE_MIXED" ;;
-        -d|--debug)     default_ansi="31"; default_icon="¤"; default_level="DEBUG";   default_animation="BRAILLE_MIXED" ;;
+        -d|--debug)     default_ansi="90"; default_icon="";  default_level="DEBUG";   default_animation="BRAILLE_MIXED" ;;
         -f|--fail)      default_ansi="31"; default_icon="✖"; default_level="ERROR";   default_animation="BRAILLE_MIXED" ;; # ✗
         -e|--error)     default_ansi="31"; default_icon="E"; default_level="ERROR";   default_animation="BRAILLE_MIXED" ;;
         -o|--okey)      default_ansi="32"; default_icon="✓"; default_level="INFO";    default_animation="BRAILLE_MIXED" ;; # ✔
@@ -100,7 +100,16 @@ stdout() {
         prompt="$(ansi 90 "$prompt")"
     fi
 
-    if [ -n "$_icon" ]; then prompt="$prompt$(ansi $_ansi "[$_icon]")"; fi
+    # Check if icon exists and format accordingly
+    if [ -n "$_icon" ]; then
+        if is_emoji "$_icon"; then
+            # For emojis, don't use brackets
+            prompt="$prompt$(ansi $_ansi " $_icon ")"
+        else
+            # For ASCII symbols, keep the brackets
+            prompt="$prompt$(ansi $_ansi "[$_icon]")"
+        fi
+    fi
 
     # Only colorize content if it's not empty
     if [ -n "$content" ]; then

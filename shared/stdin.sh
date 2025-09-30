@@ -283,7 +283,7 @@ stdin() {
         else
             # In non-TTY mode, fail or use a sensible fallback
             stdout -e "Required input missing and no TTY available."
-            user_input="__MISSING_REQUIRED_INPUT__"
+            return 1
         fi
     fi
     

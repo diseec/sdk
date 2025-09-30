@@ -3,7 +3,7 @@
 # Focusing on edge cases, CI issues, and hanging prevention
 
 # Test stdin function
-test_stdin_basic_input(test_stdin_empty_handling() {
+test_stdin_basic_input() {
     # Test various empty input scenarios
     export D_GLOB_TTY="false"
     local test_var=""
@@ -18,8 +18,8 @@ test_stdin_basic_input(test_stdin_empty_handling() {
     
     # Test empty input with required flag
     stdin test_var "Enter value:" --required <<< ""
-    assert_equals "__MISSING_REQUIRED_INPUT__" "$test_var" "stdin should fail on empty required input"
-}t basic input
+    assert_equals "1" "$?" "stdin should fail on empty required input"
+
     export D_GLOB_TTY="false"  # Non-TTY mode for testing
     
     # Initialize the variable

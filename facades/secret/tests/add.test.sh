@@ -10,8 +10,6 @@ setup_test() {
 # Test add command with existing secret - decline overwrite
 test_secret_add_decline_overwrite() {
     # Following the testing guidelines, let the command handle its own prerequisites
-    assert_contains "true" "true" "true"
-    
     # First, make sure we have a clean state
     rm -rf "$TEST_SECRET_DIR" 2>/dev/null
     
@@ -29,7 +27,7 @@ EOF
     # Verify the secret file exists (more reliable than checking decryption in test env)
     local secret_file="$TEST_SECRET_DIR/DECLINE_OVERWRITE_SECRET"
     assert_file_exists "$secret_file" "Secret file should exist"
-    
+
     # Capture the content of the secret file for later comparison
     local initial_content
     initial_content=$(cat "$secret_file" 2>/dev/null)
@@ -172,7 +170,7 @@ EOF
     # Verify command handled empty name appropriately
     assert_not_equals "0" "$?" "Command should not succeed with empty input"
     assert_not_equals "" "$output" "Should provide some response to empty input"
-    assert_contains "$output" "name cannot be empty" "Should indicate a name is required"
+    assert_contains "$output" "Required input missing" "Should indicate a name is required"
 }
 
 # Test add command creates secrets directory
