@@ -26,7 +26,6 @@ display_help "" "" \
 "    ude|update               " "Update CLI and sync project" \
 "    sta|status               " "Show comprehensive project status" \
 "" "" "$(ansi "1;90" "$(capitalize 'Workflow & Environment')")" "" \
-"    dai|daily                " "$(ansi 36 '✦') $(ansi 90 'Generate daily insights')" \
 "    dev|develop              " "Start development environment" \
 "    bpa|build                " "Build project images" \
 "    run                      " "Execute command in container" \
@@ -54,4 +53,5 @@ display_help "" "" \
 "    abo|about                " "About $D_SDK_NAME, authors, $D_ORG_NAME, policies and licensing" \
 "$@"
 }
+# "    dai|daily                " "$(ansi 36 '✦') $(ansi 90 'Generate daily insights')" \
 # "    ai$(printf "\033[96m✦\033[0m\033[34m")                      " "Access to a comprehensive set of AI utils" \

@@ -42,7 +42,7 @@ ansi() {
 # ┃   106 Bright Cyan    107 Bright White                                   ┃
 # ┃                                                                         ┃
 # ┃ TEXT STYLES                                                             ┃
-# ┃   0   Reset/Normal   1   Bold        2   Dim                            ┃
+# ┃   0   Reset/Normal   1   Bold        2   Dim     9   Strikethrough      ┃
 # ┃   3   Italic         4   Underline   5   Blink                          ┃
 # ┃   7   Inverse        8   Hidden                                         ┃
 # ┃                                                                         ┃

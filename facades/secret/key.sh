@@ -73,7 +73,7 @@ sdk_fac_sec_reset_key() {
         local new_key=$(sdk_fac_sec_generate_encryption_key)
         sdk_fac_sec_store_encryption_key "$new_key"
         stdout -l "New encryption key generated"
-        stdout -l "Key: $new_key"
+        stdout -i "Key: $new_key"
         stdout -w "Store this key safely!"
     fi
 }

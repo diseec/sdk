@@ -200,15 +200,15 @@ sdk_fac_sec_show_secrets() {
 
             if [ $? -eq 0 ] && [ -n "$decrypted_value" ]; then
                 # Display secret name in white
-                printf "$(ansi "97" "%s")\n" "$secret_name"
+                printf "$(ansi "1;97" "%b")\n" "$secret_name"
                 
                 # Display secret value based on show_values flag
                 if [ "$show_values" = true ]; then
                     # Show actual value in darker gray
-                    printf "$(ansi "2;30" "%s")\n\n" "$decrypted_value"
+                    printf "$(ansi "2;3;9;30" "%s")\n\n" "$decrypted_value"
                 else
                     # Hide value
-                    printf "$(ansi "8;30" "%s")\n\n" "$decrypted_value"
+                    printf "$(ansi "2;8" "%s")\n\n" "$decrypted_value"
                 fi
                 
                 secret_count=$((secret_count + 1))
@@ -221,12 +221,13 @@ sdk_fac_sec_show_secrets() {
     # Display summary if we have any secrets
     if [ $secret_count -gt 0 ]; then
         printf "\n"
-        printf "$(ansi "2;90" "Total: %d secrets")\n" "$secret_count"
-        if [ "$show_values" = false ]; then
-            printf "$(ansi "2;90" "Use --unmask to display actual values")\n"
-        fi
+        printf "$(ansi "2;97" "Total: %d secrets")\n" "$secret_count"
         printf "$(ansi "2;90" "To export a secret as environment variables:")\n"
         printf "$(ansi "2;90" "export SECRET_NAME=\"\$(\$D_CLI_STUB secret export 'SECRET_NAME')\"")\n"
+        if [ "$show_values" = false ]; then
+            echo
+            stdout -i "Use --unmask to display actual values"
+        fi
     else
         stdout -w "No secrets were displayed"
     fi

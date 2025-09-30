@@ -59,8 +59,7 @@ sdk_fac_ins_sdk_process() {
 
     # if [ ! -f "$D_CONT_CTX_DIR/.gitignore" ]; then cp "/$D_SDK_NAME/templates/.gitignore" "$D_CONT_CTX_DIR/.gitignore"; fi
     local d_version="$(grep '"version"' "$D_CONT_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH/package.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"
-    stdout -l "$D_SDK_NAME current version: $d_version"
-    processing_stop
+    stdout -l "$D_SDK_NAME patched to version $d_version"
 }
 
 sdk_fac_ins_sdk() {

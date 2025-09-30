@@ -124,18 +124,16 @@ sdk_fac_git_cmd_pr_check_status() {
       local resolved_count=$(echo "$pr_data" | _jq -r '[.comments[]? | select(.isResolved == true)] | length')
       local unresolved_count=$(echo "$pr_data" | _jq -r '[.comments[]? | select(.isResolved != true)] | length')
       
-      processing_stop
-      
       # Display info
-      stdout "PR#$pr_number" "title: $pr_title"
-      stdout "PR#$pr_number" "url: $pr_url"
+      stdout -l "PR#$pr_number" "title: $pr_title"
+      stdout -l "PR#$pr_number" "url: $pr_url"
       
       # Review status
       case "$review_decision" in
           "APPROVED") stdout -o "Approved! Ready to merge." ;;
           "CHANGES_REQUESTED") stdout --ansi="31" --icon="⊝" "Changes requested. See comments below." ;;
           "REVIEW_REQUIRED") stdout --ansi="33" --icon="⊙" "Waiting for review" ;;
-          *) stdout "No reviews yet" ;;
+          *) stdout -l "No reviews yet" ;;
       esac
     
     # Comment status
@@ -156,5 +154,5 @@ sdk_fac_git_cmd_pr_check_status() {
       stdout -e "View PR at: \033[4mhttps://github.com/$(_git remote get-url origin | sed -E 's/.*github.com[:\/](.*)\/(.*)(\.git)?/\1\/\2/')/pull/$pr_number\033[24m"
   fi
 
-  processing_stop
+    stdout -l "Checking PR status done"
 }
