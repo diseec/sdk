@@ -75,22 +75,18 @@ sdk_fac_ins_rep_handle() {
         fi
     fi
 
-    retry "cli_ctx docker function sdk_doc_init_compose_files"
-    if [ $? -ne 0 ]; then
-        rep_failures+=("Docker compose file initialization failed")
-        rep_exit_code=1
-    fi
-    
-    _compose_files_init () {
-        local module="$1"
-        local module_path="$2"
-        retry "cli_ctx docker function sdk_doc_init_compose_files \"$D_CTX_DIR/$module_path\""
-        return $?
-    }
-    cli_ctx submodule foreach_active _compose_files_init
-    if [ $? -ne 0 ]; then
-        rep_failures+=("Docker compose file initialization in submodules failed")
-        rep_exit_code=1
+    if [ "$D_GLOB_RECURSIVE" = "true" ]; then
+        _compose_files_init () {
+            local module="$1"
+            local module_path="$2"
+            retry "cli_ctx docker function sdk_doc_init_compose_files \"$D_CTX_DIR/$module_path\""
+            return $?
+        }
+        cli_ctx submodule foreach_active _compose_files_init
+        if [ $? -ne 0 ]; then
+            rep_failures+=("Docker compose file initialization in submodules failed")
+            rep_exit_code=1
+        fi
     fi
 
     # cli_ctx sdk stop;
@@ -132,6 +128,12 @@ sdk_fac_ins_repository() {
         cli_ctx --safely install function sdk_fac_ins_rep_handle
     fi
 
+    retry "cli_ctx docker function sdk_doc_init_compose_files"
+    if [ $? -ne 0 ]; then
+        rep_failures+=("Docker compose file initialization failed")
+        rep_exit_code=1
+    fi
+    
     if [ $? -ne 0 ]; then
         install_failures+=("Repository handling failed in SDK container")
         exit_code=1
