@@ -152,7 +152,7 @@ retry() {
             if confirm "Operation failed. Retry? Failure on '$operation_cmd'"; then
                 attempt=$((attempt + 1))
             else
-                stdout -l "User chose not to retry. Exiting retry loop."
+                stdout -l "Retry denied, exiting retry loop."
                 break
             fi
 

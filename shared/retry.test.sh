@@ -5,7 +5,6 @@
 # Test retry function
 test_retry_success_first_attempt() {
     # Test retry with successful command on first attempt
-    export D_GLOB_TTY="false"  # Non-TTY mode for testing
     
     # Test basic output capture
     local result1=$(capture_test_log retry --auto "echo 'success'")
@@ -20,7 +19,6 @@ test_retry_success_first_attempt() {
 
 test_retry_auto_mode() {
     # Test retry in auto mode with initially failing command
-    export D_GLOB_TTY="false"  # Non-TTY mode for testing
     
     # Create a command that fails on first run but succeeds on second
     local test_script="$TEST_CTX/retry_test.sh"
@@ -44,7 +42,6 @@ EOF
 
 test_retry_auto_timeout() {
     # Test auto retry with strict timeout
-    export D_GLOB_TTY="false"
     
     # Create a command that always fails but takes time
     local test_script="$TEST_CTX/slow_fail.sh"
@@ -67,7 +64,6 @@ EOF
 
 test_retry_output_capture() {
     # Test output capturing in various scenarios
-    export D_GLOB_TTY="false"
     
     # Test successful command output capture
     local output=""
@@ -82,7 +78,6 @@ test_retry_output_capture() {
 
 # test_retry_signal_handling() {
 #     # Test retry's signal handling
-#     export D_GLOB_TTY="false"
     
 #     # Create a test script that we know exists and works
 #     local test_script="$TEST_CTX/simple_sleep.sh"
@@ -120,7 +115,6 @@ test_retry_output_capture() {
 
 test_retry_mixed_mode() {
     # Test transition from auto to manual mode
-    export D_GLOB_TTY="false"
     
     # Create a script that fails a specific number of times
     local test_script="$TEST_CTX/count_fails.sh"
@@ -150,7 +144,6 @@ EOF
 
 test_retry_environment_handling() {
     # Test retry behavior with different environment variables
-    export D_GLOB_TTY="false"
     local test_script="$TEST_CTX/env_test.sh"
     
     # Create a script that checks environment preservation

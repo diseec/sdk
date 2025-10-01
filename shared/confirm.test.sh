@@ -70,7 +70,6 @@ test_stdout_custom_icon_ansi() {
 # Test confirm function
 test_confirm_yes_input() {
     # Test confirm with 'yes' input
-    export D_GLOB_TTY="false"  # Non-TTY mode for testing
     
     # Simulate 'y' input using here string
     local result=$(echo "y" | confirm "Confirm test?" echo "Confirmation successful")
@@ -81,7 +80,6 @@ test_confirm_yes_input() {
 
 test_confirm_no_input() {
     # Test confirm with 'no' input
-    export D_GLOB_TTY="false"  # Non-TTY mode for testing
     
     # Simulate 'n' input using here string
     local result=$(echo "n" | confirm "Confirm test?" echo "Confirmation successful")
@@ -92,7 +90,6 @@ test_confirm_no_input() {
 
 test_confirm_if_statement() {
     # Test confirm in an if statement
-    export D_GLOB_TTY="false"  # Non-TTY mode for testing
     
     # Simulate 'y' input and use in if statement
     if echo "y" | confirm "Confirm test?"; then

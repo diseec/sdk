@@ -6,9 +6,20 @@
 
 export D_GLOB_ENV="${D_GLOB_ENV:-DEVELOPMENT}" # Valid environments: DEVELOPMENT, TESTING, PRODUCTION
 export D_GLOB_DEBUG="${D_GLOB_DEBUG:-false}"
-export D_GLOB_LOG_LEVEL="${D_GLOB_LOG_LEVEL:-$([ -z "$CI" ] && [ -t 0 ] && echo INFO || echo VERBOSE)}" # VERBOSE > INFO > WARNING > ERROR > QUIET
+export D_GLOB_LOG_LEVEL="${D_GLOB_LOG_LEVEL:-INFO}"
 export D_GLOB_RECURSIVE="${D_GLOB_RECURSIVE:-false}"
-export D_GLOB_TTY="${D_GLOB_TTY:-$([ -z "$CI" ] && [ -t 0 ] && echo true || echo false)}"  # TTY availability flag, true by default
+export D_GLOB_AUTO="${D_GLOB_AUTO:-$(
+    if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ] || [ -n "$GITLAB_CI" ] || [ -n "$CIRCLECI" ] || \
+        [ -n "$TRAVIS" ] || [ -n "$JENKINS_URL" ] || [ -n "$BUILDKITE" ] || [ -n "$BITBUCKET_BUILD_NUMBER" ]; then
+        echo true
+    elif ! [ -t 0 ]; then
+        echo true
+    elif [ -n "$INVOCATION_ID" ] || [ -n "$JOURNAL_STREAM" ]; then
+        echo true
+    else
+        echo false
+    fi
+)}"
 export D_GLOB_PATCH="${D_GLOB_PATCH:-false}"
 
 # Support both long and short options, including grouped short options
@@ -38,7 +49,7 @@ _ARGS_ENVS_PROCESS=""; _found_command=false; for arg in "${_expanded_args[@]}"; 
             -v|--verbose)   D_GLOB_LOG_LEVEL="VERBOSE" ;;
             --log-level=*)  D_GLOB_LOG_LEVEL="${arg#*=}" ;;
             --env=*)        D_GLOB_ENV="${arg#*=}" ;;
-            --no-tty)       D_GLOB_TTY="false" ;;
+            --auto)         D_GLOB_AUTO="true" ;;
             *) _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\""; _found_command=true;;
         esac
     fi

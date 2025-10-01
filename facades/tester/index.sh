@@ -30,7 +30,7 @@ sdk_tester_initialize() {
     fi
 
     # Disable TTY functionality during tests
-    export D_GLOB_TTY="false"
+    export IS_TTY_AVAILABLE="false"
     export D_GLOB_LOG_LEVEL="VERBOSE"
     # export D_GLOB_DEBUG="false"
 

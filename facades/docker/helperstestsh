@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Test: when examples exist and targets don't, the function should copy examples and call fix_permissions
+test_init_compose_creates_files() {
+    printf '%s' "COMPOSE_EXAMPLE_CONTENT" > "$TEST_CTX/docker-compose.yaml.example"
+    printf '%s' "OVERRIDE_EXAMPLE_CONTENT" > "$TEST_CTX/docker-compose.override.yaml.example"
+
+    # Run the function
+    D docker function sdk_doc_init_compose_files "$TEST_CTX"
+ 
+    # Verify files were created
+    assert_file_exists "$TEST_CTX/docker-compose.yaml" "docker-compose.yaml should be created"
+    assert_file_exists "$TEST_CTX/docker-compose.override.yaml" "docker-compose.override.yaml should be created"
+
+    # Verify contents match the examples
+    local a
+    a=$(cat "$TEST_CTX/docker-compose.yaml")
+    assert_equals "COMPOSE_EXAMPLE_CONTENT" "$a" "docker-compose.yaml should match example"
+
+    local b
+    b=$(cat "$TEST_CTX/docker-compose.override.yaml")
+    assert_equals "OVERRIDE_EXAMPLE_CONTENT" "$b" "docker-compose.override.yaml should match example"
+}
+
+# Test: existing target files must not be overwritten
+test_init_compose_does_not_overwrite_existing() {
+    # Create example and an existing target with different content
+    printf '%s' "EXAMPLE_A" > "$TEST_CTX/docker-compose.yaml.example"
+    printf '%s' "EXISTING_B" > "$TEST_CTX/docker-compose.yaml"
+
+    # Ensure override example absent to keep test focused
+    rm -f "$TEST_CTX/docker-compose.override.yaml.example" "$TEST_CTX/docker-compose.override.yaml" 2>/dev/null || true
+
+    # Mock fix_permissions so it doesn't error
+    fix_permissions() { :; }
+
+    D docker function sdk_doc_init_compose_files "$TEST_CTX"
+
+    # Verify existing file was not overwritten
+    local content
+    content=$(cat "$TEST_CTX/docker-compose.yaml")
+    assert_equals "EXISTING_B" "$content" "Existing docker-compose.yaml should not be overwritten"
+}

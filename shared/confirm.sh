@@ -21,7 +21,7 @@ confirm() {
     printf "$(stdout -q --ansi="35" --icon="Y/N" "$question ")"
 
     # Check if TTY is available
-    if [ "$D_GLOB_TTY" = "true" ]; then
+    if [ "$IS_TTY_AVAILABLE" = "true" ] && [ "$D_GLOB_AUTO" != "true" ]; then
         # Store original terminal settings to restore later
         local old_settings=$(stty -g)
     
@@ -40,11 +40,17 @@ confirm() {
         local full_line
         read -t 1 full_line || true
         if [ -n "$full_line" ]; then
+            stdout -d "No TTY available but input received: $full_line"
             local response=${full_line:0:1}
         else
             # Default to no in fully automated environments with no input
-            stdout -w "No TTY available and no input received, denying"
-            local response="n"
+            if [ "$D_GLOB_AUTO" = "true" ]; then
+                stdout -d "No TTY available and auto mode active, confirming"
+                local response="y"
+            else
+                stdout -w "No TTY available and no input received, denying"
+                local response="n"
+            fi
         fi
     fi
     

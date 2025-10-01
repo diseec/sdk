@@ -5,7 +5,7 @@ vars=( \
     D_GLOB_DEBUG \
     D_GLOB_LOG_LEVEL \
     D_GLOB_RECURSIVE \
-    D_GLOB_TTY \
+    D_GLOB_AUTO \
     D_GLOB_PATCH \
     D_VERSION \
     D_CTX_DIR \

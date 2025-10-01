@@ -17,7 +17,7 @@ trap 'processing_stop >&2' SIGINT SIGTERM EXIT
 # Main public function - Start an animation that auto-stops on output
 # Usage: processing_start [ANIMATION_TYPE]
 processing_start() {
-    if [ "$D_GLOB_TTY" != "true" ] || [ "$D_GLOB_LOG_LEVEL" = "QUIET" ]; then return 0; fi
+    if [ "$IS_TTY_AVAILABLE" != "true" ] || [ "$D_GLOB_LOG_LEVEL" = "QUIET" ]; then return 0; fi
     
     # Clean up any existing animation first
     processing_stop >&2
@@ -62,7 +62,7 @@ processing_start() {
 # Internal function to stop any running animation
 # Usage: processing_stop
 processing_stop() {
-    if [ "$D_GLOB_TTY" != "true" ] || [ "$D_GLOB_LOG_LEVEL" = "QUIET" ]; then return 0; fi
+    if [ "$IS_TTY_AVAILABLE" != "true" ] || [ "$D_GLOB_LOG_LEVEL" = "QUIET" ]; then return 0; fi
     
     # Set flags first to prevent race conditions
     PROCESSING_ANIMATION_RUNNING=false

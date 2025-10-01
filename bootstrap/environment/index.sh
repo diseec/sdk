@@ -27,6 +27,10 @@ sdk_boo_env_setup_environment() {
         readonly D_HOST_GID
     fi
 
+    # readonly D_IS_TTY="${D_IS_TTY:-$([ -t 0 ] && echo true || echo false)}"  # TTY availability flag, true by default
+    export IS_TTY_AVAILABLE="$([ -t 0 ] && echo true || echo false)"  # TTY availability flag, true by default
+
+
     # =============================================================================
     # BASIC ENVIRONMENT VARIABLES
     # =============================================================================

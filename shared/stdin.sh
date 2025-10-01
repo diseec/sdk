@@ -144,9 +144,9 @@ stdin() {
     fi
 
     stdout -q --ansi="35" --icon=">" "$display_prompt"
-    
+
     # Check if input is available from redirection (<, <<, <<<, pipe)
-    if [ ! -t 0 ] && [ "$D_GLOB_TTY" = "false" ]; then
+    if [ ! -t 0 ]; then
         # Non-TTY mode with redirection available
         if [ "$hidden" = true ]; then
             # For hidden input, just read once
@@ -187,7 +187,7 @@ stdin() {
                 fi
             fi
         fi
-    elif [ "$D_GLOB_TTY" = "true" ]; then
+    elif [ "$IS_TTY_AVAILABLE" = "true" ]; then
         # TTY mode
         # Store original terminal settings
         local old_settings=$(stty -g)
@@ -204,7 +204,7 @@ stdin() {
                 if [ "$idx" -ge 0 ] && [ "$idx" -lt "${#options_array[@]}" ]; then
                     user_input="${options_array[$idx]}"
                 else
-                    if [ "$D_GLOB_TTY" = "true" ]; then
+                    if [ "$IS_TTY_AVAILABLE" = "true" ]; then
                         stdout -e "Invalid selection number."
                         # Retry on invalid selection
                         stdin "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} \
@@ -275,7 +275,7 @@ stdin() {
     
     # Check if input is required
     if [ "$required" = true ] && [ -z "$user_input" ]; then
-        if [ "$D_GLOB_TTY" = "true" ]; then
+        if [ "$IS_TTY_AVAILABLE" = "true" ]; then
             stdout -e "Input is required."
             # Retry stdin in TTY mode
             stdin "$var_name" "$prompt" ${default_value:+--default="$default_value"} ${validate_pattern:+--validate="$validate_pattern"} ${error_message:+--error="$error_message"} ${hidden:+--hidden} ${required:+--required}
@@ -290,7 +290,7 @@ stdin() {
     # Validate input if pattern provided
     if [ -n "$validate_pattern" ] && [ -n "$user_input" ]; then
         if ! echo "$user_input" | grep -qE "$validate_pattern"; then
-            if [ "$D_GLOB_TTY" = "true" ]; then
+            if [ "$IS_TTY_AVAILABLE" = "true" ]; then
                 stdout -e "$error_message"
                 # Retry input in TTY mode with all original parameters
                 stdin "$var_name" "$prompt" ${default_value:+--default="$default_value"} \

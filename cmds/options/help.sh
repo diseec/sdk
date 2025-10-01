@@ -13,14 +13,16 @@ display_help "" "" \
 "    -s|--safely              " "Safe command execution, (in $D_SDK_NAME container!)" \
 "    -r|--recursive           " "Recurse actions into submodules" \
 "                             " "$(ansi "2;90" "Not supported by all commands, check command help")" \
+"    -a|--auto                " "Enable automatic standalone mode (detect CI/container/no-TTY)" \
+"                             " "$(ansi "2;90" "Handle defaults, and outputs automatically")" \
+"                             " "$(ansi "2;90" "Detected when running in CI, non-TTY, or under systemd.")" \
 "    -q|--quiet               " "Suppress all output" \
 "    -v|--verbose             " "Set log level to VERBOSE (most detailed)" \
-"    --log-level              " "Set the log level for the CLI" \
-"                             " "$(ansi "2;90" "Valid values: VERBOSE, INFO, WARNING, ERROR")" \
-"    --no-tty                 " "Disable TTY detection (force non-interactive mode)" \
-"    --version                " "Show version information" \
 "    -d|--debug               " "Enable debug mode: tracing and verbose logging" \
 "    -h|--help                " "Brief usage and docs information" \
+"    --log-level              " "Set the log level for the CLI" \
+"                             " "$(ansi "2;90" "Valid values: VERBOSE, INFO, WARNING, ERROR")" \
+"    --version                " "Show version information" \
 "" "" "$(ansi "1;90" "$(capitalize 'Project Management')")" "" \
 "    ins|install              " "Install project dependencies and tools" \
 "    ude|update               " "Update CLI and sync project" \
