@@ -2,9 +2,9 @@
 
 sdk_api_v1(){
     local c=$1; shift; case $c in
-        install) cli_ctx install ;;
-        update) cli_ctx update ;;
-        build) cli_ctx build ;;
+        install) cli_ctx --verbose --patch install ;;
+        update) cli_ctx --verbose --patch update ;;
+        build) cli_ctx --verbose --patch build ;;
         git.commit.push.pr) cli_ctx git commit-push-pr ;;
         git.log.--today) cli_ctx git log --today ;;
         pull) cli_ctx git pull ;;
