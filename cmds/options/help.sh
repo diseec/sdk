@@ -25,11 +25,11 @@ display_help "" "" \
 "    --version                " "Show version information" \
 "" "" "$(ansi "1;90" "$(capitalize 'Project Management')")" "" \
 "    ins|install              " "Install project dependencies and tools" \
-"    ude|update               " "Update CLI and sync project" \
+"    upd|update               " "Update CLI and sync project" \
 "    sta|status               " "Show comprehensive project status" \
 "" "" "$(ansi "1;90" "$(capitalize 'Workflow & Environment')")" "" \
 "    dev|develop              " "Start development environment" \
-"    bpa|build                " "Build project images" \
+"    bui|build                " "Build project images" \
 "    run                      " "Execute command in container" \
 "    exe|execute              " "Execute command in specific service" \
 "    she|shell                " "Open interactive shell" \

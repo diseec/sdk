@@ -3,9 +3,9 @@
 c=$1; shift; case $c in
     sta|status)     sdk_cmd_status "$@" ;;
     ins|install)    mark_ctx_only; source "$D_SDK_DIR/facades/install/cli.sh" "$@" ;;
-    ude|update)     mark_ctx_only; cli_ctx install update "$@" ;;
+    upd|update)     mark_ctx_only; cli_ctx install update "$@" ;;
     dev|develop)    mark_ctx_only; cli_ctx docker compose up-dev "$@" ;;
-    bpa|build)      cli_ctx docker compose build "$@" ;;
+    bui|build)      cli_ctx docker compose build "$@" ;;
     run)            cli_ctx docker compose execute "$D_REPO_NAME" "$@" ;;
     exe|execute)    cli_ctx docker compose execute "$@" ;;
     she|shell)      cli_ctx run /bin/bash "$@" ;;
