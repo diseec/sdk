@@ -21,7 +21,7 @@ confirm() {
     printf "$(stdout -q --ansi="35" --icon="Y/N" "$question ")"
 
     # Check if TTY is available
-    if [ "$IS_TTY_AVAILABLE" = "true" ] && [ "$D_GLOB_AUTO" != "true" ]; then
+    if [ "$IS_TTY_AVAILABLE" = "true" ] && [ "$D_AUTO" != "true" ]; then
         # Store original terminal settings to restore later
         local old_settings=$(stty -g)
     
@@ -44,7 +44,7 @@ confirm() {
             local response=${full_line:0:1}
         else
             # Default to no in fully automated environments with no input
-            if [ "$D_GLOB_AUTO" = "true" ]; then
+            if [ "$D_AUTO" = "true" ]; then
                 stdout -d "No TTY available and auto mode active, confirming"
                 local response="y"
             else
@@ -55,7 +55,7 @@ confirm() {
     fi
     
     # In testing environments, echo the input for visibility
-    if [ "$D_GLOB_ENV" = "TESTING" ]; then
+    if [ "$D_ENV" = "TESTING" ]; then
         stdout -i --icon="<" "Input received (non-TTY mode): $response"
     fi
 

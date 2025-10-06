@@ -22,7 +22,7 @@ sdk_fac_git_cmd_commit_push_pr() {
     stdout -l "CPP done."
     # sdk_fac_git_cmd_git_log "HEAD"
 
-    if [ "$D_GLOB_RECURSIVE" = "true" ]; then
+    if [ "$D_RECURSIVE" = "true" ]; then
         stdout -l --processing "Cpp for selected submodules"
         cpp_submodule() {
             local module="$1"; local module_path="$2"

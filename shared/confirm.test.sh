@@ -5,7 +5,7 @@
 # Test stdout function
 test_stdout_basic() {
     # Test basic log message
-    export D_GLOB_LOG_LEVEL="VERBOSE"
+    export D_LOG_LEVEL="VERBOSE"
     local result=$(capture_test_log stdout "Test message" 2>&1)
     
     # We don't test the exact format (timestamp varies) but check the content
@@ -14,7 +14,7 @@ test_stdout_basic() {
 
 test_stdout_types() {
     # Test different message types
-    export D_GLOB_LOG_LEVEL="VERBOSE"
+    export D_LOG_LEVEL="VERBOSE"
     
     # Test info message
     local info_result=$(capture_test_log stdout -i "Info message" 2>&1)
@@ -36,7 +36,7 @@ test_stdout_log_levels() {
     # Test different log levels
     
     # Set log level to INFO
-    export D_GLOB_LOG_LEVEL="INFO"
+    export D_LOG_LEVEL="INFO"
     
     # Debug messages should be suppressed at INFO level
     local debug_result=$(capture_test_log stdout -d "Debug message" 2>&1)
@@ -47,7 +47,7 @@ test_stdout_log_levels() {
     assert_contains "$info_result" "Info message" "Info message should appear at INFO level"
     
     # Set log level to ERROR
-    export D_GLOB_LOG_LEVEL="ERROR"
+    export D_LOG_LEVEL="ERROR"
     
     # Warning messages should be suppressed at ERROR level
     local warning_result=$(capture_test_log stdout -w "Warning message" 2>&1)
@@ -60,7 +60,7 @@ test_stdout_log_levels() {
 
 test_stdout_custom_icon_ansi() {
     # Test custom icon and ANSI code
-    export D_GLOB_LOG_LEVEL="VERBOSE"
+    export D_LOG_LEVEL="VERBOSE"
     
     local result=$(capture_test_log stdout --icon="X" --ansi="36" "Custom message" 2>&1)
     assert_contains "$result" "[X]" "stdout should display custom icon"
@@ -113,7 +113,7 @@ test_confirm_if_statement() {
 # Test display_help function
 test_display_help_output() {
     # Test display_help output format
-    export D_GLOB_LOG_LEVEL="VERBOSE"
+    export D_LOG_LEVEL="VERBOSE"
     
     local result=$(capture_test_log display_help "command1" "Description 1" "command2" "Description 2" 2>&1)
     

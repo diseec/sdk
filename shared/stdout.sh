@@ -95,7 +95,7 @@ stdout() {
     # Prepare prompt & content
     local prompt
 
-    if [ "$D_GLOB_LOG_LEVEL" = "VERBOSE" ] || [ "$D_GLOB_LOG_LEVEL" = "DEBUG" ]; then    
+    if [ "$D_LOG_LEVEL" = "VERBOSE" ] || [ "$D_LOG_LEVEL" = "DEBUG" ]; then    
         prompt="[$(date "+%H:%M:%S")][$(capitalize "$repo_name")]"
         prompt="$(ansi 90 "$prompt")"
     fi
@@ -117,7 +117,7 @@ stdout() {
     fi
 
     # Handle logging levels
-    case $D_GLOB_LOG_LEVEL in
+    case $D_LOG_LEVEL in
         DEBUG|debug) ;;
         VERBOSE|verbose) case $_level in DEBUG) return 0; esac ;;
         INFO|info) case $_level in       DEBUG|VERBOSE) return 0; esac ;;

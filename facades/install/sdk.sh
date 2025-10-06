@@ -88,7 +88,7 @@ sdk_fac_ins_sdk() {
 sdk_fac_ins_ensure_patched() {
     mark_ctx_only
 
-    local is_forced="${D_GLOB_PATCH:-false}";
+    local is_forced="${D_PATCH:-false}";
     local sdk_dir="$D_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH";
 
     # Patch operation applied only either asked to or target project is missing the sdk
@@ -106,7 +106,13 @@ sdk_fac_ins_ensure_patched() {
         fi
         
         _D_SDK_HAS_PATCHED="true"
-        sdk_fac_ins_sdk
+
+        if [ -f "$D_CTX_DIR/package.json" ] && \
+           grep -q "\"$D_SDK_NPM_PKG\"" "$D_CTX_DIR/package.json"; then
+            sdk_fac_ins_sdk
+        else
+            stdout -w "No dep definition, skipping patching; in: $D_CTX_DIR"
+        fi
 
         # abort if patch failed
         if [ $? -ne 0 ]; then

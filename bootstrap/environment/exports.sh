@@ -1,12 +1,12 @@
 #!/bin/bash
 
 vars=( \
-    D_GLOB_ENV \
-    D_GLOB_DEBUG \
-    D_GLOB_LOG_LEVEL \
-    D_GLOB_RECURSIVE \
-    D_GLOB_AUTO \
-    D_GLOB_PATCH \
+    D_ENV \
+    D_DEBUG \
+    D_LOG_LEVEL \
+    D_RECURSIVE \
+    D_AUTO \
+    D_PATCH \
     D_VERSION \
     D_CTX_DIR \
     D_SDK_DIR \

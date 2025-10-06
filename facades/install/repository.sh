@@ -75,7 +75,7 @@ sdk_fac_ins_rep_handle() {
         fi
     fi
 
-    if [ "$D_GLOB_RECURSIVE" = "true" ]; then
+    if [ "$D_RECURSIVE" = "true" ]; then
         _compose_files_init () {
             local module="$1"
             local module_path="$2"
@@ -122,7 +122,7 @@ sdk_fac_ins_repository() {
     fi
 
     # Early return in CI environment - silent skip
-    if [ -n "$CI" ]; then
+    if [ "$D_ENV" = "PIPELINE" ]; then
         stdout -w "Skipping interactive installation in CI environment";
     else
         cli_ctx --safely install function sdk_fac_ins_rep_handle
@@ -139,7 +139,7 @@ sdk_fac_ins_repository() {
         exit_code=1
     fi
 
-    if [ "$D_GLOB_RECURSIVE" = "true" ]; then
+    if [ "$D_RECURSIVE" = "true" ]; then
         stdout -l --processing "Installing dependencies in selected submodules"
         local active_modules="$(cli_ctx --quiet submodule actives)"
         # Normalize whitespace: convert newlines/tabs to single spaces and trim edges

@@ -22,7 +22,7 @@ sdk_fac_git_cmd_pull_merge() {
 
     stdout -l "Pull and merge complete."
 
-    if [ "$D_GLOB_RECURSIVE" = "true" ]; then
+    if [ "$D_RECURSIVE" = "true" ]; then
         pull_submodule() {
             stdout -l --processing "Pull and merging in submodule '$module'"
             local module="$1"

@@ -16,7 +16,7 @@ sdk_fac_for_prettier() {
 
     stdout -i --ansi="34" --icon="❄︎" --processing "Formatting using Prettier"
 
-    if [ "$CI" = "true" ]; then 
+    if [ "$D_ENV" = "PIPELINE" ]; then 
         _prettier --check --log-level=warn "$@";
     else
         _prettier --write --log-level=warn "$@";

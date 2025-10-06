@@ -31,8 +31,8 @@ sdk_tester_initialize() {
 
     # Disable TTY functionality during tests
     export IS_TTY_AVAILABLE="false"
-    export D_GLOB_LOG_LEVEL="VERBOSE"
-    # export D_GLOB_DEBUG="false"
+    export D_LOG_LEVEL="VERBOSE"
+    # export D_DEBUG="false"
 
     export TESTER_RESULT_FILE_NAME=".test_result"
     export TESTER_LOG_FILE_NAME=".test_logs_XXXXXX"

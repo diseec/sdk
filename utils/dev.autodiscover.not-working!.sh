@@ -5,7 +5,7 @@
 # ┃ Syncs SDK changes to target modules for live development                ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-# D_GLOB_LOG_LEVEL="DEBUG"
+# D_LOG_LEVEL="DEBUG"
 
 # Core configuration
 WATCH_DIR="$D_SDK_DIR"

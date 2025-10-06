@@ -4,13 +4,41 @@
 # PROCESS COMMAND-LINE ARGUMENTS
 # =============================================================================
 
-export D_GLOB_ENV="${D_GLOB_ENV:-DEVELOPMENT}" # Valid environments: DEVELOPMENT, TESTING, PRODUCTION
-export D_GLOB_DEBUG="${D_GLOB_DEBUG:-false}"
-export D_GLOB_LOG_LEVEL="${D_GLOB_LOG_LEVEL:-INFO}"
-export D_GLOB_RECURSIVE="${D_GLOB_RECURSIVE:-false}"
-export D_GLOB_AUTO="${D_GLOB_AUTO:-$(
+export D_ENV="${D_ENV:-$(
     if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ] || [ -n "$GITLAB_CI" ] || [ -n "$CIRCLECI" ] || \
         [ -n "$TRAVIS" ] || [ -n "$JENKINS_URL" ] || [ -n "$BUILDKITE" ] || [ -n "$BITBUCKET_BUILD_NUMBER" ]; then
+        echo PIPELINE
+    elif [ -n "$IS_TESTING_COMPOSE_FILE" ]; then
+        echo TESTING
+    elif [ -n "$IS_PRODUCTION_COMPOSE_FILE" ]; then
+        echo PRODUCTION
+    else
+        echo DEVELOPMENT
+    fi
+)}"
+
+export D_DEBUG="${D_DEBUG:-$(
+    if [ "$D_ENV" = "PIPELINE" ] || [ "$D_ENV" = "TESTING" ]; then
+        echo true
+    else
+        echo false
+    fi
+)}"
+
+export D_LOG_LEVEL="${D_LOG_LEVEL:-$(
+    if [ "$D_DEBUG" = "true" ]; then
+        echo DEBUG
+    elif [ "$D_ENV" = "PIPELINE" ]; then
+        echo DEBUG
+    elif [ "$D_ENV" = "PRODUCTION" ]; then
+        echo ERROR
+    else
+        echo INFO
+    fi
+)}"
+
+export D_AUTO="${D_AUTO:-$(
+    if [ "$D_ENV" = "PIPELINE" ]; then
         echo true
     elif ! [ -t 0 ]; then
         echo true
@@ -20,7 +48,16 @@ export D_GLOB_AUTO="${D_GLOB_AUTO:-$(
         echo false
     fi
 )}"
-export D_GLOB_PATCH="${D_GLOB_PATCH:-false}"
+
+export D_PATCH="${D_PATCH:-$(
+    if [ "$D_AUTO" = "true" ]; then
+        echo true
+    else
+        echo false
+    fi
+)}"
+
+export D_RECURSIVE="${D_RECURSIVE:-false}"
 
 # Support both long and short options, including grouped short options
 # Expand grouped short options (e.g., -rq -> -r -q)
@@ -42,14 +79,14 @@ _ARGS_ENVS_PROCESS=""; _found_command=false; for arg in "${_expanded_args[@]}"; 
         _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\""
     else
         case "$arg" in
-            -p|--patch)     D_GLOB_PATCH="true" ;;
-            -r|--recursive) D_GLOB_RECURSIVE="true" ;;
-            -d|--debug)     D_GLOB_LOG_LEVEL="DEBUG"; D_GLOB_DEBUG="true" ;;
-            -q|--quiet)     D_GLOB_LOG_LEVEL="QUIET" ;;
-            -v|--verbose)   D_GLOB_LOG_LEVEL="VERBOSE" ;;
-            --log-level=*)  D_GLOB_LOG_LEVEL="${arg#*=}" ;;
-            --env=*)        D_GLOB_ENV="${arg#*=}" ;;
-            --auto)         D_GLOB_AUTO="true" ;;
+            -p|--patch)     D_PATCH="true" ;;
+            -r|--recursive) D_RECURSIVE="true" ;;
+            -d|--debug)     D_DEBUG="true" ;;
+            -q|--quiet)     D_LOG_LEVEL="QUIET" ;;
+            -v|--verbose)   D_LOG_LEVEL="VERBOSE" ;;
+            --log-level=*)  D_LOG_LEVEL="${arg#*=}" ;;
+            --env=*)        D_ENV="${arg#*=}" ;;
+            --auto)         D_AUTO="true" ;;
             *) _ARGS_ENVS_PROCESS="$_ARGS_ENVS_PROCESS \"$arg\""; _found_command=true;;
         esac
     fi

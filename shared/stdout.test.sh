@@ -14,7 +14,7 @@ capture_stderr() {
 # Test stdout function
 test_stdout_basic() {
     # Test basic log message
-    export D_GLOB_LOG_LEVEL="VERBOSE"
+    export D_LOG_LEVEL="VERBOSE"
     
     # Capture stdout - should be empty
     local stdout_result=$(capture_stdout stdout "Test message")
@@ -31,7 +31,7 @@ test_stdout_basic() {
 
 test_stdout_types() {
     # Test different message types
-    export D_GLOB_LOG_LEVEL="VERBOSE"
+    export D_LOG_LEVEL="VERBOSE"
     
     # Test info message
     local info_stdout=$(capture_stdout stdout -i "Info message")
@@ -62,7 +62,7 @@ test_stdout_log_levels() {
     # Test different log levels
     
     # Set log level to INFO
-    export D_GLOB_LOG_LEVEL="INFO"
+    export D_LOG_LEVEL="INFO"
     
     # Debug messages should be suppressed at INFO level
     local debug_stdout=$(capture_stdout stdout -d "Debug message")
@@ -79,7 +79,7 @@ test_stdout_log_levels() {
     assert_contains "$info_stderr" "Info message" "Info message should appear at INFO level in stderr"
     
     # Set log level to ERROR
-    export D_GLOB_LOG_LEVEL="ERROR"
+    export D_LOG_LEVEL="ERROR"
     
     # Warning messages should be suppressed at ERROR level
     local warning_stdout=$(capture_stdout stdout -w "Warning message")
@@ -98,7 +98,7 @@ test_stdout_log_levels() {
 
 test_stdout_custom_icon_ansi() {
     # Test custom icon and ANSI code
-    export D_GLOB_LOG_LEVEL="VERBOSE"
+    export D_LOG_LEVEL="VERBOSE"
     
     local stdout_result=$(capture_stdout stdout --icon="X" --ansi="36" "Custom message")
     local stderr_result=$(capture_stderr stdout --icon="X" --ansi="36" "Custom message")
@@ -111,7 +111,7 @@ test_stdout_custom_icon_ansi() {
 # Test command substitution behavior
 test_stdout_in_command_substitution() {
     # Test that command substitution doesn't capture stderr output
-    export D_GLOB_LOG_LEVEL="VERBOSE"
+    export D_LOG_LEVEL="VERBOSE"
     
     # This function outputs a message to stderr via stdout function
     # and returns a string to stdout directly
@@ -130,7 +130,7 @@ test_stdout_in_command_substitution() {
 # Test processing flag
 test_stdout_processing() {
     # Test processing animation flag
-    export D_GLOB_LOG_LEVEL="VERBOSE"
+    export D_LOG_LEVEL="VERBOSE"
     
     # Capture output to stderr with processing flag
     local stdout_result=$(capture_stdout stdout --processing "Processing message")
