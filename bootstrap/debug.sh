@@ -177,6 +177,8 @@ function sdk_boo_debug_init() {
 
         # Set verbose mode for debugging
         # set -x
+        
+        D_LOG_LEVEL="DEBUG"
 
         trap trace_error_handler ERR
     fi
