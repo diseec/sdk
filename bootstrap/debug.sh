@@ -103,8 +103,8 @@ get_system_info() {
 # Function to display environment variables
 get_env_variables() {
     printf "\n\033[1;97mENV VARIABLES\033[0m\033[97m %s\033[0m\n" "$(printf '%*s' 58 | tr ' ' '-')"
-    printf "\033[90mD_GLOB_ENV    \033[0m \033[90m%s\033[0m\n" "${D_ENV:-unknown}"
-    printf "\033[90mD_GLOB_DEBUG    \033[0m \033[90m%s\033[0m\n" "${D_DEBUG:-unknown}"
+    printf "\033[90mD_GLOB_ENV     \033[0m \033[90m%s\033[0m\n" "${D_ENV:-unknown}"
+    printf "\033[90mD_GLOB_DEBUG   \033[0m \033[90m%s\033[0m\n" "${D_DEBUG:-unknown}"
     printf "\033[90mPWD            \033[0m \033[90m%s\033[0m\n" "${PWD:-unknown}"
     printf "\033[90mD_INI_PWD      \033[0m \033[90m%s\033[0m\n" "${D_INI_PWD:-unknown}"
     printf "\033[90mD_INI_ARGS     \033[0m \033[90m%s\033[0m\n" "${D_INI_ARGS:-unknown}"
@@ -161,21 +161,23 @@ trace_error_handler() {
 }
 
 function sdk_boo_debug_init() {
-    
-    # # Always exit on error - this is now enforced
-    # set -e
-    
-    # # Handle undefined variables
-    # set -u
-    
-    # # Set errexit option
-    # set -o errexit
-    
-    # # Set pipefail option - ensures pipelines fail if any command fails
-    # set -o pipefail
-    
     # Start the tracing system and error handler if debug mode is enabled
     if [[ "$D_DEBUG" == "true" ]]; then
+        # # Always exit on error - this is now enforced
+        # set -e
+        
+        # # Handle undefined variables
+        # set -u
+        
+        # # Set errexit option
+        # set -o errexit
+        
+        # # Set pipefail option - ensures pipelines fail if any command fails
+        # set -o pipefail
+
+        # Set verbose mode for debugging
+        set -x
+
         trap trace_error_handler ERR
     fi
 }
