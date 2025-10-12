@@ -98,9 +98,10 @@ sdk_fac_ins_sdk() {
     #     --disable-content-trust > /dev/null 2>&1
 
     stdout -d "Pulling latest SDK docker image"
-    cli_core "$D_SDK_NAME" docker compose _ pull > /dev/null 2>&1
+    # local pull_output=$(cli_core "$D_SDK_NAME" docker compose _ pull &>&1)
+    local pull_output=$(cli_core "$D_SDK_NAME" docker compose _ pull)
     if [ $? -ne 0 ]; then
-        stdout -d "Failed to pull latest SDK image"
+        echo $pull_output
         stdout -e "Failed to pull latest $D_SDK_NAME image" >&2
         return 1
     fi
