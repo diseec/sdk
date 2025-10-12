@@ -176,7 +176,7 @@ function sdk_boo_debug_init() {
         # set -o pipefail
 
         # Set verbose mode for debugging
-        set -x
+        # set -x
 
         trap trace_error_handler ERR
     fi
