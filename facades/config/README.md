@@ -54,7 +54,7 @@ $D_CTX_DIR/
 version: "1.0"
 organization:
   name: diseec
-  registry: image.registry.diseec.com
+  registry: registry.diseec.com
 defaults:
   shell: bash
   editor: code

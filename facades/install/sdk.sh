@@ -94,7 +94,7 @@ sdk_fac_ins_sdk() {
     stdout -d "Entering sdk_fac_ins_sdk function"
     processing_start "BRAILLE_MIXED"
 
-    # docker pull image.registry.diseec.com/kit \
+    # docker pull registry.diseec.com/kit \
     #     --disable-content-trust > /dev/null 2>&1
 
     stdout -d "Pulling latest SDK docker image"

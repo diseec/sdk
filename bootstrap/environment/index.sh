@@ -53,7 +53,7 @@ sdk_boo_env_setup_environment() {
     readonly D_CLI_LOCAL_NAME="cli"
 
     # Registry and repository configuration
-    readonly D_REGISTRY_URL="image.registry.$D_ORG_NAME.com"
+    readonly D_REGISTRY_URL="registry.$D_ORG_NAME.com"
     readonly D_REPOSITORY_URL="github.com/$D_ORG_NAME"
     readonly D_SDK_IMAGE="$D_REGISTRY_URL/$D_SDK_NAME"
     readonly D_SDK_NPM_PKG="@$D_ORG_NAME/$D_SDK_NAME"
