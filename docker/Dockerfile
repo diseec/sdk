@@ -8,7 +8,7 @@ ARG D_CONT_CTX_DIR="/ctx"
 
 # Install base dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash coreutils curl jq git openssl git-lfs wget dnsutils traceroute bc \
+    bash coreutils curl jq git openssl git-lfs wget dnsutils traceroute bc ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Install yq
