@@ -7,7 +7,21 @@ ARG D_SDK_NAME=sdk
 ARG D_CONT_CTX_DIR="/ctx"
 
 # Install base dependencies
-RUN apk add --no-cache bash coreutils curl yq jq git openssl git-lfs
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash coreutils curl jq git openssl git-lfs wget dnsutils traceroute bc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install yq
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then \
+    YQ_ARCH="amd64"; \
+    elif [ "$ARCH" = "aarch64" ]; then \
+    YQ_ARCH="arm64"; \
+    else \
+    echo "Unsupported architecture: $ARCH" && exit 1; \
+    fi && \
+    wget -qO /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${YQ_ARCH}" && \
+    chmod +x /usr/local/bin/yq
 
 WORKDIR /${D_SDK_NAME}
 
@@ -31,9 +45,6 @@ RUN ARCH=$(uname -m) && \
     rm -rf /tmp/gh
 
 RUN npm install -g prettier
-
-# Install network diagnostic tools for internet facade
-RUN apk add --no-cache wget iputils bind-tools traceroute bc
 
 COPY . .
 
