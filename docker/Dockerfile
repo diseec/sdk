@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:20-bullseye-slim
 
 ENV IS_IN_SDK_CONTAINER=true
 
