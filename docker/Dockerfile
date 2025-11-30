@@ -8,8 +8,12 @@ ARG D_CONT_CTX_DIR="/ctx"
 
 # Install base dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash coreutils curl jq git openssl git-lfs wget dnsutils traceroute bc yq \
+    bash coreutils curl jq git openssl git-lfs wget dnsutils traceroute bc \
     && rm -rf /var/lib/apt/lists/*
+
+# Install yq
+RUN wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_$(dpkg --print-architecture) -O /usr/local/bin/yq && \
+    chmod +x /usr/local/bin/yq
 
 WORKDIR /${D_SDK_NAME}
 
