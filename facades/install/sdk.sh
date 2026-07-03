@@ -126,6 +126,19 @@ sdk_fac_ins_ensure_patched() {
     stdout -d "Entering sdk_fac_ins_ensure_patched function"
     mark_ctx_only
 
+    # Self-heal the project cli's executable bit. `D` runs it via `bash`, so a
+    # missing +x still "works" for the entry command — but the hook runner
+    # (handle_hook) and other paths gate on `[ -x "$D_CLI_STUB" ]`, so hooks are
+    # silently skipped and the failure surfaces later as a misleading error
+    # (e.g. "no such service: /entrypoints/default.sh:"). Fix it here, at the
+    # earliest stage of every D invocation, before any hook runs.
+    local ctx_cli="$D_CTX_DIR/$D_CLI_LOCAL_NAME"
+    if [ -f "$ctx_cli" ] && [ ! -x "$ctx_cli" ]; then
+        stdout -w "Project cli '$D_CLI_LOCAL_NAME' was not executable; fixing (chmod +x)"
+        chmod +x "$ctx_cli" 2>/dev/null || \
+            stdout -e "Could not make '$ctx_cli' executable; run: chmod +x $D_CLI_LOCAL_NAME"
+    fi
+
     local is_forced="${D_PATCH:-false}";
     stdout -d "Force patch: $is_forced"
     local sdk_dir="$D_CTX_DIR/$D_SDK_LOCAL_RELATIVE_PATH";
