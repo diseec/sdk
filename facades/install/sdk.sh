@@ -52,7 +52,20 @@ sdk_fac_ins_sdk_process() {
     stdout -d "npm install successful"
 
     stdout -d "Removing existing target kit: $target_kit"
-    rm -rf "$target_kit" 2>/dev/null 
+    rm -rf "$target_kit" 2>/dev/null
+
+    # This runs as root inside the SDK container. The `mkdir -p` below silently
+    # creates every missing intermediate parent (e.g. node_modules, node_modules/@diseec)
+    # owned by root. fix_permissions only chowns the leaf, so those parents stay
+    # root-owned — and since removing a dir entry needs write on its *parent*, a later
+    # non-root actions/checkout clean fails with EACCES trying to rmdir node_modules/@diseec.
+    # Record the topmost directory mkdir -p will actually create so we can restore
+    # ownership of the whole created chain, not just the leaf.
+    local perm_fix_root="$target_kit"
+    while [ "$(dirname "$perm_fix_root")" != "/" ] && [ ! -d "$(dirname "$perm_fix_root")" ]; do
+        perm_fix_root="$(dirname "$perm_fix_root")"
+    done
+
     stdout -d "Creating target kit directory"
     mkdir -p "$target_kit" 2>/dev/null
 
@@ -66,8 +79,15 @@ sdk_fac_ins_sdk_process() {
     fi
     stdout -d "Copy operation successful"
 
-    stdout -d "Fixing permissions for $target_kit"
-    fix_permissions "$target_kit"
+    # Chown the whole chain mkdir -p created (perm_fix_root .. target_kit), recursively.
+    # fix_permissions is chown -R, so this also covers the copied kit contents.
+    stdout -d "Fixing permissions for $perm_fix_root"
+    if ! fix_permissions "$perm_fix_root"; then
+        stdout -d "Failed to fix permissions"
+        stdout -e "Failed to fix ownership of $perm_fix_root; leaving root-owned files here will break later checkouts" >&2
+        rm -rf "$_tempdir"
+        return 1
+    fi
 
     stdout -d "Checking for CLI file in repo root: $D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME"
     if [ ! -f "$D_CONT_CTX_DIR/$D_CLI_LOCAL_NAME" ]; then

@@ -114,6 +114,45 @@ fix_permissions() {
     stdout -d "Fixed permissions for $target_dir to $D_HOST_UID:$D_HOST_GID"
 }
 
+# Create a directory with `mkdir -p` and restore host ownership of every directory it
+# actually creates — not just the leaf.
+#
+# These helpers run as root inside SDK containers, so any intermediate parents that
+# `mkdir -p` creates are owned by root. fix_permissions only chowns the path it is given,
+# and its early-return optimisation checks ownership of that top path only — so pointing it
+# at the leaf (or at an already host-owned ancestor) leaves freshly-created root-owned
+# parents untouched. A root-owned parent then breaks later non-root operations that must
+# remove/replace entries inside it (e.g. actions/checkout's clean step failing with EACCES
+# on node_modules/@diseec). We compute the topmost missing ancestor *before* creating, then
+# chown -R from there down so the whole created chain is fixed.
+ensure_dir_owned() {
+    local dir="$1"
+
+    if [ -z "$dir" ]; then
+        stdout -e "No directory provided to ensure_dir_owned"
+        return 1
+    fi
+
+    if [ -d "$dir" ]; then
+        # Nothing to create; just make sure ownership is correct.
+        fix_permissions "$dir"
+        return $?
+    fi
+
+    # Topmost ancestor that does not yet exist == the root of what mkdir -p will create.
+    local created_root="$dir"
+    while [ "$(dirname "$created_root")" != "/" ] && [ ! -d "$(dirname "$created_root")" ]; do
+        created_root="$(dirname "$created_root")"
+    done
+
+    if ! mkdir -p "$dir"; then
+        stdout -e "Failed to create directory: $dir"
+        return 1
+    fi
+
+    fix_permissions "$created_root"
+}
+
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃ HELP DISPLAY FUNCTION - Formatted Command List with Descriptions        ┃
 # ┃ Provides a clean way to display commands and their descriptions in help ┃

@@ -93,8 +93,7 @@ sdk_fac_sec_show_key() {
 # Clear all secrets
 sdk_fac_sec_clear_secrets() {
     # Ensure the secrets directory exists
-    mkdir -p "$SECRETS_DIR"
-    fix_permissions "$SECRETS_DIR"
+    ensure_dir_owned "$SECRETS_DIR"
     
     # Check if secrets directory has any files
     if [ ! -n "$(ls -A "$SECRETS_DIR" 2>/dev/null)" ]; then

@@ -53,7 +53,8 @@ sdk_boo_env_setup_environment() {
     readonly D_CLI_LOCAL_NAME="cli"
 
     # Registry and repository configuration
-    readonly D_REGISTRY_URL="registry.$D_ORG_NAME.com"
+    readonly D_REGISTRY_URL="ghcr.io/$D_ORG_NAME"
+    # readonly D_REGISTRY_URL="registry.$D_ORG_NAME.com"
     readonly D_REPOSITORY_URL="github.com/$D_ORG_NAME"
     readonly D_SDK_IMAGE="$D_REGISTRY_URL/$D_SDK_NAME"
     readonly D_SDK_NPM_PKG="@$D_ORG_NAME/$D_SDK_NAME"
@@ -66,7 +67,7 @@ sdk_boo_env_setup_environment() {
     readonly D_CONT_HOME_DIR="/root"
     readonly D_CONT_GIT_DIR="/.git"
     readonly D_CONT_CTX_DIR="/ctx"
-    readonly D_CONT_ORG_DIR="$D_CONT_HOME_DIR/$D_ORG_NAME"
+    readonly D_CONT_ORG_DIR="$D_CONT_HOME_DIR/.$D_ORG_NAME"
 
     # =============================================================================
     # COMPUTED PATHS AND DIRECTORIES

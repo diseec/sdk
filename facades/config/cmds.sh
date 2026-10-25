@@ -204,8 +204,7 @@ sdk_fac_con_init() {
             continue
         else
             # Create directory if it doesn't exist
-            mkdir -p "$(dirname "$config_file")"
-            fix_permissions "$(dirname "$config_file")"
+            ensure_dir_owned "$(dirname "$config_file")"
             # Create or initialize empty file
             echo "" > "$config_file"
             initialized_files+=("$scope")
